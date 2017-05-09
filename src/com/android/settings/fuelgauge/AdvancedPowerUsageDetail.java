@@ -17,21 +17,18 @@
 package com.android.settings.fuelgauge;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.admin.DevicePolicyManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.BatteryStats;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.support.annotation.VisibleForTesting;
 import android.support.v14.preference.PreferenceFragment;
 import android.support.v7.preference.Preference;
+import android.text.TextUtils;
 import android.view.View;
 
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
@@ -44,6 +41,7 @@ import com.android.settings.Utils;
 import com.android.settings.applications.AppHeaderController;
 import com.android.settings.applications.LayoutPreference;
 import com.android.settings.core.PreferenceController;
+import com.android.settings.dashboard.DashboardFragment;
 import com.android.settings.enterprise.DevicePolicyManagerWrapper;
 import com.android.settings.enterprise.DevicePolicyManagerWrapperImpl;
 import com.android.settings.overlay.FeatureFactory;
@@ -59,7 +57,7 @@ import java.util.List;
  * 2. Battery related controls for app(i.e uninstall, force stop)
  *
  */
-public class AdvancedPowerUsageDetail extends PowerUsageBase implements
+public class AdvancedPowerUsageDetail extends DashboardFragment implements
         ButtonActionDialogFragment.AppButtonsDialogListener {
 
     public static final String TAG = "AdvancedPowerUsageDetail";
@@ -86,6 +84,8 @@ public class AdvancedPowerUsageDetail extends PowerUsageBase implements
     ApplicationsState mState;
     @VisibleForTesting
     ApplicationsState.AppEntry mAppEntry;
+    @VisibleForTesting
+    BatteryUtils mBatteryUtils;
 
     private Preference mForegroundPreference;
     private Preference mBackgroundPreference;
@@ -105,11 +105,12 @@ public class AdvancedPowerUsageDetail extends PowerUsageBase implements
         final BatterySipper sipper = entry.sipper;
         final BatteryStats.Uid uid = sipper.uidObj;
         final BatteryUtils batteryUtils = BatteryUtils.getInstance(caller);
+        final boolean isTypeApp = sipper.drainType == BatterySipper.DrainType.APP;
 
-        final long backgroundTimeMs = batteryUtils.getProcessTimeMs(
-                BatteryUtils.StatusType.BACKGROUND, uid, which);
-        final long foregroundTimeMs = batteryUtils.getProcessTimeMs(
-                BatteryUtils.StatusType.FOREGROUND, uid, which);
+        final long foregroundTimeMs = isTypeApp ? batteryUtils.getProcessTimeMs(
+                BatteryUtils.StatusType.FOREGROUND, uid, which) : sipper.usageTimeMs;
+        final long backgroundTimeMs = isTypeApp ? batteryUtils.getProcessTimeMs(
+                BatteryUtils.StatusType.BACKGROUND, uid, which) : 0;
 
         if (ArrayUtils.isEmpty(sipper.mPackages)) {
             // populate data for system app
@@ -140,6 +141,7 @@ public class AdvancedPowerUsageDetail extends PowerUsageBase implements
                 (DevicePolicyManager) activity.getSystemService(Context.DEVICE_POLICY_SERVICE));
         mUserManager = (UserManager) activity.getSystemService(Context.USER_SERVICE);
         mPackageManager = activity.getPackageManager();
+        mBatteryUtils = BatteryUtils.getInstance(getContext());
     }
 
     @Override
@@ -179,7 +181,7 @@ public class AdvancedPowerUsageDetail extends PowerUsageBase implements
     @VisibleForTesting
     void initHeader() {
         final View appSnippet = mHeaderPreference.findViewById(R.id.app_snippet);
-        final Context context = getContext();
+        final Activity context = getActivity();
         final Bundle bundle = getArguments();
         AppHeaderController controller = FeatureFactory.getFactory(context)
                 .getApplicationFeatureProvider(context)
@@ -203,7 +205,7 @@ public class AdvancedPowerUsageDetail extends PowerUsageBase implements
             controller.setSummary(getString(Utils.getInstallationStatus(mAppEntry.info)));
         }
 
-        controller.done(true /* rebindActions */);
+        controller.done(context, true /* rebindActions */);
     }
 
     @Override
@@ -230,7 +232,7 @@ public class AdvancedPowerUsageDetail extends PowerUsageBase implements
 
         controllers.add(new BackgroundActivityPreferenceController(context, uid));
         controllers.add(new BatteryOptimizationPreferenceController(
-                (SettingsActivity) getActivity(), this));
+                (SettingsActivity) getActivity(), this, packageName));
         mAppButtonsPreferenceController = new AppButtonsPreferenceController(
                 (SettingsActivity) getActivity(), this, getLifecycle(), packageName, mState, mDpm,
                 mUserManager, mPackageManager, REQUEST_UNINSTALL, REQUEST_REMOVE_DEVICE_ADMIN);

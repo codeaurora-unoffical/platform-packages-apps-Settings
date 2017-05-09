@@ -23,7 +23,6 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageItemInfo;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.AdaptiveIconDrawable;
 import android.icu.text.AlphabeticIndex;
 import android.os.Bundle;
 import android.os.Environment;
@@ -35,7 +34,6 @@ import android.preference.PreferenceFrameLayout;
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import android.util.ArraySet;
-import android.util.LauncherIcons;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -55,14 +53,15 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.SectionIndexer;
 import android.widget.Spinner;
-
 import android.widget.TextView;
+
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
 import com.android.settings.Settings.AllApplicationsActivity;
 import com.android.settings.Settings.GamesStorageActivity;
 import com.android.settings.Settings.HighPowerApplicationsActivity;
 import com.android.settings.Settings.ManageExternalSourcesActivity;
+import com.android.settings.Settings.MoviesStorageActivity;
 import com.android.settings.Settings.NotificationAppListActivity;
 import com.android.settings.Settings.OverlaySettingsActivity;
 import com.android.settings.Settings.StorageUseActivity;
@@ -131,13 +130,13 @@ public class ManageApplications extends InstrumentedPreferenceFragment
     public static final int SIZE_EXTERNAL = 2;
 
     // Filter options used for displayed list of applications
-    // The order which they appear is the order they will show when spinner is present.
+    // Filters will appear sorted based on their value defined here.
     public static final int FILTER_APPS_POWER_WHITELIST = 0;
     public static final int FILTER_APPS_POWER_WHITELIST_ALL = 1;
     public static final int FILTER_APPS_ALL = 2;
     public static final int FILTER_APPS_ENABLED = 3;
-    public static final int FILTER_APPS_DISABLED = 4;
-    public static final int FILTER_APPS_INSTANT = 5;
+    public static final int FILTER_APPS_INSTANT = 4;
+    public static final int FILTER_APPS_DISABLED = 5;
     public static final int FILTER_APPS_BLOCKED = 6;
     public static final int FILTER_APPS_PERSONAL = 7;
     public static final int FILTER_APPS_WORK = 8;
@@ -256,6 +255,7 @@ public class ManageApplications extends InstrumentedPreferenceFragment
     public static final int LIST_TYPE_WRITE_SETTINGS = 7;
     public static final int LIST_TYPE_MANAGE_SOURCES = 8;
     public static final int LIST_TYPE_GAMES = 9;
+    public static final int LIST_TYPE_MOVIES = 10;
 
 
     // List types that should show instant apps.
@@ -315,6 +315,9 @@ public class ManageApplications extends InstrumentedPreferenceFragment
             mListType = LIST_TYPE_MANAGE_SOURCES;
         } else if (className.equals(GamesStorageActivity.class.getName())) {
             mListType = LIST_TYPE_GAMES;
+            mSortOrder = R.id.sort_order_size;
+        } else if (className.equals(MoviesStorageActivity.class.getName())) {
+            mListType = LIST_TYPE_MOVIES;
             mSortOrder = R.id.sort_order_size;
         } else {
             mListType = LIST_TYPE_MAIN;
@@ -424,6 +427,8 @@ public class ManageApplications extends InstrumentedPreferenceFragment
         }
         if (mListType == LIST_TYPE_GAMES) {
             mApplications.setOverrideFilter(ApplicationsState.FILTER_GAMES);
+        } else if (mListType == LIST_TYPE_MOVIES) {
+            mApplications.setOverrideFilter(ApplicationsState.FILTER_MOVIES);
         }
     }
 
@@ -450,6 +455,7 @@ public class ManageApplications extends InstrumentedPreferenceFragment
             case LIST_TYPE_NOTIFICATION:
             case LIST_TYPE_STORAGE:
             case LIST_TYPE_GAMES:
+            case LIST_TYPE_MOVIES:
                 return mSortOrder == R.id.sort_order_alpha;
             default:
                 return false;
@@ -470,6 +476,8 @@ public class ManageApplications extends InstrumentedPreferenceFragment
                 return MetricsEvent.APPLICATIONS_STORAGE_APPS;
             case LIST_TYPE_GAMES:
                 return MetricsEvent.APPLICATIONS_STORAGE_GAMES;
+            case LIST_TYPE_MOVIES:
+                return MetricsEvent.APPLICATIONS_STORAGE_MOVIES;
             case LIST_TYPE_USAGE_ACCESS:
                 return MetricsEvent.USAGE_ACCESS;
             case LIST_TYPE_HIGH_POWER:
@@ -576,6 +584,9 @@ public class ManageApplications extends InstrumentedPreferenceFragment
                 break;
             case LIST_TYPE_GAMES:
                 startAppInfoFragment(AppStorageSettings.class, R.string.game_storage_settings);
+                break;
+            case LIST_TYPE_MOVIES:
+                startAppInfoFragment(AppStorageSettings.class, R.string.storage_movies_tv);
                 break;
             // TODO: Figure out if there is a way where we can spin up the profile's settings
             // process ahead of time, to avoid a long load of data when user clicks on a managed app.
@@ -813,7 +824,6 @@ public class ManageApplications extends InstrumentedPreferenceFragment
         private final AppStateBaseBridge mExtraInfoBridge;
         private final Handler mBgHandler;
         private final Handler mFgHandler;
-        private final LauncherIcons mLauncherIcons;
 
         private int mFilterMode;
         private ArrayList<ApplicationsState.AppEntry> mBaseEntries;
@@ -869,7 +879,6 @@ public class ManageApplications extends InstrumentedPreferenceFragment
             mContext = manageApplications.getActivity();
             mPm = mContext.getPackageManager();
             mFilterMode = filterMode;
-            mLauncherIcons = new LauncherIcons(mContext);
             if (mManageApplications.mListType == LIST_TYPE_NOTIFICATION) {
                 mExtraInfoBridge = new AppStateNotificationBridge(mContext, mState, this,
                         manageApplications.mNotifBackend);
@@ -1304,9 +1313,6 @@ public class ManageApplications extends InstrumentedPreferenceFragment
                     }
                     mState.ensureIcon(entry);
                     if (entry.icon != null) {
-                        if (entry.icon instanceof AdaptiveIconDrawable) {
-                            entry.icon = mLauncherIcons.wrapIconDrawableWithShadow(entry.icon);
-                        }
                         holder.appIcon.setImageDrawable(entry.icon);
                     }
                     updateSummary(holder);
