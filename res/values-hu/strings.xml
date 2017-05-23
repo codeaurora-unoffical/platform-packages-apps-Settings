@@ -331,7 +331,8 @@
     <string name="account_settings_title" msgid="626177544686329806">"Fiókok"</string>
     <string name="security_settings_title" msgid="6134528367364159294">"Biztonság és hely"</string>
     <string name="encryption_and_credential_settings_title" msgid="6514904533438791561">"Titkosítás és hitelesítési adatok"</string>
-    <string name="encryption_and_credential_settings_summary" msgid="8721883002237981248">"Telefon titkosítva"</string>
+    <string name="encryption_and_credential_settings_summary" product="default" msgid="8721883002237981248">"Telefon titkosítva"</string>
+    <string name="encryption_and_credential_settings_summary" product="tablet" msgid="7200428573872395685">"Az eszköz titkosítva"</string>
     <string name="lockscreen_settings_title" msgid="3922976395527087455">"A lezárási képernyő beállításai"</string>
     <string name="security_settings_summary" msgid="967393342537986570">"Saját pozíció beállítása, képernyőzár feloldása, SIM-kártya zárolása, hitelesítési adatok tárolójának zárolása"</string>
     <string name="cdma_security_settings_summary" msgid="6068799952798901542">"Saját pozíció beállítása, képernyőzár feloldása, hitelesítési adatok tárolójának zárolása"</string>
@@ -668,7 +669,7 @@
     <string name="nfc_disclaimer_title" msgid="4364003873202264039">"NFC bekapcsolása"</string>
     <string name="nfc_disclaimer_content" msgid="5566907911915158075">"Az NFC adatokat küld ezen eszköz és a közelben található egyéb eszközök és célpontok – például fizetési terminálok, beléptetési terminálok, interaktív hirdetések vagy címkék – között."</string>
     <string name="android_beam_settings_title" msgid="7832812974600338649">"Android Beam"</string>
-    <string name="android_beam_on_summary" msgid="3618057099355636830">"Készen áll alkalmazástartalmak továbbítására NFC segítségével"</string>
+    <string name="android_beam_on_summary" msgid="3618057099355636830">"Alkalmazástartalmakat tud továbbítani NFC segítségével"</string>
     <string name="android_beam_off_summary" msgid="4663095428454779138">"Ki"</string>
     <string name="android_beam_disabled_summary" msgid="1737782116894793393">"Nem érhető el, mert az NFC ki van kapcsolva"</string>
     <string name="android_beam_label" msgid="6257036050366775040">"Android Beam"</string>
@@ -1290,7 +1291,7 @@
     </plurals>
     <string name="master_clear_summary" msgid="6902443944660426951">"A belső tárhely és minden adat visszaállításra kerül"</string>
     <string name="master_clear_desc" product="tablet" msgid="9146059417023157222">"Ez minden adatot töröl a táblagép "<b>"belső tárolójáról"</b>", többek között: \n \n"<li>"Google Fiókját"</li>\n<li>"A rendszer- és alkalmazásadatokat és beállításokat"</li>" \n "<li>"A letöltött alkalmazásokat"</li></string>
-    <string name="master_clear_desc" product="default" msgid="4800386183314202571">"Ez minden adatot töröl a telefon "<b>"belső tárolójáról"</b>", többek között: \n \n"<li>"Google-fiókját;"</li>\n<li>"a rendszer- és alkalmazásadatokat és beállításokat;"</li>" \n "<li>"a letöltött alkalmazásokat."</li></string>
+    <string name="master_clear_desc" product="default" msgid="4800386183314202571">"Ez minden adatot töröl a telefon "<b>"belső tárolójáról"</b>", többek között: \n \n"<li>"Google-fiókját;"</li>\n<li>"a rendszer- és alkalmazásadatokat és beállításokat;"</li>" \n"<li>"a letöltött alkalmazásokat."</li></string>
     <string name="master_clear_accounts" product="default" msgid="6412857499147999073">\n\n"Jelenleg a következő fiókokba van bejelentkezve:\n"</string>
     <string name="master_clear_other_users_present" product="default" msgid="5161423070702470742">\n\n"Más felhasználók is vannak ezen az eszközön.\n"</string>
     <string name="master_clear_desc_also_erases_external" msgid="1903185203791274237"><li>"Zene"</li>\n<li>"Fotók"</li>\n<li>"Más felhasználói adatok"</li></string>
@@ -1853,6 +1854,7 @@
     <string name="enable_service_title" msgid="3061307612673835592">"Használja a(z) <xliff:g id="SERVICE">%1$s</xliff:g> szolgáltatást?"</string>
     <string name="capabilities_list_title" msgid="86713361724771971">"A(z) <xliff:g id="SERVICE">%1$s</xliff:g> szolgáltatásnak a következőkre van szüksége:"</string>
     <string name="touch_filtered_warning" msgid="8644034725268915030">"Mivel az egyik alkalmazás zavar egy engedélykérelmet, a Beállítások funkció nem tudja ellenőrizni az Ön válaszát."</string>
+    <string name="window_obscured_warning" msgid="8711643931674708175">"Mivel egy másik alkalmazás jelenik meg a beállítások felett, a Beállítások alkalmazás nem tud válaszolni a műveletre."</string>
     <string name="enable_service_encryption_warning" msgid="3064686622453974606">"Ha engedélyezi a(z) <xliff:g id="SERVICE">%1$s</xliff:g> szolgáltatást, az eszköz nem fogja használni a képernyőzárat az adattitkosítás növelése érdekében."</string>
     <string name="secure_lock_encryption_warning" msgid="460911459695077779">"Mivel engedélyezett egy kisegítő szolgáltatást, az eszköz nem fogja használni a képernyőzárat az adattitkosítás növelése érdekében."</string>
     <string name="enable_service_pattern_reason" msgid="777577618063306751">"Mivel a(z) <xliff:g id="SERVICE">%1$s</xliff:g> bekapcsolása hatással van az adatok titkosítására, meg kell erősítenie mintáját."</string>
@@ -2777,6 +2779,7 @@
     <string name="configure_notification_settings" msgid="7616737397127242615">"Értesítések"</string>
     <string name="advanced_section_header" msgid="8833934850242546903">"Speciális"</string>
     <string name="profile_section_header" msgid="2320848161066912001">"Munkahelyi profil értesítései"</string>
+    <string name="notification_badging_title" msgid="5125022693565388760">"Ikonjelvények engedélyezése"</string>
     <string name="notification_pulse_title" msgid="1905382958860387030">"Villogó fény"</string>
     <string name="lock_screen_notifications_title" msgid="6173076173408887213">"A lezárási képernyőn"</string>
     <string name="lock_screen_notifications_summary_show" msgid="6407527697810672847">"Az összes értesítés jelenjen meg"</string>
@@ -2802,10 +2805,11 @@
     <string name="notification_importance_low_title" msgid="8131254047772814309">"Közepes"</string>
     <string name="notification_importance_default_title" msgid="9120383978536089489">"Magas"</string>
     <string name="notification_importance_high_title" msgid="3058778300264746473">"Sürgős"</string>
-    <string name="allow_sound" msgid="6585849855452076626">"Hang engedélyezése"</string>
+    <string name="allow_sound" msgid="1820188704793497324">"Hang engedélyezése"</string>
     <string name="show_silently_summary" msgid="7616604629123146565">"Ne legyen hangjelzés vagy rezgés, illetve az értesítések ne jelenjenek meg rövid időre sem az aktuális képernyőn."</string>
     <string name="default_notification_assistant" msgid="7631945224761430146">"Értesítési segéd"</string>
     <string name="manage_notification_access_title" msgid="7510080164564944891">"Hozzáférés értesítésekhez"</string>
+    <string name="work_profile_notification_access_blocked_summary" msgid="8748026238701253040">"A munkaprofil értesítéseihez való hozzáférés letiltva"</string>
     <string name="manage_notification_access_summary_zero" msgid="2409912785614953348">"Az alkalmazások nem tudják olvasni az értesítéseket"</string>
     <plurals name="manage_notification_access_summary_nonzero" formatted="false" msgid="7930130030691218387">
       <item quantity="other">%d alkalmazás tudja olvasni az értesítéseket</item>
@@ -2857,8 +2861,7 @@
     <string name="app_notification_block_summary" msgid="4744020456943215352">"Soha ne jelenjenek meg ezek az értesítések"</string>
     <string name="notification_content_block_title" msgid="5854232570963006360">"Értesítések megjelenítése"</string>
     <string name="notification_content_block_summary" msgid="7746185794438882389">"Soha ne jelenjen meg értesítés az értesítési felületen és a perifériás eszközökön"</string>
-    <string name="notification_badge_title" msgid="7166470350070693657">"Jelvény-alkalmazásikon"</string>
-    <string name="notification_badge_summary" msgid="3944771498030335669">"Értesítések megjelenítése jelvényként a kezdőalkalmazásban, ha támogatott."</string>
+    <string name="notification_badge_title" msgid="7734903868300369178">"Ikonjelvény engedélyezése"</string>
     <string name="app_notification_override_dnd_title" msgid="7867458246395884830">"A Ne zavarjanak mód felülbírálása"</string>
     <string name="app_notification_override_dnd_summary" msgid="3516007157020189746">"A Ne zavarjanak mód „Csak prioritásos” beállítása esetén ezek az értesítések továbbra is zavarhatnak"</string>
     <string name="app_notification_visibility_override_title" msgid="2187232730902430718">"A lezárási képernyőn"</string>
@@ -3415,7 +3418,7 @@
     <string name="support_sign_in_required_help" msgid="5200654782405538114">"Nem tud bejelentkezni?"</string>
     <string name="support_disclaimer_title" msgid="4825302018208770031">"Rendszeradatok elküldése"</string>
     <string name="support_disclaimer_do_not_show" msgid="3378367075323727539">"Ne jelenjen meg újra"</string>
-    <string name="support_account_request_prefix" msgid="6387847874661861650">"Lekérés a következőként:"</string>
+    <string name="support_account_request_prefix" msgid="6387847874661861650">"Kérelmező fiók:"</string>
     <string name="support_account_picker_add_account" msgid="5076277544846506214">"Fiók hozzáadása"</string>
     <string name="support_system_information_title" msgid="3439905790018934773">"Rendszer-információk"</string>
     <string name="managed_profile_settings_title" msgid="2729481936758125054">"Munkaprofil beállításai"</string>

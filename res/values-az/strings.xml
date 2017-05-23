@@ -331,7 +331,8 @@
     <string name="account_settings_title" msgid="626177544686329806">"Hesablar"</string>
     <string name="security_settings_title" msgid="6134528367364159294">"Təhlükəsizlik və Məkan"</string>
     <string name="encryption_and_credential_settings_title" msgid="6514904533438791561">"Şifrələmə və kredensiallar"</string>
-    <string name="encryption_and_credential_settings_summary" msgid="8721883002237981248">"Telefon şifrələnib"</string>
+    <string name="encryption_and_credential_settings_summary" product="default" msgid="8721883002237981248">"Telefon şifrələnib"</string>
+    <string name="encryption_and_credential_settings_summary" product="tablet" msgid="7200428573872395685">"Cihaz şifrələndi"</string>
     <string name="lockscreen_settings_title" msgid="3922976395527087455">"Ekran kilidi tərcihləri"</string>
     <string name="security_settings_summary" msgid="967393342537986570">"Məkanım\'ı, ekranı kiliddən çıxarmanı, hesab yaddaş kilidini ayarlayın,"</string>
     <string name="cdma_security_settings_summary" msgid="6068799952798901542">"Məkanım\'ı, ekranı kiliddən çıxarmanı, hesab yaddaş kilidini ayarlayın,"</string>
@@ -1853,6 +1854,7 @@
     <string name="enable_service_title" msgid="3061307612673835592">"<xliff:g id="SERVICE">%1$s</xliff:g> xidməti istifadə edilsin?"</string>
     <string name="capabilities_list_title" msgid="86713361724771971">"<xliff:g id="SERVICE">%1$s</xliff:g> etməlidir:"</string>
     <string name="touch_filtered_warning" msgid="8644034725268915030">"Çünki, tətbiq icazə sorğusunu anlaşılmaz edir. Ayarlar cavabınızı doğrulaya bilməz."</string>
+    <string name="window_obscured_warning" msgid="8711643931674708175">"Digər tətbiqlər bu seçimlərin üstündə göstərildiyinə görə Ayarlar əməliyyata cavab verə bilmir."</string>
     <string name="enable_service_encryption_warning" msgid="3064686622453974606">"<xliff:g id="SERVICE">%1$s</xliff:g> aktiv olarsa, cihazınız data şifrələnməsini genişləndirmək üçün ekran kilidini istifadə etməyəcək."</string>
     <string name="secure_lock_encryption_warning" msgid="460911459695077779">"Girişimlik xidmətini aktiv etdiyiniz üçün cihazınız data şifrələnməsini genişləndirmək üçün ekran kilidini istifadə etməyəcək."</string>
     <string name="enable_service_pattern_reason" msgid="777577618063306751">"<xliff:g id="SERVICE">%1$s</xliff:g> xidmətinin aktiv edilməsi şifrələnməyə təsir etdiyi üçün modelinizi təsdiq etməlisiniz."</string>
@@ -2775,6 +2777,7 @@
     <string name="configure_notification_settings" msgid="7616737397127242615">"Bildirişlər"</string>
     <string name="advanced_section_header" msgid="8833934850242546903">"Qabaqcıl"</string>
     <string name="profile_section_header" msgid="2320848161066912001">"İş bildirişləri"</string>
+    <string name="notification_badging_title" msgid="5125022693565388760">"İkona nişanlarına icazə verin"</string>
     <string name="notification_pulse_title" msgid="1905382958860387030">"Parıltı işığı"</string>
     <string name="lock_screen_notifications_title" msgid="6173076173408887213">"Ekran kilidində"</string>
     <string name="lock_screen_notifications_summary_show" msgid="6407527697810672847">"Bütün bildiriş məzmunlarını göstər"</string>
@@ -2800,10 +2803,11 @@
     <string name="notification_importance_low_title" msgid="8131254047772814309">"Orta"</string>
     <string name="notification_importance_default_title" msgid="9120383978536089489">"Yüksək"</string>
     <string name="notification_importance_high_title" msgid="3058778300264746473">"Vacib"</string>
-    <string name="allow_sound" msgid="6585849855452076626">"Səsə icazə verin"</string>
+    <string name="allow_sound" msgid="1820188704793497324">"Səsə icazə verin"</string>
     <string name="show_silently_summary" msgid="7616604629123146565">"Səs, vibrasiyanı deaktiv edin və ya bu bildirişlərə cari ekranınızda baxın."</string>
     <string name="default_notification_assistant" msgid="7631945224761430146">"Bildiriş köməkçisi"</string>
     <string name="manage_notification_access_title" msgid="7510080164564944891">"Bildiriş girişi"</string>
+    <string name="work_profile_notification_access_blocked_summary" msgid="8748026238701253040">"İş profili bildirişlərinə giriş blok edilib"</string>
     <string name="manage_notification_access_summary_zero" msgid="2409912785614953348">"Tətbiqlər bildirişləri oxuya bilmir"</string>
     <plurals name="manage_notification_access_summary_nonzero" formatted="false" msgid="7930130030691218387">
       <item quantity="other">%d proqram bildirişləri oxuya bilər</item>
@@ -2855,8 +2859,7 @@
     <string name="app_notification_block_summary" msgid="4744020456943215352">"Bu bildirişlər heç vaxt göstərilməsin"</string>
     <string name="notification_content_block_title" msgid="5854232570963006360">"Bildirişləri göstərin"</string>
     <string name="notification_content_block_summary" msgid="7746185794438882389">"Bildirişləri heç vaxt ekranda və ya periferik cihazlarda göstərməyin."</string>
-    <string name="notification_badge_title" msgid="7166470350070693657">"Nişan tətbiq ikonası"</string>
-    <string name="notification_badge_summary" msgid="3944771498030335669">"Əgər dəstəkləyirsə, bildirişləri Əsas tətbiqdə nişanlar kimi göstərin."</string>
+    <string name="notification_badge_title" msgid="7734903868300369178">"İkona nişanına icazə verin"</string>
     <string name="app_notification_override_dnd_title" msgid="7867458246395884830">"\"Narahat etməyin\" seçimini əvəzləyin"</string>
     <string name="app_notification_override_dnd_summary" msgid="3516007157020189746">"Narahat Etməyin seçimi Yalnız Prioritet üçün ayarlandıqda bildirişlərin mane olmasına imkan verin"</string>
     <string name="app_notification_visibility_override_title" msgid="2187232730902430718">"Ekran kilidində"</string>

@@ -331,7 +331,8 @@
     <string name="account_settings_title" msgid="626177544686329806">"Есептік жазбалар"</string>
     <string name="security_settings_title" msgid="6134528367364159294">"Қауіпсіздік және орын"</string>
     <string name="encryption_and_credential_settings_title" msgid="6514904533438791561">"Шифрлау және тіркелу деректері"</string>
-    <string name="encryption_and_credential_settings_summary" msgid="8721883002237981248">"Телефон шифрланған"</string>
+    <string name="encryption_and_credential_settings_summary" product="default" msgid="8721883002237981248">"Телефон шифрланған"</string>
+    <string name="encryption_and_credential_settings_summary" product="tablet" msgid="7200428573872395685">"Құрылғы шифрланған"</string>
     <string name="lockscreen_settings_title" msgid="3922976395527087455">"Құлып экранының параметрлері"</string>
     <string name="security_settings_summary" msgid="967393342537986570">"Менің аймағым, экран бекіту, SIM картасын бекіту, растау дерекқорын бекітуді орнату"</string>
     <string name="cdma_security_settings_summary" msgid="6068799952798901542">"Менің аймағым, экран бекітпесі, растау деректері жадының бекітпесін реттеу"</string>
@@ -1672,7 +1673,7 @@
     <string name="hardkeyboard_category" msgid="5957168411305769899">"Қатты пернетақта параметрлері"</string>
     <string name="auto_punctuate_summary" msgid="4372126865670574837">"Енгізу үшін бос орын пернесін екі рет басу \".\""</string>
     <string name="show_password" msgid="4837897357002495384">"Құпия сөздерді көрсету"</string>
-    <string name="show_password_summary" msgid="3365397574784829969">"Таңбалар терілген кезде қысқа уақыт көрсетіледі"</string>
+    <string name="show_password_summary" msgid="3365397574784829969">"Таңбалар терілген кезде аз уақыт көрсетіледі"</string>
     <string name="spellchecker_security_warning" msgid="9060897418527708922">"Бұл орфографиялық тексеру қызметі сіз терген барлық мәтіндерді, кілтсөздер мен кредит карта нөмірі сияқты жеке ақпаратты қоса, жинауы мүмкін. Ол <xliff:g id="SPELLCHECKER_APPLICATION_NAME">%1$s</xliff:g> қолданбасы арқылы жабдықталған.  Осы орфографиялық тексеру қызметі қолданылсын ба?"</string>
     <string name="spellchecker_quick_settings" msgid="246728645150092058">"Параметрлер"</string>
     <string name="spellchecker_language" msgid="6041050114690541437">"Тіл"</string>
@@ -1853,6 +1854,7 @@
     <string name="enable_service_title" msgid="3061307612673835592">"<xliff:g id="SERVICE">%1$s</xliff:g> қолданылсын ба?"</string>
     <string name="capabilities_list_title" msgid="86713361724771971">"<xliff:g id="SERVICE">%1$s</xliff:g> қызметіне қажет:"</string>
     <string name="touch_filtered_warning" msgid="8644034725268915030">"Бағдарлама рұқсат сұрауын жасырып тұрғандықтан, Параметрлер жауабыңызды тексере алмайды."</string>
+    <string name="window_obscured_warning" msgid="8711643931674708175">"Себебі бұл опциялардың жоғарғы жағында басқа қолданба көрсетіледі. Параметрлер әрекетіңізге әсер етпейді."</string>
     <string name="enable_service_encryption_warning" msgid="3064686622453974606">"<xliff:g id="SERVICE">%1$s</xliff:g> қоссаңыз, құрылғыңыз деректерді шифрлау үшін экранды бекітуді пайдаланбайды."</string>
     <string name="secure_lock_encryption_warning" msgid="460911459695077779">"Сіз арнайы мүмкіндіктер қызметін қосқандықтан, құрылғыңыз деректерді шифрлау үшін экранды бекітуді пайдаланбайды."</string>
     <string name="enable_service_pattern_reason" msgid="777577618063306751">"<xliff:g id="SERVICE">%1$s</xliff:g> қосу деректерді шифрлауға әсер ететіндіктен, өрнекті растау керек."</string>
@@ -1911,7 +1913,7 @@
     <string name="device_screen_consumption" msgid="4607589286438986687">"Экран жарығына жұмсалатын заряд шығыны"</string>
     <string name="device_cellular_network" msgid="4724773411762382950">"Мобильдік желіні сканерлеу"</string>
     <string name="power_last_full_charge_summary" msgid="532845389094620657">"<xliff:g id="TIME">^1</xliff:g> бұрын"</string>
-    <string name="power_usage_list_summary" msgid="6775339745194635000">"Толық зарядталғаннан кейін (<xliff:g id="TIME">^1</xliff:g> бұрын) қолданбалардың тұтынуы"</string>
+    <string name="power_usage_list_summary" msgid="6775339745194635000">"Толық зарядтан кейін (<xliff:g id="TIME">^1</xliff:g> бұрын) қолданба тұтынуы"</string>
     <string name="screen_usage_summary" msgid="6687403051423153550">"Толық зарядталғаннан кейін экран қосулы болған уақыт мөлшері"</string>
     <string name="device_usage_list_summary" msgid="5623036661468763251">"Толық зарядталғаннан кейін құрылғының пайдаланылуы"</string>
     <string name="battery_since_unplugged" msgid="338073389740738437">"Ажыратылғаннан бері батарея қолданысы"</string>
@@ -1931,7 +1933,7 @@
     <string name="awake" msgid="387122265874485088">"Құрылғыны ояту уақыты"</string>
     <string name="wifi_on_time" msgid="3208518458663637035">"Wi‑Fi уақытында"</string>
     <string name="bluetooth_on_time" msgid="3056108148042308690">"Wi‑Fi уақытында"</string>
-    <string name="advanced_battery_title" msgid="2068039111517508622">"Батарея зарядын кеңейтілген пайдалану"</string>
+    <string name="advanced_battery_title" msgid="2068039111517508622">"Батарея зарядын пайдалану туралы"</string>
     <string name="history_details_title" msgid="3608240585315506067">"Тарих егжей-тегжейі"</string>
     <string name="battery_details_title" msgid="6101394441569858580">"Батарея зарядының тұтынылуы"</string>
     <string name="details_subtitle" msgid="32593908269911734">"Қолдану деректері"</string>
@@ -2005,7 +2007,7 @@
     <string name="battery_used_for" msgid="2690821851327075443">"Пайдаланылу уақыты: <xliff:g id="TIME">^1</xliff:g>"</string>
     <string name="battery_used_by" msgid="1135316757755282999">"<xliff:g id="APP">%2$s</xliff:g> <xliff:g id="PERCENT">%1$s</xliff:g>-н пайдаланды"</string>
     <string name="battery_overall_usage" msgid="2093409063297375436">"Жалпы батарея зарядының <xliff:g id="PERCENT">%1$s</xliff:g>-ы"</string>
-    <string name="battery_detail_since_full_charge" msgid="7515347842046955855">"Соңғы толық зарядталғаннан кейін пайдаланылғаны"</string>
+    <string name="battery_detail_since_full_charge" msgid="7515347842046955855">"Толық зарядталғаннан кейін пайдаланылғаны"</string>
     <string name="battery_last_full_charge" msgid="7151251641099019361">"Соңғы толық зарядталуы"</string>
     <string name="battery_footer_summary" msgid="4701358808575132647">"Қалған батарея зарядының уақыты шамамен көрсетілген және оның тұтынылуына қарай өзгеруі мүмкін"</string>
     <string name="battery_detail_foreground" msgid="3350401514602032183">"Белсенді пайдаланылатын кезде"</string>
@@ -2190,7 +2192,7 @@
     <string name="wifi_setup_not_connected" msgid="6997432604664057052">"Қосылмаған"</string>
     <string name="wifi_setup_add_network" msgid="5939624680150051807">"Желі қосу"</string>
     <string name="wifi_setup_refresh_list" msgid="3411615711486911064">"Тізімді жаңалау"</string>
-    <string name="wifi_setup_skip" msgid="6661541841684895522">"Аттап өту"</string>
+    <string name="wifi_setup_skip" msgid="6661541841684895522">"Өткізіп жіберу"</string>
     <string name="wifi_setup_next" msgid="3388694784447820477">"Келесі"</string>
     <string name="wifi_setup_back" msgid="144777383739164044">"Артқа"</string>
     <string name="wifi_setup_detail" msgid="2336990478140503605">"Желі деректері"</string>
@@ -2775,6 +2777,7 @@
     <string name="configure_notification_settings" msgid="7616737397127242615">"Хабарландырулар"</string>
     <string name="advanced_section_header" msgid="8833934850242546903">"Кеңейтілген"</string>
     <string name="profile_section_header" msgid="2320848161066912001">"Жұмыс хабарландырулары"</string>
+    <string name="notification_badging_title" msgid="5125022693565388760">"Белгіше танымбелгілеріне рұқсат беру"</string>
     <string name="notification_pulse_title" msgid="1905382958860387030">"Жыпылықтаған жарық"</string>
     <string name="lock_screen_notifications_title" msgid="6173076173408887213">"Құлып экранында"</string>
     <string name="lock_screen_notifications_summary_show" msgid="6407527697810672847">"Бүкіл хабарландыру мазмұнын көрсету"</string>
@@ -2800,10 +2803,11 @@
     <string name="notification_importance_low_title" msgid="8131254047772814309">"Орташа"</string>
     <string name="notification_importance_default_title" msgid="9120383978536089489">"Жоғары"</string>
     <string name="notification_importance_high_title" msgid="3058778300264746473">"Шұғыл"</string>
-    <string name="allow_sound" msgid="6585849855452076626">"Дыбысқа рұқсат ету"</string>
+    <string name="allow_sound" msgid="1820188704793497324">"Дыбысқа рұқсат ету"</string>
     <string name="show_silently_summary" msgid="7616604629123146565">"Дыбыс шығармау, дірілдетпеу немесе осы хабарландыруларды ағымдағы экрандағы көріністе көрсетпеу."</string>
     <string name="default_notification_assistant" msgid="7631945224761430146">"Хабарландыру көмекшісі"</string>
     <string name="manage_notification_access_title" msgid="7510080164564944891">"Хабарландыруға кіру мүмкіндігі"</string>
+    <string name="work_profile_notification_access_blocked_summary" msgid="8748026238701253040">"Жұмыс профилінің хабарландыруларына кіру бөгелген"</string>
     <string name="manage_notification_access_summary_zero" msgid="2409912785614953348">"Қолданбалар хабарларды оқи алмайды."</string>
     <plurals name="manage_notification_access_summary_nonzero" formatted="false" msgid="7930130030691218387">
       <item quantity="other">%d қолданба хабарларды оқи алады</item>
@@ -2855,8 +2859,7 @@
     <string name="app_notification_block_summary" msgid="4744020456943215352">"Бұл хабарландыруларды ешқашан көрсетпеу"</string>
     <string name="notification_content_block_title" msgid="5854232570963006360">"Хабарландыруларды көрсету"</string>
     <string name="notification_content_block_summary" msgid="7746185794438882389">"Тақтада немесе перифериялық құрылғыларда хабарландыруларды ешқашан көрсетпеу"</string>
-    <string name="notification_badge_title" msgid="7166470350070693657">"Танымбелгі қолданбасы белгішесі"</string>
-    <string name="notification_badge_summary" msgid="3944771498030335669">"Қолдау көрсетілетін жағдайда хабарландыруларды Home қолданбасында танымбелгі ретінде көрсету."</string>
+    <string name="notification_badge_title" msgid="7734903868300369178">"Белгішеге рұқсат ету"</string>
     <string name="app_notification_override_dnd_title" msgid="7867458246395884830">"\"Мазаламау\" режимін қайта анықтау"</string>
     <string name="app_notification_override_dnd_summary" msgid="3516007157020189746">"\"Мазаламау\" режимі \"Тек маңызды\" күйіне орнатылған кезде, осы хабарландыруларға рұқсат беру"</string>
     <string name="app_notification_visibility_override_title" msgid="2187232730902430718">"Құлып экранында"</string>
@@ -3567,7 +3570,7 @@
     <string name="storage_settings_2" product="tablet" msgid="1939009096334525216">"Планшет жады"</string>
     <string name="storage_settings_2" product="default" msgid="4306047711760327031">"Телефон жады"</string>
     <string name="storage_size_large_alternate" msgid="3550744227788333060">"<xliff:g id="NUMBER">^1</xliff:g>"<small>" <xliff:g id="UNIT">^2</xliff:g>"</small>""</string>
-    <string name="storage_volume_total" msgid="3499221850532701342">"<xliff:g id="TOTAL">%1$s</xliff:g> жалпы жадтан қолданылған"</string>
+    <string name="storage_volume_total" msgid="3499221850532701342">"Жалпы <xliff:g id="TOTAL">%1$s</xliff:g> жадтан пайдаланылған"</string>
     <string name="storage_percent_full" msgid="6095012055875077036">"пайдаланылған"</string>
     <string name="clear_instant_app_data" msgid="2004222610585890909">"Қолданбаны деректерін өшіру"</string>
     <string name="clear_instant_app_confirmation" msgid="7451671214898856857">"Бұл лездік қолданбаны өшіргіңіз келе ме?"</string>

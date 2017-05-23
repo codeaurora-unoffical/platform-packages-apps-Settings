@@ -335,8 +335,9 @@
     <string name="account_settings_title" msgid="626177544686329806">"Облікові записи"</string>
     <string name="security_settings_title" msgid="6134528367364159294">"Безпека та місцезнаходження"</string>
     <string name="encryption_and_credential_settings_title" msgid="6514904533438791561">"Шифрування й облікові дані"</string>
-    <string name="encryption_and_credential_settings_summary" msgid="8721883002237981248">"Телефон зашифровано"</string>
-    <string name="lockscreen_settings_title" msgid="3922976395527087455">"Параметри блокування екрана"</string>
+    <string name="encryption_and_credential_settings_summary" product="default" msgid="8721883002237981248">"Телефон зашифровано"</string>
+    <string name="encryption_and_credential_settings_summary" product="tablet" msgid="7200428573872395685">"Пристрій зашифровано"</string>
+    <string name="lockscreen_settings_title" msgid="3922976395527087455">"Налаштування заблокованого екрана"</string>
     <string name="security_settings_summary" msgid="967393342537986570">"Устан. Моє місцезн., розблок. екрана, блок. SIM-карти, сховища обл. даних"</string>
     <string name="cdma_security_settings_summary" msgid="6068799952798901542">"Устан. Моє місцезн., розбл. екрана, блок. схов. обл. даних"</string>
     <string name="security_passwords_title" msgid="2881269890053568809">"Конфіденційність"</string>
@@ -1318,7 +1319,7 @@
     </plurals>
     <string name="master_clear_summary" msgid="6902443944660426951">"Внутрішню пам’ять і всі дані буде очищено"</string>
     <string name="master_clear_desc" product="tablet" msgid="9146059417023157222">"Буде видалено всі дані з "<b>"внутрішньої пам’яті"</b>" вашого планшета, зокрема:\n\n"<li>"ваш обліковий запис Google"</li>\n<li>"дані й налаштування системи та додатків"</li>\n<li>"завантажені додатки"</li>"."</string>
-    <string name="master_clear_desc" product="default" msgid="4800386183314202571">"Буде видалено всі дані з "<b>"внутрішньої пам’яті"</b>" вашого телефона, зокрема:\n\n"<li>"ваш обліковий запис Google"</li>\n<li>"дані й налаштування системи та додатків"</li>\n<li>"завантажені додатки"</li></string>
+    <string name="master_clear_desc" product="default" msgid="4800386183314202571">"Буде видалено всі дані з "<b>"внутрішньої пам’яті"</b>" вашого телефона, зокрема:\n\n"<li>"Ваш обліковий запис Google"</li>\n<li>"Дані й налаштування системи та додатків"</li>\n<li>"Завантажені додатки"</li></string>
     <string name="master_clear_accounts" product="default" msgid="6412857499147999073">\n\n"Наразі ви ввійшли в такі облікові записи:\n"</string>
     <string name="master_clear_other_users_present" product="default" msgid="5161423070702470742">\n\n"На цьому пристрої є інші користувачі.\n"</string>
     <string name="master_clear_desc_also_erases_external" msgid="1903185203791274237"><li>"Музика"</li>\n<li>"Фото"</li>\n<li>"Інші дані користувача"</li></string>
@@ -1565,7 +1566,7 @@
     <string name="show_running_services" msgid="5736278767975544570">"Показати запущені служби"</string>
     <string name="show_background_processes" msgid="2009840211972293429">"Показати кешовані процеси"</string>
     <string name="default_emergency_app" msgid="1951760659640369980">"Додаток для екстрених викликів"</string>
-    <string name="reset_app_preferences" msgid="1321050641018356925">"Скинути налаштування"</string>
+    <string name="reset_app_preferences" msgid="1321050641018356925">"Скинути налаштування додатків"</string>
     <string name="reset_app_preferences_title" msgid="6093179367325336662">"Скинути налаштування додатків?"</string>
     <string name="reset_app_preferences_desc" msgid="4822447731869201512">"Буде скинуто всі налаштування для:\n\n "<li>"вимкнених додатків"</li>\n" "<li>"вимкнених сповіщень із додатків"</li>\n" "<li>"додатків за умовчанням"</li>\n" "<li>"обмежень щодо передавання даних у фоновому режимі"</li>\n" "<li>"усіх обмежень щодо дозволів"</li>\n\n" Дані додатків видалено не буде."</string>
     <string name="reset_app_preferences_button" msgid="2559089511841281242">"Скинути"</string>
@@ -1806,7 +1807,7 @@
     <string name="accessibility_screen_magnification_summary" msgid="5258868553337478505"><b>"Щоб збільшити вміст"</b>", тричі торкніться екрана.\n"<ul><li>"Щоб прокрутити вміст, проведіть по екрану принаймні двома пальцями."</li>\n<li>"Щоб змінити масштаб, стисніть або розведіть принаймні два пальці."</li></ul>\n\n<b>"Щоб тимчасово збільшити вміст"</b>", тричі натисніть і втримуйте його.\n"<ul><li>"Пересувайте палець, щоб переміщатись екраном."</li>\n<li>"Підніміть палець, щоб знову зменшити елемент."</li></ul>\n\n"Масштабування не підтримується на клавіатурі та панелі навігації."</string>
     <string name="accessibility_screen_magnification_navbar_summary" msgid="1996584694050087161">"Коли ввімкнено збільшення, використовуйте кнопку спеціальних можливостей унизу екрана, щоб швидко збільшувати його вміст.\n\n"<b>"Щоб збільшити вміст"</b>", торкніться кнопки спеціальних можливостей, а потім будь-де на екрані.\n"<ul><li>"Щоб прокрутити вміст, проведіть по екрану принаймні двома пальцями."</li>\n<li>"Щоб змінити масштаб, стисніть або розведіть принаймні два пальці."</li></ul>\n\n<b>"Щоб тимчасово збільшити вміст"</b>", торкніться кнопки спеціальних можливостей, а потім натисніть і втримуйте будь-яке місце на екрані.\n"<ul><li>"Пересувайте палець, щоб переміщатись екраном.у"</li>\n<li>"Підніміть палець, щоб знову зменшити елемент."</li></ul>\n\n"Масштабування не підтримується на клавіатурі та панелі навігації."</string>
     <string name="accessibility_screen_magnification_navbar_configuration_warning" msgid="70533120652758190">"Для кнопки спеціальних можливостей вибрано службу \"<xliff:g id="SERVICE">%1$s</xliff:g>\". Щоб змінити на збільшення, натисніть і втримуйте кнопку спеціальних можливостей, а потім виберіть \"Збільшення\"."</string>
-    <string name="accessibility_global_gesture_preference_title" msgid="6752037184140789970">"Ярлик доступності"</string>
+    <string name="accessibility_global_gesture_preference_title" msgid="6752037184140789970">"Ярлик"</string>
     <string name="accessibility_shortcut_service_title" msgid="4779360749706905640">"Служба, пов’язана з ярликом"</string>
     <string name="accessibility_shortcut_service_on_lock_screen_title" msgid="5490636079625489534">"Дозволити на заблокованому екрані"</string>
     <string name="accessibility_shortcut_description" msgid="6488524140219209763">"Якщо ввімкнено ярлик спеціальних можливостей, ви можете активувати функцію спеціальних можливостей, натиснувши обидві клавіші гучності й утримуючи їх протягом 3 секунд."</string>
@@ -1893,6 +1894,7 @@
     <string name="enable_service_title" msgid="3061307612673835592">"Використовувати <xliff:g id="SERVICE">%1$s</xliff:g>?"</string>
     <string name="capabilities_list_title" msgid="86713361724771971">"Службі <xliff:g id="SERVICE">%1$s</xliff:g> потрібно:"</string>
     <string name="touch_filtered_warning" msgid="8644034725268915030">"Вашу відповідь не видно в Налаштуваннях, оскільки інший додаток загороджує запит на дозвіл."</string>
+    <string name="window_obscured_warning" msgid="8711643931674708175">"Оскільки поверх цих опцій відображається інший додаток, налаштування не можуть реагувати на ваші дії."</string>
     <string name="enable_service_encryption_warning" msgid="3064686622453974606">"Якщо ви ввімкнете службу <xliff:g id="SERVICE">%1$s</xliff:g>, дані на пристрої не захищатимуться екраном блокування."</string>
     <string name="secure_lock_encryption_warning" msgid="460911459695077779">"Оскільки ви ввімкнули службу доступності, дані на пристрої не захищатимуться екраном блокування."</string>
     <string name="enable_service_pattern_reason" msgid="777577618063306751">"Оскільки ввімкнення служби <xliff:g id="SERVICE">%1$s</xliff:g> впливає на шифрування даних, потрібно підтвердити ключ."</string>
@@ -1973,7 +1975,7 @@
     <string name="awake" msgid="387122265874485088">"Час активн. пристрою"</string>
     <string name="wifi_on_time" msgid="3208518458663637035">"Час роботи Wi-Fi"</string>
     <string name="bluetooth_on_time" msgid="3056108148042308690">"Час роботи Wi-Fi"</string>
-    <string name="advanced_battery_title" msgid="2068039111517508622">"Відомості про використання заряду"</string>
+    <string name="advanced_battery_title" msgid="2068039111517508622">"Відомості про вжиток заряду"</string>
     <string name="history_details_title" msgid="3608240585315506067">"Дані про використання"</string>
     <string name="battery_details_title" msgid="6101394441569858580">"Використання заряду"</string>
     <string name="details_subtitle" msgid="32593908269911734">"Вжиток"</string>
@@ -2802,7 +2804,7 @@
       <item quantity="many">Увімкнено <xliff:g id="ON_COUNT">%d</xliff:g> автоматичних правил</item>
       <item quantity="other">Увімкнено <xliff:g id="ON_COUNT">%d</xliff:g> автоматичного правила</item>
     </plurals>
-    <string name="zen_mode_settings_title" msgid="842308776768942600">"Налаштування режиму \"Не турбувати\""</string>
+    <string name="zen_mode_settings_title" msgid="842308776768942600">"Режим \"Не турбувати\""</string>
     <string name="zen_mode_priority_settings_title" msgid="2623117023031824309">"Дозволити лише пріоритетні"</string>
     <string name="zen_mode_automation_settings_title" msgid="4228995740594063774">"Авторежим"</string>
     <string name="zen_mode_automation_suggestion_title" msgid="5105443455143476201">"Налаштувати правила режиму \"Не турбувати\""</string>
@@ -2829,6 +2831,7 @@
     <string name="configure_notification_settings" msgid="7616737397127242615">"Сповіщення"</string>
     <string name="advanced_section_header" msgid="8833934850242546903">"Розширені налаштування"</string>
     <string name="profile_section_header" msgid="2320848161066912001">"Робочі сповіщення"</string>
+    <string name="notification_badging_title" msgid="5125022693565388760">"Показувати значки сповіщень"</string>
     <string name="notification_pulse_title" msgid="1905382958860387030">"Блимання"</string>
     <string name="lock_screen_notifications_title" msgid="6173076173408887213">"На заблокованому екрані"</string>
     <string name="lock_screen_notifications_summary_show" msgid="6407527697810672847">"Показувати весь вміст сповіщень"</string>
@@ -2854,10 +2857,11 @@
     <string name="notification_importance_low_title" msgid="8131254047772814309">"Звичайне сповіщення"</string>
     <string name="notification_importance_default_title" msgid="9120383978536089489">"Важливе сповіщення"</string>
     <string name="notification_importance_high_title" msgid="3058778300264746473">"Термінове сповіщення"</string>
-    <string name="allow_sound" msgid="6585849855452076626">"Дозвольте звуковий сигнал"</string>
+    <string name="allow_sound" msgid="1820188704793497324">"Дозволити звуковий сигнал"</string>
     <string name="show_silently_summary" msgid="7616604629123146565">"Не подавати звуковий сигнал і вібросигнал та не показувати ці сповіщення на поточному екрані."</string>
     <string name="default_notification_assistant" msgid="7631945224761430146">"Диспетчер сповіщень"</string>
     <string name="manage_notification_access_title" msgid="7510080164564944891">"Доступ до сповіщень"</string>
+    <string name="work_profile_notification_access_blocked_summary" msgid="8748026238701253040">"Доступ до сповіщень робочого профілю заблоковано"</string>
     <string name="manage_notification_access_summary_zero" msgid="2409912785614953348">"Додатки не можуть читати сповіщення"</string>
     <plurals name="manage_notification_access_summary_nonzero" formatted="false" msgid="7930130030691218387">
       <item quantity="one">%d додаток може читати сповіщення</item>
@@ -2865,14 +2869,14 @@
       <item quantity="many">%d додатків можуть читати сповіщення</item>
       <item quantity="other">%d додатка можуть читати сповіщення</item>
     </plurals>
-    <string name="no_notification_listeners" msgid="3487091564454192821">"Установлені додатки не просять доступу до сповіщень."</string>
+    <string name="no_notification_listeners" msgid="3487091564454192821">"Установлені додатки не запитували доступу до сповіщень."</string>
     <string name="notification_listener_security_warning_title" msgid="5522924135145843279">"Надати додатку <xliff:g id="SERVICE">%1$s</xliff:g> доступ для сповіщень?"</string>
     <string name="notification_listener_security_warning_summary" msgid="119203147791040151">"Додаток <xliff:g id="NOTIFICATION_LISTENER_NAME">%1$s</xliff:g> зможе переглядати всі сповіщення, зокрема особисту інформацію, як-от імена контактів і тексти отриманих повідомлень. Він також зможе закривати сповіщення й активувати в них командні кнопки. \n\nДодаток зможе вмикати й вимикати режим \"Не турбувати\" та змінювати пов’язані з ним налаштування."</string>
     <string name="notification_listener_disable_warning_summary" msgid="6738915379642948000">"Якщо ви вимкнете доступ додатка <xliff:g id="NOTIFICATION_LISTENER_NAME">%1$s</xliff:g> до сповіщень, доступ до режиму \"Не турбувати\" також буде вимкнено."</string>
     <string name="notification_listener_disable_warning_confirm" msgid="8333442186428083057">"Вимкнути"</string>
     <string name="notification_listener_disable_warning_cancel" msgid="8586417377104211584">"Скасувати"</string>
     <string name="vr_listeners_title" msgid="1318901577754715777">"Допоміжні VR-сервіси"</string>
-    <string name="no_vr_listeners" msgid="2689382881717507390">"Установлені додатки не запитують запуск у режимі допоміжних служб віртуальної реальності."</string>
+    <string name="no_vr_listeners" msgid="2689382881717507390">"Установлені додатки не запитували доступу для роботи в режимі допоміжних служб VR."</string>
     <string name="vr_listener_security_warning_title" msgid="8309673749124927122">"Надати VR-сервісу доступ до сервісу <xliff:g id="SERVICE">%1$s</xliff:g>?"</string>
     <string name="vr_listener_security_warning_summary" msgid="6931541068825094653">"<xliff:g id="VR_LISTENER_NAME">%1$s</xliff:g> запускатиметься, коли ви вмикатимете в додатках режим віртуальної реальності"</string>
     <string name="display_vr_pref_title" msgid="8104485269504335481">"Коли пристрій у VR-режимі"</string>
@@ -2887,7 +2891,7 @@
     <string name="picture_in_picture_on" msgid="6103704909710176555">"Так"</string>
     <string name="picture_in_picture_off" msgid="5654388666434625247">"Ні"</string>
     <string name="manage_zen_access_title" msgid="2611116122628520522">"Доступ у режимі \"Не турбувати\""</string>
-    <string name="zen_access_empty_text" msgid="8772967285742259540">"Установлені додатки не просили доступу в режимі \"Не турбувати\""</string>
+    <string name="zen_access_empty_text" msgid="8772967285742259540">"Установлені додатки не запитували доступу до функції \"Не турбувати\""</string>
     <string name="loading_notification_apps" msgid="5031818677010335895">"Завантаження додатків…"</string>
     <string name="app_notifications_off_desc" msgid="4882445501376722969">"Android блокує сповіщення з цього додатка на цьому пристрої"</string>
     <string name="channel_notifications_off_desc" msgid="5899225298718840635">"Android блокує цю категорію сповіщень на цьому пристрої"</string>
@@ -2915,8 +2919,7 @@
     <string name="app_notification_block_summary" msgid="4744020456943215352">"Ніколи не показувати ці сповіщення"</string>
     <string name="notification_content_block_title" msgid="5854232570963006360">"Показувати сповіщення"</string>
     <string name="notification_content_block_summary" msgid="7746185794438882389">"Ніколи не показувати сповіщення на панелі та периферійних пристроях"</string>
-    <string name="notification_badge_title" msgid="7166470350070693657">"Значок додатка"</string>
-    <string name="notification_badge_summary" msgid="3944771498030335669">"Показувати сповіщення у вигляді значків у додатку Home (якщо він підтримується)."</string>
+    <string name="notification_badge_title" msgid="7734903868300369178">"Дозволити значок"</string>
     <string name="app_notification_override_dnd_title" msgid="7867458246395884830">"Заміна режиму \"Не турбувати\""</string>
     <string name="app_notification_override_dnd_summary" msgid="3516007157020189746">"Показувати ці сповіщення, коли в режимі \"Не турбувати\" вибрано \"Лише пріоритетні\""</string>
     <string name="app_notification_visibility_override_title" msgid="2187232730902430718">"На заблокованому екрані"</string>
@@ -3051,7 +3054,7 @@
     <string name="imei_information_summary" msgid="2074095606556565233">"Інформація про IMEI"</string>
     <string name="slot_number" msgid="3762676044904653577">"(Гніздо <xliff:g id="SLOT_NUM">%1$d</xliff:g>)"</string>
     <string name="launch_by_default" msgid="1840761193189009248">"Відкривати за умовчанням"</string>
-    <string name="app_launch_domain_links_title" msgid="1160925981363706090">"Посилання для відкривання"</string>
+    <string name="app_launch_domain_links_title" msgid="1160925981363706090">"Відкривання посилань"</string>
     <string name="app_launch_open_domain_urls_title" msgid="8914721351596745701">"Відкривати підтримувані посилання"</string>
     <string name="app_launch_open_domain_urls_summary" msgid="5367573364240712217">"Відкривати, не запитуючи"</string>
     <string name="app_launch_supported_domain_urls_title" msgid="8250695258211477480">"Підтримувані посилання"</string>
@@ -3113,7 +3116,7 @@
     <string name="app_permissions_summary" msgid="5163974162150406324">"Додатки, які використовують <xliff:g id="APPS">%1$s</xliff:g>"</string>
     <string name="tap_to_wake" msgid="7211944147196888807">"Торкніться, щоб активувати"</string>
     <string name="tap_to_wake_summary" msgid="4341387904987585616">"Двічі торкніться екрана, щоб активувати пристрій"</string>
-    <string name="domain_urls_title" msgid="3132983644568821250">"Посилання для відкривання"</string>
+    <string name="domain_urls_title" msgid="3132983644568821250">"Відкривання посилань"</string>
     <string name="domain_urls_summary_none" msgid="2639588015479657864">"Не відкривати підтримувані посилання"</string>
     <string name="domain_urls_summary_one" msgid="3704934031930978405">"Відкривати <xliff:g id="DOMAIN">%s</xliff:g>"</string>
     <string name="domain_urls_summary_some" msgid="3950089361819428455">"Відкрити сайт <xliff:g id="DOMAIN">%s</xliff:g> та інші URL-адреси"</string>
@@ -3139,7 +3142,7 @@
     <string name="choose_voice_input_title" msgid="975471367067718019">"Вибрати голосовий ввід"</string>
     <string name="default_browser_title" msgid="8101772675085814670">"Додаток веб-переглядача"</string>
     <string name="default_browser_title_none" msgid="2124785489953628553">"Немає веб-переглядача за умовчанням"</string>
-    <string name="default_phone_title" msgid="282005908059637350">"Телефонний додаток"</string>
+    <string name="default_phone_title" msgid="282005908059637350">"Додаток для дзвінків"</string>
     <string name="default_app" msgid="6864503001385843060">"(За умовчанням)"</string>
     <string name="system_app" msgid="9068313769550747372">"(Система)"</string>
     <string name="system_default_app" msgid="3091113402349739037">"(За умовчанням)"</string>
@@ -3390,10 +3393,10 @@
     <string name="configure" msgid="1029654422228677273">"Налаштувати"</string>
     <string name="data_usage_other_apps" msgid="3272872663517382050">"Інші додатки, які використовуються"</string>
     <plurals name="data_saver_unrestricted_summary" formatted="false" msgid="2635267833484232703">
-      <item quantity="one"><xliff:g id="COUNT">%1$d</xliff:g> додатку дозволено використовувати необмежений трафік, коли ввімкнено Заощадження трафіку</item>
-      <item quantity="few"><xliff:g id="COUNT">%1$d</xliff:g> додаткам дозволено використовувати необмежений трафік, коли ввімкнено Заощадження трафіку</item>
-      <item quantity="many"><xliff:g id="COUNT">%1$d</xliff:g> додаткам дозволено використовувати необмежений трафік, коли ввімкнено Заощадження трафіку</item>
-      <item quantity="other"><xliff:g id="COUNT">%1$d</xliff:g> додатка дозволено використовувати необмежений трафік, коли ввімкнено Заощадження трафіку</item>
+      <item quantity="one"><xliff:g id="COUNT">%1$d</xliff:g> додаток може без обмежень передавати дані, коли ввімкнено Заощадження трафіку</item>
+      <item quantity="few"><xliff:g id="COUNT">%1$d</xliff:g> додатки можуть без обмежень передавати дані, коли ввімкнено Заощадження трафіку</item>
+      <item quantity="many"><xliff:g id="COUNT">%1$d</xliff:g> додатків можуть без обмежень передавати дані, коли ввімкнено Заощадження трафіку</item>
+      <item quantity="other"><xliff:g id="COUNT">%1$d</xliff:g> додатків можуть без обмежень передавати дані, коли ввімкнено Заощадження трафіку</item>
     </plurals>
     <string name="data_saver_title" msgid="398458827917495765">"Заощадження трафіку"</string>
     <string name="unrestricted_data_saver" msgid="7019858887510062789">"Повний доступ до трафіку"</string>
@@ -3448,12 +3451,12 @@
     <string name="notification_log_details_none" msgid="184131801230614059">"немає"</string>
     <string name="notification_log_details_ranking_null" msgid="244660392058720919">"Об’єкта немає в рейтингу."</string>
     <string name="notification_log_details_ranking_none" msgid="599607025882587844">"Об’єкт у рейтингу не містить цього ключа."</string>
-    <string name="special_access" msgid="3458780842491881155">"Спеціальний доступ до додатка"</string>
+    <string name="special_access" msgid="3458780842491881155">"Спеціальний доступ"</string>
     <plurals name="special_access_summary" formatted="false" msgid="260765309935675867">
-      <item quantity="one"><xliff:g id="COUNT">%d</xliff:g> додатку дозволено використовувати необмежений трафік</item>
-      <item quantity="few"><xliff:g id="COUNT">%d</xliff:g> додаткам дозволено використовувати необмежений трафік</item>
-      <item quantity="many"><xliff:g id="COUNT">%d</xliff:g> додаткам дозволено використовувати необмежений трафік</item>
-      <item quantity="other"><xliff:g id="COUNT">%d</xliff:g> додатка дозволено використовувати необмежений трафік</item>
+      <item quantity="one"><xliff:g id="COUNT">%d</xliff:g> додаток може без обмежень передавати дані</item>
+      <item quantity="few"><xliff:g id="COUNT">%d</xliff:g> додатки можуть без обмежень передавати дані</item>
+      <item quantity="many"><xliff:g id="COUNT">%d</xliff:g> додатків можуть без обмежень передавати дані</item>
+      <item quantity="other"><xliff:g id="COUNT">%d</xliff:g> додаток можуть без обмежень передавати дані</item>
     </plurals>
     <string name="confirm_convert_to_fbe_warning" msgid="1487005506049137659">"Стерти дані користувача та конвертувати в зашифрований файл?"</string>
     <string name="button_confirm_convert_fbe" msgid="7101855374850373091">"Стерти та конвертувати"</string>
@@ -3465,7 +3468,7 @@
     <string name="page_tab_title_support" msgid="6330657582897417458">"Підтримка"</string>
     <string name="developer_density_summary" msgid="1998244213021456519">"Точок: <xliff:g id="ID_1">%d</xliff:g>"</string>
     <string name="developer_smallest_width" msgid="7516950434587313360">"Найменша ширина"</string>
-    <string name="premium_sms_none" msgid="8268105565738040566">"Установлені додатки не запитували доступ до платних SMS"</string>
+    <string name="premium_sms_none" msgid="8268105565738040566">"Установлені додатки не запитували доступу до платних SMS"</string>
     <string name="premium_sms_warning" msgid="9086859595338944882">"Кошти за платні SMS стягує оператор. Ви зможете надсилати платні SMS через додаток, якому надасте такий дозвіл."</string>
     <string name="premium_sms_access" msgid="4660047004791638305">"Доступ до платних SMS"</string>
     <string name="bluetooth_disabled" msgid="2456198532288640046">"Невидимий для інших пристроїв"</string>
@@ -3540,19 +3543,19 @@
     <string name="gesture_preference_summary" product="device" msgid="4205941452664950852">"Швидкі жести для керування пристроєм"</string>
     <string name="double_tap_power_for_camera_title" msgid="64716226816032800">"Перейти до камери"</string>
     <string name="double_tap_power_for_camera_summary" msgid="242037150983277829">"Щоб швидко відкрити камеру, двічі натисніть кнопку живлення. Працює на будь-якому екрані."</string>
-    <string name="double_twist_for_camera_mode_title" msgid="4877834147983530479">"Як змінити камеру"</string>
+    <string name="double_twist_for_camera_mode_title" msgid="4877834147983530479">"Змінити камеру"</string>
     <string name="double_twist_for_camera_mode_summary" msgid="122977081337563340"></string>
     <string name="ambient_display_title" product="default" msgid="5144814600610448504">"Двічі торкніться, щоб перевірити телефон"</string>
     <string name="ambient_display_title" product="tablet" msgid="8688795028609563837">"Двічі торкніться, щоб перевірити планшет"</string>
     <string name="ambient_display_title" product="device" msgid="3423781975742145894">"Двічі торкніться, щоб перевірити пристрій"</string>
     <string name="ambient_display_summary" msgid="2521630136233865893">"Щоб швидко переглянути сповіщення, двічі торкніться екрана."</string>
-    <string name="ambient_display_pickup_title" product="default" msgid="818688002837687268">"Підніміть телефон, щоб перевірити його"</string>
+    <string name="ambient_display_pickup_title" product="default" msgid="818688002837687268">"Підняти телефон, щоб перевірити сповіщення"</string>
     <string name="ambient_display_pickup_title" product="tablet" msgid="4455864282995698097">"Підніміть планшет, щоб перевірити його"</string>
     <string name="ambient_display_pickup_title" product="device" msgid="5380534405773531175">"Підніміть пристрій, щоб перевірити його"</string>
     <string name="ambient_display_pickup_summary" product="default" msgid="8696432220086951466">"Щоб швидко переглянути сповіщення, візьміть телефон у руки."</string>
     <string name="ambient_display_pickup_summary" product="tablet" msgid="2442551819015699120">"Щоб швидко переглянути сповіщення, візьміть планшет у руки."</string>
     <string name="ambient_display_pickup_summary" product="device" msgid="2369325441608811599">"Щоб швидко переглянути сповіщення, візьміть пристрій у руки."</string>
-    <string name="fingerprint_swipe_for_notifications_title" msgid="5816346492253270243">"Проведіть пальцем, щоб переглянути сповіщення"</string>
+    <string name="fingerprint_swipe_for_notifications_title" msgid="5816346492253270243">"Використати відбиток, щоб переглянути сповіщення"</string>
     <string name="fingerprint_swipe_for_notifications_summary" product="default" msgid="1770661868393713922">"Щоб переглянути сповіщення, проведіть пальцем униз по сканеру відбитків на задній панелі телефона."</string>
     <string name="fingerprint_swipe_for_notifications_summary" product="tablet" msgid="902719947767712895">"Щоб переглянути сповіщення, проведіть пальцем униз по сканеру відбитків на задній панелі планшета."</string>
     <string name="fingerprint_swipe_for_notifications_summary" product="device" msgid="5372926094116306647">"Щоб переглянути сповіщення, проведіть пальцем униз по сканеру відбитків на задній панелі пристрою."</string>

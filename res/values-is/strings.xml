@@ -331,7 +331,8 @@
     <string name="account_settings_title" msgid="626177544686329806">"Reikningar"</string>
     <string name="security_settings_title" msgid="6134528367364159294">"Öryggi og staðsetning"</string>
     <string name="encryption_and_credential_settings_title" msgid="6514904533438791561">"Dulkóðun og skilríki"</string>
-    <string name="encryption_and_credential_settings_summary" msgid="8721883002237981248">"Sími dulkóðaður"</string>
+    <string name="encryption_and_credential_settings_summary" product="default" msgid="8721883002237981248">"Sími dulkóðaður"</string>
+    <string name="encryption_and_credential_settings_summary" product="tablet" msgid="7200428573872395685">"Tæki dulkóðað"</string>
     <string name="lockscreen_settings_title" msgid="3922976395527087455">"Kjörstillingar lásskjás"</string>
     <string name="security_settings_summary" msgid="967393342537986570">"Stilla staðsetninguna mína, opnun skjás, SIM-kortalás, lás skilríkjageymslu"</string>
     <string name="cdma_security_settings_summary" msgid="6068799952798901542">"Stilla staðsetninguna mína, opnun skjás, lás skilríkjageymslu"</string>
@@ -1853,6 +1854,7 @@
     <string name="enable_service_title" msgid="3061307612673835592">"Nota <xliff:g id="SERVICE">%1$s</xliff:g>?"</string>
     <string name="capabilities_list_title" msgid="86713361724771971">"<xliff:g id="SERVICE">%1$s</xliff:g> þarf að:"</string>
     <string name="touch_filtered_warning" msgid="8644034725268915030">"Stillingar geta ekki staðfest svarið þitt vegna þess að forrit er að fela heimildarbeiðni."</string>
+    <string name="window_obscured_warning" msgid="8711643931674708175">"Stillingar geta ekki brugðist við aðgerðinni því að annað forrit er birt yfir þessum valkostum."</string>
     <string name="enable_service_encryption_warning" msgid="3064686622453974606">"Ef þú kveikir á <xliff:g id="SERVICE">%1$s</xliff:g> mun tækið ekki nota skjálásinn til að efla dulkóðun gagna."</string>
     <string name="secure_lock_encryption_warning" msgid="460911459695077779">"Þar sem þú hefur kveikt á aðgengisþjónustu mun tækið ekki nota skjálásinn til að efla dulkóðun gagna."</string>
     <string name="enable_service_pattern_reason" msgid="777577618063306751">"Ef <xliff:g id="SERVICE">%1$s</xliff:g> er gert virkt hefur það áhrif á dulkóðun gagna og því þarftu að staðfesta mynstrið þitt."</string>
@@ -2775,6 +2777,7 @@
     <string name="configure_notification_settings" msgid="7616737397127242615">"Tilkynningar"</string>
     <string name="advanced_section_header" msgid="8833934850242546903">"Ítarlegt"</string>
     <string name="profile_section_header" msgid="2320848161066912001">"Vinnutilkynningar"</string>
+    <string name="notification_badging_title" msgid="5125022693565388760">"Leyfa merkingu á skjöldum"</string>
     <string name="notification_pulse_title" msgid="1905382958860387030">"Blikkandi ljós"</string>
     <string name="lock_screen_notifications_title" msgid="6173076173408887213">"Á lásskjá"</string>
     <string name="lock_screen_notifications_summary_show" msgid="6407527697810672847">"Sýna allt innihald tilkynninga"</string>
@@ -2788,8 +2791,7 @@
     <string name="lock_screen_notifications_interstitial_message_profile" msgid="8307705621027472346">"Hvernig viltu að tilkynningar frá sniði birtist þegar tækið er læst?"</string>
     <string name="lock_screen_notifications_interstitial_title_profile" msgid="3169806586032521333">"Sniðtilkynningar"</string>
     <string name="app_notifications_title" msgid="139788604658984593">"Tilkynningar"</string>
-    <!-- no translation found for notification_channel_title (2260666541030178452) -->
-    <skip />
+    <string name="notification_channel_title" msgid="2260666541030178452">"Tilkynningaflokkur"</string>
     <string name="notification_importance_title" msgid="848692592679312666">"Mikilvægi"</string>
     <string name="notification_importance_unspecified" msgid="2196023702875112081">"Leyfa forritinu að ákveða"</string>
     <string name="notification_importance_blocked" msgid="7938180808339386300">"Aldrei sýna tilkynningar"</string>
@@ -2797,18 +2799,15 @@
     <string name="notification_importance_low" msgid="8881468429453766553">"Ekkert hljóð"</string>
     <string name="notification_importance_default" msgid="5958338024601957516">"Spila hljóð"</string>
     <string name="notification_importance_high" msgid="2082429479238228527">"Spila hljóð og birta sprettitilkynningu"</string>
-    <!-- no translation found for notification_importance_min_title (6974673091137544803) -->
-    <skip />
-    <!-- no translation found for notification_importance_low_title (8131254047772814309) -->
-    <skip />
-    <!-- no translation found for notification_importance_default_title (9120383978536089489) -->
-    <skip />
-    <!-- no translation found for notification_importance_high_title (3058778300264746473) -->
-    <skip />
-    <string name="allow_sound" msgid="6585849855452076626">"Leyfa hljóð"</string>
+    <string name="notification_importance_min_title" msgid="6974673091137544803">"Lítið"</string>
+    <string name="notification_importance_low_title" msgid="8131254047772814309">"Í meðallagi"</string>
+    <string name="notification_importance_default_title" msgid="9120383978536089489">"Mikið"</string>
+    <string name="notification_importance_high_title" msgid="3058778300264746473">"Áríðandi"</string>
+    <string name="allow_sound" msgid="1820188704793497324">"Leyfa hljóð"</string>
     <string name="show_silently_summary" msgid="7616604629123146565">"Ekki nota hljóð, titring eða birta tilkynningar á núverandi skjá."</string>
     <string name="default_notification_assistant" msgid="7631945224761430146">"Tilkynningaaðstoð"</string>
     <string name="manage_notification_access_title" msgid="7510080164564944891">"Tilkynningaaðgangur"</string>
+    <string name="work_profile_notification_access_blocked_summary" msgid="8748026238701253040">"Lokað er fyrir aðgang að tilkynningu vinnuprófíls"</string>
     <string name="manage_notification_access_summary_zero" msgid="2409912785614953348">"Forrit geta ekki lesið tilkynningar"</string>
     <plurals name="manage_notification_access_summary_nonzero" formatted="false" msgid="7930130030691218387">
       <item quantity="one">%d forrit getur lesið tilkynningar</item>
@@ -2838,10 +2837,8 @@
     <string name="manage_zen_access_title" msgid="2611116122628520522">"„Ónáðið ekki“ aðgangur"</string>
     <string name="zen_access_empty_text" msgid="8772967285742259540">"Engin uppsett forrit hafa óskað eftir „Ónáðið ekki“ aðgangi"</string>
     <string name="loading_notification_apps" msgid="5031818677010335895">"Hleður forrit..."</string>
-    <!-- no translation found for app_notifications_off_desc (4882445501376722969) -->
-    <skip />
-    <!-- no translation found for channel_notifications_off_desc (5899225298718840635) -->
-    <skip />
+    <string name="app_notifications_off_desc" msgid="4882445501376722969">"Android kemur í veg fyrir að tilkynningar þessa forrits birtist í þessu tæki"</string>
+    <string name="channel_notifications_off_desc" msgid="5899225298718840635">"Android kemur í veg fyrir að tilkynningar birtist í þessu tæki"</string>
     <string name="notification_channels" msgid="5346841743182627500">"Flokkar"</string>
     <string name="notification_channels_other" msgid="5645317113885788226">"Annað"</string>
     <string name="no_channels" msgid="3077375508177744586">"Þetta forrit hefur ekki birt neinar tilkynningar"</string>
@@ -2862,8 +2859,7 @@
     <string name="app_notification_block_summary" msgid="4744020456943215352">"Aldrei sýna þessar tilkynningar"</string>
     <string name="notification_content_block_title" msgid="5854232570963006360">"Sýna tilkynningar"</string>
     <string name="notification_content_block_summary" msgid="7746185794438882389">"Aldrei sýna tilkynningar í skugga eða á jaðartækjum"</string>
-    <string name="notification_badge_title" msgid="7166470350070693657">"Tákn fyrir skjaldarforrit"</string>
-    <string name="notification_badge_summary" msgid="3944771498030335669">"Sýna tilkynningar sem merki í Home forritinu, ef þær eru studdar."</string>
+    <string name="notification_badge_title" msgid="7734903868300369178">"Leyfa merkingu á tákni"</string>
     <string name="app_notification_override_dnd_title" msgid="7867458246395884830">"Hnekkja „Ónáðið ekki“"</string>
     <string name="app_notification_override_dnd_summary" msgid="3516007157020189746">"Láta þessar tilkynningar halda áfram að trufla þegar „Ónáðið ekki“ er stillt á „Aðeins forgangur“"</string>
     <string name="app_notification_visibility_override_title" msgid="2187232730902430718">"Á lásskjá"</string>

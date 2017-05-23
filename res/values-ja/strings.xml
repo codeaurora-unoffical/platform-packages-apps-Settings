@@ -331,7 +331,8 @@
     <string name="account_settings_title" msgid="626177544686329806">"アカウント"</string>
     <string name="security_settings_title" msgid="6134528367364159294">"セキュリティと現在地情報"</string>
     <string name="encryption_and_credential_settings_title" msgid="6514904533438791561">"暗号化と認証情報"</string>
-    <string name="encryption_and_credential_settings_summary" msgid="8721883002237981248">"スマートフォンの暗号化"</string>
+    <string name="encryption_and_credential_settings_summary" product="default" msgid="8721883002237981248">"スマートフォンの暗号化"</string>
+    <string name="encryption_and_credential_settings_summary" product="tablet" msgid="7200428573872395685">"端末の暗号化"</string>
     <string name="lockscreen_settings_title" msgid="3922976395527087455">"ロック画面の設定"</string>
     <string name="security_settings_summary" msgid="967393342537986570">"現在地、画面ロック、SIMカードロック、認証情報ストレージのロック"</string>
     <string name="cdma_security_settings_summary" msgid="6068799952798901542">"現在地、画面のロック解除、認証情報ストレージのロックを設定します"</string>
@@ -1853,6 +1854,7 @@
     <string name="enable_service_title" msgid="3061307612673835592">"<xliff:g id="SERVICE">%1$s</xliff:g>を利用しますか？"</string>
     <string name="capabilities_list_title" msgid="86713361724771971">"<xliff:g id="SERVICE">%1$s</xliff:g>では以下が必要です。"</string>
     <string name="touch_filtered_warning" msgid="8644034725268915030">"アプリが許可リクエストを隠しているため、設定側でユーザーの応答を確認できません。"</string>
+    <string name="window_obscured_warning" msgid="8711643931674708175">"このオプションに重なって他のアプリが表示されているため、[設定] を操作しても反応しません。"</string>
     <string name="enable_service_encryption_warning" msgid="3064686622453974606">"<xliff:g id="SERVICE">%1$s</xliff:g>をONにすると、端末データの暗号化の強化に画面ロックは使用されなくなります。"</string>
     <string name="secure_lock_encryption_warning" msgid="460911459695077779">"ユーザー補助サービスがONに設定されているため、端末データの暗号化の強化に画面ロックは使用されません。"</string>
     <string name="enable_service_pattern_reason" msgid="777577618063306751">"<xliff:g id="SERVICE">%1$s</xliff:g>をONにするとデータの暗号化に影響するため、パターンの確認が必要となります。"</string>
@@ -2779,6 +2781,7 @@
     <string name="configure_notification_settings" msgid="7616737397127242615">"通知"</string>
     <string name="advanced_section_header" msgid="8833934850242546903">"詳細設定"</string>
     <string name="profile_section_header" msgid="2320848161066912001">"仕事用プロファイルの通知"</string>
+    <string name="notification_badging_title" msgid="5125022693565388760">"アイコンバッジの許可"</string>
     <string name="notification_pulse_title" msgid="1905382958860387030">"点滅"</string>
     <string name="lock_screen_notifications_title" msgid="6173076173408887213">"ロック画面の通知"</string>
     <string name="lock_screen_notifications_summary_show" msgid="6407527697810672847">"すべての通知内容を表示する"</string>
@@ -2792,8 +2795,7 @@
     <string name="lock_screen_notifications_interstitial_message_profile" msgid="8307705621027472346">"端末がロックされている場合、プロファイル通知をどのように表示しますか？"</string>
     <string name="lock_screen_notifications_interstitial_title_profile" msgid="3169806586032521333">"プロファイル通知"</string>
     <string name="app_notifications_title" msgid="139788604658984593">"通知"</string>
-    <!-- no translation found for notification_channel_title (2260666541030178452) -->
-    <skip />
+    <string name="notification_channel_title" msgid="2260666541030178452">"通知のカテゴリ"</string>
     <string name="notification_importance_title" msgid="848692592679312666">"重要度"</string>
     <string name="notification_importance_unspecified" msgid="2196023702875112081">"アプリに判断させる"</string>
     <string name="notification_importance_blocked" msgid="7938180808339386300">"通知を表示しない"</string>
@@ -2801,18 +2803,15 @@
     <string name="notification_importance_low" msgid="8881468429453766553">"音声なし"</string>
     <string name="notification_importance_default" msgid="5958338024601957516">"音声で知らせる"</string>
     <string name="notification_importance_high" msgid="2082429479238228527">"音声とポップアップで知らせる"</string>
-    <!-- no translation found for notification_importance_min_title (6974673091137544803) -->
-    <skip />
-    <!-- no translation found for notification_importance_low_title (8131254047772814309) -->
-    <skip />
-    <!-- no translation found for notification_importance_default_title (9120383978536089489) -->
-    <skip />
-    <!-- no translation found for notification_importance_high_title (3058778300264746473) -->
-    <skip />
-    <string name="allow_sound" msgid="6585849855452076626">"音の許可"</string>
+    <string name="notification_importance_min_title" msgid="6974673091137544803">"低"</string>
+    <string name="notification_importance_low_title" msgid="8131254047772814309">"中"</string>
+    <string name="notification_importance_default_title" msgid="9120383978536089489">"高"</string>
+    <string name="notification_importance_high_title" msgid="3058778300264746473">"緊急"</string>
+    <string name="allow_sound" msgid="1820188704793497324">"音の許可"</string>
     <string name="show_silently_summary" msgid="7616604629123146565">"音やバイブレーションで知らせず、現在の画面に通知を数秒間表示することもしません。"</string>
     <string name="default_notification_assistant" msgid="7631945224761430146">"通知アシスタント"</string>
     <string name="manage_notification_access_title" msgid="7510080164564944891">"通知へのアクセス"</string>
+    <string name="work_profile_notification_access_blocked_summary" msgid="8748026238701253040">"仕事用プロファイルの通知へのアクセスがブロックされています"</string>
     <string name="manage_notification_access_summary_zero" msgid="2409912785614953348">"アプリは通知を読み取ることができません"</string>
     <plurals name="manage_notification_access_summary_nonzero" formatted="false" msgid="7930130030691218387">
       <item quantity="other">%d個のアプリが通知を読み取れます</item>
@@ -2842,10 +2841,8 @@
     <string name="manage_zen_access_title" msgid="2611116122628520522">"マナーモードへのアクセス"</string>
     <string name="zen_access_empty_text" msgid="8772967285742259540">"マナーモードへのアクセスをリクエストしたインストール済みアプリはありません"</string>
     <string name="loading_notification_apps" msgid="5031818677010335895">"アプリを読み込んでいます..."</string>
-    <!-- no translation found for app_notifications_off_desc (4882445501376722969) -->
-    <skip />
-    <!-- no translation found for channel_notifications_off_desc (5899225298718840635) -->
-    <skip />
+    <string name="app_notifications_off_desc" msgid="4882445501376722969">"Android により、このアプリの通知はこの端末には表示されません"</string>
+    <string name="channel_notifications_off_desc" msgid="5899225298718840635">"Android により、この通知のカテゴリはこの端末には表示されません"</string>
     <string name="notification_channels" msgid="5346841743182627500">"カテゴリ"</string>
     <string name="notification_channels_other" msgid="5645317113885788226">"その他"</string>
     <string name="no_channels" msgid="3077375508177744586">"このアプリの通知はありません"</string>
@@ -2866,8 +2863,7 @@
     <string name="app_notification_block_summary" msgid="4744020456943215352">"今後はこの通知を表示しない"</string>
     <string name="notification_content_block_title" msgid="5854232570963006360">"通知の表示"</string>
     <string name="notification_content_block_summary" msgid="7746185794438882389">"シェードにも周辺端末にも通知を表示しない"</string>
-    <string name="notification_badge_title" msgid="7166470350070693657">"バッジアプリ アイコン"</string>
-    <string name="notification_badge_summary" msgid="3944771498030335669">"通知をホームアプリでバッジとして表示する（対応している場合）"</string>
+    <string name="notification_badge_title" msgid="7734903868300369178">"アイコンバッジの許可"</string>
     <string name="app_notification_override_dnd_title" msgid="7867458246395884830">"マナーモードをオーバーライドする"</string>
     <string name="app_notification_override_dnd_summary" msgid="3516007157020189746">"[マナーモード] が [優先する通知のみ] に設定されているとき、この通知を引き続き表示する"</string>
     <string name="app_notification_visibility_override_title" msgid="2187232730902430718">"ロック画面"</string>

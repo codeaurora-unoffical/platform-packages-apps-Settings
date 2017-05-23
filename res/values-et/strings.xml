@@ -331,7 +331,8 @@
     <string name="account_settings_title" msgid="626177544686329806">"Kontod"</string>
     <string name="security_settings_title" msgid="6134528367364159294">"Turvalisus ja asukoht"</string>
     <string name="encryption_and_credential_settings_title" msgid="6514904533438791561">"Krüpteerimine ja mandaat"</string>
-    <string name="encryption_and_credential_settings_summary" msgid="8721883002237981248">"Telefon on krüpteeritud"</string>
+    <string name="encryption_and_credential_settings_summary" product="default" msgid="8721883002237981248">"Telefon on krüpteeritud"</string>
+    <string name="encryption_and_credential_settings_summary" product="tablet" msgid="7200428573872395685">"Seade on krüpteeritud"</string>
     <string name="lockscreen_settings_title" msgid="3922976395527087455">"Lukustuskuva eelistused"</string>
     <string name="security_settings_summary" msgid="967393342537986570">"Määrake Minu asukoht, ekraani avamine, SIM-kaardi lukk, mandaadi talletuslukk"</string>
     <string name="cdma_security_settings_summary" msgid="6068799952798901542">"Määrake oma asukoht, ekraani avamine, mandaadi talletuslukk"</string>
@@ -1290,7 +1291,7 @@
     </plurals>
     <string name="master_clear_summary" msgid="6902443944660426951">"Sisemine salvestusruum ja kõik andmed lähtestatakse"</string>
     <string name="master_clear_desc" product="tablet" msgid="9146059417023157222">"See kustutab kõik andmed teie tahvelarvuti "<b>"sisemälust"</b>", sh:\n\n"<li>"teie Google\'i konto"</li>\n<li>"süsteemi ja rakenduste andmed ning seaded"</li>\n<li>"Allalaaditud rakendused"</li></string>
-    <string name="master_clear_desc" product="default" msgid="4800386183314202571">"See kustutab kõik andmed telefoni "<b>"sisemälust"</b>", sh:\n\n"<li>"teie Google\'i konto"</li>\n<li>"süsteemi ja rakenduse andmed ning seaded"</li>\n<li>"Allalaaditud rakendused"</li></string>
+    <string name="master_clear_desc" product="default" msgid="4800386183314202571">"See kustutab kõik andmed telefoni "<b>"sisemälust"</b>", sh:\n\n"<li>"Teie Google\'i konto"</li>\n<li>"Süsteemi- ja rakenduste andmed ning seaded"</li>\n<li>"Allalaaditud rakendused"</li></string>
     <string name="master_clear_accounts" product="default" msgid="6412857499147999073">\n\n"Olete praegu sisse logitud järgmistele kontodele:\n"</string>
     <string name="master_clear_other_users_present" product="default" msgid="5161423070702470742">\n\n"Seadmes on teisi kasutajaid.\n"</string>
     <string name="master_clear_desc_also_erases_external" msgid="1903185203791274237"><li>"Muusika"</li>\n<li>"Fotod"</li>\n<li>"Muud kasutajaandmed"</li></string>
@@ -1313,7 +1314,7 @@
     <string name="call_settings_summary" msgid="7291195704801002886">"Seadista kõnepost, kõne edastamine, ootel kõne, helistaja ID"</string>
     <string name="tether_settings_title_usb" msgid="6688416425801386511">"USB jagamine"</string>
     <string name="tether_settings_title_wifi" msgid="3277144155960302049">"Kantav tööpunkt"</string>
-    <string name="tether_settings_title_bluetooth" msgid="355855408317564420">"Bluetoothi jagamine"</string>
+    <string name="tether_settings_title_bluetooth" msgid="355855408317564420">"Jagamine Bluetoothiga"</string>
     <string name="tether_settings_title_usb_bluetooth" msgid="5355828977109785001">"Jagamine"</string>
     <string name="tether_settings_title_all" msgid="3058586928118801157">"Kuumkoht ja jagamine"</string>
     <string name="tether_settings_summary_hotspot_on_tether_on" msgid="930464462687425777">"Leviala on sees, jagamine"</string>
@@ -1328,7 +1329,7 @@
     <string name="usb_tethering_unavailable_subtext" msgid="1044622421184007254">"USB ei ole ühendatud"</string>
     <string name="usb_tethering_turnon_subtext" msgid="4748616058219273033">"Ühendage sisselülitamiseks"</string>
     <string name="usb_tethering_errored_subtext" msgid="1377574819427841992">"USB jagamise viga"</string>
-    <string name="bluetooth_tether_checkbox_text" msgid="2379175828878753652">"Bluetoothi jagamine"</string>
+    <string name="bluetooth_tether_checkbox_text" msgid="2379175828878753652">"Jagamine Bluetoothiga"</string>
     <string name="bluetooth_tethering_available_subtext" product="tablet" msgid="2092766774943506688">"Tahvelarvuti Interneti-üh. jagam. Bluetoothi kaudu"</string>
     <string name="bluetooth_tethering_available_subtext" product="default" msgid="313873759999970236">"Telefoni Interneti-ühenduse jag. Bluetoothi kaudu"</string>
     <string name="bluetooth_tethering_device_connected_subtext" product="tablet" msgid="6388191062495199481">"Tahvelarv. Interneti-üh. jag. Bluetoothi kaudu ühe seadmega"</string>
@@ -1853,6 +1854,7 @@
     <string name="enable_service_title" msgid="3061307612673835592">"Kas soovite kasutada teenust <xliff:g id="SERVICE">%1$s</xliff:g>?"</string>
     <string name="capabilities_list_title" msgid="86713361724771971">"<xliff:g id="SERVICE">%1$s</xliff:g> teeb järgmist:"</string>
     <string name="touch_filtered_warning" msgid="8644034725268915030">"Seaded ei saa teie vastust kinnitada, sest rakendus varjab loataotlust."</string>
+    <string name="window_obscured_warning" msgid="8711643931674708175">"Menüü Seaded ei saa teie toimingule reageerida, kuna muu rakendus on kuvatud nende valikute peal."</string>
     <string name="enable_service_encryption_warning" msgid="3064686622453974606">"Kui lülitate sisse teenuse <xliff:g id="SERVICE">%1$s</xliff:g>, ei kasuta seade andmete krüpteerimise täiustamiseks ekraanilukku."</string>
     <string name="secure_lock_encryption_warning" msgid="460911459695077779">"Kuna lülitasite sisse juurdepääsetavuse teenuse, siis ei kasuta teie seade andmete krüpteerimise täiustamiseks ekraanilukku."</string>
     <string name="enable_service_pattern_reason" msgid="777577618063306751">"Kuna teenuse <xliff:g id="SERVICE">%1$s</xliff:g> sisselülitamine mõjutab andmete krüpteerimist, peate kinnitama oma mustri."</string>
@@ -2775,6 +2777,7 @@
     <string name="configure_notification_settings" msgid="7616737397127242615">"Märguanded"</string>
     <string name="advanced_section_header" msgid="8833934850242546903">"Täpsemad"</string>
     <string name="profile_section_header" msgid="2320848161066912001">"Töö märguanded"</string>
+    <string name="notification_badging_title" msgid="5125022693565388760">"Ikoonimärgi lubamine"</string>
     <string name="notification_pulse_title" msgid="1905382958860387030">"Vilkuv tuli"</string>
     <string name="lock_screen_notifications_title" msgid="6173076173408887213">"Lukustuskuval"</string>
     <string name="lock_screen_notifications_summary_show" msgid="6407527697810672847">"Kuva kogu märguande sisu"</string>
@@ -2800,10 +2803,11 @@
     <string name="notification_importance_low_title" msgid="8131254047772814309">"Keskmine"</string>
     <string name="notification_importance_default_title" msgid="9120383978536089489">"Kõrge"</string>
     <string name="notification_importance_high_title" msgid="3058778300264746473">"Kiireloomuline"</string>
-    <string name="allow_sound" msgid="6585849855452076626">"Heli lubamine"</string>
+    <string name="allow_sound" msgid="1820188704793497324">"Heli lubamine"</string>
     <string name="show_silently_summary" msgid="7616604629123146565">"Ära tee heli, vibreeri ega kuva neid märguandeid praeguse ekraani servas."</string>
     <string name="default_notification_assistant" msgid="7631945224761430146">"Märguannete abi"</string>
     <string name="manage_notification_access_title" msgid="7510080164564944891">"Juurdepääs märguannetele"</string>
+    <string name="work_profile_notification_access_blocked_summary" msgid="8748026238701253040">"Juurdepääs tööprofiili märguannetele on blokeeritud"</string>
     <string name="manage_notification_access_summary_zero" msgid="2409912785614953348">"Rakendused ei suuda märguandeid lugeda"</string>
     <plurals name="manage_notification_access_summary_nonzero" formatted="false" msgid="7930130030691218387">
       <item quantity="other">%d rakendust saavad lugeda märguandeid</item>
@@ -2855,8 +2859,7 @@
     <string name="app_notification_block_summary" msgid="4744020456943215352">"Ära kunagi näita neid märguandeid"</string>
     <string name="notification_content_block_title" msgid="5854232570963006360">"Kuva märguanded"</string>
     <string name="notification_content_block_summary" msgid="7746185794438882389">"Ära kuva märguandeid kunagi märguandealal ega välisseadmetes"</string>
-    <string name="notification_badge_title" msgid="7166470350070693657">"Märgirakenduse ikoon"</string>
-    <string name="notification_badge_summary" msgid="3944771498030335669">"Kuva märguanded rakenduses Home märkidena, kui seda toetatakse."</string>
+    <string name="notification_badge_title" msgid="7734903868300369178">"Ikoonimärgi lubamine"</string>
     <string name="app_notification_override_dnd_title" msgid="7867458246395884830">"Funktsiooni Mitte segada alistamine"</string>
     <string name="app_notification_override_dnd_summary" msgid="3516007157020189746">"Lubage nendel märguannetel teid jätkuvalt katkestada, kui funktsioon Mitte segada on määratud valikule Ainult prioriteetsed"</string>
     <string name="app_notification_visibility_override_title" msgid="2187232730902430718">"Lukustuskuval"</string>

@@ -331,7 +331,8 @@
     <string name="account_settings_title" msgid="626177544686329806">"അക്കൗണ്ടുകൾ"</string>
     <string name="security_settings_title" msgid="6134528367364159294">"സുരക്ഷയും ലൊക്കേഷനും"</string>
     <string name="encryption_and_credential_settings_title" msgid="6514904533438791561">"എൻക്രിപ്‌ഷനും ക്രെഡന്‍ഷ്യലുകളും"</string>
-    <string name="encryption_and_credential_settings_summary" msgid="8721883002237981248">"ഫോൺ എൻക്രിപ്‌റ്റ് ചെയ്‌തു"</string>
+    <string name="encryption_and_credential_settings_summary" product="default" msgid="8721883002237981248">"ഫോൺ എൻക്രിപ്‌റ്റ് ചെയ്‌തു"</string>
+    <string name="encryption_and_credential_settings_summary" product="tablet" msgid="7200428573872395685">"ഉപകരണം എൻക്രിപ്റ്റ് ചെയ്തു"</string>
     <string name="lockscreen_settings_title" msgid="3922976395527087455">"ലോക്ക് സ്‌ക്രീൻ മുൻഗണനകൾ"</string>
     <string name="security_settings_summary" msgid="967393342537986570">"എന്റെ ലൊക്കേഷൻ, സ്‌ക്രീൻ അൺലോക്ക്, സിം കാർഡ് ലോക്ക്, ക്രഡൻഷ്യൽ സംഭരണ ലോക്ക് എന്നിവ സജ്ജീകരിക്കുക"</string>
     <string name="cdma_security_settings_summary" msgid="6068799952798901542">"എന്റെ ലൊക്കേഷൻ, സ്‌ക്രീൻ അൺലോക്ക്, ക്രെഡൻഷ്യൽ സംഭരണ ലോക്ക് എന്നിവ സജ്ജീകരിക്കുക"</string>
@@ -1003,7 +1004,7 @@
     <string name="wallpaper_settings_summary_custom" msgid="515035303981687172">"ഇഷ്‌ടാനുസൃതം"</string>
     <string name="wallpaper_suggestion_title" msgid="8583988696513822528">"വാൾപേപ്പർ മാറ്റുക"</string>
     <string name="wallpaper_suggestion_summary" msgid="1579144009898110491">"നിങ്ങളുടെ സ്ക്രീൻ വ്യക്തിഗതമാക്കുക"</string>
-    <string name="wallpaper_settings_fragment_title" msgid="519078346877860129">"ഇവിടെനിന്ന് വാൾപേപ്പർ തിരഞ്ഞെടുക്കൂ"</string>
+    <string name="wallpaper_settings_fragment_title" msgid="519078346877860129">"ഇവിടുന്ന് വാൾപേപ്പർ തിരഞ്ഞെടുക്കൂ"</string>
     <string name="screensaver_settings_title" msgid="1770575686476851778">"സ്ക്രീൻ സേവർ"</string>
     <string name="screensaver_settings_summary_either_long" msgid="7302740999250873332">"ചാർജ് ചെയ്യുമ്പോൾ അല്ലെങ്കിൽ ഡോക്ക് ചെയ്യുമ്പോൾ"</string>
     <string name="screensaver_settings_summary_either_short" msgid="6140527286137331478">"ഏതിലെങ്കിലും"</string>
@@ -1187,7 +1188,7 @@
     <string name="storage_dialog_unsupported" msgid="4503128224360482228">"ഈ ഉപകരണം ഈ <xliff:g id="NAME_0">^1</xliff:g> പിന്തുണയ്ക്കുന്നില്ല. \n\nഉപകരണത്തിനൊപ്പം <xliff:g id="NAME_1">^1</xliff:g> ഉപയോഗിക്കുന്നതിന്, ആദ്യം നിങ്ങളിത് സജ്ജമാക്കേണ്ടതുണ്ട്."</string>
     <string name="storage_internal_format_details" msgid="4018647158382548820">"ഫോർമാറ്റുചെയ്‌തശേഷം, നിങ്ങൾക്ക് ഈ <xliff:g id="NAME_0">^1</xliff:g> മറ്റ് ഉപകരണങ്ങളിൽ ഉപയോഗിക്കാനാകും. \n\nഈ <xliff:g id="NAME_1">^1</xliff:g> എന്നതിലെ എല്ലാ വിവരവും മായ്‌ക്കും. ആദ്യം ബാക്കപ്പുചെയ്യുന്നത് പരിഗണിക്കുക. \n\n"<b>"ഫോട്ടോകളും മറ്റ് മീഡിയയും ബാക്കപ്പുചെയ്യുക"</b>" \nനിങ്ങളുടെ മീഡിയ ഫയലുകളെ ഈ ഉപകരണത്തിലെ ഇതര സംഭരണയിടത്തിലേക്ക് നീക്കുകയോ USB കേബിൾ ഉപയോഗിച്ച് അവയെ ഒരു കമ്പ്യൂട്ടറിലേക്ക് മാറ്റുകയോ ചെയ്യുക. \n\n"<b>"അപ്ലിക്കേഷനുകൾ ബാക്കപ്പുചെയ്യുക"</b>" \nഈ <xliff:g id="NAME_6">^1</xliff:g> എന്നതിൽ സംഭരിച്ചിരിക്കുന്ന എല്ലാ അപ്ലിക്കേഷനുകളും അൺഇൻസ്റ്റാൾ ചെയ്യുകയും അവയുടെ വിവരം മായ്‌ക്കുകയും ചെയ്യും. ഈ അപ്ലിക്കേഷനുകൾ സൂക്ഷിക്കാൻ, അവയെ ഈ ഉപകരണത്തിലെ ഇതര സംഭരണയിടത്തിലേക്ക് നീക്കുക."</string>
     <string name="storage_internal_unmount_details" msgid="3582802571684490057"><b>"നിങ്ങൾ ഈ <xliff:g id="NAME_0">^1</xliff:g> ഒഴിവാക്കുമ്പോൾ, അതിൽ സംഭരിച്ചിരിക്കുന്ന അപ്ലിക്കേഷനുകളുടെ പ്രവർത്തനം നിലയ്‌ക്കുകയും അതിൽ സംഭരിച്ചിരിക്കുന്ന മീഡിയ ഫയലുകൾ അത് തിരികെ ചേർക്കുന്നതുവരെ ലഭ്യമാകുകയുമില്ല ."</b>" \n\nഈ <xliff:g id="NAME_1">^1</xliff:g> എന്നത് ഈ ഉപകരണത്തിൽ മാത്രം പ്രവർത്തിക്കാനാണ് ഫോർമാറ്റുചെയ്‌തിരിക്കുന്നത്. ഇത് മറ്റുള്ളവയിലൊന്നും പ്രവർത്തിക്കില്ല."</string>
-    <string name="storage_internal_forget_details" msgid="9028875424669047327">"ഈ <xliff:g id="NAME">^1</xliff:g> അടങ്ങിയിരിക്കുന്ന ആപ്പ്‌സ്, ഫോട്ടോകൾ അല്ലെങ്കിൽ വിവരം ഉപയോഗിക്കാൻ, അത് വീണ്ടും ചേർക്കുക. \n\nപകരം, ഉപകരണം ലഭ്യമല്ലെങ്കിൽ, നിങ്ങൾക്ക് ഈ ഉപകരണം മറക്കാൻ തിരഞ്ഞെടുക്കാനാകും. \n\nനിങ്ങൾ മറക്കാൻ തിരഞ്ഞെടുക്കുകയാണെങ്കിൽ, ഉപകരണത്തിൽ അടങ്ങിയിരിക്കുന്ന എല്ലാ വിവരവും ശാശ്വതമായി നഷ്‌ടമാകും. \n\nനിങ്ങൾക്ക് ഈ ആപ്പ്‌സ് പിന്നീട് വീണ്ടും ഇൻസ്റ്റാൾ ചെയ്യാനാകും, എന്നാൽ ഈ ഉപകരണത്തിൽ സംഭരിച്ചിരിക്കുന്ന അവയുടെ വിവരം നഷ്‌ടമാകും."</string>
+    <string name="storage_internal_forget_details" msgid="9028875424669047327">"ഈ <xliff:g id="NAME">^1</xliff:g> അടങ്ങിയിരിക്കുന്ന ആപ്പുകൾ, ഫോട്ടോകൾ അല്ലെങ്കിൽ വിവരം ഉപയോഗിക്കാൻ, അത് വീണ്ടും ചേർക്കുക. \n\nപകരം, ഉപകരണം ലഭ്യമല്ലെങ്കിൽ, നിങ്ങൾക്ക് ഈ ഉപകരണം മറക്കാൻ തിരഞ്ഞെടുക്കാനാകും. \n\nനിങ്ങൾ മറക്കാൻ തിരഞ്ഞെടുക്കുകയാണെങ്കിൽ, ഉപകരണത്തിൽ അടങ്ങിയിരിക്കുന്ന എല്ലാ വിവരവും ശാശ്വതമായി നഷ്‌ടമാകും. \n\nനിങ്ങൾക്ക് ഈ ആപ്പുകൾ പിന്നീട് വീണ്ടും ഇൻസ്റ്റാൾ ചെയ്യാനാകും, എന്നാൽ ഈ ഉപകരണത്തിൽ സംഭരിച്ചിരിക്കുന്ന അവയുടെ വിവരം നഷ്‌ടമാകും."</string>
     <string name="storage_internal_forget_confirm_title" msgid="1370847944388479245">"<xliff:g id="NAME">^1</xliff:g> മറക്കണോ?"</string>
     <string name="storage_internal_forget_confirm" msgid="1148446041396902905">"<xliff:g id="NAME">^1</xliff:g> എന്നതിൽ സംഭരിച്ചിരിക്കുന്ന എല്ലാ ആപ്സും ഫോട്ടോകളും ഡാറ്റയും ശാശ്വതമായി നഷ്ടപ്പെടും."</string>
     <string name="storage_detail_apps" msgid="6141154016753507490">"ആപ്സ്"</string>
@@ -1537,7 +1538,7 @@
     <string name="default_emergency_app" msgid="1951760659640369980">"അടിയന്തിര അപ്ലിക്കേഷൻ"</string>
     <string name="reset_app_preferences" msgid="1321050641018356925">"ആപ്പ് മുൻഗണന പുനഃജ്ജമാക്കൂ"</string>
     <string name="reset_app_preferences_title" msgid="6093179367325336662">"അപ്ലിക്കേഷൻ മുൻഗണനകൾ പുനഃസജ്ജമാക്കണോ?"</string>
-    <string name="reset_app_preferences_desc" msgid="4822447731869201512">"ഇത് ഇനിപ്പറയുന്നവയ്‌ക്കുള്ള എല്ലാ മുൻഗണനകളും പുനഃസജ്ജമാക്കും:\n\n "<li>"പ്രവർത്തനരഹിതമാക്കിയ ആപ്സുകൾ"</li>\n" "<li>"പ്രവർത്തനരഹിതമാക്കിയ ആപ്സ് അറിയിപ്പുകൾ"</li>\n" "<li>"പ്രവർത്തനങ്ങൾക്കുള്ള ഡിഫോൾട്ട് ആപ്സുകൾ"</li>\n" "<li>"ആപ്സുകൾക്കുള്ള പശ്ചാത്തല ഡാറ്റാ നിയന്ത്രണങ്ങൾ"</li>\n" "<li>"എല്ലാ അനുമതി നിയന്ത്രണങ്ങളും"</li>\n\n" നിങ്ങൾക്ക് ആപ്സ് ഡാറ്റയൊന്നും നഷ്‌ടമാകില്ല."</string>
+    <string name="reset_app_preferences_desc" msgid="4822447731869201512">"ഇത് ഇനിപ്പറയുന്നവയ്‌ക്കുള്ള എല്ലാ മുൻഗണനകളും പുനഃസജ്ജമാക്കും:\n\n "<li>"പ്രവർത്തനരഹിതമാക്കിയ ആപ്പുകൾ"</li>\n" "<li>"പ്രവർത്തനരഹിതമാക്കിയ ആപ്സ് അറിയിപ്പുകൾ"</li>\n" "<li>"പ്രവർത്തനങ്ങൾക്കുള്ള ഡിഫോൾട്ട് ആപ്പുകൾ"</li>\n" "<li>"ആപ്പുകൾക്കുള്ള പശ്ചാത്തല ഡാറ്റാ നിയന്ത്രണങ്ങൾ"</li>\n" "<li>"എല്ലാ അനുമതി നിയന്ത്രണങ്ങളും"</li>\n\n" നിങ്ങൾക്ക് ആപ്സ് ഡാറ്റയൊന്നും നഷ്‌ടമാകില്ല."</string>
     <string name="reset_app_preferences_button" msgid="2559089511841281242">"ആപ്സ് പുനഃസജ്ജമാക്കൂ"</string>
     <string name="manage_space_text" msgid="8852711522447794676">"സ്‌പെയ്സ് നിയന്ത്രിക്കുക"</string>
     <string name="filter" msgid="2018011724373033887">"ഫിൽട്ടർ ചെയ്യുക"</string>
@@ -1790,7 +1791,7 @@
     <string name="accessibility_long_press_timeout_preference_title" msgid="6708467774619266508">"സ്‌പർശിച്ച് കുറെനേരം അമർത്തിപ്പിടിക്കൂ"</string>
     <string name="accessibility_display_inversion_preference_title" msgid="2119647786141420802">"വർണ്ണവൈപരീത്യം"</string>
     <string name="accessibility_display_inversion_preference_subtitle" msgid="7052959202195368109">"പ്രകടനത്തെ ബാധിച്ചേക്കാം"</string>
-    <string name="accessibility_autoclick_preference_title" msgid="7014499339068449623">"പോയിന്റർ നിന്നശേഷം ക്ലിക്കുചെയ്യൂ"</string>
+    <string name="accessibility_autoclick_preference_title" msgid="7014499339068449623">"പോയിന്റർനിന്നശേഷം ക്ലിക്കുചെയ്യൂ"</string>
     <string name="accessibility_autoclick_delay_preference_title" msgid="3962261178385106006">"ക്ലിക്കിന് മുമ്പുള്ള കാലതാമസം"</string>
     <string name="accessibility_summary_default_combination" msgid="90096949592817459">"<xliff:g id="STATE">%1$s</xliff:g> / <xliff:g id="DESCRIPTION">%2$s</xliff:g>"</string>
     <string name="accessibility_summary_state_enabled" msgid="8359913912320966304">"ഓൺ"</string>
@@ -1853,6 +1854,7 @@
     <string name="enable_service_title" msgid="3061307612673835592">"<xliff:g id="SERVICE">%1$s</xliff:g> ഉപയോഗിക്കണോ?"</string>
     <string name="capabilities_list_title" msgid="86713361724771971">"<xliff:g id="SERVICE">%1$s</xliff:g> എന്നതിന് ഇവ ആവശ്യമാണ്:"</string>
     <string name="touch_filtered_warning" msgid="8644034725268915030">"അനുമതി അഭ്യർത്ഥനയെ ഒരു അപ്ലിക്കേഷൻ മറയ്‌ക്കുന്നതിനാൽ, ക്രമീകരണത്തിന് നിങ്ങളുടെ പ്രതികരണം പരിശോധിച്ചുറപ്പിക്കാനാകില്ല."</string>
+    <string name="window_obscured_warning" msgid="8711643931674708175">"ഈ ഓപ്‌ഷനുകളുടെ മുകളിൽ മറ്റൊരു ആപ്പ് ദൃശ്യമാകുന്നതിനാൽ, ക്രമീകരണത്തിന് നിങ്ങളുടെ നടപടിയോട് പ്രതികരിക്കാനാവില്ല."</string>
     <string name="enable_service_encryption_warning" msgid="3064686622453974606">"<xliff:g id="SERVICE">%1$s</xliff:g> ഓണാക്കിയെങ്കിൽ, ഡാറ്റ എൻക്രിപ്‌ഷൻ മെച്ചപ്പെടുത്താനായി ഉപകരണം നിങ്ങളുടെ സ്‌ക്രീൻ ലോക്ക് ഉപയോഗിക്കില്ല."</string>
     <string name="secure_lock_encryption_warning" msgid="460911459695077779">"നിങ്ങൾ ഉപയോഗസഹായി സേവനം ഓണാക്കിയതിനാൽ, ഡാറ്റ എൻക്രിപ്‌ഷൻ മെച്ചപ്പെടുത്താനായി ഉപകരണം നിങ്ങളുടെ സ്‌ക്രീൻ ലോക്ക് ഉപയോഗിക്കില്ല."</string>
     <string name="enable_service_pattern_reason" msgid="777577618063306751">"<xliff:g id="SERVICE">%1$s</xliff:g> ഓണാക്കുന്നത് ഡാറ്റ എൻക്രിപ്‌ഷനെ ബാധിക്കുന്നതിനാൽ, നിങ്ങളുടെ പാറ്റേൺ സ്ഥിരീകരിക്കേണ്ടതുണ്ട്."</string>
@@ -2156,8 +2158,8 @@
     <string name="backup_configure_account_default_summary" msgid="2436933224764745553">"നിലവിൽ അക്കൗണ്ടുകളൊന്നും ബാക്കപ്പ് ചെയ്ത ഡാറ്റ സംഭരിക്കുന്നില്ല"</string>
     <string name="backup_erase_dialog_title" msgid="1027640829482174106"></string>
     <string name="backup_erase_dialog_message" msgid="5221011285568343155">"Google സെർവറുകളിൽ നിങ്ങളുടെ വൈഫൈ പാസ്‌വേഡുകൾ, ബുക്ക്‌മാർക്കുകൾ, മറ്റ് ക്രമീകരണങ്ങൾ, അപ്ലിക്കേഷൻ ഡാറ്റ എന്നിവ ബാക്കപ്പുചെയ്യുന്നത് അവസാനിപ്പിക്കുകയും അതിലെ എല്ലാ പകർപ്പുകളും മായ്‌ക്കുകയും ചെയ്യണോ?"</string>
-    <string name="fullbackup_erase_dialog_message" msgid="694766389396659626">"ഉപകരണ വിവരവും (വൈഫൈ പാസ്‌വേഡുകളും കോൾ ചരിത്രവും പോലുള്ളവ) ആപ്പ് വിവരവും (ആപ്പ്‌സ് സംഭരിച്ച ക്രമീകരണവും ഫയലുകളും പോലുള്ളവ) ബാക്കപ്പുചെയ്യുന്നത് നിർത്തുകയും വിദൂര സെർവറുകളിലെ എല്ലാ പകർപ്പുകളും മായ്‌ക്കുകയും ചെയ്യണോ?"</string>
-    <string name="fullbackup_data_summary" msgid="960850365007767734">"ഉപകരണ വിവരവും (വൈഫൈ പാസ്‌വേഡുകളും കോൾ ചരിത്രവും പോലുള്ളവ) ആപ്പ് വിവരവും (ക്രമീകരണവും ആപ്പ്‌സ് സംഭരിച്ച ഫയലുകളും പോലുള്ളവ) വിദൂരമായി സ്വയമേവ ബാക്കപ്പെടുക്കുന്നു.\n\nനിങ്ങൾ സ്വയമേയുള്ള ബാക്കപ്പ് ഓണാക്കുമ്പോൾ, ഉപകരണ, ആപ്പ് വിവരം ഇടയ്‌ക്കിടെ വിദൂരമായി സംരക്ഷിക്കും. ആപ്പ് വിവരം എന്നത് കോൺടാക്റ്റുകൾ, സന്ദേശങ്ങൾ, ഫോട്ടോകൾ എന്നിവ പോലുള്ള രഹസ്യസ്വഭാവമുള്ളവ ഉൾപ്പെടെ ആപ്പ് സംരക്ഷിച്ചിട്ടുള്ള ഏതൊരു വിവരവും (ഡെവലപ്പർ ക്രമീകരണം അടിസ്ഥാനമാക്കി) ആകാം."</string>
+    <string name="fullbackup_erase_dialog_message" msgid="694766389396659626">"ഉപകരണ വിവരവും (വൈഫൈ പാസ്‌വേഡുകളും കോൾ ചരിത്രവും പോലുള്ളവ) ആപ്പ് വിവരവും (ആപ്പുകൾ സംഭരിച്ച ക്രമീകരണവും ഫയലുകളും പോലുള്ളവ) ബാക്കപ്പുചെയ്യുന്നത് നിർത്തുകയും വിദൂര സെർവറുകളിലെ എല്ലാ പകർപ്പുകളും മായ്‌ക്കുകയും ചെയ്യണോ?"</string>
+    <string name="fullbackup_data_summary" msgid="960850365007767734">"ഉപകരണ വിവരവും (വൈഫൈ പാസ്‌വേഡുകളും കോൾ ചരിത്രവും പോലുള്ളവ) ആപ്പ് വിവരവും (ക്രമീകരണവും ആപ്പുകൾ സംഭരിച്ച ഫയലുകളും പോലുള്ളവ) വിദൂരമായി സ്വയമേവ ബാക്കപ്പെടുക്കുന്നു.\n\nനിങ്ങൾ സ്വയമേയുള്ള ബാക്കപ്പ് ഓണാക്കുമ്പോൾ, ഉപകരണ, ആപ്പ് വിവരം ഇടയ്‌ക്കിടെ വിദൂരമായി സംരക്ഷിക്കും. ആപ്പ് വിവരം എന്നത് കോൺടാക്റ്റുകൾ, സന്ദേശങ്ങൾ, ഫോട്ടോകൾ എന്നിവ പോലുള്ള രഹസ്യസ്വഭാവമുള്ളവ ഉൾപ്പെടെ ആപ്പ് സംരക്ഷിച്ചിട്ടുള്ള ഏതൊരു വിവരവും (ഡെവലപ്പർ ക്രമീകരണം അടിസ്ഥാനമാക്കി) ആകാം."</string>
     <string name="device_admin_settings_title" msgid="4960761799560705902">"ഉപകരണ അഡ്‌മിൻ ക്രമീകരണം"</string>
     <string name="active_device_admin_msg" msgid="578748451637360192">"ഉപകരണ അഡ്‌മിൻ ആപ്പ്"</string>
     <string name="remove_device_admin" msgid="9207368982033308173">"ഈ ഉപകരണ അഡ്‌മിൻ ആപ്പ് നിർജീവമാക്കുക"</string>
@@ -2775,6 +2777,8 @@
     <string name="configure_notification_settings" msgid="7616737397127242615">"അറിയിപ്പുകൾ"</string>
     <string name="advanced_section_header" msgid="8833934850242546903">"വിപുലമായത്"</string>
     <string name="profile_section_header" msgid="2320848161066912001">"ഔദ്യോഗിക അറിയിപ്പുകൾ"</string>
+    <!-- no translation found for notification_badging_title (5125022693565388760) -->
+    <skip />
     <string name="notification_pulse_title" msgid="1905382958860387030">"ലൈറ്റ് മിന്നുക"</string>
     <string name="lock_screen_notifications_title" msgid="6173076173408887213">"ലോക്ക് സ്ക്രീനിൽ"</string>
     <string name="lock_screen_notifications_summary_show" msgid="6407527697810672847">"എല്ലാ അറിയിപ്പുകളും കാണിക്കുക"</string>
@@ -2788,8 +2792,7 @@
     <string name="lock_screen_notifications_interstitial_message_profile" msgid="8307705621027472346">"നിങ്ങളുടെ ഉപകരണം ലോക്കുചെയ്തിരിക്കുമ്പോൾ, പ്രൊഫൈൽ അറിയിപ്പുകൾ എങ്ങനെ കാണിക്കാനാണ് നിങ്ങൾ ആഗ്രഹിക്കുന്നത്?"</string>
     <string name="lock_screen_notifications_interstitial_title_profile" msgid="3169806586032521333">"പ്രൊഫൈൽ അറിയിപ്പുകൾ"</string>
     <string name="app_notifications_title" msgid="139788604658984593">"അറിയിപ്പുകൾ"</string>
-    <!-- no translation found for notification_channel_title (2260666541030178452) -->
-    <skip />
+    <string name="notification_channel_title" msgid="2260666541030178452">"അറിയിപ്പ് വിഭാഗം"</string>
     <string name="notification_importance_title" msgid="848692592679312666">"പ്രാധാന്യം"</string>
     <string name="notification_importance_unspecified" msgid="2196023702875112081">"ആപ്പ് തീരുമാനിക്കട്ടെ"</string>
     <string name="notification_importance_blocked" msgid="7938180808339386300">"അറിയിപ്പുകൾ ഒരിക്കലും കാണിക്കരുത്"</string>
@@ -2797,18 +2800,15 @@
     <string name="notification_importance_low" msgid="8881468429453766553">"ശബ്‌ദമില്ല"</string>
     <string name="notification_importance_default" msgid="5958338024601957516">"ശബ്ദമുണ്ടാക്കുക"</string>
     <string name="notification_importance_high" msgid="2082429479238228527">"ശബ്ദമുണ്ടാക്കുക, സ്ക്രീനിൽ കാണിക്കുക"</string>
-    <!-- no translation found for notification_importance_min_title (6974673091137544803) -->
-    <skip />
-    <!-- no translation found for notification_importance_low_title (8131254047772814309) -->
-    <skip />
-    <!-- no translation found for notification_importance_default_title (9120383978536089489) -->
-    <skip />
-    <!-- no translation found for notification_importance_high_title (3058778300264746473) -->
-    <skip />
-    <string name="allow_sound" msgid="6585849855452076626">"ശ‌ബ്‌ദം അനുവദിക്കുക"</string>
+    <string name="notification_importance_min_title" msgid="6974673091137544803">"കുറഞ്ഞത്"</string>
+    <string name="notification_importance_low_title" msgid="8131254047772814309">"ഇടത്തരം"</string>
+    <string name="notification_importance_default_title" msgid="9120383978536089489">"ഉയർന്ന പ്രാധാന്യം"</string>
+    <string name="notification_importance_high_title" msgid="3058778300264746473">"അടിയന്തിരാവശ്യം"</string>
+    <string name="allow_sound" msgid="1820188704793497324">"ശ‌ബ്‌ദം അനുവദിക്കുക"</string>
     <string name="show_silently_summary" msgid="7616604629123146565">"ഈ അറിയിപ്പുകൾ ശബ്ദമുണ്ടാക്കുകയോ വൈബ്രേറ്റുചെയ്യുകയോ നിലവിലെ സ്ക്രീനിലെ കാഴ്ചയിൽ കാണിക്കുകയോ അരുത്."</string>
     <string name="default_notification_assistant" msgid="7631945224761430146">"അറിയിപ്പ് സഹായി"</string>
     <string name="manage_notification_access_title" msgid="7510080164564944891">"അറിയിപ്പ് ക്രമീകരണം"</string>
+    <string name="work_profile_notification_access_blocked_summary" msgid="8748026238701253040">"ഔദ്യോഗിക പ്രൊഫൈൽ അറിയിപ്പുകളിലേക്കുള്ള ആക്‌സസ്സ് ബ്ലോക്കുചെയ്‌തു"</string>
     <string name="manage_notification_access_summary_zero" msgid="2409912785614953348">"അപ്ലിക്കേഷനുകൾക്ക് അറിയിപ്പുകൾ വായിക്കാനായില്ല"</string>
     <plurals name="manage_notification_access_summary_nonzero" formatted="false" msgid="7930130030691218387">
       <item quantity="other">%d അപ്ലിക്കേഷനുകൾക്ക് അറിയിപ്പുകൾ വായിക്കാനാകും</item>
@@ -2838,10 +2838,8 @@
     <string name="manage_zen_access_title" msgid="2611116122628520522">"\'ശല്യപ്പെടുത്തരുത്\' ആക്‌സസ്സ്"</string>
     <string name="zen_access_empty_text" msgid="8772967285742259540">"ഇൻസ്റ്റാളുചെയ്‌തവയൊന്നും \'ശല്യപ്പെടുത്തരുത്\' മോഡിൽ പ്രവേശിക്കാൻ അഭ്യർത്ഥിച്ചിട്ടില്ല"</string>
     <string name="loading_notification_apps" msgid="5031818677010335895">"അപ്ലിക്കേഷനുകൾ ലോഡുചെയ്യുന്നു..."</string>
-    <!-- no translation found for app_notifications_off_desc (4882445501376722969) -->
-    <skip />
-    <!-- no translation found for channel_notifications_off_desc (5899225298718840635) -->
-    <skip />
+    <string name="app_notifications_off_desc" msgid="4882445501376722969">"ഈ ഉപകരണത്തിൽ ഈ ആപ്പിന്റെ അറിയിപ്പുകൾ ദൃശ്യമാകുന്നത് Android ബ്ലോക്കുചെയ്യുന്നു"</string>
+    <string name="channel_notifications_off_desc" msgid="5899225298718840635">"ഈ ഉപകരണത്തിൽ ഈ വിഭാഗത്തിൽ പെട്ട അറിയിപ്പുകൾ ദൃശ്യമാകുന്നത് Android ബ്ലോക്കുചെയ്യുന്നു"</string>
     <string name="notification_channels" msgid="5346841743182627500">"വിഭാഗങ്ങള്‍"</string>
     <string name="notification_channels_other" msgid="5645317113885788226">"മറ്റുള്ളവ"</string>
     <string name="no_channels" msgid="3077375508177744586">"ഈ ആപ്പ് അറിയിപ്പുകളൊന്നും പോസ്‌റ്റുചെയ്‌തിട്ടില്ല"</string>
@@ -2862,8 +2860,7 @@
     <string name="app_notification_block_summary" msgid="4744020456943215352">"ഈ അറിയിപ്പുകൾ ഒരിക്കലും കാണിക്കരുത്"</string>
     <string name="notification_content_block_title" msgid="5854232570963006360">"അറിയിപ്പുകൾ കാണിക്കുക"</string>
     <string name="notification_content_block_summary" msgid="7746185794438882389">"ഷെയ്‌ഡിലോ പെരിഫെറൽ ഉപകരണങ്ങളിലോ ഒരിക്കലും അറിയിപ്പുകൾ കാണിക്കരുത്"</string>
-    <string name="notification_badge_title" msgid="7166470350070693657">"ബാഡ്‌ജ് ആപ്പ് ഐക്കൺ"</string>
-    <string name="notification_badge_summary" msgid="3944771498030335669">"പിന്തുണയുണ്ടെങ്കിൽ, ഹോം ആപ്പിൽ ബാഡ്‌ജുകളായി അറിയിപ്പുകൾ കാണിക്കുക."</string>
+    <string name="notification_badge_title" msgid="7734903868300369178">"ഐക്കൺ ബാഡ്‌ജ് അനുവദിക്കുക"</string>
     <string name="app_notification_override_dnd_title" msgid="7867458246395884830">"\'ശല്യപ്പെടുത്തരുത്\' അസാധുവാക്കുക"</string>
     <string name="app_notification_override_dnd_summary" msgid="3516007157020189746">"\'മുൻഗണനയുള്ളവ മാത്രം\' എന്നതിലേക്ക് \'ശല്യപ്പെടുത്തരുത്\' സജ്ജമാക്കിയിട്ടുള്ളപ്പോൾ തടസ്സപ്പെടുത്തുന്നത് തുടരാൻ ഈ അറിയിപ്പുകളെ അനുവദിക്കുക"</string>
     <string name="app_notification_visibility_override_title" msgid="2187232730902430718">"ലോക്ക് സ്ക്രീനിൽ"</string>
@@ -2946,9 +2943,9 @@
     <string name="zen_mode_summary_alarms_only_by_time" msgid="7465525754879341907">"<xliff:g id="FORMATTEDTIME">%1$s</xliff:g> വരെ മാത്രം അലാറങ്ങളിലേക്ക് മാറ്റുക"</string>
     <string name="zen_mode_summary_always" msgid="6172985102689237703">"\'എല്ലായ്‌പ്പോഴും തടസ്സപ്പെടുത്തുക\' എന്നതിലേക്ക് മാറ്റുക"</string>
     <string name="zen_mode_screen_on" msgid="7712038508173845101">"ഓണായിരിക്കുമ്പോൾ ബ്ലോക്കുചെയ്യുക"</string>
-    <string name="zen_mode_screen_on_summary" msgid="6444425984146305149">"സ്ക്രീനിൽ എത്തിനോക്കുന്നതിൽ നിന്നോ പ്രത്യക്ഷപ്പെടുന്നതിൽ നിന്നോ, \'ശല്യപ്പെടുത്തരുത്\' വഴി നിശബ്ദമാക്കപ്പെടുന്ന അറിയിപ്പുകളെ തടയുക"</string>
+    <string name="zen_mode_screen_on_summary" msgid="6444425984146305149">"സ്ക്രീനിൽ എത്തിനോക്കുന്നതിൽ നിന്നോ ദൃശ്യമാകുന്നതിൽ നിന്നോ, \'ശല്യപ്പെടുത്തരുത്\' വഴി അറിയിപ്പുകളെ തടയുക"</string>
     <string name="zen_mode_screen_off" msgid="5026854939192419879">"ഓഫായിരിക്കുമ്പോൾ ബ്ലോക്കുചെയ്യുക"</string>
-    <string name="zen_mode_screen_off_summary" msgid="6490932947651798094">"സ്ക്രീൻ ഓണാക്കുന്നതിൽ നിന്നോ തുടിപ്പായി അറിയിപ്പ് വെളിച്ചം മാറുന്നതിൽ നിന്നോ, \'ശല്യപ്പെടുത്തരുത്\' വഴി നിശബ്ദമാക്കപ്പെടുന്ന അറിയിപ്പുകളെ തടയുക"</string>
+    <string name="zen_mode_screen_off_summary" msgid="6490932947651798094">"സ്ക്രീൻ ഓണാക്കുന്നതിൽ നിന്നോ അറിയിപ്പ് വെളിച്ചം തെളിയുന്നതിൽ നിന്നോ, \'ശല്യപ്പെടുത്തരുത്\' വഴി അറിയിപ്പുകളെ തടയുക"</string>
     <string name="zen_mode_screen_off_summary_no_led" msgid="3758698381956461866">"സ്ക്രീൻ ഓണാക്കുന്നതിൽ നിന്ന്, \'ശല്യപ്പെടുത്തരുത്\' വഴി നിശബ്ദമാക്കപ്പെടുന്ന അറിയിപ്പുകളെ തടയുക"</string>
     <string name="zen_mode_all_visual_interruptions" msgid="2851308980832487411">"ഓഫ്"</string>
     <string name="zen_mode_screen_on_visual_interruptions" msgid="7373348148129140528">"സ്ക്രീൻ ഓണായിരിക്കുമ്പോൾ"</string>
@@ -3157,7 +3154,7 @@
     <string name="total_memory" msgid="2017287600738630165">"ആകെ മെമ്മറി"</string>
     <string name="average_used" msgid="5338339266517245782">"ശരാശരി ഉപയോഗിച്ചത് (%)"</string>
     <string name="free_memory" msgid="4003936141603549746">"ശേഷിക്കുന്നത്"</string>
-    <string name="memory_usage_apps" msgid="5650192998273294098">"ആപ്പ്‌സ് ഉപയോഗിച്ച മെമ്മറി"</string>
+    <string name="memory_usage_apps" msgid="5650192998273294098">"ആപ്പുകൾ ഉപയോഗിച്ച മെമ്മറി"</string>
     <plurals name="memory_usage_apps_summary" formatted="false" msgid="6089210945574265774">
       <item quantity="other">കഴിഞ്ഞ <xliff:g id="DURATION_1">%2$s</xliff:g> സമയത്തിനുള്ളിൽ <xliff:g id="COUNT">%1$d</xliff:g> ആപ്പുകൾ മെമ്മറി ഉപയോഗിച്ചു</item>
       <item quantity="one">കഴിഞ്ഞ <xliff:g id="DURATION_0">%2$s</xliff:g> സമയത്തിനുള്ളിൽ ഒരു ആപ്പ് മെമ്മറി ഉപയോഗിച്ചു</item>
@@ -3319,8 +3316,8 @@
     <string name="configure" msgid="1029654422228677273">"കോൺഫിഗർ ചെയ്യുക"</string>
     <string name="data_usage_other_apps" msgid="3272872663517382050">"ഉപയോഗത്തിൽ ഉൾപ്പെട്ട മറ്റ് ആപ്‌സ്"</string>
     <plurals name="data_saver_unrestricted_summary" formatted="false" msgid="2635267833484232703">
-      <item quantity="other">ഡാറ്റ സേവർ ഓണായിരിക്കുമ്പോൾ, പരിമിതിയില്ലാതെ ഡാറ്റ ഉപയോഗിക്കുന്നത് <xliff:g id="COUNT">%1$d</xliff:g> ആപ്‌സിനെ അനുവദിച്ചു</item>
-      <item quantity="one">ഡാറ്റ സേവർ ഓണായിരിക്കുമ്പോൾ, പരിമിതിയില്ലാതെ ഡാറ്റ ഉപയോഗിക്കുന്നത് ഒരു ആപ്പിനെ അനുവദിച്ചു</item>
+      <item quantity="other">ഡാറ്റ സേവർ ഓണായിരിക്കുമ്പോൾ, പരിധിയില്ലാതെ ഡാറ്റ ഉപയോഗിക്കുന്നത് <xliff:g id="COUNT">%1$d</xliff:g> ആപ്‌സിനെ അനുവദിച്ചു</item>
+      <item quantity="one">ഡാറ്റ സേവർ ഓണായിരിക്കുമ്പോൾ, പരിധിയില്ലാതെ ഡാറ്റ ഉപയോഗിക്കുന്നത് ഒരു ആപ്പിനെ അനുവദിച്ചു</item>
     </plurals>
     <string name="data_saver_title" msgid="398458827917495765">"ഡാറ്റ സേവർ"</string>
     <string name="unrestricted_data_saver" msgid="7019858887510062789">"ഇഷ്ടം പോലെ ഡാറ്റ"</string>

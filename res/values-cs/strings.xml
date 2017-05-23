@@ -335,7 +335,8 @@
     <string name="account_settings_title" msgid="626177544686329806">"Účty"</string>
     <string name="security_settings_title" msgid="6134528367364159294">"Zabezpečení a poloha"</string>
     <string name="encryption_and_credential_settings_title" msgid="6514904533438791561">"Šifrování a identifikační údaje"</string>
-    <string name="encryption_and_credential_settings_summary" msgid="8721883002237981248">"Telefon je zašifrován"</string>
+    <string name="encryption_and_credential_settings_summary" product="default" msgid="8721883002237981248">"Telefon je zašifrován"</string>
+    <string name="encryption_and_credential_settings_summary" product="tablet" msgid="7200428573872395685">"Zařízení je zašifrováno"</string>
     <string name="lockscreen_settings_title" msgid="3922976395527087455">"Předvolby obrazovky uzamčení"</string>
     <string name="security_settings_summary" msgid="967393342537986570">"Moje poloha, odemknutí obrazovky, zámek SIM, zámek úložiště pověření"</string>
     <string name="cdma_security_settings_summary" msgid="6068799952798901542">"Nastavení funkce Moje poloha, odemknutí obrazovky a zamknutí úložiště pověření"</string>
@@ -694,7 +695,7 @@
     <string name="android_beam_off_summary" msgid="4663095428454779138">"Vypnuto"</string>
     <string name="android_beam_disabled_summary" msgid="1737782116894793393">"Není k dispozici, protože je vypnuta funkce NFC"</string>
     <string name="android_beam_label" msgid="6257036050366775040">"Android Beam"</string>
-    <string name="android_beam_explained" msgid="1810540319385192758">"Když je funkce zapnutá, můžete přenášet obsah aplikace do jiného zařízení s funkcí NFC tak, že obě zařízení podržíte blízko sebe. Přenášet můžete například webové stránky, videa YouTube, kontakty a další.\n\nPřiložte zařízení k sobě (zpravidla zadní stranou) a klepněte na obrazovku. Aplikace určí, jaký obsah se bude přenášet."</string>
+    <string name="android_beam_explained" msgid="1810540319385192758">"Když je funkce zapnutá, můžete přenášet obsah aplikace do jiného zařízení s funkcí NFC tak, že obě zařízení podržíte blízko sebe. Přenášet můžete například webové stránky, videa na YouTube, kontakty a další.\n\nPřiložte zařízení k sobě (zpravidla zadní stranou) a klepněte na obrazovku. Aplikace určí, jaký obsah se bude přenášet."</string>
     <string name="wifi_quick_toggle_title" msgid="8850161330437693895">"Wi-Fi"</string>
     <string name="wifi_quick_toggle_summary" msgid="2696547080481267642">"Zapnout Wi-Fi"</string>
     <string name="wifi_settings" msgid="29722149822540994">"Wi-Fi"</string>
@@ -1317,11 +1318,11 @@
       <item quantity="one">1 účet bude obnoven</item>
     </plurals>
     <string name="master_clear_summary" msgid="6902443944660426951">"Interní úložiště a všechna data budou vymazána"</string>
-    <string name="master_clear_desc" product="tablet" msgid="9146059417023157222">"Tato akce smaže veškerá data z "<b>"interního úložiště"</b>" tabletu, mj. i:\n\n"<li>"váš účet Google,"</li>\n<li>"nastavení a data systému a aplikací,"</li>\n<li>"stažené aplikace."</li></string>
-    <string name="master_clear_desc" product="default" msgid="4800386183314202571">"Tato akce smaže veškerá data z "<b>"interního úložiště"</b>" telefonu, mj. i:\n\n"<li>"váš účet Google,"</li>\n<li>"nastavení a data systému a aplikací,"</li>\n<li>"stažené aplikace."</li></string>
+    <string name="master_clear_desc" product="tablet" msgid="9146059417023157222">"Tato akce smaže veškerá data z "<b>"interního úložiště"</b>" tabletu, mj. i:\n\n"<li>"váš účet Google"</li>\n<li>"nastavení a data systému a aplikací"</li>\n<li>"stažené aplikace"</li></string>
+    <string name="master_clear_desc" product="default" msgid="4800386183314202571">"Tato akce smaže veškerá data z "<b>"interního úložiště"</b>" telefonu, mj. i:\n\n"<li>"váš účet Google"</li>\n<li>"nastavení a data systému a aplikací"</li>\n<li>"stažené aplikace"</li></string>
     <string name="master_clear_accounts" product="default" msgid="6412857499147999073">\n\n"Aktuálně jste přihlášeni k těmto účtům:\n"</string>
     <string name="master_clear_other_users_present" product="default" msgid="5161423070702470742">\n\n"V tomto zařízení jsou přítomni další uživatelé.\n"</string>
-    <string name="master_clear_desc_also_erases_external" msgid="1903185203791274237"><li>"Hudba"</li>\n<li>"Fotky"</li>\n<li>"další uživatelské údaje"</li></string>
+    <string name="master_clear_desc_also_erases_external" msgid="1903185203791274237"><li>"hudba"</li>\n<li>"fotky"</li>\n<li>"další uživatelské údaje"</li></string>
     <string name="master_clear_desc_erase_external_storage" product="nosdcard" msgid="7744115866662613411">\n\n"Chcete-li smazat také hudbu, obrázky a další uživatelská data, je potřeba vymazat "<b>"úložiště USB"</b>"."</string>
     <string name="master_clear_desc_erase_external_storage" product="default" msgid="4801026652617377093">\n\n"Chcete-li smazat také hudbu, obrázky a další uživatelská data, je potřeba vymazat "<b>"kartu SD"</b>"."</string>
     <string name="erase_external_storage" product="nosdcard" msgid="969364037450286809">"Smazat úložiště USB"</string>
@@ -1893,6 +1894,7 @@
     <string name="enable_service_title" msgid="3061307612673835592">"Zapnout <xliff:g id="SERVICE">%1$s</xliff:g>?"</string>
     <string name="capabilities_list_title" msgid="86713361724771971">"<xliff:g id="SERVICE">%1$s</xliff:g> potřebuje:"</string>
     <string name="touch_filtered_warning" msgid="8644034725268915030">"Žádost o oprávnění je blokována jinou aplikací. Nastavení proto vaši odpověď nemůže ověřit."</string>
+    <string name="window_obscured_warning" msgid="8711643931674708175">"Nastavení na vaši akci nemůže zareagovat, protože se přes tyto možnosti zobrazuje jiná aplikace."</string>
     <string name="enable_service_encryption_warning" msgid="3064686622453974606">"Pokud zapnete službu <xliff:g id="SERVICE">%1$s</xliff:g>, zařízení nebude používat zámek obrazovky k vylepšení šifrování dat."</string>
     <string name="secure_lock_encryption_warning" msgid="460911459695077779">"Vzhledem k tomu, že jste zapnuli službu přístupnosti, nebude zařízení používat zámek obrazovky k vylepšení šifrování dat."</string>
     <string name="enable_service_pattern_reason" msgid="777577618063306751">"Protože zapnutí služby <xliff:g id="SERVICE">%1$s</xliff:g> má vliv na šifrování dat, je třeba, abyste potvrdili své gesto."</string>
@@ -2829,6 +2831,7 @@
     <string name="configure_notification_settings" msgid="7616737397127242615">"Oznámení"</string>
     <string name="advanced_section_header" msgid="8833934850242546903">"Rozšířená nastavení"</string>
     <string name="profile_section_header" msgid="2320848161066912001">"Pracovní oznámení"</string>
+    <string name="notification_badging_title" msgid="5125022693565388760">"Povolit odznaky na ikonách"</string>
     <string name="notification_pulse_title" msgid="1905382958860387030">"Blikání kontrolky"</string>
     <string name="lock_screen_notifications_title" msgid="6173076173408887213">"Na obrazovce uzamčení"</string>
     <string name="lock_screen_notifications_summary_show" msgid="6407527697810672847">"Zobrazit veškerý obsah oznámení"</string>
@@ -2854,10 +2857,11 @@
     <string name="notification_importance_low_title" msgid="8131254047772814309">"Střední"</string>
     <string name="notification_importance_default_title" msgid="9120383978536089489">"Vysoká"</string>
     <string name="notification_importance_high_title" msgid="3058778300264746473">"Naléhavá"</string>
-    <string name="allow_sound" msgid="6585849855452076626">"Povolit zvuk"</string>
+    <string name="allow_sound" msgid="1820188704793497324">"Povolit zvuk"</string>
     <string name="show_silently_summary" msgid="7616604629123146565">"Na tato oznámení nebudete upozorněni zvukem ani vibrací, ani se nebude zobrazovat jejich náhled na aktuální obrazovce."</string>
     <string name="default_notification_assistant" msgid="7631945224761430146">"Asistent oznámení"</string>
     <string name="manage_notification_access_title" msgid="7510080164564944891">"Přístup k oznámením"</string>
+    <string name="work_profile_notification_access_blocked_summary" msgid="8748026238701253040">"Přístup k oznámením pracovního profilu je zablokován"</string>
     <string name="manage_notification_access_summary_zero" msgid="2409912785614953348">"Aplikace nesmí číst oznámení"</string>
     <plurals name="manage_notification_access_summary_nonzero" formatted="false" msgid="7930130030691218387">
       <item quantity="few">%d aplikace mohou číst oznámení</item>
@@ -2915,8 +2919,7 @@
     <string name="app_notification_block_summary" msgid="4744020456943215352">"Tato oznámení nikdy nezobrazovat"</string>
     <string name="notification_content_block_title" msgid="5854232570963006360">"Zobrazovat oznámení"</string>
     <string name="notification_content_block_summary" msgid="7746185794438882389">"Nezobrazovat oznámení na panelu ani v periferních zařízeních"</string>
-    <string name="notification_badge_title" msgid="7166470350070693657">"Odznaková ikona aplikace"</string>
-    <string name="notification_badge_summary" msgid="3944771498030335669">"Zobrazovat oznámení jako odznaky ve výchozí aplikaci, je-li tato funkce podporována."</string>
+    <string name="notification_badge_title" msgid="7734903868300369178">"Povolit odznak na ikoně"</string>
     <string name="app_notification_override_dnd_title" msgid="7867458246395884830">"Přepsat nastavení Nerušit"</string>
     <string name="app_notification_override_dnd_summary" msgid="3516007157020189746">"Umožnit těmto oznámením vyrušit mě, pokud je v nastavení Nerušit vybrána možnost Pouze prioritní"</string>
     <string name="app_notification_visibility_override_title" msgid="2187232730902430718">"Na obrazovce uzamčení"</string>
@@ -3170,7 +3173,7 @@
     <string name="high_power_desc" msgid="6283926163708585760">"Optimalizace výdrže baterie nebude použita. Baterie se může vybíjet rychleji."</string>
     <string name="high_power_prompt_title" msgid="6358673688590282655">"Povolit aplikaci stále běžet na pozadí?"</string>
     <string name="high_power_prompt_body" msgid="1031422980602565049">"Pokud aplikaci <xliff:g id="APP_NAME">%1$s</xliff:g> povolíte stále běžet na pozadí, může to zkrátit životnost baterie. \n\nToto nastavení můžete později změnit v sekci Nastavení &gt; Aplikace a oznámení."</string>
-    <string name="battery_summary" msgid="8044042095190688654">"Od posledního úplného nabití bylo využito <xliff:g id="PERCENTAGE">%1$s</xliff:g> %% baterie"</string>
+    <string name="battery_summary" msgid="8044042095190688654">"Od posledního úplného nabití bylo využito <xliff:g id="PERCENTAGE">%1$s</xliff:g> baterie"</string>
     <string name="battery_power_management" msgid="5571519699679107523">"Správa napájení"</string>
     <string name="no_battery_summary" msgid="3528036835462846814">"Baterie od posledního úplného nabití nebyla využita"</string>
     <string name="app_notification_preferences" msgid="1599319335092722613">"Nastavení aplikace"</string>

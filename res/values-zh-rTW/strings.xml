@@ -331,7 +331,8 @@
     <string name="account_settings_title" msgid="626177544686329806">"帳戶"</string>
     <string name="security_settings_title" msgid="6134528367364159294">"安全性與位置"</string>
     <string name="encryption_and_credential_settings_title" msgid="6514904533438791561">"加密和憑證"</string>
-    <string name="encryption_and_credential_settings_summary" msgid="8721883002237981248">"電話已加密"</string>
+    <string name="encryption_and_credential_settings_summary" product="default" msgid="8721883002237981248">"電話已加密"</string>
+    <string name="encryption_and_credential_settings_summary" product="tablet" msgid="7200428573872395685">"裝置已加密"</string>
     <string name="lockscreen_settings_title" msgid="3922976395527087455">"螢幕鎖定偏好設定"</string>
     <string name="security_settings_summary" msgid="967393342537986570">"設定我的位置、畫面解鎖、SIM 卡鎖定、認證儲存空間鎖定"</string>
     <string name="cdma_security_settings_summary" msgid="6068799952798901542">"設定我的位置、解除鎖定畫面及鎖定認證儲存空間"</string>
@@ -1853,6 +1854,7 @@
     <string name="enable_service_title" msgid="3061307612673835592">"使用「<xliff:g id="SERVICE">%1$s</xliff:g>」？"</string>
     <string name="capabilities_list_title" msgid="86713361724771971">"「<xliff:g id="SERVICE">%1$s</xliff:g>」需要執行下列動作："</string>
     <string name="touch_filtered_warning" msgid="8644034725268915030">"權限要求遭到其他應用程式畫面遮掩，因此「設定」無法驗證你的回應。"</string>
+    <string name="window_obscured_warning" msgid="8711643931674708175">"另一個應用程式目前顯示在畫面上層，覆蓋了這些選項，因此「設定」應用程式無法回應你的動作。"</string>
     <string name="enable_service_encryption_warning" msgid="3064686622453974606">"如果你開啟 <xliff:g id="SERVICE">%1$s</xliff:g>，你的裝置將無法使用螢幕鎖定加強資料加密。"</string>
     <string name="secure_lock_encryption_warning" msgid="460911459695077779">"你已開啟協助工具服務，因此你的裝置無法使用螢幕鎖定加強資料加密。"</string>
     <string name="enable_service_pattern_reason" msgid="777577618063306751">"開啟 <xliff:g id="SERVICE">%1$s</xliff:g> 將影響資料加密，因此你必須畫出解鎖圖案。"</string>
@@ -2756,7 +2758,7 @@
     <string name="zen_mode_priority_settings_title" msgid="2623117023031824309">"僅允許優先通知"</string>
     <string name="zen_mode_automation_settings_title" msgid="4228995740594063774">"自動規則"</string>
     <string name="zen_mode_automation_suggestion_title" msgid="5105443455143476201">"設定「零打擾」規則"</string>
-    <string name="zen_mode_automation_suggestion_summary" msgid="4732808039946935657">"在特定時間將禁用音效和震動"</string>
+    <string name="zen_mode_automation_suggestion_summary" msgid="4732808039946935657">"在特定時間禁用音效和震動"</string>
     <string name="zen_mode_option_important_interruptions" msgid="3903928008177972500">"僅限優先通知"</string>
     <string name="zen_mode_option_alarms" msgid="5785372117288803600">"僅允許鬧鐘"</string>
     <string name="zen_mode_option_no_interruptions" msgid="8107126344850276878">"完全靜音"</string>
@@ -2779,6 +2781,7 @@
     <string name="configure_notification_settings" msgid="7616737397127242615">"通知"</string>
     <string name="advanced_section_header" msgid="8833934850242546903">"進階"</string>
     <string name="profile_section_header" msgid="2320848161066912001">"Work 通知"</string>
+    <string name="notification_badging_title" msgid="5125022693565388760">"允許使用圖示徽章"</string>
     <string name="notification_pulse_title" msgid="1905382958860387030">"閃爍燈光"</string>
     <string name="lock_screen_notifications_title" msgid="6173076173408887213">"螢幕鎖定時"</string>
     <string name="lock_screen_notifications_summary_show" msgid="6407527697810672847">"顯示所有通知內容"</string>
@@ -2792,8 +2795,7 @@
     <string name="lock_screen_notifications_interstitial_message_profile" msgid="8307705621027472346">"當裝置鎖定時，你要如何顯示個人資料通知？"</string>
     <string name="lock_screen_notifications_interstitial_title_profile" msgid="3169806586032521333">"個人資料通知"</string>
     <string name="app_notifications_title" msgid="139788604658984593">"通知"</string>
-    <!-- no translation found for notification_channel_title (2260666541030178452) -->
-    <skip />
+    <string name="notification_channel_title" msgid="2260666541030178452">"通知類別"</string>
     <string name="notification_importance_title" msgid="848692592679312666">"重要性"</string>
     <string name="notification_importance_unspecified" msgid="2196023702875112081">"讓應用程式決定"</string>
     <string name="notification_importance_blocked" msgid="7938180808339386300">"一律不顯示通知"</string>
@@ -2801,18 +2803,15 @@
     <string name="notification_importance_low" msgid="8881468429453766553">"不發出音效"</string>
     <string name="notification_importance_default" msgid="5958338024601957516">"發出音效"</string>
     <string name="notification_importance_high" msgid="2082429479238228527">"發出音效並在畫面上彈出通知"</string>
-    <!-- no translation found for notification_importance_min_title (6974673091137544803) -->
-    <skip />
-    <!-- no translation found for notification_importance_low_title (8131254047772814309) -->
-    <skip />
-    <!-- no translation found for notification_importance_default_title (9120383978536089489) -->
-    <skip />
-    <!-- no translation found for notification_importance_high_title (3058778300264746473) -->
-    <skip />
-    <string name="allow_sound" msgid="6585849855452076626">"開啟音效"</string>
+    <string name="notification_importance_min_title" msgid="6974673091137544803">"低"</string>
+    <string name="notification_importance_low_title" msgid="8131254047772814309">"中"</string>
+    <string name="notification_importance_default_title" msgid="9120383978536089489">"高"</string>
+    <string name="notification_importance_high_title" msgid="3058778300264746473">"緊急"</string>
+    <string name="allow_sound" msgid="1820188704793497324">"開啟音效"</string>
     <string name="show_silently_summary" msgid="7616604629123146565">"不要發出音效、震動，也不要在目前畫面上短暫顯示這類通知。"</string>
     <string name="default_notification_assistant" msgid="7631945224761430146">"通知小幫手"</string>
     <string name="manage_notification_access_title" msgid="7510080164564944891">"通知存取權"</string>
+    <string name="work_profile_notification_access_blocked_summary" msgid="8748026238701253040">"管理員已禁止存取 Work 設定檔通知"</string>
     <string name="manage_notification_access_summary_zero" msgid="2409912785614953348">"應用程式無法讀取通知"</string>
     <plurals name="manage_notification_access_summary_nonzero" formatted="false" msgid="7930130030691218387">
       <item quantity="other">%d 個應用程式可以讀取通知</item>
@@ -2842,10 +2841,8 @@
     <string name="manage_zen_access_title" msgid="2611116122628520522">"零打擾存取權"</string>
     <string name="zen_access_empty_text" msgid="8772967285742259540">"最近沒有已安裝的應用程式要求「零打擾」存取權"</string>
     <string name="loading_notification_apps" msgid="5031818677010335895">"正在載入應用程式..."</string>
-    <!-- no translation found for app_notifications_off_desc (4882445501376722969) -->
-    <skip />
-    <!-- no translation found for channel_notifications_off_desc (5899225298718840635) -->
-    <skip />
+    <string name="app_notifications_off_desc" msgid="4882445501376722969">"Android 已設定封鎖，不讓這個應用程式的通知顯示在這個裝置上"</string>
+    <string name="channel_notifications_off_desc" msgid="5899225298718840635">"Android 已設定封鎖，不讓這個類別的通知顯示在這個裝置上"</string>
     <string name="notification_channels" msgid="5346841743182627500">"類別"</string>
     <string name="notification_channels_other" msgid="5645317113885788226">"其他"</string>
     <string name="no_channels" msgid="3077375508177744586">"這個應用程式未發佈任何通知"</string>
@@ -2866,8 +2863,7 @@
     <string name="app_notification_block_summary" msgid="4744020456943215352">"一律不顯示這類通知"</string>
     <string name="notification_content_block_title" msgid="5854232570963006360">"顯示通知"</string>
     <string name="notification_content_block_summary" msgid="7746185794438882389">"一律不在通知欄或週邊裝置上顯示通知"</string>
-    <string name="notification_badge_title" msgid="7166470350070693657">"狀態標籤應用程式圖示"</string>
-    <string name="notification_badge_summary" msgid="3944771498030335669">"在支援的 Home 應用程式上以狀態標籤形式顯示通知。"</string>
+    <string name="notification_badge_title" msgid="7734903868300369178">"允許加上狀態標籤圖示"</string>
     <string name="app_notification_override_dnd_title" msgid="7867458246395884830">"覆寫「零打擾」模式設定"</string>
     <string name="app_notification_override_dnd_summary" msgid="3516007157020189746">"當「零打擾」模式設定為「僅限優先通知」時，允許這些通知繼續干擾"</string>
     <string name="app_notification_visibility_override_title" msgid="2187232730902430718">"螢幕鎖定時"</string>

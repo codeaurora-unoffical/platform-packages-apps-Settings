@@ -331,7 +331,8 @@
     <string name="account_settings_title" msgid="626177544686329806">"መለያዎች"</string>
     <string name="security_settings_title" msgid="6134528367364159294">"ደህንነት እና አካባቢ"</string>
     <string name="encryption_and_credential_settings_title" msgid="6514904533438791561">"ምስጠራ እና ምስክርነቶች"</string>
-    <string name="encryption_and_credential_settings_summary" msgid="8721883002237981248">"ስልክ ተመስጥሯል"</string>
+    <string name="encryption_and_credential_settings_summary" product="default" msgid="8721883002237981248">"ስልክ ተመስጥሯል"</string>
+    <string name="encryption_and_credential_settings_summary" product="tablet" msgid="7200428573872395685">"መሣሪያ ተመሣጥሯል"</string>
     <string name="lockscreen_settings_title" msgid="3922976395527087455">"የማያ ገጽ ቁልፍ ምርጫዎች"</string>
     <string name="security_settings_summary" msgid="967393342537986570">"የእኔን ስፍራ፣ማያ ክፈት፣SIM ካርድ ሽንጉር፣ መረጃ ማከማቻ ሽንጉር አዘጋጅ።"</string>
     <string name="cdma_security_settings_summary" msgid="6068799952798901542">"የእኔን ስፍራ፣ማያ ክፈት፣ መረጃ ማከማቻ ሽንጉር አዘጋጅ።"</string>
@@ -1853,6 +1854,7 @@
     <string name="enable_service_title" msgid="3061307612673835592">"<xliff:g id="SERVICE">%1$s</xliff:g> ይጠቀሙ?"</string>
     <string name="capabilities_list_title" msgid="86713361724771971">"<xliff:g id="SERVICE">%1$s</xliff:g> ይህን ማድረግ አለበት፦"</string>
     <string name="touch_filtered_warning" msgid="8644034725268915030">"አንድ መተግበሪያ የፍቃድ ጥያቄ እያገደ ስለሆነ ቅንብሮች ጥያቄዎን ማረጋገጥ አይችሉም።"</string>
+    <string name="window_obscured_warning" msgid="8711643931674708175">"ሌላ መተግበሪያ በእነዚህ አማራጮች ላይ እያሳየ ስለሆነ ቅንብሮች ለእርስዎ እርምጃ ምላሽ መስጠት አይችልም።"</string>
     <string name="enable_service_encryption_warning" msgid="3064686622453974606">"<xliff:g id="SERVICE">%1$s</xliff:g>ን ካበሩት፣ መሳሪያዎ የውሂብ ምስጠራን ለማላቅ የማያ ገጽ መቆለፊያዎን አይጠቀምም።"</string>
     <string name="secure_lock_encryption_warning" msgid="460911459695077779">"አንድ የተደራሽነት አገልግሎትን ስላበሩ፣ መሳሪያዎ የውሂብ ምስጠራን ለማላቅ የማያ ገጽ መቆለፊያዎን አይጠቀምም።"</string>
     <string name="enable_service_pattern_reason" msgid="777577618063306751">"<xliff:g id="SERVICE">%1$s</xliff:g>ን ማብራት የውሂብ ምስጠራ ላይ ተጽዕኖ ስለሚያሳርፍ፣ የእርስዎን ስርዓተ-ጥለት ማረጋገጥ ያስፈልግዎታል።"</string>
@@ -2775,6 +2777,7 @@
     <string name="configure_notification_settings" msgid="7616737397127242615">"ማሳወቂያዎች"</string>
     <string name="advanced_section_header" msgid="8833934850242546903">"የላቀ"</string>
     <string name="profile_section_header" msgid="2320848161066912001">"የስራ ማሳወቂያዎች"</string>
+    <string name="notification_badging_title" msgid="5125022693565388760">"የአዶ ባጆችን ያሳዩ"</string>
     <string name="notification_pulse_title" msgid="1905382958860387030">"ብርሃን አብለጭለጭ"</string>
     <string name="lock_screen_notifications_title" msgid="6173076173408887213">"በማያ ገጽ ቁልፉ ላይ"</string>
     <string name="lock_screen_notifications_summary_show" msgid="6407527697810672847">"ሁሉንም የማሳወቂያ ይዘቶችን አሳይ"</string>
@@ -2800,10 +2803,11 @@
     <string name="notification_importance_low_title" msgid="8131254047772814309">"መካከለኛ"</string>
     <string name="notification_importance_default_title" msgid="9120383978536089489">"ከፍተኛ"</string>
     <string name="notification_importance_high_title" msgid="3058778300264746473">"አስቸኳይ"</string>
-    <string name="allow_sound" msgid="6585849855452076626">"ድምፅ ይፍቀዱ"</string>
+    <string name="allow_sound" msgid="1820188704793497324">"ድምፅ ይፍቀዱ"</string>
     <string name="show_silently_summary" msgid="7616604629123146565">"ድምፅ አታሰማ፣ አትንዘር ወይም እነዚህን ማሳወቂያዎች ወደ የአሁኑ ማያ ገጽ አታሳይ።"</string>
     <string name="default_notification_assistant" msgid="7631945224761430146">"የማሳወቂያ ረዳት"</string>
     <string name="manage_notification_access_title" msgid="7510080164564944891">"የማሳወቂያ መዳረሻ"</string>
+    <string name="work_profile_notification_access_blocked_summary" msgid="8748026238701253040">"የስራ መገለጫ ማሳወቂያዎች መዳረሻ ታግዷል"</string>
     <string name="manage_notification_access_summary_zero" msgid="2409912785614953348">"መተግበሪያዎች ማሳወቂያዎችን ማንበብ አይችሉም"</string>
     <plurals name="manage_notification_access_summary_nonzero" formatted="false" msgid="7930130030691218387">
       <item quantity="one">የ%d መተግበሪያዎች ማሳወቂያዎችን ማንበብ ይችላሉ</item>
@@ -2855,8 +2859,7 @@
     <string name="app_notification_block_summary" msgid="4744020456943215352">"እነዚህን ማሳወቂያዎች በጭራሽ አታሳይ"</string>
     <string name="notification_content_block_title" msgid="5854232570963006360">"ማሳወቂያዎች አሳይ"</string>
     <string name="notification_content_block_summary" msgid="7746185794438882389">"በጥላ ወይም በጎን ያሉ ውጫዊ መሣሪያዎች ላይ ማሳወቂያዎችን በጭራሽ አታሳይ"</string>
-    <string name="notification_badge_title" msgid="7166470350070693657">"የባጅ መተግበሪያ አዶ"</string>
-    <string name="notification_badge_summary" msgid="3944771498030335669">"በHome መተግበሪያ ላይ የሚደገፍ ከሆነ ማሳወቂያዎችን እንደ ባጆች አሳይ።"</string>
+    <string name="notification_badge_title" msgid="7734903868300369178">"የአዶ ባጅ ይፍቀዱ"</string>
     <string name="app_notification_override_dnd_title" msgid="7867458246395884830">"«አትረብሽ»ን ሻር"</string>
     <string name="app_notification_override_dnd_summary" msgid="3516007157020189746">"«አትረብሽ» ወደ ቅድሚያ ብቻ በሚቀናበርበት ጊዜ እነዚህ ማሳወቂያዎች እንዲያቋርጡ ይፍቀዱ"</string>
     <string name="app_notification_visibility_override_title" msgid="2187232730902430718">"በማያ ገጽ ቁልፉ ላይ"</string>

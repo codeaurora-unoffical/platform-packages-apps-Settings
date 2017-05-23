@@ -333,7 +333,8 @@
     <string name="account_settings_title" msgid="626177544686329806">"Konti"</string>
     <string name="security_settings_title" msgid="6134528367364159294">"Drošība un atrašanās vieta"</string>
     <string name="encryption_and_credential_settings_title" msgid="6514904533438791561">"Šifrēšana un akreditācijas dati"</string>
-    <string name="encryption_and_credential_settings_summary" msgid="8721883002237981248">"Tālrunis ir šifrēts"</string>
+    <string name="encryption_and_credential_settings_summary" product="default" msgid="8721883002237981248">"Tālrunis ir šifrēts"</string>
+    <string name="encryption_and_credential_settings_summary" product="tablet" msgid="7200428573872395685">"Ierīce ir šifrēta"</string>
     <string name="lockscreen_settings_title" msgid="3922976395527087455">"Bloķēšanas ekrāna preferences"</string>
     <string name="security_settings_summary" msgid="967393342537986570">"Manas atrašanās vietas, ekrāna atbloķēšanas, SIM kartes bloķēšanas, akreditācijas datu krātuves bloķēšanas iestatīšana"</string>
     <string name="cdma_security_settings_summary" msgid="6068799952798901542">"Manas atrašanās vietas, ekrāna atbloķēšanas, akreditācijas datu krātuves bloķēšanas iestatīšana"</string>
@@ -1873,6 +1874,7 @@
     <string name="enable_service_title" msgid="3061307612673835592">"Vai izmantot pakalpojumu <xliff:g id="SERVICE">%1$s</xliff:g>?"</string>
     <string name="capabilities_list_title" msgid="86713361724771971">"Pakalpojumam <xliff:g id="SERVICE">%1$s</xliff:g> nepieciešams:"</string>
     <string name="touch_filtered_warning" msgid="8644034725268915030">"Lietotne Iestatījumi nevar verificēt jūsu atbildi, jo cita lietotne aizsedz atļaujas pieprasījumu."</string>
+    <string name="window_obscured_warning" msgid="8711643931674708175">"Lietotne Iestatījumi nevar atbildēt uz jūsu darbību, jo cita lietotne tiek rādīta virs šīm opcijām."</string>
     <string name="enable_service_encryption_warning" msgid="3064686622453974606">"Ja ieslēgsiet pakalpojumu <xliff:g id="SERVICE">%1$s</xliff:g>, ierīce neizmantos ekrāna bloķēšanu datu šifrēšanas uzlabošanai."</string>
     <string name="secure_lock_encryption_warning" msgid="460911459695077779">"Tā kā esat ieslēdzis pieejamības pakalpojumu, ierīce neizmantos ekrāna bloķēšanu datu šifrēšanas uzlabošanai."</string>
     <string name="enable_service_pattern_reason" msgid="777577618063306751">"Tā kā pakalpojuma <xliff:g id="SERVICE">%1$s</xliff:g> ieslēgšana ietekmē datu šifrēšanu, jums ir jāapstiprina sava grafiskā atslēga."</string>
@@ -2802,6 +2804,7 @@
     <string name="configure_notification_settings" msgid="7616737397127242615">"Paziņojumi"</string>
     <string name="advanced_section_header" msgid="8833934850242546903">"Papildu"</string>
     <string name="profile_section_header" msgid="2320848161066912001">"Darba paziņojumi"</string>
+    <string name="notification_badging_title" msgid="5125022693565388760">"Atļaut ikonu emblēmas"</string>
     <string name="notification_pulse_title" msgid="1905382958860387030">"Mirgojošs gaismas signāls"</string>
     <string name="lock_screen_notifications_title" msgid="6173076173408887213">"Bloķēšanas ekrānā"</string>
     <string name="lock_screen_notifications_summary_show" msgid="6407527697810672847">"Rādīt visu saturu paziņojumos"</string>
@@ -2815,8 +2818,7 @@
     <string name="lock_screen_notifications_interstitial_message_profile" msgid="8307705621027472346">"Kā ierīcē rādīt profila paziņojumus, kad tā ir bloķēta?"</string>
     <string name="lock_screen_notifications_interstitial_title_profile" msgid="3169806586032521333">"Profila paziņojumi"</string>
     <string name="app_notifications_title" msgid="139788604658984593">"Paziņojumi"</string>
-    <!-- no translation found for notification_channel_title (2260666541030178452) -->
-    <skip />
+    <string name="notification_channel_title" msgid="2260666541030178452">"Paziņojuma kategorija"</string>
     <string name="notification_importance_title" msgid="848692592679312666">"Svarīgums"</string>
     <string name="notification_importance_unspecified" msgid="2196023702875112081">"Atkarībā no lietotnes iestatījumiem"</string>
     <string name="notification_importance_blocked" msgid="7938180808339386300">"Nekad nerādīt paziņojumus"</string>
@@ -2824,18 +2826,15 @@
     <string name="notification_importance_low" msgid="8881468429453766553">"Bez skaņas"</string>
     <string name="notification_importance_default" msgid="5958338024601957516">"Atskaņot skaņas signālu"</string>
     <string name="notification_importance_high" msgid="2082429479238228527">"Atskaņot skaņas signālu un īslaicīgi parādīt ekrānā"</string>
-    <!-- no translation found for notification_importance_min_title (6974673091137544803) -->
-    <skip />
-    <!-- no translation found for notification_importance_low_title (8131254047772814309) -->
-    <skip />
-    <!-- no translation found for notification_importance_default_title (9120383978536089489) -->
-    <skip />
-    <!-- no translation found for notification_importance_high_title (3058778300264746473) -->
-    <skip />
-    <string name="allow_sound" msgid="6585849855452076626">"Atļaut skaņu"</string>
+    <string name="notification_importance_min_title" msgid="6974673091137544803">"Mazsvarīgs"</string>
+    <string name="notification_importance_low_title" msgid="8131254047772814309">"Vidēji svarīgs"</string>
+    <string name="notification_importance_default_title" msgid="9120383978536089489">"Svarīgs"</string>
+    <string name="notification_importance_high_title" msgid="3058778300264746473">"Steidzams"</string>
+    <string name="allow_sound" msgid="1820188704793497324">"Atļaujiet skaņu"</string>
     <string name="show_silently_summary" msgid="7616604629123146565">"Nerādīt šos paziņojumus pašreizējā ekrāna skatā, kā arī neatskaņot to skaņas signālu un nevibrēt"</string>
     <string name="default_notification_assistant" msgid="7631945224761430146">"Paziņojumu palīgs"</string>
     <string name="manage_notification_access_title" msgid="7510080164564944891">"Piekļuve paziņojumiem"</string>
+    <string name="work_profile_notification_access_blocked_summary" msgid="8748026238701253040">"Piekļuve darba profila paziņojumiem ir bloķēta"</string>
     <string name="manage_notification_access_summary_zero" msgid="2409912785614953348">"Lietotnēs nevar lasīt paziņojumus."</string>
     <plurals name="manage_notification_access_summary_nonzero" formatted="false" msgid="7930130030691218387">
       <item quantity="zero">%d lietotnēs var lasīt paziņojumus</item>
@@ -2866,10 +2865,8 @@
     <string name="manage_zen_access_title" msgid="2611116122628520522">"Piekļuve pie “Netraucēt”"</string>
     <string name="zen_access_empty_text" msgid="8772967285742259540">"Nevienā instalētajā lietotnē nav pieprasīta piekļuve režīmam “Netraucēt”."</string>
     <string name="loading_notification_apps" msgid="5031818677010335895">"Notiek lietotņu ielāde..."</string>
-    <!-- no translation found for app_notifications_off_desc (4882445501376722969) -->
-    <skip />
-    <!-- no translation found for channel_notifications_off_desc (5899225298718840635) -->
-    <skip />
+    <string name="app_notifications_off_desc" msgid="4882445501376722969">"Android neatļauj šīs lietotnes paziņojumu rādīšanu šajā ierīcē"</string>
+    <string name="channel_notifications_off_desc" msgid="5899225298718840635">"Android neatļauj šīs kategorijas paziņojumu rādīšanu šajā ierīcē"</string>
     <string name="notification_channels" msgid="5346841743182627500">"Kategorijas"</string>
     <string name="notification_channels_other" msgid="5645317113885788226">"Cits"</string>
     <string name="no_channels" msgid="3077375508177744586">"Šai lietotnei nav neviena paziņojuma."</string>
@@ -2892,8 +2889,7 @@
     <string name="app_notification_block_summary" msgid="4744020456943215352">"Nekad nerādīt šos paziņojumus"</string>
     <string name="notification_content_block_title" msgid="5854232570963006360">"Rādīt paziņojumus"</string>
     <string name="notification_content_block_summary" msgid="7746185794438882389">"Nekad nerādīt paziņojumus panelī vai perifērijas ierīcēs"</string>
-    <string name="notification_badge_title" msgid="7166470350070693657">"Emblēmas lietotnes ikona"</string>
-    <string name="notification_badge_summary" msgid="3944771498030335669">"Ja tiek atbalstīts, rādīt paziņojumus kā emblēmas lietotnē Sākums."</string>
+    <string name="notification_badge_title" msgid="7734903868300369178">"Atļaut ikonas emblēmu"</string>
     <string name="app_notification_override_dnd_title" msgid="7867458246395884830">"Ignorēt režīmu “Netraucēt”"</string>
     <string name="app_notification_override_dnd_summary" msgid="3516007157020189746">"Ļaut šiem paziņojumiem pārtraukt arī turpmāk, ja režīms “Netraucēt” ir iestatīts uz “Tikai prioritārie”"</string>
     <string name="app_notification_visibility_override_title" msgid="2187232730902430718">"Bloķēšanas ekrānā"</string>
@@ -3641,7 +3637,7 @@
     <string name="storage_manager_indicator" msgid="1516810749625915020">"Krātuves pārvaldnieks: <xliff:g id="STATUS">^1</xliff:g>"</string>
     <string name="storage_manager_indicator_off" msgid="7488057587180724388">"Izslēgts"</string>
     <string name="storage_manager_indicator_on" msgid="8625551710194584733">"Ieslēgts"</string>
-    <string name="install_type_instant" msgid="3174425974536078647">"Tūlītēja lietotne"</string>
+    <string name="install_type_instant" msgid="3174425974536078647">"Tūlītējā lietotne"</string>
     <string name="automatic_storage_manager_deactivation_warning" msgid="5605210730828410482">"Vai izslēgt krātuves pārvaldnieku?"</string>
     <string name="storage_movies_tv" msgid="5498394447562086890">"Filmu un TV pārraižu lietotnes"</string>
     <string name="app_info_storage_title" msgid="5554719444625611987">"Izmantotā vieta krātuvē"</string>
