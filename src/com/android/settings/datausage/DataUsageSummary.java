@@ -28,6 +28,7 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.os.ServiceManager;
 import android.os.SystemProperties;
 import android.os.UserManager;
 import android.provider.SearchIndexableResource;
@@ -43,6 +44,7 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.text.style.RelativeSizeSpan;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -59,6 +61,8 @@ import com.android.settingslib.net.DataUsageController;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.codeaurora.internal.IExtTelephony;
+
 import static android.net.ConnectivityManager.TYPE_ETHERNET;
 import static android.net.ConnectivityManager.TYPE_WIFI;
 import static android.net.NetworkPolicy.LIMIT_DISABLED;
@@ -71,10 +75,12 @@ public class DataUsageSummary extends DataUsageBase implements Indexable, DataUs
     public static final boolean TEST_RADIOS = false;
     public static final String TEST_RADIOS_PROP = "test.radios";
 
+    public static final String KEY_RESTRICT_BACKGROUND = "restrict_background";
+    public static final String KEY_NETWORK_RESTRICTIONS = "network_restrictions";
+
     private static final String KEY_STATUS_HEADER = "status_header";
     private static final String KEY_LIMIT_SUMMARY = "limit_summary";
-    private static final String KEY_RESTRICT_BACKGROUND = "restrict_background";
-    private static final String KEY_NETWORK_RESTRICTIONS = "network_restrictions";
+    private static final String KEY_WIFI_USAGE_TITLE = "wifi_category";
 
     private DataUsageController mDataUsageController;
     private DataUsageInfoController mDataInfoController;
@@ -158,8 +164,26 @@ public class DataUsageSummary extends DataUsageBase implements Indexable, DataUs
         switch (item.getItemId()) {
             case R.id.data_usage_menu_cellular_networks: {
                 final Intent intent = new Intent(Intent.ACTION_MAIN);
-                intent.setComponent(new ComponentName("com.android.phone",
-                        "com.android.phone.MobileNetworkSettings"));
+                IExtTelephony extTelephony =
+                        IExtTelephony.Stub.asInterface(ServiceManager.getService("extphone"));
+                try {
+                    if (extTelephony != null &&
+                            extTelephony.isVendorApkAvailable("com.qualcomm.qti.networksetting")) {
+                        // prepare intent to start qti MobileNetworkSettings activity
+                        intent.setComponent(new ComponentName("com.qualcomm.qti.networksetting",
+                                "com.qualcomm.qti.networksetting.MobileNetworkSettings"));
+                    } else {
+                        // vendor MobileNetworkSettings not available, launch the default activity
+                        Log.d(TAG, "vendor MobileNetworkSettings is not available");
+                        intent.setComponent(new ComponentName("com.android.phone",
+                                "com.android.phone.MobileNetworkSettings"));
+                    }
+                } catch (RemoteException e) {
+                    // could not connect to extphone service, launch the default activity
+                    Log.d(TAG, "couldn't connect to extphone service, launch the default activity");
+                    intent.setComponent(new ComponentName("com.android.phone",
+                            "com.android.phone.MobileNetworkSettings"));
+                }
                 startActivity(intent);
                 return true;
             }
@@ -464,7 +488,7 @@ public class DataUsageSummary extends DataUsageBase implements Indexable, DataUs
             @Override
             public List<SearchIndexableResource> getXmlResourcesToIndex(Context context,
                     boolean enabled) {
-                ArrayList<SearchIndexableResource> resources = new ArrayList<>();
+                List<SearchIndexableResource> resources = new ArrayList<>();
                 SearchIndexableResource resource = new SearchIndexableResource(context);
                 resource.xmlResId = R.xml.data_usage;
                 resources.add(resource);
@@ -484,13 +508,15 @@ public class DataUsageSummary extends DataUsageBase implements Indexable, DataUs
 
             @Override
             public List<String> getNonIndexableKeys(Context context) {
-                ArrayList<String> keys = new ArrayList<>();
-                boolean hasMobileData = ConnectivityManager.from(context).isNetworkSupported(
-                        ConnectivityManager.TYPE_MOBILE);
+                List<String> keys = super.getNonIndexableKeys(context);
 
-                if (hasMobileData) {
+                if (hasMobileData(context)) {
                     keys.add(KEY_RESTRICT_BACKGROUND);
                 }
+                if (hasWifiRadio(context)) {
+                    keys.add(KEY_NETWORK_RESTRICTIONS);
+                }
+                keys.add(KEY_WIFI_USAGE_TITLE);
 
                 return keys;
             }

@@ -69,8 +69,7 @@ public class PowerUsageAdvanced extends PowerUsageBase {
             UsageType.UNACCOUNTED,
             UsageType.OVERCOUNTED};
 
-    @VisibleForTesting
-    BatteryUtils mBatteryUtils;
+    private BatteryUtils mBatteryUtils;
     private BatteryHistoryPreference mHistPref;
     private PreferenceGroup mUsageListGroup;
     private PowerUsageFeatureProvider mPowerUsageFeatureProvider;
@@ -126,7 +125,6 @@ public class PowerUsageAdvanced extends PowerUsageBase {
     @Override
     public void onResume() {
         super.onResume();
-        refreshStats();
     }
 
     @Override
@@ -165,8 +163,11 @@ public class PowerUsageAdvanced extends PowerUsageBase {
     }
 
     @Override
-    protected void refreshStats() {
-        super.refreshStats();
+    protected void refreshUi() {
+        final Context context = getContext();
+        if (context == null) {
+            return;
+        }
 
         updatePreference(mHistPref);
 
@@ -256,8 +257,10 @@ public class PowerUsageAdvanced extends PowerUsageBase {
         final List<PowerUsageData> batteryDataList = new ArrayList<>(batteryDataMap.values());
         final int dischargeAmount = statusHelper.getStats().getDischargeAmount(STATUS_TYPE);
         final double totalPower = statusHelper.getTotalPower();
+        final double hiddenPower = calculateHiddenPower(batteryDataList);
         for (final PowerUsageData usageData : batteryDataList) {
-            usageData.percentage = (usageData.totalPowerMah / totalPower) * dischargeAmount;
+            usageData.percentage = mBatteryUtils.calculateBatteryPercent(usageData.totalPowerMah,
+                    totalPower, hiddenPower, dischargeAmount);
             updateUsageDataSummary(usageData, totalPower, dischargeAmount);
         }
 
@@ -268,6 +271,17 @@ public class PowerUsageAdvanced extends PowerUsageBase {
     }
 
     @VisibleForTesting
+    double calculateHiddenPower(List<PowerUsageData> batteryDataList) {
+        for (final PowerUsageData usageData : batteryDataList) {
+            if (usageData.usageType == UsageType.UNACCOUNTED) {
+                return usageData.totalPowerMah;
+            }
+        }
+
+        return 0;
+    }
+
+    @VisibleForTesting
     void updateUsageDataSummary(PowerUsageData usageData, double totalPower, int dischargeAmount) {
         if (shouldHideSummary(usageData)) {
             return;
@@ -275,8 +289,8 @@ public class PowerUsageAdvanced extends PowerUsageBase {
         if (usageData.usageList.size() <= 1) {
             CharSequence timeSequence = Utils.formatElapsedTime(getContext(),
                     usageData.totalUsageTimeMs, false);
-            usageData.summary = TextUtils.expandTemplate(getText(R.string.battery_used_for),
-                    timeSequence);
+            usageData.summary = usageData.usageType == UsageType.IDLE ? timeSequence
+                    : TextUtils.expandTemplate(getText(R.string.battery_used_for), timeSequence);
         } else {
             BatterySipper sipper = findBatterySipperWithMaxBatteryUsage(usageData.usageList);
             BatteryEntry batteryEntry = new BatteryEntry(getContext(), mHandler, mUserManager,
@@ -291,7 +305,9 @@ public class PowerUsageAdvanced extends PowerUsageBase {
     boolean shouldHideSummary(PowerUsageData powerUsageData) {
         @UsageType final int usageType = powerUsageData.usageType;
 
-        return usageType == UsageType.CELL;
+        return usageType == UsageType.CELL
+                || usageType == UsageType.BLUETOOTH
+                || usageType == UsageType.WIFI;
     }
 
     @VisibleForTesting
@@ -319,6 +335,10 @@ public class PowerUsageAdvanced extends PowerUsageBase {
     @VisibleForTesting
     void setUserManager(UserManager userManager) {
         mUserManager = userManager;
+    }
+    @VisibleForTesting
+    void setBatteryUtils(BatteryUtils batteryUtils) {
+        mBatteryUtils = batteryUtils;
     }
 
     /**

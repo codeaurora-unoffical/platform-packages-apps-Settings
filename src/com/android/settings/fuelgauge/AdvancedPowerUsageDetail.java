@@ -28,7 +28,6 @@ import android.os.UserManager;
 import android.support.annotation.VisibleForTesting;
 import android.support.v14.preference.PreferenceFragment;
 import android.support.v7.preference.Preference;
-import android.text.TextUtils;
 import android.view.View;
 
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
@@ -41,9 +40,11 @@ import com.android.settings.Utils;
 import com.android.settings.applications.AppHeaderController;
 import com.android.settings.applications.LayoutPreference;
 import com.android.settings.core.PreferenceController;
+import com.android.settings.dashboard.DashboardFragment;
 import com.android.settings.enterprise.DevicePolicyManagerWrapper;
 import com.android.settings.enterprise.DevicePolicyManagerWrapperImpl;
 import com.android.settings.overlay.FeatureFactory;
+import com.android.settingslib.applications.AppUtils;
 import com.android.settingslib.applications.ApplicationsState;
 
 import java.util.ArrayList;
@@ -56,7 +57,7 @@ import java.util.List;
  * 2. Battery related controls for app(i.e uninstall, force stop)
  *
  */
-public class AdvancedPowerUsageDetail extends PowerUsageBase implements
+public class AdvancedPowerUsageDetail extends DashboardFragment implements
         ButtonActionDialogFragment.AppButtonsDialogListener {
 
     public static final String TAG = "AdvancedPowerUsageDetail";
@@ -126,6 +127,17 @@ public class AdvancedPowerUsageDetail extends PowerUsageBase implements
         args.putLong(EXTRA_FOREGROUND_TIME, foregroundTimeMs);
         args.putString(EXTRA_POWER_USAGE_PERCENT, usagePercent);
         args.putInt(EXTRA_POWER_USAGE_AMOUNT, (int) sipper.totalPowerMah);
+
+        caller.startPreferencePanelAsUser(fragment, AdvancedPowerUsageDetail.class.getName(), args,
+                R.string.battery_details_title, null,
+                new UserHandle(UserHandle.getUserId(sipper.getUid())));
+    }
+
+    public static void startBatteryDetailPage(SettingsActivity caller, PreferenceFragment fragment,
+            String packageName) {
+        final Bundle args = new Bundle(2);
+        args.putString(EXTRA_PACKAGE_NAME, packageName);
+        args.putString(EXTRA_POWER_USAGE_PERCENT, Utils.formatPercentage(0));
 
         caller.startPreferencePanelAsUser(fragment, AdvancedPowerUsageDetail.class.getName(), args,
                 R.string.battery_details_title, null, new UserHandle(UserHandle.myUserId()));
@@ -201,7 +213,11 @@ public class AdvancedPowerUsageDetail extends PowerUsageBase implements
             mState.ensureIcon(mAppEntry);
             controller.setLabel(mAppEntry);
             controller.setIcon(mAppEntry);
-            controller.setSummary(getString(Utils.getInstallationStatus(mAppEntry.info)));
+            boolean isInstantApp = AppUtils.isInstant(mAppEntry.info);
+            CharSequence summary = isInstantApp
+                    ? null : getString(Utils.getInstallationStatus(mAppEntry.info));
+            controller.setIsInstantApp(AppUtils.isInstant(mAppEntry.info));
+            controller.setSummary(summary);
         }
 
         controller.done(context, true /* rebindActions */);

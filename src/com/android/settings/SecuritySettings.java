@@ -16,6 +16,9 @@
 
 package com.android.settings;
 
+import static android.provider.Settings.System.SCREEN_OFF_TIMEOUT;
+import static com.android.settingslib.RestrictedLockUtils.EnforcedAdmin;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -33,6 +36,7 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.os.UserHandle;
 import android.os.UserManager;
+import android.os.storage.StorageManager;
 import android.provider.SearchIndexableResource;
 import android.provider.Settings;
 import android.service.trust.TrustAgentService;
@@ -47,7 +51,6 @@ import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
-import android.util.ArrayMap;
 import android.util.Log;
 
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
@@ -72,16 +75,9 @@ import com.android.settings.widget.GearPreference;
 import com.android.settingslib.RestrictedLockUtils;
 import com.android.settingslib.RestrictedPreference;
 import com.android.settingslib.drawer.CategoryKey;
-import com.android.settingslib.drawer.DashboardCategory;
-import com.android.settingslib.drawer.Tile;
-import com.android.settingslib.drawer.TileUtils;
 
 import java.util.ArrayList;
-import java.util.concurrent.Executors;
 import java.util.List;
-
-import static android.provider.Settings.System.SCREEN_OFF_TIMEOUT;
-import static com.android.settingslib.RestrictedLockUtils.EnforcedAdmin;
 
 /**
  * Gesture lock pattern settings.
@@ -106,6 +102,8 @@ public class SecuritySettings extends SettingsPreferenceFragment
     private static final String KEY_UNIFICATION = "unification";
     @VisibleForTesting
     static final String KEY_LOCKSCREEN_PREFERENCES = "lockscreen_preferences";
+    private static final String KEY_ENCRYPTION_AND_CREDENTIALS = "encryption_and_credential";
+    private static final String KEY_LOCATION_SCANNING  = "location_scanning";
 
     private static final int SET_OR_CHANGE_LOCK_METHOD_REQUEST = 123;
     private static final int CHANGE_TRUST_AGENT_SETTINGS = 126;
@@ -622,6 +620,18 @@ public class SecuritySettings extends SettingsPreferenceFragment
     public boolean onPreferenceTreeClick(Preference preference) {
         final String key = preference.getKey();
         if (KEY_UNLOCK_SET_OR_CHANGE.equals(key)) {
+            // TODO(b/35930129): Remove once existing password can be passed into vold directly.
+            // Currently we need this logic to ensure that the QUIET_MODE is off for any work
+            // profile with unified challenge on FBE-enabled devices. Otherwise, vold would not be
+            // able to complete the operation due to the lack of (old) encryption key.
+            if (mProfileChallengeUserId != UserHandle.USER_NULL
+                    && !mLockPatternUtils.isSeparateProfileChallengeEnabled(mProfileChallengeUserId)
+                    && StorageManager.isFileEncryptedNativeOnly()) {
+                if (Utils.startQuietModeDialogIfNecessary(this.getActivity(), mUm,
+                        mProfileChallengeUserId)) {
+                    return false;
+                }
+            }
             startFragment(this, "com.android.settings.ChooseLockGeneric$ChooseLockGenericFragment",
                     R.string.lock_settings_picker_title, SET_OR_CHANGE_LOCK_METHOD_REQUEST, null);
         } else if (KEY_UNLOCK_SET_OR_CHANGE_PROFILE.equals(key)) {
@@ -922,7 +932,7 @@ public class SecuritySettings extends SettingsPreferenceFragment
 
         @Override
         public List<String> getNonIndexableKeys(Context context) {
-            final List<String> keys = new ArrayList<String>();
+            final List<String> keys = super.getNonIndexableKeys(context);
 
             LockPatternUtils lockPatternUtils = new LockPatternUtils(context);
 
@@ -943,6 +953,14 @@ public class SecuritySettings extends SettingsPreferenceFragment
                     .isAvailable()) {
                 keys.add(KEY_ENTERPRISE_PRIVACY);
             }
+
+            // Duplicate in special app access
+            keys.add(KEY_MANAGE_DEVICE_ADMIN);
+            // Duplicates between parent-child
+            keys.add((new LocationPreferenceController(context)).getPreferenceKey());
+            keys.add(KEY_ENCRYPTION_AND_CREDENTIALS);
+            keys.add(KEY_SCREEN_PINNING);
+            keys.add(KEY_LOCATION_SCANNING);
 
             return keys;
         }

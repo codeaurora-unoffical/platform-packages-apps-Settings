@@ -747,7 +747,9 @@
     <!-- Security Settings screen setting option title for the item to take you to the encryption and credential screen -->
     <string name="encryption_and_credential_settings_title">Encryption &amp; credentials</string>
     <!-- Security Settings screen Encryption and crendential summary -->
-    <string name="encryption_and_credential_settings_summary">Phone encrypted</string>
+    <string name="encryption_and_credential_settings_summary" product="default">Phone encrypted</string>
+    <!-- Security Settings screen Encryption and crendential summary -->
+    <string name="encryption_and_credential_settings_summary" product="tablet">Device encrypted</string>
     <!-- Security Settings screen setting option title for the item to take you to the lock screen preference screen [CHAR LIMIT=60] -->
     <string name="lockscreen_settings_title">Lock screen preferences</string>
 
@@ -2124,6 +2126,9 @@
     <string name="sound_settings">Sound</string>
     <!-- DO NOT TRANSLATE Summary placeholder -->
     <string name="summary_placeholder" translatable="false">&#160;</string>
+    <!-- DO NOT TRANSLATE Summary placeholder reserving 2 lines -->
+    <string name="summary_two_lines_placeholder" translatable="false">&#160;\n&#160;</string>
+
     <!-- DO NOT TRANSLATE Empty summary for dynamic preferences -->
     <string name="summary_empty" translatable="false"></string>
     <!-- Sound settings screen, volume title -->
@@ -3933,8 +3938,6 @@
     <!-- Summary text for keyboards when no layout has been selected. [CHAR LIMIT=35] -->
     <string name="default_keyboard_layout">Default</string>
 
-    <!-- On Languages & input settings screen, heading. Inside the "Languages & input settings" screen, this is the header for settings that relate to mouse and trackpad devices. [CHAR LIMIT=40] -->
-    <string name="pointer_settings_category">Mouse/trackpad</string>
     <!-- On Languages & input settings screen, setting summary.  Setting for mouse pointer speed. [CHAR LIMIT=35] -->
     <string name="pointer_speed">Pointer speed</string>
 
@@ -4478,6 +4481,8 @@
     <string name="power_last_full_charge_summary"><xliff:g id="time">^1</xliff:g> ago</string>
     <!-- Label for list of apps using battery in power use UI. Note: ^1 should be used in all translations[CHAR_LIMIT=120] -->
     <string name="power_usage_list_summary">App usage since full charge (<xliff:g id="time">^1</xliff:g> ago)</string>
+    <!-- Label for device components using battery in power use UI. Note: ^1 should be used in all translations[CHAR_LIMIT=120] -->
+    <string name="power_usage_list_summary_device">Device usage since full charge (<xliff:g id="time">^1</xliff:g> ago)</string>
     <!-- Description for the screen usage item [CHAR_LIMIT=120] -->
     <string name="screen_usage_summary">Amount of time screen has been on since full charge</string>
     <!-- Label for list of different types using battery in power use UI [CHAR_LIMIT=60] -->
@@ -4678,6 +4683,8 @@
 
     <!-- Description for battery usage time for an app, i.e. Used for 30min. Note: ^1 should be used in all translations [CHAR LIMIT=60] -->
     <string name="battery_used_for">Used for <xliff:g id="time">^1</xliff:g></string>
+    <!-- Description for battery screen usage time for an app, i.e. Screen usage 30min. Note: ^1 should be used in all translations [CHAR LIMIT=60] -->
+    <string name="battery_screen_usage">Screen usage <xliff:g id="time">^1</xliff:g></string>
     <!-- Description for battery usage info for an app, i.e. 60% used by facebook. [CHAR LIMIT=60] -->
     <string name="battery_used_by"><xliff:g id="percent">%1$s</xliff:g> used by <xliff:g id="app">%2$s</xliff:g></string>
     <!-- Description for percentage of battery usage for an app, i.e. Screen: 30% of overall battery. [CHAR LIMIT=60] -->
@@ -4845,8 +4852,6 @@
     <string name="voice_search_settings_title">Voice search</string>
     <!-- Title of keyboard settings list item within voice input/output settings -->
     <string name="keyboard_settings_title">Android keyboard</string>
-    <!-- Title for the 'voice input' category of voice input/output settings -->
-    <string name="voice_category">Speech</string>
 
     <!-- Voice input settings --><skip />
     <!-- [CHAR_LIMIT=NONE] Name of the settings item to open the voice input settings. -->
@@ -6509,6 +6514,9 @@
     <!-- Configure Notifications: Work profile section header [CHAR LIMIT=30] -->
     <string name="profile_section_header">Work notifications</string>
 
+    <!-- Configure Notifications: Title for the notification badging option. [CHAR LIMIT=30 BACKUP_MESSAGE_ID=5125022693565388760] -->
+    <string name="notification_badging_title">Allow notification dots</string>
+
     <!-- Configure Notifications: Title for the pulse notification light option. [CHAR LIMIT=30] -->
     <string name="notification_pulse_title">Blink light</string>
 
@@ -6558,7 +6566,10 @@
     <!-- Notification Settings: Title for the option managing notifications per application. [CHAR LIMIT=30] -->
     <string name="app_notifications_title">Notifications</string>
 
-    <!-- [CHAR LIMIT=100] Notification importance slider title -->
+    <!-- [CHAR LIMIT=100] Notification channel title -->
+    <string name="notification_channel_title">Notification category</string>
+
+    <!-- [CHAR LIMIT=100] Notification importance screen title -->
     <string name="notification_importance_title">Importance</string>
 
     <!-- [CHAR LIMIT=100] Notification Importance: unspecified importance level description -->
@@ -6566,6 +6577,12 @@
 
     <!-- [CHAR LIMIT=100] Notification Importance: blocked importance level description -->
     <string name="notification_importance_blocked">Never show notifications</string>
+
+    <!-- [CHAR LIMIT=100] Notification Importance template for the channel importance summary -->
+    <string name="notification_importance_divider" translatable="false"><xliff:g id="importance_title">%1$s</xliff:g>: <xliff:g id="importance_summary">%2$s</xliff:g></string>
+
+    <!-- Importance title strings for the Importance page. Also the second part of the importance
+     summary on the channel page-->
 
     <!-- [CHAR LIMIT=100] Notification Importance: min importance level description -->
     <string name="notification_importance_min">No sound or visual interruption</string>
@@ -6579,20 +6596,23 @@
     <!-- [CHAR LIMIT=100] Notification Importance: high importance level description -->
     <string name="notification_importance_high">Make sound and pop on screen</string>
 
-    <!-- [CHAR LIMIT=100] Notification Importance summary: min importance level description -->
-    <string name="notification_importance_min_summary">Low: No sound or visual interruption</string>
+    <!-- Importance title strings for the Importance page. Also the first part of the importance
+     summary on the channel page-->
 
-    <!-- [CHAR LIMIT=100] Notification Importance summary: low importance level description -->
-    <string name="notification_importance_low_summary">Medium: No sound</string>
+    <!-- [CHAR LIMIT=100] Notification Importance title: min importance level title -->
+    <string name="notification_importance_min_title">Low</string>
 
-    <!-- [CHAR LIMIT=100] Notification Importance summary: normal importance level description -->
-    <string name="notification_importance_default_summary">High: Make sound</string>
+    <!-- [CHAR LIMIT=100] Notification Importance title: low importance level title -->
+    <string name="notification_importance_low_title">Medium</string>
 
-    <!-- [CHAR LIMIT=100] Notification Importance summary: high importance level description -->
-    <string name="notification_importance_high_summary">Urgent: Make sound and pop on screen</string>
+    <!-- [CHAR LIMIT=100] Notification Importance title: normal importance level title -->
+    <string name="notification_importance_default_title">High</string>
 
-    <!-- [CHAR LIMIT=40] Notification importance title -->
-    <string name="allow_sound">Allow Sound</string>
+    <!-- [CHAR LIMIT=100] Notification Importance title: high importance level title -->
+    <string name="notification_importance_high_title">Urgent</string>
+
+    <!-- [CHAR LIMIT=40 BACKUP_MESSAGE_ID:6585849855452076626] Notification importance title -->
+    <string name="allow_sound">Allow sound</string>
 
     <!-- [CHAR LIMIT=180] Notification importance summary -->
     <string name="show_silently_summary">Don\'t make sound, vibrate, or peek these notifications into view on the current screen.</string>
@@ -6602,6 +6622,10 @@
 
     <!-- Sound & notification > Advanced section: Title for managing notification listeners option. [CHAR LIMIT=30] -->
     <string name="manage_notification_access_title">Notification access</string>
+
+    <!-- Notification Access section: Indicates that the work profile admin doesn't allow this
+         notification listener to access work profile notifications [CHAR LIMIT=100] -->
+    <string name="work_profile_notification_access_blocked_summary">Access to work profile notifications is blocked</string>
 
     <!-- Summary of preference to manage notification listeners, when none are enabled -->
     <string name="manage_notification_access_summary_zero">Apps cannot read notifications</string>
@@ -6694,6 +6718,12 @@
     <!-- [CHAR LIMIT=NONE] Text when loading app list in notification settings -->
     <string name="loading_notification_apps">Loading apps...</string>
 
+    <!-- [CHAR LIMIT=NONE] Text appearing when app notifications are off -->
+    <string name="app_notifications_off_desc">Android is blocking this app\'s notifications from appearing on this device</string>
+
+    <!-- [CHAR LIMIT=NONE] Text appearing when channel notifications are off -->
+    <string name="channel_notifications_off_desc">Android is blocking this category of notifications from appearing on this device</string>
+
     <!-- [CHAR LIMIT=NONE] App notification settings: channels title -->
     <string name="notification_channels">Categories</string>
 
@@ -6720,9 +6750,6 @@
         <item quantity="other"><xliff:g id="count" example="10">%d</xliff:g> categories deleted</item>
     </plurals>
 
-    <!-- [CHAR LIMIT=45\ Global notification badge setting -->
-    <string name="notification_badges">Notification badges</string>
-
     <!-- [CHAR LIMIT=NONE] App notification settings: notifications enabled-->
     <string name="notification_toggle_on">On</string>
 
@@ -6741,11 +6768,11 @@
     <!-- [CHAR LIMIT=NONE] Channel notification settings: Block option description-->
     <string name="notification_content_block_summary">Never show notifications in the shade or on peripheral devices</string>
 
-    <!-- [CHAR LIMIT=NONE] Channel notification settings: Badging option title -->
-    <string name="notification_badge_title">Badge app icon</string>
+    <!-- [CHAR LIMIT=NONE BACKUP_MESSAGE_ID:7166470350070693657] App notification settings: Badging option title -->
+    <string name="notification_badge_title">Allow notification dot</string>
 
-    <!-- [CHAR LIMIT=NONE] Channel notification settings: Badge option description-->
-    <string name="notification_badge_summary">Show notifications as badges on the Home app, if supported.</string>
+    <!-- [CHAR LIMIT=NONE BACKUP_MESSAGE_ID:7166470350070693657] Channel notification settings: Badging option title -->
+    <string name="notification_channel_badge_title">Show notification dot</string>
 
     <!-- [CHAR LIMIT=NONE] App notification settings: Override DND option title -->
     <string name="app_notification_override_dnd_title">Override Do Not Disturb</string>
@@ -7369,11 +7396,11 @@
     <!-- Label for menu to launch a screen showing usage alerts for battery [CHAR LIMIT=30] -->
     <string name="additional_battery_info">Usage alerts</string>
 
-    <!-- Label for menu to show all apps in battery settings [CHAR LIMIT=30] -->
-    <string name="show_all_apps">Show all apps</string>
+    <!-- Label for menu to show battery usage in the device [CHAR LIMIT=45] -->
+    <string name="show_all_apps">Show full device usage</string>
 
-    <!-- Label for menu to hide extra apps in battery settings [CHAR LIMIT=30] -->
-    <string name="hide_extra_apps">Hide extra apps</string>
+    <!-- Label for menu to show app usage [CHAR LIMIT=30] -->
+    <string name="hide_extra_apps">Show app usage</string>
 
     <!-- Filter for apps allowed to use a lot of power [CHAR LIMIT=25] -->
     <string name="high_power_filter_on">Not optimized</string>
@@ -8589,10 +8616,6 @@
 
     <!-- Preference label for the Files storage section. [CHAR LIMIT=50] -->
     <string name="storage_files">Files</string>
-
-    <!-- Main settings screen item's title to go into the storage settings screen [CHAR LIMIT=25] -->
-    <string name="storage_settings_2" product="tablet">Tablet storage</string>
-    <string name="storage_settings_2" product="default">Phone storage</string>
 
     <!-- Summary of a single storage volume used space. [CHAR LIMIT=24] -->
     <string name="storage_size_large_alternate"><xliff:g id="number" example="128">^1</xliff:g><small> <xliff:g id="unit" example="KB">^2</xliff:g></small></string>

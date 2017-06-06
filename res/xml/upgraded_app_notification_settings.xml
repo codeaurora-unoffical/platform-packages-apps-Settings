@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2014 The Android Open Source Project
+<!-- Copyright (C) 2017 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -15,22 +15,12 @@
 -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:settings="http://schemas.android.com/apk/res/com.android.settings"
-        android:title="@string/app_notifications_title"
-        android:key="app_notification_settings">
-    <!-- Block -->
-    <com.android.settingslib.RestrictedSwitchPreference
-        android:key="block"
-        android:title="@string/app_notification_block_title"
-        android:summary="@string/app_notification_block_summary"
-        settings:useAdditionalSummary="true"
-        settings:restrictedSwitchSummary="@string/enabled_by_admin" />
+        xmlns:settings="http://schemas.android.com/apk/res/com.android.settings">
 
     <!-- Show badge -->
     <com.android.settingslib.RestrictedSwitchPreference
         android:key="badge"
         android:title="@string/notification_badge_title"
-        android:summary="@string/notification_badge_summary"
         settings:useAdditionalSummary="true"
         settings:restrictedSwitchSummary="@string/enabled_by_admin" />
 

@@ -18,9 +18,16 @@ package com.android.settings.network;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothPan;
 import android.bluetooth.BluetoothProfile;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.database.ContentObserver;
 import android.net.ConnectivityManager;
+import android.net.Uri;
+import android.os.Handler;
 import android.os.UserHandle;
+import android.provider.Settings;
 import android.support.annotation.VisibleForTesting;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceScreen;
@@ -31,6 +38,8 @@ import com.android.settings.core.PreferenceController;
 import com.android.settings.core.lifecycle.Lifecycle;
 import com.android.settings.core.lifecycle.LifecycleObserver;
 import com.android.settings.core.lifecycle.events.OnDestroy;
+import com.android.settings.core.lifecycle.events.OnPause;
+import com.android.settings.core.lifecycle.events.OnResume;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -39,7 +48,7 @@ import static com.android.settingslib.RestrictedLockUtils.checkIfRestrictionEnfo
 import static com.android.settingslib.RestrictedLockUtils.hasBaseUserRestriction;
 
 public class TetherPreferenceController extends PreferenceController
-        implements LifecycleObserver, OnDestroy {
+        implements LifecycleObserver, OnResume, OnPause, OnDestroy {
 
     private static final String KEY_TETHER_SETTINGS = "tether_settings";
 
@@ -47,7 +56,6 @@ public class TetherPreferenceController extends PreferenceController
     private final AtomicReference<BluetoothPan> mBluetoothPan;
     private final ConnectivityManager mConnectivityManager;
     private final BluetoothAdapter mBluetoothAdapter;
-
     private final BluetoothProfile.ServiceListener mBtProfileServiceListener =
             new android.bluetooth.BluetoothProfile.ServiceListener() {
                 public void onServiceConnected(int profile, BluetoothProfile proxy) {
@@ -60,7 +68,9 @@ public class TetherPreferenceController extends PreferenceController
                 }
             };
 
+    private SettingObserver mAirplaneModeObserver;
     private Preference mPreference;
+    private TetherBroadcastReceiver mTetherReceiver;
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     TetherPreferenceController() {
@@ -121,6 +131,30 @@ public class TetherPreferenceController extends PreferenceController
     }
 
     @Override
+    public void onResume() {
+        if (mAirplaneModeObserver == null) {
+            mAirplaneModeObserver = new SettingObserver();
+        }
+        if (mTetherReceiver == null) {
+            mTetherReceiver = new TetherBroadcastReceiver();
+        }
+        mContext.registerReceiver(
+            mTetherReceiver, new IntentFilter(ConnectivityManager.ACTION_TETHER_STATE_CHANGED));
+        mContext.getContentResolver()
+                .registerContentObserver(mAirplaneModeObserver.uri, false, mAirplaneModeObserver);
+    }
+
+    @Override
+    public void onPause() {
+        if (mAirplaneModeObserver != null) {
+            mContext.getContentResolver().unregisterContentObserver(mAirplaneModeObserver);
+        }
+        if (mTetherReceiver != null) {
+            mContext.unregisterReceiver(mTetherReceiver);
+        }
+    }
+
+    @Override
     public void onDestroy() {
         final BluetoothProfile profile = mBluetoothPan.getAndSet(null);
         if (profile != null && mBluetoothAdapter != null) {
@@ -128,7 +162,7 @@ public class TetherPreferenceController extends PreferenceController
         }
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void updateSummary() {
         if (mPreference == null) {
             // Preference is not ready yet.
@@ -182,5 +216,48 @@ public class TetherPreferenceController extends PreferenceController
         } else {
             mPreference.setSummary(R.string.tether_settings_summary_hotspot_off_tether_on);
         }
+    }
+
+    private void updateSummaryToOff() {
+        if (mPreference == null) {
+            // Preference is not ready yet.
+            return;
+        }
+        mPreference.setSummary(R.string.switch_off_text);
+    }
+
+    class SettingObserver extends ContentObserver {
+
+        public final Uri uri;
+
+        public SettingObserver() {
+            super(new Handler());
+            uri = Settings.Global.getUriFor(Settings.Global.AIRPLANE_MODE_ON);
+        }
+
+        @Override
+        public void onChange(boolean selfChange, Uri uri) {
+            super.onChange(selfChange, uri);
+            if (this.uri.equals(uri)) {
+                boolean isAirplaneMode = Settings.Global.getInt(mContext.getContentResolver(),
+                        Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
+                if (isAirplaneMode) {
+                    // Airplane mode is on. Update summary to say tether is OFF directly. We cannot
+                    // go through updateSummary() because turning off tether takes time, and we
+                    // might still get "ON" status when rerun updateSummary(). So, just say it's off
+                    updateSummaryToOff();
+                }
+            }
+        }
+    }
+
+    @VisibleForTesting
+    class TetherBroadcastReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            updateSummary();
+        }
+
     }
 }

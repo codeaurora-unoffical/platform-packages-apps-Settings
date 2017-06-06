@@ -22,13 +22,17 @@ import android.os.SystemClock;
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
+import android.text.format.DateUtils;
 import android.util.Log;
+import android.util.SparseLongArray;
 
 import com.android.internal.os.BatterySipper;
 import com.android.settings.overlay.FeatureFactory;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -100,10 +104,7 @@ public class BatteryUtils {
 
     private long getProcessForegroundTimeMs(BatteryStats.Uid uid, int which) {
         final long rawRealTimeUs = convertMsToUs(SystemClock.elapsedRealtime());
-        final int foregroundTypes[] = {BatteryStats.Uid.PROCESS_STATE_TOP,
-                BatteryStats.Uid.PROCESS_STATE_FOREGROUND_SERVICE,
-                BatteryStats.Uid.PROCESS_STATE_TOP_SLEEPING,
-                BatteryStats.Uid.PROCESS_STATE_FOREGROUND};
+        final int foregroundTypes[] = {BatteryStats.Uid.PROCESS_STATE_TOP};
         Log.v(TAG, "package: " + mPackageManager.getNameForUid(uid.getUid()));
 
         long timeUs = 0;
@@ -118,26 +119,64 @@ public class BatteryUtils {
     }
 
     /**
-     * Remove the {@link BatterySipper} that we should hide.
+     * Remove the {@link BatterySipper} that we should hide and smear the screen usage based on
+     * foreground activity time.
      *
      * @param sippers sipper list that need to check and remove
      * @return the total power of the hidden items of {@link BatterySipper}
+     * for proportional smearing
      */
     public double removeHiddenBatterySippers(List<BatterySipper> sippers) {
-        double totalPowerMah = 0;
+        double proportionalSmearPowerMah = 0;
+        BatterySipper screenSipper = null;
         for (int i = sippers.size() - 1; i >= 0; i--) {
             final BatterySipper sipper = sippers.get(i);
             if (shouldHideSipper(sipper)) {
                 sippers.remove(i);
                 if (sipper.drainType != BatterySipper.DrainType.OVERCOUNTED
+                        && sipper.drainType != BatterySipper.DrainType.SCREEN
                         && sipper.drainType != BatterySipper.DrainType.UNACCOUNTED) {
-                    // Don't add it if it is overcounted or unaccounted
-                    totalPowerMah += sipper.totalPowerMah;
+                    // Don't add it if it is overcounted, unaccounted or screen
+                    proportionalSmearPowerMah += sipper.totalPowerMah;
                 }
+            }
+
+            if (sipper.drainType == BatterySipper.DrainType.SCREEN) {
+                screenSipper = sipper;
             }
         }
 
-        return totalPowerMah;
+        smearScreenBatterySipper(sippers, screenSipper);
+
+        return proportionalSmearPowerMah;
+    }
+
+    /**
+     * Smear the screen on power usage among {@code sippers}, based on ratio of foreground activity
+     * time.
+     */
+    @VisibleForTesting
+    void smearScreenBatterySipper(List<BatterySipper> sippers, BatterySipper screenSipper) {
+        final long rawRealtimeMs = SystemClock.elapsedRealtime();
+        long totalActivityTimeMs = 0;
+        final SparseLongArray activityTimeArray = new SparseLongArray();
+        for (int i = 0, size = sippers.size(); i < size; i++) {
+            final BatteryStats.Uid uid = sippers.get(i).uidObj;
+            if (uid != null) {
+                final long timeMs = getForegroundActivityTotalTimeMs(uid, rawRealtimeMs);
+                activityTimeArray.put(uid.getUid(), timeMs);
+                totalActivityTimeMs += timeMs;
+            }
+        }
+
+        if (totalActivityTimeMs >= 10 * DateUtils.MINUTE_IN_MILLIS) {
+            final double screenPowerMah = screenSipper.totalPowerMah;
+            for (int i = 0, size = sippers.size(); i < size; i++) {
+                final BatterySipper sipper = sippers.get(i);
+                sipper.totalPowerMah += screenPowerMah * activityTimeArray.get(sipper.getUid(), 0)
+                        / totalActivityTimeMs;
+            }
+        }
     }
 
     /**
@@ -148,9 +187,7 @@ public class BatteryUtils {
 
         return drainType == BatterySipper.DrainType.IDLE
                 || drainType == BatterySipper.DrainType.CELL
-                || drainType == BatterySipper.DrainType.WIFI
                 || drainType == BatterySipper.DrainType.SCREEN
-                || drainType == BatterySipper.DrainType.BLUETOOTH
                 || drainType == BatterySipper.DrainType.UNACCOUNTED
                 || drainType == BatterySipper.DrainType.OVERCOUNTED
                 || (sipper.totalPowerMah * SECONDS_IN_HOUR) < MIN_POWER_THRESHOLD_MILLI_AMP
@@ -178,6 +215,19 @@ public class BatteryUtils {
         return (powerUsageMah / (totalPowerMah - hiddenPowerMah)) * dischargeAmount;
     }
 
+    /**
+     * Sort the {@code usageList} based on {@link BatterySipper#totalPowerMah}
+     * @param usageList
+     */
+    public void sortUsageList(List<BatterySipper> usageList) {
+        Collections.sort(usageList, new Comparator<BatterySipper>() {
+            @Override
+            public int compare(BatterySipper a, BatterySipper b) {
+                return Double.compare(b.totalPowerMah, a.totalPowerMah);
+            }
+        });
+    }
+
     private long convertUsToMs(long timeUs) {
         return timeUs / 1000;
     }
@@ -188,6 +238,16 @@ public class BatteryUtils {
 
     private boolean isDataCorrupted() {
         return mPackageManager == null;
+    }
+
+    @VisibleForTesting
+    long getForegroundActivityTotalTimeMs(BatteryStats.Uid uid, long rawRealtimeMs) {
+        final BatteryStats.Timer timer = uid.getForegroundActivityTimer();
+        if (timer != null) {
+            return timer.getTotalTimeLocked(rawRealtimeMs, BatteryStats.STATS_SINCE_CHARGED);
+        }
+
+        return 0;
     }
 
 }

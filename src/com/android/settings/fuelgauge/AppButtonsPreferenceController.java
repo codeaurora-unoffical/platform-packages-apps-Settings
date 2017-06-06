@@ -60,6 +60,7 @@ import com.android.settings.core.lifecycle.events.OnResume;
 import com.android.settings.enterprise.DevicePolicyManagerWrapper;
 import com.android.settings.overlay.FeatureFactory;
 import com.android.settingslib.RestrictedLockUtils;
+import com.android.settingslib.applications.AppUtils;
 import com.android.settingslib.applications.ApplicationsState;
 
 import java.util.ArrayList;
@@ -97,6 +98,8 @@ public class AppButtonsPreferenceController extends PreferenceController impleme
     @VisibleForTesting
     Button mUninstallButton;
     @VisibleForTesting
+    String mPackageName;
+    @VisibleForTesting
     boolean mDisableAfterUninstall = false;
 
     private final int mRequestUninstall;
@@ -112,7 +115,6 @@ public class AppButtonsPreferenceController extends PreferenceController impleme
     private MetricsFeatureProvider mMetricsFeatureProvider;
 
     private LayoutPreference mButtonsPref;
-    private String mPackageName;
     private int mUserId;
     private boolean mUpdatedSysApp = false;
     private boolean mListeningToPackageRemove = false;
@@ -133,7 +135,6 @@ public class AppButtonsPreferenceController extends PreferenceController impleme
         mMetricsFeatureProvider = FeatureFactory.getFactory(activity).getMetricsFeatureProvider();
 
         mState = state;
-        mSession = mState.newSession(this);
         mDpm = dpm;
         mUserManager = userManager;
         mPm = packageManager;
@@ -144,10 +145,10 @@ public class AppButtonsPreferenceController extends PreferenceController impleme
         mRequestUninstall = requestUninstall;
         mRequestRemoveDeviceAdmin = requestRemoveDeviceAdmin;
 
-        lifecycle.addObserver(this);
-
         if (packageName != null) {
             mAppEntry = mState.getEntry(packageName, mUserId);
+            mSession = mState.newSession(this);
+            lifecycle.addObserver(this);
         } else {
             mFinishing = true;
         }
@@ -155,7 +156,8 @@ public class AppButtonsPreferenceController extends PreferenceController impleme
 
     @Override
     public boolean isAvailable() {
-        return mAppEntry != null;
+        // TODO(b/37313605): Re-enable once this controller supports instant apps
+        return mAppEntry != null && !AppUtils.isInstant(mAppEntry.info);
     }
 
     @Override
@@ -618,7 +620,11 @@ public class AppButtonsPreferenceController extends PreferenceController impleme
         return false;
     }
 
-    private boolean refreshUi() {
+    @VisibleForTesting
+    boolean refreshUi() {
+        if (mPackageName == null) {
+            return false;
+        }
         retrieveAppEntry();
         if (mAppEntry == null || mPackageInfo == null) {
             return false;

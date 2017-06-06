@@ -85,6 +85,7 @@
                 android:singleLine="false"
                 android:ellipsize="marquee"
                 android:gravity="start"
+                android:textDirection="locale"
                 android:paddingTop="8dp"/>
 
             <TextView
@@ -111,10 +112,5 @@
         </LinearLayout>
 
     </RelativeLayout>
-
-    <!-- Drop shadow -->
-    <View android:layout_width="match_parent"
-          android:layout_height="5dp"
-          android:background="@drawable/action_bar_dropshadow"/>
 
 </LinearLayout>

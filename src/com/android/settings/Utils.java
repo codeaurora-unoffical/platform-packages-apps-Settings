@@ -81,6 +81,7 @@ import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceGroup;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.preference.PreferenceScreen;
+import android.telephony.ServiceState;
 import android.telephony.TelephonyManager;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -106,6 +107,8 @@ import com.android.internal.app.UnlaunchableAppActivity;
 import com.android.internal.util.ArrayUtils;
 import com.android.internal.util.UserIcons;
 import com.android.internal.widget.LockPatternUtils;
+import com.android.settings.password.FingerprintManagerWrapper;
+import com.android.settings.password.IFingerprintManager;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -1203,6 +1206,15 @@ public final class Utils extends com.android.settingslib.Utils {
         }
     }
 
+    public static IFingerprintManager getFingerprintManagerWrapperOrNull(Context context) {
+        FingerprintManager fingerprintManager = getFingerprintManagerOrNull(context);
+        if (fingerprintManager != null) {
+            return new FingerprintManagerWrapper(fingerprintManager);
+        } else {
+            return null;
+        }
+    }
+
     /**
      * Launches an intent which may optionally have a user id defined.
      * @param fragment Fragment to use to launch the activity.
@@ -1332,4 +1344,19 @@ public final class Utils extends com.android.settingslib.Utils {
         }
         return true;
     }
+
+    public static String getServiceStateString(int state, Resources res) {
+        switch (state) {
+            case ServiceState.STATE_IN_SERVICE:
+                return res.getString(R.string.radioInfo_service_in);
+            case ServiceState.STATE_OUT_OF_SERVICE:
+            case ServiceState.STATE_EMERGENCY_ONLY:
+                return res.getString(R.string.radioInfo_service_out);
+            case ServiceState.STATE_POWER_OFF:
+                return res.getString(R.string.radioInfo_service_off);
+            default:
+                return res.getString(R.string.radioInfo_unknown);
+        }
+    }
+
 }

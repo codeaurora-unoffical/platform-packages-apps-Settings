@@ -138,7 +138,7 @@
             android:title="@string/wait_for_debugger"
             android:summary="@string/wait_for_debugger_summary"/>
 
-        <SwitchPreference
+        <com.android.settingslib.RestrictedSwitchPreference
             android:key="verify_apps_over_usb"
             android:title="@string/verify_apps_over_usb_title"
             android:summary="@string/verify_apps_over_usb_summary"/>
@@ -422,6 +422,11 @@
             android:key="show_all_anrs"
             android:title="@string/show_all_anrs"
             android:summary="@string/show_all_anrs_summary"/>
+
+        <SwitchPreference
+            android:key="show_notification_channel_warnings"
+            android:title="@string/show_notification_channel_warnings"
+            android:summary="@string/show_notification_channel_warnings_summary"/>
 
         <Preference
                 android:key="inactive_apps"

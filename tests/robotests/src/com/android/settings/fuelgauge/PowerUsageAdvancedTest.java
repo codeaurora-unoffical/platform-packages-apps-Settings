@@ -111,7 +111,7 @@ public class PowerUsageAdvancedTest {
         mPowerUsageAdvanced.setPackageManager(mPackageManager);
         mPowerUsageAdvanced.setPowerUsageFeatureProvider(mPowerUsageFeatureProvider);
         mPowerUsageAdvanced.setUserManager(mUserManager);
-        mPowerUsageAdvanced.mBatteryUtils = spy(new BatteryUtils(mShadowContext));
+        mPowerUsageAdvanced.setBatteryUtils(BatteryUtils.getInstance(mShadowContext));
 
         mPowerUsageData = new PowerUsageData(UsageType.APP);
         mMaxBatterySipper.totalPowerMah = TYPE_BLUETOOTH_USAGE;
@@ -186,6 +186,16 @@ public class PowerUsageAdvancedTest {
         mPowerUsageAdvanced.updateUsageDataSummary(mPowerUsageData, TOTAL_POWER, DISCHARGE_AMOUNT);
 
         assertThat(mPowerUsageData.summary.toString()).isEqualTo(expectedSummary);
+    }
+
+    @Test
+    public void testUpdateUsageDataSummary_typeIdle_showUsageTime() {
+        mPowerUsageData.usageType = UsageType.IDLE;
+        mPowerUsageData.usageList.add(mNormalBatterySipper);
+
+        mPowerUsageAdvanced.updateUsageDataSummary(mPowerUsageData, TOTAL_POWER, DISCHARGE_AMOUNT);
+
+        assertThat(mPowerUsageData.summary.toString()).isEqualTo("0m");
     }
 
     @Test
@@ -279,6 +289,20 @@ public class PowerUsageAdvancedTest {
     }
 
     @Test
+    public void testShouldHideSummary_typeWifi_returnTrue() {
+        mPowerUsageData.usageType = UsageType.WIFI;
+
+        assertThat(mPowerUsageAdvanced.shouldHideSummary(mPowerUsageData)).isTrue();
+    }
+
+    @Test
+    public void testShouldHideSummary_typeBluetooth_returnTrue() {
+        mPowerUsageData.usageType = UsageType.BLUETOOTH;
+
+        assertThat(mPowerUsageAdvanced.shouldHideSummary(mPowerUsageData)).isTrue();
+    }
+
+    @Test
     public void testShouldHideSummary_typeNormal_returnFalse() {
         mPowerUsageData.usageType = UsageType.APP;
 
@@ -299,4 +323,16 @@ public class PowerUsageAdvancedTest {
         assertThat(mPowerUsageAdvanced.shouldShowBatterySipper(mNormalBatterySipper)).isTrue();
     }
 
+    @Test
+    public void testCalculateHiddenPower_returnCorrectPower() {
+        List<PowerUsageData> powerUsageDataList = new ArrayList<>();
+        final double unaccountedPower = 100;
+        final double normalPower = 150;
+        powerUsageDataList.add(new PowerUsageData(UsageType.UNACCOUNTED, unaccountedPower));
+        powerUsageDataList.add(new PowerUsageData(UsageType.APP, normalPower));
+        powerUsageDataList.add(new PowerUsageData(UsageType.CELL, normalPower));
+
+        assertThat(mPowerUsageAdvanced.calculateHiddenPower(powerUsageDataList)).isWithin(
+                PRECISION).of(unaccountedPower);
+    }
 }

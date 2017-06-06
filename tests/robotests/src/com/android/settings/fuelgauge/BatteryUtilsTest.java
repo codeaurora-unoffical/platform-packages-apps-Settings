@@ -18,6 +18,7 @@ package com.android.settings.fuelgauge;
 import android.content.Context;
 import android.os.BatteryStats;
 import android.os.Process;
+import android.text.format.DateUtils;
 
 import com.android.internal.os.BatterySipper;
 import com.android.settings.SettingsRobolectricTestRunner;
@@ -47,8 +48,11 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.spy;
 
@@ -62,14 +66,18 @@ public class BatteryUtilsTest {
     private static final long TIME_STATE_TOP_SLEEPING = 2500 * UNIT;
     private static final long TIME_STATE_FOREGROUND = 3000 * UNIT;
     private static final long TIME_STATE_BACKGROUND = 6000 * UNIT;
+    private static final long TIME_FOREGROUND_ACTIVITY_ZERO = 0;
+    private static final long TIME_FOREGROUND_ACTIVITY = 100 * DateUtils.MINUTE_IN_MILLIS;
 
     private static final int UID = 123;
-    private static final long TIME_EXPECTED_FOREGROUND = 9000;
+    private static final long TIME_EXPECTED_FOREGROUND = 1500;
     private static final long TIME_EXPECTED_BACKGROUND = 6000;
-    private static final long TIME_EXPECTED_ALL = 15000;
+    private static final long TIME_EXPECTED_ALL = 7500;
     private static final double BATTERY_SCREEN_USAGE = 300;
     private static final double BATTERY_SYSTEM_USAGE = 600;
     private static final double BATTERY_OVERACCOUNTED_USAGE = 500;
+    private static final double BATTERY_UNACCOUNTED_USAGE = 700;
+    private static final double BATTERY_APP_USAGE = 100;
     private static final double TOTAL_BATTERY_USAGE = 1000;
     private static final double HIDDEN_USAGE = 200;
     private static final int DISCHARGE_AMOUNT = 80;
@@ -84,6 +92,8 @@ public class BatteryUtilsTest {
     private BatterySipper mScreenBatterySipper;
     @Mock
     private BatterySipper mOvercountedBatterySipper;
+    @Mock
+    private BatterySipper mUnaccountedBatterySipper;
     @Mock
     private BatterySipper mSystemBatterySipper;
     @Mock
@@ -125,6 +135,9 @@ public class BatteryUtilsTest {
 
         mOvercountedBatterySipper.drainType = BatterySipper.DrainType.OVERCOUNTED;
         mOvercountedBatterySipper.totalPowerMah = BATTERY_OVERACCOUNTED_USAGE;
+
+        mUnaccountedBatterySipper.drainType = BatterySipper.DrainType.UNACCOUNTED;
+        mUnaccountedBatterySipper.totalPowerMah = BATTERY_UNACCOUNTED_USAGE;
 
         mBatteryUtils = BatteryUtils.getInstance(RuntimeEnvironment.application);
         mBatteryUtils.mPowerUsageFeatureProvider = mProvider;
@@ -171,12 +184,15 @@ public class BatteryUtilsTest {
         sippers.add(mScreenBatterySipper);
         sippers.add(mSystemBatterySipper);
         sippers.add(mOvercountedBatterySipper);
+        sippers.add(mUnaccountedBatterySipper);
         when(mProvider.isTypeSystem(mSystemBatterySipper))
                 .thenReturn(true);
+        doNothing().when(mBatteryUtils).smearScreenBatterySipper(any(), any());
 
         final double totalUsage = mBatteryUtils.removeHiddenBatterySippers(sippers);
+
         assertThat(sippers).containsExactly(mNormalBatterySipper);
-        assertThat(totalUsage).isWithin(PRECISION).of(BATTERY_SCREEN_USAGE + BATTERY_SYSTEM_USAGE);
+        assertThat(totalUsage).isWithin(PRECISION).of(BATTERY_SYSTEM_USAGE);
     }
 
     @Test
@@ -198,12 +214,6 @@ public class BatteryUtilsTest {
     }
 
     @Test
-    public void testShouldHideSipper_TypeWifi_ReturnTrue() {
-        mNormalBatterySipper.drainType = BatterySipper.DrainType.WIFI;
-        assertThat(mBatteryUtils.shouldHideSipper(mNormalBatterySipper)).isTrue();
-    }
-
-    @Test
     public void testShouldHideSipper_TypeCell_ReturnTrue() {
         mNormalBatterySipper.drainType = BatterySipper.DrainType.CELL;
         assertThat(mBatteryUtils.shouldHideSipper(mNormalBatterySipper)).isTrue();
@@ -212,12 +222,6 @@ public class BatteryUtilsTest {
     @Test
     public void testShouldHideSipper_TypeScreen_ReturnTrue() {
         mNormalBatterySipper.drainType = BatterySipper.DrainType.SCREEN;
-        assertThat(mBatteryUtils.shouldHideSipper(mNormalBatterySipper)).isTrue();
-    }
-
-    @Test
-    public void testShouldHideSipper_TypeBluetooth_ReturnTrue() {
-        mNormalBatterySipper.drainType = BatterySipper.DrainType.BLUETOOTH;
         assertThat(mBatteryUtils.shouldHideSipper(mNormalBatterySipper)).isTrue();
     }
 
@@ -250,5 +254,57 @@ public class BatteryUtilsTest {
         assertThat(mBatteryUtils.calculateBatteryPercent(BATTERY_SYSTEM_USAGE, TOTAL_BATTERY_USAGE,
                 HIDDEN_USAGE, DISCHARGE_AMOUNT))
                 .isWithin(PRECISION).of(PERCENT_SYSTEM_USAGE);
+    }
+
+    @Test
+    public void testSmearScreenBatterySipper() {
+        final BatterySipper sipperNull = createTestSmearBatterySipper(TIME_FOREGROUND_ACTIVITY_ZERO,
+                BATTERY_APP_USAGE, 0 /* uid */, true /* isUidNull */);
+        final BatterySipper sipperBg = createTestSmearBatterySipper(TIME_FOREGROUND_ACTIVITY_ZERO,
+                BATTERY_APP_USAGE, 1 /* uid */, false /* isUidNull */);
+        final BatterySipper sipperFg = createTestSmearBatterySipper(TIME_FOREGROUND_ACTIVITY,
+                BATTERY_APP_USAGE, 2 /* uid */, false /* isUidNull */);
+
+        final List<BatterySipper> sippers = new ArrayList<>();
+        sippers.add(sipperNull);
+        sippers.add(sipperBg);
+        sippers.add(sipperFg);
+
+        mBatteryUtils.smearScreenBatterySipper(sippers, mScreenBatterySipper);
+
+        assertThat(sipperNull.totalPowerMah).isWithin(PRECISION).of(BATTERY_APP_USAGE);
+        assertThat(sipperBg.totalPowerMah).isWithin(PRECISION).of(BATTERY_APP_USAGE);
+        assertThat(sipperFg.totalPowerMah).isWithin(PRECISION).of(
+                BATTERY_APP_USAGE + BATTERY_SCREEN_USAGE);
+    }
+
+    @Test
+    public void testSortUsageList() {
+        final List<BatterySipper> sippers = new ArrayList<>();
+        sippers.add(mNormalBatterySipper);
+        sippers.add(mScreenBatterySipper);
+        sippers.add(mSystemBatterySipper);
+
+        mBatteryUtils.sortUsageList(sippers);
+
+        assertThat(sippers).containsExactly(mNormalBatterySipper, mSystemBatterySipper,
+                mScreenBatterySipper);
+    }
+
+    private BatterySipper createTestSmearBatterySipper(long activityTime, double totalPowerMah,
+            int uidCode, boolean isUidNull) {
+        final BatterySipper sipper = mock(BatterySipper.class);
+        sipper.drainType = BatterySipper.DrainType.APP;
+        sipper.totalPowerMah = totalPowerMah;
+        doReturn(uidCode).when(sipper).getUid();
+        if (!isUidNull) {
+            final BatteryStats.Uid uid = mock(BatteryStats.Uid.class, RETURNS_DEEP_STUBS);
+            doReturn(activityTime).when(mBatteryUtils).getForegroundActivityTotalTimeMs(eq(uid),
+                    anyLong());
+            doReturn(uidCode).when(uid).getUid();
+            sipper.uidObj = uid;
+        }
+
+        return sipper;
     }
 }
