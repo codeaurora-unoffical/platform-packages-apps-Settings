@@ -54,7 +54,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.Toast;
 
 import com.android.internal.logging.MetricsLogger;
 import com.android.internal.telephony.OperatorSimInfo;
@@ -546,7 +545,6 @@ public class SimSettings extends RestrictedSettingsFragment implements Indexable
         private static final int GENERIC_FAILURE = -1;
         private static final int INVALID_INPUT = -2;
         private static final int REQUEST_IN_PROGRESS = -3;
-        private static final int REQUEST_NOT_ALLOWED = -4;
 
 
         private static final String DISPLAY_NUMBERS_TYPE = "display_numbers_type";
@@ -992,11 +990,7 @@ public class SimSettings extends RestrictedSettingsFragment implements Indexable
                             logd("EVT_SHOW_RESULT_DLG result: " + result +
                                     " new provisioned state " + newProvisionedState);
                             update();
-                            if (result == REQUEST_NOT_ALLOWED) {
-                                cleanUpPendingDialogs();
-                                Toast.makeText(mContext, getResources().getString(
-                                        R.string.action_not_allowed), Toast.LENGTH_SHORT).show();
-                            } else if (result != REQUEST_SUCCESS) {
+                            if (result != REQUEST_SUCCESS) {
                                 int msgId = (newProvisionedState == PROVISIONED) ?
                                         R.string.sub_activate_failed :
                                         R.string.sub_deactivate_failed;

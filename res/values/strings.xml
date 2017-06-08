@@ -7435,7 +7435,6 @@ ation on your phone or online at https://my.t-mobile.com under Manage > Plans an
     <string name="memory_available_summary">The amount of storage space currently available.\n</string>
     <string name="memory_media_misc_usage_title">Miscellaneous files</string>
     <string name="memory_media_misc_usage_summary">The amount of memory used to store miscellaneous files.\n</string>
-    <string name="action_not_allowed">Not allowed</string>
     <string name="turn_on_data_msg">Please turn on data</string>
 
     <string-array name="mccs_white_listed" translatable="false">
