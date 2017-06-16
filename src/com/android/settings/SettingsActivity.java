@@ -751,7 +751,9 @@ public class SettingsActivity extends SettingsDrawerActivity
             Log.i(LOG_TAG, "switchToFragment, launch simSettings  ");
             Intent provisioningIntent =
                     new Intent("com.android.settings.sim.SIM_SUB_INFO_SETTINGS");
-            startActivity(provisioningIntent);
+            if (!getPackageManager().queryIntentActivities(provisioningIntent, 0).isEmpty()) {
+                startActivity(provisioningIntent);
+            }
             finish();
             return null;
         }
@@ -852,8 +854,7 @@ public class SettingsActivity extends SettingsDrawerActivity
 
         // Enable/disable backup settings depending on whether the user is admin.
         setTileEnabled(new ComponentName(packageName,
-                        BackupSettingsActivity.class.getName()), true,
-                isAdmin || Utils.isCarrierDemoUser(this));
+                        BackupSettingsActivity.class.getName()), true, isAdmin);
 
         setTileEnabled(new ComponentName(packageName,
                         Settings.WifiDisplaySettingsActivity.class.getName()),
@@ -921,7 +922,8 @@ public class SettingsActivity extends SettingsDrawerActivity
     }
 
     public void startSuggestion(Intent intent) {
-        if (intent == null || ActivityManager.isUserAMonkey()) {
+        if (intent == null || ActivityManager.isUserAMonkey()
+                || getPackageManager().queryIntentActivities(intent, 0).isEmpty()) {
             return;
         }
         mCurrentSuggestion = intent.getComponent();

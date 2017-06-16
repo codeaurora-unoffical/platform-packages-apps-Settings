@@ -159,6 +159,22 @@ public class FingerprintEnrollEnrolling extends FingerprintEnrollBase
         startIconAnimation();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mSidecar != null) {
+            mSidecar.setListener(this);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mSidecar != null) {
+            mSidecar.setListener(null);
+        }
+    }
+
     private void startIconAnimation() {
         mIconAnimationDrawable.start();
     }
