@@ -45,6 +45,11 @@ public class FakeUid extends Uid {
     }
 
     @Override
+    public Timer getAggregatedPartialWakelockTimer() {
+        return null;
+    }
+
+    @Override
     public ArrayMap<String, ? extends Timer> getSyncStats() {
         return null;
     }
@@ -292,7 +297,22 @@ public class FakeUid extends Uid {
     }
 
     @Override
+    public Timer getBluetoothUnoptimizedScanTimer() {
+        return null;
+    }
+
+    @Override
+    public Timer getBluetoothUnoptimizedScanBackgroundTimer() {
+        return null;
+    }
+
+    @Override
     public Counter getBluetoothScanResultCounter() {
+        return null;
+    }
+
+    @Override
+    public Counter getBluetoothScanResultBgCounter() {
         return null;
     }
 

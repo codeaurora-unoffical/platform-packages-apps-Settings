@@ -119,7 +119,7 @@ public class AdvancedPowerUsageDetail extends DashboardFragment implements
             args.putString(EXTRA_PACKAGE_NAME, null);
         } else {
             // populate data for normal app
-            args.putString(EXTRA_PACKAGE_NAME, sipper.mPackages[0]);
+            args.putString(EXTRA_PACKAGE_NAME, entry.defaultPackageName);
         }
 
         args.putInt(EXTRA_UID, sipper.getUid());
@@ -127,6 +127,17 @@ public class AdvancedPowerUsageDetail extends DashboardFragment implements
         args.putLong(EXTRA_FOREGROUND_TIME, foregroundTimeMs);
         args.putString(EXTRA_POWER_USAGE_PERCENT, usagePercent);
         args.putInt(EXTRA_POWER_USAGE_AMOUNT, (int) sipper.totalPowerMah);
+
+        caller.startPreferencePanelAsUser(fragment, AdvancedPowerUsageDetail.class.getName(), args,
+                R.string.battery_details_title, null,
+                new UserHandle(UserHandle.getUserId(sipper.getUid())));
+    }
+
+    public static void startBatteryDetailPage(SettingsActivity caller, PreferenceFragment fragment,
+            String packageName) {
+        final Bundle args = new Bundle(2);
+        args.putString(EXTRA_PACKAGE_NAME, packageName);
+        args.putString(EXTRA_POWER_USAGE_PERCENT, Utils.formatPercentage(0));
 
         caller.startPreferencePanelAsUser(fragment, AdvancedPowerUsageDetail.class.getName(), args,
                 R.string.battery_details_title, null, new UserHandle(UserHandle.myUserId()));

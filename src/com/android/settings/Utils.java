@@ -25,6 +25,7 @@ import android.annotation.Nullable;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.AppGlobals;
+import android.app.AppOpsManager;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.app.IActivityManager;
@@ -81,6 +82,7 @@ import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceGroup;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.preference.PreferenceScreen;
+import android.telephony.ServiceState;
 import android.telephony.TelephonyManager;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -108,6 +110,7 @@ import com.android.internal.util.UserIcons;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.settings.password.FingerprintManagerWrapper;
 import com.android.settings.password.IFingerprintManager;
+import com.android.settings.bluetooth.BluetoothSettings;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -595,7 +598,12 @@ public final class Utils extends com.android.settingslib.Utils {
             Bundle args, String titleResPackageName, int titleResId, CharSequence title,
             boolean isShortcut, int sourceMetricsCategory) {
         Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.setClass(context, SubSettings.class);
+        if (BluetoothSettings.class.getName().equals(fragmentName)) {
+            intent.setClass(context, SubSettings.BluetoothSubSettings.class);
+            intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_AS_SUBSETTING, true);
+         } else {
+             intent.setClass(context, SubSettings.class);
+         }
         intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT, fragmentName);
         intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS, args);
         intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_TITLE_RES_PACKAGE_NAME,
@@ -608,7 +616,8 @@ public final class Utils extends com.android.settingslib.Utils {
     }
 
     /**
-     * Returns the managed profile of the current user or null if none found.
+     * Returns the managed profile of the current user or {@code null} if none is found or a profile
+     * exists but it is disabled.
      */
     public static UserHandle getManagedProfile(UserManager userManager) {
         List<UserHandle> userProfiles = userManager.getUserProfiles();
@@ -621,6 +630,29 @@ public final class Utils extends com.android.settingslib.Utils {
             final UserInfo userInfo = userManager.getUserInfo(profile.getIdentifier());
             if (userInfo.isManagedProfile()) {
                 return profile;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns the managed profile of the current user or {@code null} if none is found. Unlike
+     * {@link #getManagedProfile} this method returns enabled and disabled managed profiles.
+     */
+    public static UserHandle getManagedProfileWithDisabled(UserManager userManager) {
+        // TODO: Call getManagedProfileId from here once Robolectric supports
+        // API level 24 and UserManager.getProfileIdsWithDisabled can be Mocked (to avoid having
+        // yet another implementation that loops over user profiles in this method). In the meantime
+        // we need to use UserManager.getProfiles that is available on API 23 (the one currently
+        // used for Settings Robolectric tests).
+        final int myUserId = UserHandle.myUserId();
+        List<UserInfo> profiles = userManager.getProfiles(myUserId);
+        final int count = profiles.size();
+        for (int i = 0; i < count; i++) {
+            final UserInfo profile = profiles.get(i);
+            if (profile.isManagedProfile()
+                    && profile.getUserHandle().getIdentifier() != myUserId) {
+                return profile.getUserHandle();
             }
         }
         return null;
@@ -1278,6 +1310,22 @@ public final class Utils extends com.android.settingslib.Utils {
         return info.enabled ? R.string.installed : R.string.disabled;
     }
 
+    /**
+     * Control if other apps can display overlays. By default this is allowed. Be sure to
+     * re-enable overlays, as the effect is system-wide.
+     */
+    public static void setOverlayAllowed(Context context, IBinder token, boolean allowed) {
+        AppOpsManager appOpsManager = context.getSystemService(AppOpsManager.class);
+        if (appOpsManager != null) {
+            appOpsManager.setUserRestriction(AppOpsManager.OP_SYSTEM_ALERT_WINDOW,
+                    !allowed, token);
+            appOpsManager.setUserRestriction(AppOpsManager.OP_TOAST_WINDOW,
+                    !allowed, token);
+        }
+    }
+
+
+
     private static boolean isVolumeValid(VolumeInfo volume) {
         return (volume != null) && (volume.getType() == VolumeInfo.TYPE_PRIVATE)
                 && volume.isMountedReadable();
@@ -1343,4 +1391,19 @@ public final class Utils extends com.android.settingslib.Utils {
         }
         return true;
     }
+
+    public static String getServiceStateString(int state, Resources res) {
+        switch (state) {
+            case ServiceState.STATE_IN_SERVICE:
+                return res.getString(R.string.radioInfo_service_in);
+            case ServiceState.STATE_OUT_OF_SERVICE:
+            case ServiceState.STATE_EMERGENCY_ONLY:
+                return res.getString(R.string.radioInfo_service_out);
+            case ServiceState.STATE_POWER_OFF:
+                return res.getString(R.string.radioInfo_service_off);
+            default:
+                return res.getString(R.string.radioInfo_unknown);
+        }
+    }
+
 }

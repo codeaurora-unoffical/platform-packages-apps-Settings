@@ -51,7 +51,6 @@ import com.android.settings.widget.MasterSwitchPreference;
 import com.android.settings.widget.SwitchBar;
 import com.android.settingslib.RestrictedSwitchPreference;
 
-import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -95,7 +94,6 @@ public class AppNotificationSettings extends NotificationSettingsBase {
         getPreferenceScreen().setOrderingAsAdded(true);
         setupBlock();
         addHeaderPref();
-        addAppLinkPref();
 
         mShowLegacyChannelConfig = mBackend.onlyHasDefaultChannel(mAppRow.pkg, mAppRow.uid);
         if (mShowLegacyChannelConfig) {
@@ -120,6 +118,7 @@ public class AppNotificationSettings extends NotificationSettingsBase {
                         return;
                     }
                     populateChannelList();
+                    addAppLinkPref();
                 }
             }.execute();
         }
@@ -147,6 +146,15 @@ public class AppNotificationSettings extends NotificationSettingsBase {
     }
 
     private void populateChannelList() {
+        if (!mChannelGroups.isEmpty()) {
+            // If there's anything in mChannelGroups, we've called populateChannelList twice.
+            // Clear out existing channels and log.
+            Log.w(TAG, "Notification channel group posted twice to settings - old size " +
+                    mChannelGroups.size() + ", new size " + mChannelGroupList.size());
+            for (Preference p : mChannelGroups) {
+                getPreferenceScreen().removePreference(p);
+            }
+        }
         if (mChannelGroupList.isEmpty()) {
             PreferenceCategory groupCategory = new PreferenceCategory(getPrefContext());
             groupCategory.setTitle(R.string.notification_channels);
@@ -203,7 +211,8 @@ public class AppNotificationSettings extends NotificationSettingsBase {
             final NotificationChannel channel) {
         MasterSwitchPreference channelPref = new MasterSwitchPreference(
                 getPrefContext());
-        channelPref.setSwitchEnabled(mSuspendedAppsAdmin == null && !mAppRow.systemApp);
+        channelPref.setSwitchEnabled(mSuspendedAppsAdmin == null
+                &&  isChannelBlockable(mAppRow.systemApp, channel));
         channelPref.setKey(channel.getId());
         channelPref.setTitle(channel.getName());
         channelPref.setChecked(channel.getImportance() != IMPORTANCE_NONE);

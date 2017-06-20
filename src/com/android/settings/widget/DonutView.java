@@ -16,13 +16,16 @@
 package com.android.settings.widget;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.ColorFilter;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.android.internal.util.Preconditions;
 import com.android.settings.R;
 import com.android.settings.Utils;
 
@@ -32,6 +35,8 @@ import com.android.settings.Utils;
  */
 public class DonutView extends View {
     private static final int TOP = -90;
+    // From manual testing, this is the longest we can go without visual errors.
+    private static final int LINE_CHARACTER_LIMIT = 10;
     private float mStrokeWidth;
     private float mDeviceDensity;
     private int mPercent;
@@ -50,31 +55,40 @@ public class DonutView extends View {
         super(context, attrs);
         mDeviceDensity = getResources().getDisplayMetrics().density;
         mStrokeWidth = 6f * mDeviceDensity;
+        final ColorFilter mAccentColorFilter =
+                new PorterDuffColorFilter(
+                        Utils.getColorAttr(context, android.R.attr.colorAccent),
+                        PorterDuff.Mode.SRC_IN);
 
         mBackgroundCircle = new Paint();
         mBackgroundCircle.setAntiAlias(true);
         mBackgroundCircle.setStrokeCap(Paint.Cap.BUTT);
         mBackgroundCircle.setStyle(Paint.Style.STROKE);
         mBackgroundCircle.setStrokeWidth(mStrokeWidth);
-        mBackgroundCircle.setColor(getResources().getColor(R.color.donut_background_grey));
+        mBackgroundCircle.setColorFilter(mAccentColorFilter);
+        mBackgroundCircle.setColor(context.getColor(R.color.meter_background_color));
 
         mFilledArc = new Paint();
         mFilledArc.setAntiAlias(true);
         mFilledArc.setStrokeCap(Paint.Cap.BUTT);
         mFilledArc.setStyle(Paint.Style.STROKE);
         mFilledArc.setStrokeWidth(mStrokeWidth);
-        mFilledArc.setColor(Utils.getColorAccent(getContext()));
+        mFilledArc.setColor(Utils.getDefaultColor(mContext, R.color.meter_consumed_color));
+        mFilledArc.setColorFilter(mAccentColorFilter);
 
+        Resources resources = context.getResources();
         mTextPaint = new TextPaint();
         mTextPaint.setColor(Utils.getColorAccent(getContext()));
         mTextPaint.setAntiAlias(true);
-        mTextPaint.setTextSize(14f * mDeviceDensity);
+        mTextPaint.setTextSize(
+                resources.getDimension(R.dimen.storage_donut_view_label_text_size));
         mTextPaint.setTextAlign(Paint.Align.CENTER);
 
         mBigNumberPaint = new TextPaint();
         mBigNumberPaint.setColor(Utils.getColorAccent(getContext()));
         mBigNumberPaint.setAntiAlias(true);
-        mBigNumberPaint.setTextSize(30f * mDeviceDensity);
+        mBigNumberPaint.setTextSize(
+                resources.getDimension(R.dimen.storage_donut_view_percent_text_size));
         mBigNumberPaint.setTextAlign(Paint.Align.CENTER);
     }
 
@@ -86,11 +100,25 @@ public class DonutView extends View {
     }
 
     private void drawDonut(Canvas canvas) {
-        canvas.drawArc(0 + mStrokeWidth, 0 + mStrokeWidth, getWidth() - mStrokeWidth,
-                getHeight() - mStrokeWidth, TOP, 360, false, mBackgroundCircle);
+        canvas.drawArc(
+                0 + mStrokeWidth,
+                0 + mStrokeWidth,
+                getWidth() - mStrokeWidth,
+                getHeight() - mStrokeWidth,
+                TOP,
+                360,
+                false,
+                mBackgroundCircle);
 
-        canvas.drawArc(0 + mStrokeWidth, 0 + mStrokeWidth, getWidth() - mStrokeWidth,
-                getHeight() - mStrokeWidth, TOP, (360 * mPercent / 100), false, mFilledArc);
+        canvas.drawArc(
+                0 + mStrokeWidth,
+                0 + mStrokeWidth,
+                getWidth() - mStrokeWidth,
+                getHeight() - mStrokeWidth,
+                TOP,
+                (360 * mPercent / 100),
+                false,
+                mFilledArc);
     }
 
     private void drawInnerText(Canvas canvas) {
@@ -114,6 +142,13 @@ public class DonutView extends View {
         mPercent = percent;
         mPercentString = Utils.formatPercentage(mPercent);
         mFullString = getContext().getString(R.string.storage_percent_full);
+        if (mFullString.length() > LINE_CHARACTER_LIMIT) {
+            mTextPaint.setTextSize(
+                    getContext()
+                            .getResources()
+                            .getDimension(
+                                    R.dimen.storage_donut_view_shrunken_label_text_size));
+        }
         invalidate();
     }
 

@@ -16,8 +16,6 @@
 
 package com.android.settings.applications;
 
-import static com.android.settingslib.RestrictedLockUtils.EnforcedAdmin;
-
 import android.Manifest.permission;
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -93,6 +91,7 @@ import com.android.settings.datausage.DataUsageList;
 import com.android.settings.datausage.DataUsageSummary;
 import com.android.settings.fuelgauge.AdvancedPowerUsageDetail;
 import com.android.settings.fuelgauge.BatteryEntry;
+import com.android.settings.fuelgauge.BatteryStatsHelperLoader;
 import com.android.settings.fuelgauge.BatteryUtils;
 import com.android.settings.notification.AppNotificationSettings;
 import com.android.settings.notification.NotificationBackend;
@@ -115,6 +114,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static com.android.settingslib.RestrictedLockUtils.EnforcedAdmin;
 
 /**
  * Activity to display application information from Settings. This activity presents
@@ -143,6 +144,8 @@ public class InstalledAppDetails extends AppInfoBase
 
     private static final int LOADER_CHART_DATA = 2;
     private static final int LOADER_STORAGE = 3;
+    @VisibleForTesting
+    static final int LOADER_BATTERY = 4;
 
     private static final int DLG_FORCE_STOP = DLG_BASE + 1;
     private static final int DLG_DISABLE = DLG_BASE + 2;
@@ -194,6 +197,8 @@ public class InstalledAppDetails extends AppInfoBase
     BatterySipper mSipper;
     @VisibleForTesting
     BatteryStatsHelper mBatteryHelper;
+    @VisibleForTesting
+    BatteryUtils mBatteryUtils;
 
     protected ProcStatsData mStatsManager;
     protected ProcStatsPackageEntry mStats;
@@ -202,9 +207,35 @@ public class InstalledAppDetails extends AppInfoBase
 
     private AppStorageStats mLastResult;
     private String mBatteryPercent;
-    private BatteryUtils mBatteryUtils;
 
-    private boolean handleDisableable(Button button) {
+    @VisibleForTesting
+    final LoaderCallbacks<BatteryStatsHelper> mBatteryCallbacks =
+            new LoaderCallbacks<BatteryStatsHelper>() {
+
+                @Override
+                public Loader<BatteryStatsHelper> onCreateLoader(int id, Bundle args) {
+                    return new BatteryStatsHelperLoader(getContext(), args);
+                }
+
+                @Override
+                public void onLoadFinished(Loader<BatteryStatsHelper> loader,
+                        BatteryStatsHelper batteryHelper) {
+                    mBatteryHelper = batteryHelper;
+                    if (mPackageInfo != null) {
+                        mSipper = findTargetSipper(batteryHelper, mPackageInfo.applicationInfo.uid);
+                        if (getActivity() != null) {
+                            updateBattery();
+                        }
+                    }
+                }
+
+                @Override
+                public void onLoaderReset(Loader<BatteryStatsHelper> loader) {
+                }
+            };
+
+    @VisibleForTesting
+    boolean handleDisableable(Button button) {
         boolean disableable = false;
         // Try to prevent the user from bricking their phone
         // by not allowing disabling of apps signed with the
@@ -215,7 +246,8 @@ public class InstalledAppDetails extends AppInfoBase
             button.setText(R.string.disable_text);
         } else if (mAppEntry.info.enabled && !isDisabledUntilUsed()) {
             button.setText(R.string.disable_text);
-            disableable = true;
+            disableable = !mApplicationFeatureProvider.getKeepEnabledPackages()
+                    .contains(mAppEntry.info.packageName);
         } else {
             button.setText(R.string.enable_text);
             disableable = true;
@@ -362,7 +394,6 @@ public class InstalledAppDetails extends AppInfoBase
         } else {
             removePreference(KEY_DATA);
         }
-        mBatteryHelper = new BatteryStatsHelper(getActivity(), true);
         mBatteryUtils = BatteryUtils.getInstance(getContext());
     }
 
@@ -386,9 +417,14 @@ public class InstalledAppDetails extends AppInfoBase
                     mDataCallbacks);
             loaderManager.restartLoader(LOADER_STORAGE, Bundle.EMPTY, this);
         }
-        new BatteryUpdater().execute();
+        restartBatteryStatsLoader();
         new MemoryUpdater().execute();
         updateDynamicPrefs();
+    }
+
+    @VisibleForTesting
+    public void restartBatteryStatsLoader() {
+        getLoaderManager().restartLoader(LOADER_BATTERY, Bundle.EMPTY, mBatteryCallbacks);
     }
 
     @Override
@@ -625,6 +661,19 @@ public class InstalledAppDetails extends AppInfoBase
         return showIt;
     }
 
+    @VisibleForTesting
+    BatterySipper findTargetSipper(BatteryStatsHelper batteryHelper, int uid) {
+        List<BatterySipper> usageList = batteryHelper.getUsageList();
+        for (int i = 0, size = usageList.size(); i < size; i++) {
+            BatterySipper sipper = usageList.get(i);
+            if (sipper.getUid() == uid) {
+                return sipper;
+            }
+        }
+
+        return null;
+    }
+
     private boolean signaturesMatch(String pkg1, String pkg2) {
         if (pkg1 != null && pkg2 != null) {
             try {
@@ -690,8 +739,6 @@ public class InstalledAppDetails extends AppInfoBase
             mDataPreference.setSummary(getDataSummary());
         }
 
-        updateBattery();
-
         if (!mInitialized) {
             // First time init: are we displaying an uninstalled app?
             mInitialized = true;
@@ -718,9 +765,10 @@ public class InstalledAppDetails extends AppInfoBase
         return true;
     }
 
-    private void updateBattery() {
-        if (mSipper != null) {
-            mBatteryPreference.setEnabled(true);
+    @VisibleForTesting
+    void updateBattery() {
+        mBatteryPreference.setEnabled(true);
+        if (isBatteryStatsAvailable()) {
             final int dischargeAmount = mBatteryHelper.getStats().getDischargeAmount(
                     BatteryStats.STATS_SINCE_CHARGED);
 
@@ -732,7 +780,6 @@ public class InstalledAppDetails extends AppInfoBase
             mBatteryPercent = Utils.formatPercentage(percentOfMax);
             mBatteryPreference.setSummary(getString(R.string.battery_summary, mBatteryPercent));
         } else {
-            mBatteryPreference.setEnabled(false);
             mBatteryPreference.setSummary(getString(R.string.no_battery_summary));
         }
     }
@@ -764,6 +811,11 @@ public class InstalledAppDetails extends AppInfoBase
             return context.getString(R.string.storage_summary_format,
                     getSize(context, stats), storageType.toString().toLowerCase());
         }
+    }
+
+    @VisibleForTesting
+    boolean isBatteryStatsAvailable() {
+        return mBatteryHelper != null && mSipper != null;
     }
 
     private static CharSequence getSize(Context context, AppStorageStats stats) {
@@ -1004,9 +1056,15 @@ public class InstalledAppDetails extends AppInfoBase
         } else if (preference == mDataPreference) {
             startAppInfoFragment(AppDataUsage.class, getString(R.string.app_data_usage));
         } else if (preference == mBatteryPreference) {
-            BatteryEntry entry = new BatteryEntry(getContext(), null, mUserManager, mSipper);
-            AdvancedPowerUsageDetail.startBatteryDetailPage((SettingsActivity) getActivity(), this,
-                    mBatteryHelper, BatteryStats.STATS_SINCE_CHARGED, entry, mBatteryPercent);
+            if (isBatteryStatsAvailable()) {
+                BatteryEntry entry = new BatteryEntry(getContext(), null, mUserManager, mSipper);
+                AdvancedPowerUsageDetail.startBatteryDetailPage((SettingsActivity) getActivity(),
+                        this, mBatteryHelper, BatteryStats.STATS_SINCE_CHARGED, entry,
+                        mBatteryPercent);
+            } else {
+                AdvancedPowerUsageDetail.startBatteryDetailPage((SettingsActivity) getActivity(),
+                        this, mPackageName);
+            }
         } else {
             return false;
         }
@@ -1172,9 +1230,7 @@ public class InstalledAppDetails extends AppInfoBase
     void maybeAddInstantAppButtons() {
         if (AppUtils.isInstant(mPackageInfo.applicationInfo)) {
             LayoutPreference buttons = (LayoutPreference) findPreference(KEY_INSTANT_APP_BUTTONS);
-            final Activity activity = getActivity();
-            mInstantAppButtonsController = FeatureFactory.getFactory(activity)
-                    .getApplicationFeatureProvider(activity)
+            mInstantAppButtonsController = mApplicationFeatureProvider
                     .newInstantAppButtonsController(this,
                             buttons.findViewById(R.id.instant_app_button_container),
                             id -> showDialogInner(id, 0))
@@ -1341,33 +1397,6 @@ public class InstalledAppDetails extends AppInfoBase
             }
         }
 
-    }
-
-    private class BatteryUpdater extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... params) {
-            mBatteryHelper.create((Bundle) null);
-            mBatteryHelper.refreshStats(BatteryStats.STATS_SINCE_CHARGED,
-                    mUserManager.getUserProfiles());
-            List<BatterySipper> usageList = mBatteryHelper.getUsageList();
-            final int N = usageList.size();
-            for (int i = 0; i < N; i++) {
-                BatterySipper sipper = usageList.get(i);
-                if (sipper.getUid() == mPackageInfo.applicationInfo.uid) {
-                    mSipper = sipper;
-                    break;
-                }
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            if (getActivity() == null) {
-                return;
-            }
-            refreshUi();
-        }
     }
 
     /**
