@@ -97,20 +97,26 @@ public class AirplaneModePreferenceController extends PreferenceController
     }
 
     public void onResume() {
-        mAirplaneModeEnabler.resume();
+        if (mAirplaneModeEnabler != null) {
+            mAirplaneModeEnabler.resume();
+        }
     }
 
     @Override
     public void onPause() {
-        mAirplaneModeEnabler.pause();
+        if (mAirplaneModeEnabler != null) {
+            mAirplaneModeEnabler.pause();
+        }
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE_EXIT_ECM) {
             Boolean isChoiceYes = data.getBooleanExtra(EXIT_ECM_RESULT, false);
             // Set Airplane mode based on the return value and checkbox state
-            mAirplaneModeEnabler.setAirplaneModeInECM(isChoiceYes,
-                    mAirplaneModePreference.isChecked());
+            if (mAirplaneModeEnabler != null) {
+                mAirplaneModeEnabler.setAirplaneModeInECM(isChoiceYes,
+                        mAirplaneModePreference.isChecked());
+            }
         }
     }
 }
