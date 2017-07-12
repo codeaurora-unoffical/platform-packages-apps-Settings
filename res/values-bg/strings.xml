@@ -2663,7 +2663,7 @@
     <string name="system_dashboard_summary" msgid="5797743225249766685">"Езици, час, резервно копие, актуализации"</string>
     <string name="search_results_title" msgid="1796252422574886932">"Настройки"</string>
     <string name="search_menu" msgid="6283419262313758339">"Търсете в настройките"</string>
-    <string name="query_hint_text" msgid="3350700807437473939">"Настройки за търсене"</string>
+    <string name="query_hint_text" msgid="3350700807437473939">"Търсете в настройките"</string>
     <string name="keywords_wifi" msgid="1395786161993828719">"wifi, wi-fi, връзка с мрежа"</string>
     <string name="keywords_more_default_sms_app" msgid="2265154063220360784">"текстово съобщение, изпращане на текстово съобщение, съобщения, изпращане на съобщения"</string>
     <string name="keywords_more_mobile_networks" msgid="8995946622054642367">"мобилни данни, мобилна мрежа, мобилен оператор, безжична мрежа, данни, 4g, 3g, 2g, lte"</string>
@@ -3434,6 +3434,8 @@
     <string name="support_estimated_wait_time" msgid="6523081420029378051">"Време за изчакване: ~ <xliff:g id="ESTIMATE">%1$s</xliff:g>"</string>
     <string name="bluetooth_talkback_computer" msgid="4875089335641234463">"Компютър"</string>
     <string name="bluetooth_talkback_headset" msgid="5140152177885220949">"Слушалки"</string>
+    <string name="qtifeedback_settings_title"> Обратна връзка за хардуер</string>
+    <string name="qtifeedback_settings_subtitle">Qualcomm Technologies доклади</string>
     <string name="bluetooth_talkback_phone" msgid="4260255181240622896">"Телефон"</string>
     <string name="bluetooth_talkback_imaging" msgid="551146170554589119">"Изображения"</string>
     <string name="bluetooth_talkback_headphone" msgid="26580326066627664">"Слушалки"</string>

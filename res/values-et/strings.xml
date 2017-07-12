@@ -2662,8 +2662,8 @@
     <string name="app_default_dashboard_title" msgid="7342549305933047317">"Vaikerakendused"</string>
     <string name="system_dashboard_summary" msgid="5797743225249766685">"Keeled, aeg, varundamine, värskendused"</string>
     <string name="search_results_title" msgid="1796252422574886932">"Seaded"</string>
-    <string name="search_menu" msgid="6283419262313758339">"Otsingu seaded"</string>
-    <string name="query_hint_text" msgid="3350700807437473939">"Otsinguseaded"</string>
+    <string name="search_menu" msgid="6283419262313758339">"Otsige seadetest"</string>
+    <string name="query_hint_text" msgid="3350700807437473939">"Otsige seadetest"</string>
     <string name="keywords_wifi" msgid="1395786161993828719">"wifi, wi-fi, võrguühendus"</string>
     <string name="keywords_more_default_sms_app" msgid="2265154063220360784">"tekstsõnum, SMS-i saatmine, sõnumid, sõnumside"</string>
     <string name="keywords_more_mobile_networks" msgid="8995946622054642367">"mobiilne, mobiil, mobiilioperaator, juhtmeta, andmed, 4g,3g, 2g, lte"</string>
@@ -3585,4 +3585,6 @@
     <string name="automatic_storage_manager_deactivation_warning" msgid="5605210730828410482">"Kas soovite salvestusruumi halduri välja lülitada?"</string>
     <string name="storage_movies_tv" msgid="5498394447562086890">"Filmi- ja TV-rakendused"</string>
     <string name="app_info_storage_title" msgid="5554719444625611987">"Kasutatav ruum"</string>
+    <string name="qtifeedback_settings_title">Tagasiside</string>
+    <string name="qtifeedback_settings_subtitle">Qualcomm Technologies riistvara kohta</string>
 </resources>
