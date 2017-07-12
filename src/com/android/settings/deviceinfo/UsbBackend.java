@@ -22,6 +22,7 @@ import android.content.pm.PackageManager;
 import android.hardware.usb.UsbManager;
 import android.hardware.usb.UsbPort;
 import android.hardware.usb.UsbPortStatus;
+import android.os.SystemProperties;
 import android.os.UserHandle;
 import android.os.UserManager;
 
@@ -40,6 +41,7 @@ public class UsbBackend {
     public static final int MODE_DATA_PTP    = 0x02 << 1;
     public static final int MODE_DATA_MIDI   = 0x03 << 1;
     public static final int MODE_DATA_TETHERING   = 0x04 << 1;
+    public static final int MODE_DATA_NONE_CTA = -1;
 
     private final boolean mRestricted;
     private final boolean mRestrictedBySystem;
@@ -53,6 +55,8 @@ public class UsbBackend {
     private boolean mIsUnlocked;
     private boolean mTetheringEnabled;
     private Context mContext;
+
+    private boolean mIsCTA = SystemProperties.getBoolean("persist.vendor.strict_op_enable", false);
 
     public UsbBackend(Context context) {
         mContext = context;
@@ -107,7 +111,7 @@ public class UsbBackend {
             return MODE_DATA_TETHERING;
         }
         if (!mIsUnlocked) {
-            if(isInPowerSourceMode()){
+            if(!mIsCTA || isInPowerSourceMode()){
                 //In power supply mode
                 return MODE_DATA_NONE;
             }else if (mUsbManager.isFunctionEnabled(UsbManager.USB_FUNCTION_MTP)) {
@@ -115,7 +119,7 @@ public class UsbBackend {
                 return MODE_DATA_NONE;
             } else {
                 // select none if no found
-                return -1;
+                return MODE_DATA_NONE_CTA;
             }
         } else if (mUsbManager.isFunctionEnabled(UsbManager.USB_FUNCTION_MTP)) {
             return MODE_DATA_MTP;
@@ -125,7 +129,7 @@ public class UsbBackend {
             return MODE_DATA_MIDI;
         }
         // select none if no found
-        return -1; // ...
+        return mIsCTA ? MODE_DATA_NONE_CTA : MODE_DATA_NONE; // ...
     }
 
     private void setUsbFunction(int mode) {
@@ -149,7 +153,7 @@ public class UsbBackend {
                 break;
             case MODE_DATA_NONE:
                 //Take MTP mode and data unlocked false as charging
-                if(!isInPowerSourceMode()){
+                if(mIsCTA && !isInPowerSourceMode()){
                     mUsbManager.setCurrentFunction(UsbManager.USB_FUNCTION_MTP);
                     mUsbManager.setUsbDataUnlocked(false);
                     break;
@@ -217,19 +221,5 @@ public class UsbBackend {
         }
         // No port, support sink modes only.
         return (mode & MODE_POWER_MASK) != MODE_POWER_SOURCE;
-    }
-
-    public boolean isCurrentModeSupported(int mode){
-        if (mPort != null){
-            int power = mPortStatus.getCurrentPowerRole() == UsbPort.POWER_ROLE_SOURCE
-                    ? MODE_POWER_SOURCE : MODE_POWER_SINK;
-            int data = mode & MODE_DATA_MASK;
-            if(data == 0){
-                return (mode & MODE_POWER_MASK) == power;
-            }else if((mode & MODE_POWER_MASK) != power){
-                return false;
-            }
-        }
-        return isModeSupported(mode);
     }
 }
