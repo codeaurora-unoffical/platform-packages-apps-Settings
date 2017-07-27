@@ -34,7 +34,7 @@ import android.support.v7.preference.PreferenceScreen;
 import android.util.SparseArray;
 
 import com.android.settings.SettingsActivity;
-import com.android.settings.SettingsRobolectricTestRunner;
+import com.android.settings.testutils.SettingsRobolectricTestRunner;
 import com.android.settings.SubSettings;
 import com.android.settings.TestConfig;
 import com.android.settings.applications.UserManagerWrapper;
@@ -114,7 +114,7 @@ public class UserProfileControllerTest {
                         99 * MEGABYTE_IN_BYTES,
                         33 * MEGABYTE_IN_BYTES,
                         33 * MEGABYTE_IN_BYTES,
-                        33 * MEGABYTE_IN_BYTES);
+                        33 * MEGABYTE_IN_BYTES, 0);
         result.put(10, userResult);
 
         mController.handleResult(result);

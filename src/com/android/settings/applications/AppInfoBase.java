@@ -35,6 +35,7 @@ import android.os.IBinder;
 import android.os.ServiceManager;
 import android.os.UserHandle;
 import android.os.UserManager;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.android.internal.logging.nano.MetricsProto;
@@ -42,6 +43,7 @@ import com.android.settings.SettingsActivity;
 import com.android.settings.SettingsPreferenceFragment;
 import com.android.settings.Utils;
 import com.android.settings.core.instrumentation.InstrumentedDialogFragment;
+import com.android.settings.overlay.FeatureFactory;
 import com.android.settingslib.RestrictedLockUtils;
 import com.android.settingslib.applications.ApplicationsState;
 import com.android.settingslib.applications.ApplicationsState.AppEntry;
@@ -62,6 +64,7 @@ public abstract class AppInfoBase extends SettingsPreferenceFragment
     protected EnforcedAdmin mAppsControlDisallowedAdmin;
     protected boolean mAppsControlDisallowedBySystem;
 
+    protected ApplicationFeatureProvider mApplicationFeatureProvider;
     protected ApplicationsState mState;
     protected ApplicationsState.Session mSession;
     protected ApplicationsState.AppEntry mAppEntry;
@@ -84,13 +87,14 @@ public abstract class AppInfoBase extends SettingsPreferenceFragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mFinishing = false;
-
-        mState = ApplicationsState.getInstance(getActivity().getApplication());
+        final Activity activity = getActivity();
+        mApplicationFeatureProvider = FeatureFactory.getFactory(activity)
+                .getApplicationFeatureProvider(activity);
+        mState = ApplicationsState.getInstance(activity.getApplication());
         mSession = mState.newSession(this);
-        Context context = getActivity();
-        mDpm = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
-        mUserManager = (UserManager) context.getSystemService(Context.USER_SERVICE);
-        mPm = context.getPackageManager();
+        mDpm = (DevicePolicyManager) activity.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        mUserManager = (UserManager) activity.getSystemService(Context.USER_SERVICE);
+        mPm = activity.getPackageManager();
         IBinder b = ServiceManager.getService(Context.USB_SERVICE);
         mUsbManager = IUsbManager.Stub.asInterface(b);
 
@@ -288,7 +292,8 @@ public abstract class AppInfoBase extends SettingsPreferenceFragment
         @Override
         public void onReceive(Context context, Intent intent) {
             String packageName = intent.getData().getSchemeSpecificPart();
-            if (!mFinishing && mAppEntry.info.packageName.equals(packageName)) {
+            if (!mFinishing && (mAppEntry == null || mAppEntry.info == null
+                    || TextUtils.equals(mAppEntry.info.packageName, packageName))) {
                 onPackageRemoved();
             }
         }

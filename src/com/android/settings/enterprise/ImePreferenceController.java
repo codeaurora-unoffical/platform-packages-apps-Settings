@@ -20,8 +20,8 @@ import android.support.v7.preference.Preference;
 
 import com.android.settings.R;
 import com.android.settings.core.DynamicAvailabilityPreferenceController;
-import com.android.settings.core.lifecycle.Lifecycle;
 import com.android.settings.overlay.FeatureFactory;
+import com.android.settingslib.core.lifecycle.Lifecycle;
 
 public class ImePreferenceController extends DynamicAvailabilityPreferenceController {
 
@@ -43,7 +43,9 @@ public class ImePreferenceController extends DynamicAvailabilityPreferenceContro
 
     @Override
     public boolean isAvailable() {
-        return mFeatureProvider.getImeLabelIfOwnerSet() != null;
+        final boolean available = mFeatureProvider.getImeLabelIfOwnerSet() != null;
+        notifyOnAvailabilityUpdate(available);
+        return available;
     }
 
     @Override

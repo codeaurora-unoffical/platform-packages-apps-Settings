@@ -75,7 +75,7 @@ import java.util.Iterator;
  */
 public class WifiConfigController implements TextWatcher,
         AdapterView.OnItemSelectedListener, OnCheckedChangeListener,
-        TextView.OnEditorActionListener, View.OnKeyListener{
+        TextView.OnEditorActionListener, View.OnKeyListener {
     private static final String TAG = "WifiConfigController";
 
     private static final String SYSTEM_CA_STORE_PATH = "/system/etc/security/cacerts";
@@ -109,6 +109,7 @@ public class WifiConfigController implements TextWatcher,
     public static final int WIFI_PEAP_PHASE2_SIM        = 3;
     public static final int WIFI_PEAP_PHASE2_AKA        = 4;
     public static final int WIFI_PEAP_PHASE2_AKA_PRIME  = 5;
+
 
     /* Phase2 methods supported by PEAP are limited */
     private final ArrayAdapter<String> mPhase2PeapAdapter;
@@ -410,7 +411,7 @@ public class WifiConfigController implements TextWatcher,
 
         if (mPasswordView != null
                 && ((mAccessPointSecurity == AccessPoint.SECURITY_WEP
-                        && mPasswordView.length() == 0)
+                    && !isWepPskValid(mPasswordView.getText().toString(), mPasswordView.length()))
                     || (mAccessPointSecurity == AccessPoint.SECURITY_PSK
                            && (mPasswordView.length() < 8 || mPasswordView.length() > 63)))) {
             passwordInvalid = true;
@@ -457,7 +458,14 @@ public class WifiConfigController implements TextWatcher,
     void showWarningMessagesIfAppropriate() {
         mView.findViewById(R.id.no_ca_cert_warning).setVisibility(View.GONE);
         mView.findViewById(R.id.no_domain_warning).setVisibility(View.GONE);
+        mView.findViewById(R.id.ssid_too_long_warning).setVisibility(View.GONE);
 
+        if (mSsidView != null) {
+            final String ssid = mSsidView.getText().toString();
+            if (WifiUtils.isSSIDTooLong(ssid)) {
+                mView.findViewById(R.id.ssid_too_long_warning).setVisibility(View.VISIBLE);
+            }
+        }
         if (mEapCaCertSpinner != null
                 && mView.findViewById(R.id.l_ca_cert).getVisibility() != View.GONE) {
             String caCertSelection = (String) mEapCaCertSpinner.getSelectedItem();
@@ -511,8 +519,8 @@ public class WifiConfigController implements TextWatcher,
                 if (mPasswordView.length() != 0) {
                     int length = mPasswordView.length();
                     String password = mPasswordView.getText().toString();
-                    // WEP-40, WEP-104, and 256-bit WEP (WEP-232?)
-                    if ((length == 10 || length == 26 || length == 58)
+                    // WEP-40, WEP-104, and WEP128
+                    if ((length == 10 || length == 26 || length == 32)
                             && password.matches("[0-9A-Fa-f]*")) {
                         config.wepKeys[0] = password;
                     } else {
@@ -1328,5 +1336,17 @@ public class WifiConfigController implements TextWatcher,
 
     public AccessPoint getAccessPoint() {
         return mAccessPoint;
+    }
+
+    private boolean isWepPskValid(String psk, int pskLength) {
+        if (psk == null || pskLength <= 0) return false;
+
+        // WEP40 or WEP104 or WEP128
+        if (pskLength == 5 || pskLength == 13 || pskLength == 16
+                ||((pskLength == 10 || pskLength == 26 || pskLength == 32)  // HEX format
+                    && psk.matches("[0-9A-Fa-f]*"))) {
+            return true;
+        }
+        return false;
     }
 }

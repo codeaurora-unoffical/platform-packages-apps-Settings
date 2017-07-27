@@ -21,8 +21,8 @@ import android.support.v7.preference.Preference;
 import com.android.settings.R;
 import com.android.settings.applications.ApplicationFeatureProvider;
 import com.android.settings.core.DynamicAvailabilityPreferenceController;
-import com.android.settings.core.lifecycle.Lifecycle;
 import com.android.settings.overlay.FeatureFactory;
+import com.android.settingslib.core.lifecycle.Lifecycle;
 
 public abstract class AdminGrantedPermissionsPreferenceControllerBase
         extends DynamicAvailabilityPreferenceController {
@@ -50,15 +50,15 @@ public abstract class AdminGrantedPermissionsPreferenceControllerBase
                 true /* async */,
                 (num) -> {
                     if (num == 0) {
-                        preference.setVisible(false);
                         mHasApps = false;
                     } else {
-                        preference.setVisible(true);
                         preference.setSummary(mContext.getResources().getQuantityString(
                                 R.plurals.enterprise_privacy_number_packages_lower_bound,
                                 num, num));
                         mHasApps = true;
                     }
+                    preference.setVisible(mHasApps);
+                    notifyOnAvailabilityUpdate(mHasApps);
                 });
     }
 
@@ -80,6 +80,7 @@ public abstract class AdminGrantedPermissionsPreferenceControllerBase
         mFeatureProvider.calculateNumberOfAppsWithAdminGrantedPermissions(mPermissions,
                 false /* async */, (num) -> haveAppsWithAdminGrantedPermissions[0] = num > 0);
         mHasApps = haveAppsWithAdminGrantedPermissions[0];
+        notifyOnAvailabilityUpdate(mHasApps);
         return mHasApps;
     }
 

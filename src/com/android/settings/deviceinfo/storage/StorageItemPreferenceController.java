@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.net.TrafficStats;
 import android.os.Bundle;
 import android.os.UserHandle;
 import android.os.storage.VolumeInfo;
@@ -30,17 +31,19 @@ import android.support.annotation.VisibleForTesting;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceScreen;
 import android.util.Log;
+import android.util.SparseArray;
 
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
 import com.android.settings.Settings;
 import com.android.settings.Utils;
 import com.android.settings.applications.ManageApplications;
-import com.android.settings.core.PreferenceController;
+import com.android.settings.core.PreferenceControllerMixin;
 import com.android.settings.core.instrumentation.MetricsFeatureProvider;
 import com.android.settings.deviceinfo.PrivateVolumeSettings.SystemInfoFragment;
 import com.android.settings.deviceinfo.StorageItemPreference;
 import com.android.settings.overlay.FeatureFactory;
+import com.android.settingslib.core.AbstractPreferenceController;
 import com.android.settingslib.deviceinfo.StorageMeasurement;
 import com.android.settingslib.deviceinfo.StorageVolumeProvider;
 
@@ -52,7 +55,8 @@ import java.util.Map;
  * StorageItemPreferenceController handles the storage line items which summarize the storage
  * categorization breakdown.
  */
-public class StorageItemPreferenceController extends PreferenceController {
+public class StorageItemPreferenceController extends AbstractPreferenceController implements
+        PreferenceControllerMixin {
     private static final String TAG = "StorageItemPreference";
 
     private static final String IMAGE_MIME_TYPE = "image/*";
@@ -237,7 +241,10 @@ public class StorageItemPreferenceController extends PreferenceController {
         setFilesPreferenceVisibility();
     }
 
-    public void onLoadFinished(StorageAsyncLoader.AppsStorageResult data) {
+    public void onLoadFinished(SparseArray<StorageAsyncLoader.AppsStorageResult> result,
+            int userId) {
+        final StorageAsyncLoader.AppsStorageResult data = result.get(userId);
+
         // TODO(b/35927909): Figure out how to split out apps which are only installed for work
         //       profiles in order to attribute those app's code bytes only to that profile.
         mPhotoPreference.setStorageSize(
@@ -248,23 +255,30 @@ public class StorageItemPreferenceController extends PreferenceController {
         mMoviesPreference.setStorageSize(data.videoAppsSize, mTotalSize);
         mAppPreference.setStorageSize(data.otherAppsSize, mTotalSize);
 
-        long unattributedExternalBytes =
+        long otherExternalBytes =
                 data.externalStats.totalBytes
                         - data.externalStats.audioBytes
                         - data.externalStats.videoBytes
-                        - data.externalStats.imageBytes;
-        mFilePreference.setStorageSize(unattributedExternalBytes, mTotalSize);
+                        - data.externalStats.imageBytes
+                        - data.externalStats.appBytes;
+        mFilePreference.setStorageSize(otherExternalBytes, mTotalSize);
 
-        // We define the system size as everything we can't classify.
         if (mSystemPreference != null) {
-            mSystemPreference.setStorageSize(
-                    mUsedBytes
-                            - data.externalStats.totalBytes
-                            - data.musicAppsSize
-                            - data.gamesSize
-                            - data.videoAppsSize
-                            - data.otherAppsSize,
-                    mTotalSize);
+            // Everything else that hasn't already been attributed is tracked as
+            // belonging to system.
+            long attributedSize = 0;
+            for (int i = 0; i < result.size(); i++) {
+                final StorageAsyncLoader.AppsStorageResult otherData = result.valueAt(i);
+                attributedSize += otherData.gamesSize
+                        + otherData.musicAppsSize
+                        + otherData.videoAppsSize
+                        + otherData.otherAppsSize;
+                attributedSize += otherData.externalStats.totalBytes
+                        - otherData.externalStats.appBytes;
+            }
+
+            final long systemSize = Math.max(TrafficStats.GB_IN_BYTES, mUsedBytes - attributedSize);
+            mSystemPreference.setStorageSize(systemSize, mTotalSize);
         }
     }
 

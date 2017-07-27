@@ -17,12 +17,12 @@
 package com.android.settings.enterprise;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.support.v7.preference.Preference;
 
 import com.android.settings.R;
-import com.android.settings.SettingsRobolectricTestRunner;
+import com.android.settings.testutils.SettingsRobolectricTestRunner;
 import com.android.settings.TestConfig;
+import com.android.settings.core.PreferenceAvailabilityObserver;
 import com.android.settings.testutils.FakeFeatureFactory;
 
 import org.junit.Before;
@@ -34,6 +34,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -43,13 +44,15 @@ import static org.mockito.Mockito.when;
 @Config(manifest = TestConfig.MANIFEST_PATH, sdk = TestConfig.SDK_VERSION)
 public final class EnterprisePrivacyPreferenceControllerTest {
 
-    private final String MANAGED_GENERIC = "managed by organization";
-    private final String MANAGED_WITH_NAME = "managed by Foo, Inc.";
-    private final String MANAGING_ORGANIZATION = "Foo, Inc.";
+    private static final String MANAGED_GENERIC = "managed by organization";
+    private static final String MANAGED_WITH_NAME = "managed by Foo, Inc.";
+    private static final String MANAGING_ORGANIZATION = "Foo, Inc.";
+    private static final String KEY_ENTERPRISE_PRIVACY = "enterprise_privacy";
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private Context mContext;
     private FakeFeatureFactory mFeatureFactory;
+    @Mock private PreferenceAvailabilityObserver mObserver;
 
     private EnterprisePrivacyPreferenceController mController;
 
@@ -59,6 +62,12 @@ public final class EnterprisePrivacyPreferenceControllerTest {
         FakeFeatureFactory.setupForTest(mContext);
         mFeatureFactory = (FakeFeatureFactory) FakeFeatureFactory.getFactory(mContext);
         mController = new EnterprisePrivacyPreferenceController(mContext, null /* lifecycle */);
+        mController.setAvailabilityObserver(mObserver);
+    }
+
+    @Test
+    public void testGetAvailabilityObserver() {
+        assertThat(mController.getAvailabilityObserver()).isEqualTo(mObserver);
     }
 
     @Test
@@ -85,10 +94,11 @@ public final class EnterprisePrivacyPreferenceControllerTest {
     public void testIsAvailable() {
         when(mFeatureFactory.enterprisePrivacyFeatureProvider.hasDeviceOwner()).thenReturn(false);
         assertThat(mController.isAvailable()).isFalse();
+        verify(mObserver).onPreferenceAvailabilityUpdated(KEY_ENTERPRISE_PRIVACY, false);
 
         when(mFeatureFactory.enterprisePrivacyFeatureProvider.hasDeviceOwner()).thenReturn(true);
         assertThat(mController.isAvailable()).isTrue();
-
+        verify(mObserver).onPreferenceAvailabilityUpdated(KEY_ENTERPRISE_PRIVACY, true);
     }
 
     @Test
@@ -99,6 +109,6 @@ public final class EnterprisePrivacyPreferenceControllerTest {
 
     @Test
     public void testGetPreferenceKey() {
-        assertThat(mController.getPreferenceKey()).isEqualTo("enterprise_privacy");
+        assertThat(mController.getPreferenceKey()).isEqualTo(KEY_ENTERPRISE_PRIVACY);
     }
 }

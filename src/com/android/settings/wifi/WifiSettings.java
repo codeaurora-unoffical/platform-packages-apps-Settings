@@ -43,15 +43,12 @@ import android.provider.Settings;
 import android.support.annotation.VisibleForTesting;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceCategory;
-import android.support.v7.preference.PreferenceManager;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
@@ -142,7 +139,7 @@ public class WifiSettings extends RestrictedSettingsFragment
     private WifiDialog mDialog;
     private WriteWifiConfigToNfcDialog mWifiToNfcDialog;
 
-    private ProgressBar mProgressHeader;
+    private View mProgressHeader;
 
     // this boolean extra specifies whether to disable the Next button when not connected. Used by
     // account creation outside of setup wizard.
@@ -189,7 +186,8 @@ public class WifiSettings extends RestrictedSettingsFragment
         super.onViewCreated(view, savedInstanceState);
         final Activity activity = getActivity();
         if (activity != null) {
-            mProgressHeader = (ProgressBar) setPinnedHeaderView(R.layout.wifi_progress_header);
+            mProgressHeader = setPinnedHeaderView(R.layout.wifi_progress_header)
+                    .findViewById(R.id.progress_bar_animation);
             setProgressBarVisible(false);
         }
     }
@@ -321,7 +319,6 @@ public class WifiSettings extends RestrictedSettingsFragment
 
         if (intent.hasExtra(EXTRA_START_CONNECT_SSID)) {
             mOpenSsid = intent.getStringExtra(EXTRA_START_CONNECT_SSID);
-            updateAccessPointsDelayed();
         }
     }
 
@@ -354,13 +351,28 @@ public class WifiSettings extends RestrictedSettingsFragment
         onWifiStateChanged(mWifiManager.getWifiState());
     }
 
-    private void forceUpdateAPs() {
+    /**
+     * Only update the AP list if there are not any APs currently shown.
+     *
+     * <p>Thus forceUpdate will only be called during cold start or when toggling between wifi on
+     * and off. In other use cases, the previous APs will remain until the next update is received
+     * from {@link WifiTracker}.
+     */
+    private void conditionallyForceUpdateAPs() {
+        if (mAccessPointsPreferenceCategory.getPreferenceCount() > 0
+                && mAccessPointsPreferenceCategory.getPreference(0) instanceof
+                        AccessPointPreference) {
+            // Make sure we don't update due to callbacks initiated by sticky broadcasts in
+            // WifiTracker.
+            Log.d(TAG, "Did not force update APs due to existing APs displayed");
+            getView().removeCallbacks(mUpdateAccessPointsRunnable);
+            return;
+        }
         setProgressBarVisible(true);
         mWifiTracker.forceUpdate();
         if (DEBUG) {
             Log.d(TAG, "WifiSettings force update APs: " + mWifiTracker.getAccessPoints());
         }
-
         getView().removeCallbacks(mUpdateAccessPointsRunnable);
         updateAccessPointPreferences();
     }
@@ -436,20 +448,6 @@ public class WifiSettings extends RestrictedSettingsFragment
             case MENU_ID_WPS_PBC:
                 showDialog(WPS_PBC_DIALOG_ID);
                 return true;
-                /*
-            case MENU_ID_P2P:
-                if (getActivity() instanceof SettingsActivity) {
-                    ((SettingsActivity) getActivity()).startPreferencePanel(
-                            WifiP2pSettings.class.getCanonicalName(),
-                            null,
-                            R.string.wifi_p2p_settings_title, null,
-                            this, 0);
-                } else {
-                    startFragment(this, WifiP2pSettings.class.getCanonicalName(),
-                            R.string.wifi_p2p_settings_title, -1, null);
-                }
-                return true;
-                */
             case MENU_ID_WPS_PIN:
                 showDialog(WPS_PIN_DIALOG_ID);
                 return true;
@@ -654,6 +652,7 @@ public class WifiSettings extends RestrictedSettingsFragment
      */
     @Override
     public void onAccessPointsChanged() {
+        Log.d(TAG, "onAccessPointsChanged (WifiTracker) callback initiated");
         updateAccessPointsDelayed();
     }
 
@@ -679,7 +678,7 @@ public class WifiSettings extends RestrictedSettingsFragment
         final int wifiState = mWifiManager.getWifiState();
         switch (wifiState) {
             case WifiManager.WIFI_STATE_ENABLED:
-                forceUpdateAPs();
+                conditionallyForceUpdateAPs();
                 break;
 
             case WifiManager.WIFI_STATE_ENABLING:
@@ -697,6 +696,7 @@ public class WifiSettings extends RestrictedSettingsFragment
 
             case WifiManager.WIFI_STATE_DISABLED:
                 setOffMessage();
+                setAdditionalSettingsSummaries();
                 setProgressBarVisible(false);
                 break;
         }
@@ -719,6 +719,9 @@ public class WifiSettings extends RestrictedSettingsFragment
         }
         // AccessPoints are sorted by the WifiTracker
         final List<AccessPoint> accessPoints = mWifiTracker.getAccessPoints();
+        if (DEBUG) {
+            Log.d(TAG, "updateAccessPoints called for: " + accessPoints);
+        }
 
         boolean hasAvailableAccessPoints = false;
         mAccessPointsPreferenceCategory.removePreference(mStatusMessagePreference);
@@ -731,10 +734,7 @@ public class WifiSettings extends RestrictedSettingsFragment
             AccessPoint accessPoint = accessPoints.get(index);
             // Ignore access points that are out of range.
             if (accessPoint.isReachable()) {
-                String key = accessPoint.getBssid();
-                if (TextUtils.isEmpty(key)) {
-                    key = accessPoint.getSsidStr();
-                }
+                String key = AccessPointPreference.generatePreferenceKey(accessPoint);
                 hasAvailableAccessPoints = true;
                 LongPressAccessPointPreference pref =
                         (LongPressAccessPointPreference) getCachedPreference(key);
@@ -909,7 +909,7 @@ public class WifiSettings extends RestrictedSettingsFragment
 
     protected void setProgressBarVisible(boolean visible) {
         if (mProgressHeader != null) {
-            mProgressHeader.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+            mProgressHeader.setVisibility(visible ? View.VISIBLE : View.GONE);
         }
     }
 
@@ -988,6 +988,7 @@ public class WifiSettings extends RestrictedSettingsFragment
         mMetricsFeatureProvider.action(getActivity(), MetricsEvent.ACTION_WIFI_CONNECT,
                 isSavedNetwork);
         mWifiManager.connect(config, mConnectListener);
+        scrollToPreference(mConnectedAccessPointPreferenceCategory);
     }
 
     protected void connect(final int networkId, boolean isSavedNetwork) {
@@ -1014,6 +1015,7 @@ public class WifiSettings extends RestrictedSettingsFragment
 
     @Override
     public void onAccessPointChanged(final AccessPoint accessPoint) {
+        Log.d(TAG, "onAccessPointChanged (singular) callback initiated");
         View view = getView();
         if (view != null) {
             view.post(new Runnable() {

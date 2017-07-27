@@ -16,8 +16,8 @@ package com.android.settings.enterprise;
 import android.content.Context;
 
 import com.android.settings.core.DynamicAvailabilityPreferenceController;
-import com.android.settings.core.lifecycle.Lifecycle;
 import com.android.settings.overlay.FeatureFactory;
+import com.android.settingslib.core.lifecycle.Lifecycle;
 
 public class AlwaysOnVpnManagedProfilePreferenceController
         extends DynamicAvailabilityPreferenceController {
@@ -33,7 +33,9 @@ public class AlwaysOnVpnManagedProfilePreferenceController
 
     @Override
     public boolean isAvailable() {
-        return mFeatureProvider.isAlwaysOnVpnSetInManagedProfile();
+        final boolean available = mFeatureProvider.isAlwaysOnVpnSetInManagedProfile();
+        notifyOnAvailabilityUpdate(available);
+        return available;
     }
 
     @Override

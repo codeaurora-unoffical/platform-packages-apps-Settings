@@ -30,14 +30,17 @@ import com.android.internal.logging.nano.MetricsProto;
 import com.android.internal.util.Preconditions;
 import com.android.settings.Utils;
 import com.android.settings.applications.UserManagerWrapper;
-import com.android.settings.core.PreferenceController;
+import com.android.settings.core.PreferenceControllerMixin;
 import com.android.settings.deviceinfo.StorageItemPreference;
 import com.android.settings.deviceinfo.StorageProfileFragment;
+import com.android.settingslib.core.AbstractPreferenceController;
 import com.android.settingslib.drawer.SettingsDrawerActivity;
 
-/** Defines a {@link PreferenceController} which handles a single profile of the primary user. */
-public class UserProfileController extends PreferenceController
-        implements StorageAsyncLoader.ResultHandler, UserIconLoader.UserIconHandler {
+/** Defines a {@link AbstractPreferenceController} which handles a single profile of the primary
+ *  user. */
+public class UserProfileController extends AbstractPreferenceController implements
+        PreferenceControllerMixin, StorageAsyncLoader.ResultHandler,
+        UserIconLoader.UserIconHandler {
     private static final String PREFERENCE_KEY_BASE = "pref_profile_";
     private StorageItemPreference mStoragePreference;
     private UserManagerWrapper mUserManager;
@@ -96,7 +99,13 @@ public class UserProfileController extends PreferenceController
         int userId = mUser.id;
         StorageAsyncLoader.AppsStorageResult result = stats.get(userId);
         if (result != null) {
-            setSize(result.externalStats.totalBytes, mTotalSizeBytes);
+            setSize(
+                    result.externalStats.totalBytes
+                            + result.otherAppsSize
+                            + result.videoAppsSize
+                            + result.musicAppsSize
+                            + result.gamesSize,
+                    mTotalSizeBytes);
         }
     }
 

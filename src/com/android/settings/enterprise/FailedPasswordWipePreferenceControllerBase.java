@@ -20,8 +20,8 @@ import android.support.v7.preference.Preference;
 
 import com.android.settings.R;
 import com.android.settings.core.DynamicAvailabilityPreferenceController;
-import com.android.settings.core.lifecycle.Lifecycle;
 import com.android.settings.overlay.FeatureFactory;
+import com.android.settingslib.core.lifecycle.Lifecycle;
 
 public abstract class FailedPasswordWipePreferenceControllerBase
         extends DynamicAvailabilityPreferenceController {
@@ -46,6 +46,8 @@ public abstract class FailedPasswordWipePreferenceControllerBase
 
     @Override
     public boolean isAvailable() {
-        return getMaximumFailedPasswordsBeforeWipe() > 0;
+        final boolean available = getMaximumFailedPasswordsBeforeWipe() > 0;
+        notifyOnAvailabilityUpdate(available);
+        return available;
     }
 }

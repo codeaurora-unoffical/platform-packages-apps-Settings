@@ -27,7 +27,8 @@ import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceScreen;
 import android.util.Pair;
 
-import com.android.settings.SettingsRobolectricTestRunner;
+import com.android.settings.testutils.SettingsRobolectricTestRunner;
+import com.android.settings.R;
 import com.android.settings.TestConfig;
 import com.android.settingslib.drawer.DashboardCategory;
 import com.android.settingslib.drawer.Tile;
@@ -180,7 +181,7 @@ public class SecurityFeatureProviderImplTest {
         mImpl.initPreferences(mContext, screen, dashboardCategory);
         verify(screen.findPreference(MOCK_KEY)).setIcon(SecurityFeatureProviderImpl.DEFAULT_ICON);
         verify(screen.findPreference(MOCK_KEY))
-                .setSummary(SecurityFeatureProviderImpl.DEFAULT_SUMMARY);
+                .setSummary(mContext.getString(R.string.summary_placeholder));
     }
 
     @Test

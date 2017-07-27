@@ -17,12 +17,13 @@ package com.android.settings.deviceinfo;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import android.util.SparseArray;
 
-import com.android.settings.SettingsRobolectricTestRunner;
+import com.android.settings.testutils.SettingsRobolectricTestRunner;
 import com.android.settings.TestConfig;
 import com.android.settings.deviceinfo.storage.StorageAsyncLoader;
 import com.android.settings.deviceinfo.storage.StorageItemPreferenceController;
@@ -31,13 +32,18 @@ import com.android.settingslib.applications.StorageStatsSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 @RunWith(SettingsRobolectricTestRunner.class)
 @Config(manifest = TestConfig.MANIFEST_PATH, sdk = TestConfig.SDK_VERSION)
 public class StorageProfileFragmentTest {
+    @Captor
+    private ArgumentCaptor<SparseArray<StorageAsyncLoader.AppsStorageResult>> mCaptor;
+
     @Test
-    public void verifyAppSizesAreZeroedOut() {
+    public void verifyAppSizesAreNotZeroedOut() {
         StorageItemPreferenceController controller = mock(StorageItemPreferenceController.class);
         StorageProfileFragment fragment = new StorageProfileFragment();
         StorageAsyncLoader.AppsStorageResult result = new StorageAsyncLoader.AppsStorageResult();
@@ -45,22 +51,21 @@ public class StorageProfileFragmentTest {
         result.otherAppsSize = 200;
         result.gamesSize = 300;
         result.videoAppsSize = 400;
-        result.externalStats = new StorageStatsSource.ExternalStorageStats(6, 1, 2, 3);
+        result.externalStats = new StorageStatsSource.ExternalStorageStats(6, 1, 2, 3, 0);
         SparseArray<StorageAsyncLoader.AppsStorageResult> resultsArray = new SparseArray<>();
         resultsArray.put(0, result);
         fragment.setPreferenceController(controller);
 
         fragment.onLoadFinished(null, resultsArray);
 
-        ArgumentCaptor<StorageAsyncLoader.AppsStorageResult> resultCaptor = ArgumentCaptor.forClass(
-                StorageAsyncLoader.AppsStorageResult.class);
-        verify(controller).onLoadFinished(resultCaptor.capture());
+        MockitoAnnotations.initMocks(this);
+        verify(controller).onLoadFinished(mCaptor.capture(), anyInt());
 
-        StorageAsyncLoader.AppsStorageResult extractedResult = resultCaptor.getValue();
-        assertThat(extractedResult.musicAppsSize).isEqualTo(0);
-        assertThat(extractedResult.videoAppsSize).isEqualTo(0);
-        assertThat(extractedResult.otherAppsSize).isEqualTo(0);
-        assertThat(extractedResult.gamesSize).isEqualTo(0);
+        StorageAsyncLoader.AppsStorageResult extractedResult = mCaptor.getValue().get(0);
+        assertThat(extractedResult.musicAppsSize).isEqualTo(100);
+        assertThat(extractedResult.videoAppsSize).isEqualTo(400);
+        assertThat(extractedResult.otherAppsSize).isEqualTo(200);
+        assertThat(extractedResult.gamesSize).isEqualTo(300);
         assertThat(extractedResult.externalStats.audioBytes).isEqualTo(1);
         assertThat(extractedResult.externalStats.videoBytes).isEqualTo(2);
         assertThat(extractedResult.externalStats.imageBytes).isEqualTo(3);

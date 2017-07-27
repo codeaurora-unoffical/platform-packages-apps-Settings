@@ -16,6 +16,7 @@
 
 package com.android.settings.notification;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,14 +28,15 @@ import android.preference.SeekBarVolumizer;
 import android.provider.SearchIndexableResource;
 import android.support.v7.preference.Preference;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
 import com.android.settings.RingtonePreference;
-import com.android.settings.core.PreferenceController;
-import com.android.settings.core.lifecycle.Lifecycle;
 import com.android.settings.dashboard.DashboardFragment;
 import com.android.settings.search.BaseSearchIndexProvider;
+import com.android.settingslib.core.AbstractPreferenceController;
+import com.android.settingslib.core.lifecycle.Lifecycle;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -98,7 +100,19 @@ public class SoundSettings extends DashboardFragment {
                     null,
                     UserHandle.of(mRequestPreference.getUserId()));
             return true;
+        } else if (preference == findPreference(KEY_CELL_BROADCAST_SETTINGS)) {
+            final Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.setComponent(new ComponentName("com.android.cellbroadcastreceiver",
+                    "com.android.cellbroadcastreceiver.CellBroadcastSettings"));
+            if (getActivity().getPackageManager().queryIntentActivities(intent, 0).isEmpty()) {
+                Log.d(TAG, "Activity com.android.cellbroadcastreceiver" +
+                        ".CellBroadcastSettings does not exist");
+                return false;
+            }
+            startActivity(intent);
+            return true;
         }
+
         return super.onPreferenceTreeClick(preference);
     }
 
@@ -113,7 +127,7 @@ public class SoundSettings extends DashboardFragment {
     }
 
     @Override
-    protected List<PreferenceController> getPreferenceControllers(Context context) {
+    protected List<AbstractPreferenceController> getPreferenceControllers(Context context) {
         return buildPreferenceControllers(context, this, mVolumeCallback, getLifecycle());
     }
 
@@ -182,10 +196,10 @@ public class SoundSettings extends DashboardFragment {
         }
     }
 
-    private static List<PreferenceController> buildPreferenceControllers(Context context,
+    private static List<AbstractPreferenceController> buildPreferenceControllers(Context context,
             SoundSettings fragment, VolumeSeekBarPreference.Callback callback,
             Lifecycle lifecycle) {
-        final List<PreferenceController> controllers = new ArrayList<>();
+        final List<AbstractPreferenceController> controllers = new ArrayList<>();
         controllers.add(new ZenModePreferenceController(context));
         controllers.add(new EmergencyBroadcastPreferenceController(
                 context, KEY_CELL_BROADCAST_SETTINGS));
@@ -233,7 +247,7 @@ public class SoundSettings extends DashboardFragment {
                 }
 
                 @Override
-                public List<PreferenceController> getPreferenceControllers(Context context) {
+                public List<AbstractPreferenceController> getPreferenceControllers(Context context) {
                     return buildPreferenceControllers(context, null /* fragment */,
                             null /* callback */, null /* lifecycle */);
                 }

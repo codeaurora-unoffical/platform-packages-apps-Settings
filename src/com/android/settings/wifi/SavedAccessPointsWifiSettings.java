@@ -38,7 +38,7 @@ import com.android.settings.search.Indexable;
 import com.android.settings.search.SearchIndexableRaw;
 import com.android.settingslib.wifi.AccessPoint;
 import com.android.settingslib.wifi.AccessPointPreference;
-import com.android.settingslib.wifi.WifiTracker;
+import com.android.settingslib.wifi.WifiSavedConfigUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -124,55 +124,31 @@ public class SavedAccessPointsWifiSettings extends SettingsPreferenceFragment
         PreferenceScreen preferenceScreen = getPreferenceScreen();
         final Context context = getPrefContext();
 
-        final List<AccessPoint> accessPoints = getSavedConfigs(context, mWifiManager);
+        final List<AccessPoint> accessPoints =
+                WifiSavedConfigUtils.getAllConfigs(context, mWifiManager);
         Collections.sort(accessPoints, SAVED_NETWORK_COMPARATOR);
-        preferenceScreen.removeAll();
+        cacheRemoveAllPrefs(preferenceScreen);
 
         final int accessPointsSize = accessPoints.size();
-        for (int i = 0; i < accessPointsSize; ++i){
+        for (int i = 0; i < accessPointsSize; ++i) {
+            AccessPoint ap = accessPoints.get(i);
+            String key = AccessPointPreference.generatePreferenceKey(ap);
             LongPressAccessPointPreference preference =
-                    new LongPressAccessPointPreference(accessPoints.get(i), context,
-                            mUserBadgeCache, true, this);
-            preference.setIcon(null);
-            preferenceScreen.addPreference(preference);
+                    (LongPressAccessPointPreference) getCachedPreference(key);
+            if (preference == null) {
+                preference = new LongPressAccessPointPreference(
+                        ap, context, mUserBadgeCache, true, this);
+                preference.setKey(key);
+                preference.setIcon(null);
+                preferenceScreen.addPreference(preference);
+            }
         }
+
+        removeCachedPrefs(preferenceScreen);
 
         if(getPreferenceScreen().getPreferenceCount() < 1) {
             Log.w(TAG, "Saved networks activity loaded, but there are no saved networks!");
         }
-    }
-
-    /**
-     * Retrieved the list of saved network configurations from {@link WifiManager}.
-     * Each configuration is represented by {@link AccessPoint}.
-     *
-     * @param context The application context
-     * @param wifiManager An instance of {@link WifiManager}
-     * @return List of {@link AccessPoint}
-     */
-    private static List<AccessPoint> getSavedConfigs(Context context, WifiManager wifiManager) {
-        List<AccessPoint> savedConfigs = new ArrayList<>();
-        List<WifiConfiguration> savedNetworks = wifiManager.getConfiguredNetworks();
-        for (WifiConfiguration network : savedNetworks) {
-            // Configuration for Passpoint network is configured temporary by WifiService for
-            // connection attempt only.  The underlying configuration is saved as Passpoint
-            // configuration, which will be retrieved with WifiManager#getPasspointConfiguration
-            // call below.
-            if (network.isPasspoint()) {
-                continue;
-            }
-            savedConfigs.add(new AccessPoint(context, network));
-        }
-        try {
-            List<PasspointConfiguration> savedPasspointConfigs =
-                    wifiManager.getPasspointConfigurations();
-            for (PasspointConfiguration config : savedPasspointConfigs) {
-                savedConfigs.add(new AccessPoint(context, config));
-            }
-        } catch (UnsupportedOperationException e) {
-            // Passpoint not supported.
-        }
-        return savedConfigs;
     }
 
     private void showDialog(LongPressAccessPointPreference accessPoint, boolean edit) {
@@ -292,8 +268,8 @@ public class SavedAccessPointsWifiSettings extends SettingsPreferenceFragment
                 result.add(data);
 
                 // Add available Wi-Fi access points
-                final List<AccessPoint> accessPoints =
-                        getSavedConfigs(context, context.getSystemService(WifiManager.class));
+                final List<AccessPoint> accessPoints = WifiSavedConfigUtils.getAllConfigs(
+                        context, context.getSystemService(WifiManager.class));
 
                 final int accessPointsSize = accessPoints.size();
                 for (int i = 0; i < accessPointsSize; ++i){

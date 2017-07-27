@@ -16,21 +16,19 @@
 
 package com.android.settings.notification;
 
-import static android.app.NotificationManager.IMPORTANCE_LOW;
-import static android.app.NotificationManager.IMPORTANCE_NONE;
-import static android.app.NotificationManager.IMPORTANCE_UNSPECIFIED;
-
 import android.app.Activity;
 import android.app.NotificationChannel;
+import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
 import android.content.Intent;
-import android.content.pm.UserInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.UserHandle;
+import android.os.AsyncTask;
 import android.provider.Settings;
 import android.support.v7.preference.Preference;
 import android.text.TextUtils;
+import android.text.BidiFormatter;
+import android.text.SpannableStringBuilder;
 import android.util.ArrayMap;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -38,18 +36,19 @@ import android.view.View;
 import android.widget.Switch;
 
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
-import com.android.internal.widget.LockPatternUtils;
-import com.android.settings.AppHeader;
 import com.android.settings.R;
 import com.android.settings.RingtonePreference;
 import com.android.settings.Utils;
-import com.android.settings.applications.AppHeaderController;
 import com.android.settings.applications.AppInfoBase;
 import com.android.settings.applications.LayoutPreference;
-import com.android.settings.overlay.FeatureFactory;
-import com.android.settings.widget.FooterPreference;
+import com.android.settings.widget.EntityHeaderController;
 import com.android.settings.widget.SwitchBar;
 import com.android.settingslib.RestrictedSwitchPreference;
+import com.android.settingslib.widget.FooterPreference;
+
+import static android.app.NotificationManager.IMPORTANCE_LOW;
+import static android.app.NotificationManager.IMPORTANCE_NONE;
+import static android.app.NotificationManager.IMPORTANCE_UNSPECIFIED;
 
 public class ChannelNotificationSettings extends NotificationSettingsBase {
     private static final String TAG = "ChannelSettings";
@@ -64,6 +63,8 @@ public class ChannelNotificationSettings extends NotificationSettingsBase {
     private RestrictedSwitchPreference mVibrate;
     private NotificationSoundPreference mRingtone;
     private FooterPreference mFooter;
+    private NotificationChannelGroup mChannelGroup;
+    private EntityHeaderController mHeaderPref;
 
     @Override
     public int getMetricsCategory() {
@@ -93,6 +94,27 @@ public class ChannelNotificationSettings extends NotificationSettingsBase {
             mShowLegacyChannelConfig = true;
         } else {
             populateUpgradedChannelPrefs();
+
+            if (mChannel.getGroup() != null) {
+                // Go look up group name
+                new AsyncTask<Void, Void, Void>() {
+                    @Override
+                    protected Void doInBackground(Void... unused) {
+                        if (mChannel.getGroup() != null) {
+                            mChannelGroup = mBackend.getGroup(mChannel.getGroup(), mPkg, mUid);
+                        }
+                        return null;
+                    }
+
+                    @Override
+                    protected void onPostExecute(Void unused) {
+                        if (getHost() == null || mChannelGroup == null) {
+                            return;
+                        }
+                        setChannelGroupLabel(mChannelGroup.getName());
+                    }
+                }.execute();
+            }
         }
 
         updateDependents(mChannel.getImportance() == IMPORTANCE_NONE);
@@ -110,22 +132,38 @@ public class ChannelNotificationSettings extends NotificationSettingsBase {
     }
 
     private void addHeaderPref() {
-        ArrayMap<String, NotificationBackend.AppRow> rows = new ArrayMap<String, NotificationBackend.AppRow>();
+        ArrayMap<String, NotificationBackend.AppRow> rows = new ArrayMap<>();
         rows.put(mAppRow.pkg, mAppRow);
         collectConfigActivities(rows);
         final Activity activity = getActivity();
-        final Preference pref = FeatureFactory.getFactory(activity)
-                .getApplicationFeatureProvider(activity)
-                .newAppHeaderController(this /* fragment */, null /* appHeader */)
+        mHeaderPref = EntityHeaderController
+                .newInstance(activity, this /* fragment */, null /* header */)
+                .setRecyclerView(getListView(), getLifecycle());
+        final Preference pref = mHeaderPref
                 .setIcon(mAppRow.icon)
                 .setLabel(mChannel.getName())
                 .setSummary(mAppRow.label)
                 .setPackageName(mAppRow.pkg)
                 .setUid(mAppRow.uid)
-                .setButtonActions(AppHeaderController.ActionType.ACTION_APP_INFO,
-                        AppHeaderController.ActionType.ACTION_NOTIF_PREFERENCE)
+                .setButtonActions(EntityHeaderController.ActionType.ACTION_NOTIF_PREFERENCE,
+                        EntityHeaderController.ActionType.ACTION_NONE)
+                .setHasAppInfoLink(true)
                 .done(activity, getPrefContext());
         getPreferenceScreen().addPreference(pref);
+    }
+
+    private void setChannelGroupLabel(CharSequence groupName) {
+        final SpannableStringBuilder summary = new SpannableStringBuilder();
+        BidiFormatter bidi = BidiFormatter.getInstance();
+        summary.append(bidi.unicodeWrap(mAppRow.label.toString()));
+        if (groupName != null) {
+            summary.append(bidi.unicodeWrap(mContext.getText(
+                    R.string.notification_header_divider_symbol_with_spaces)));
+            summary.append(bidi.unicodeWrap(groupName.toString()));
+        }
+        final Activity activity = getActivity();
+        mHeaderPref.setSummary(summary.toString());
+        mHeaderPref.done(activity, getPrefContext());
     }
 
     private void addFooterPref() {
@@ -175,6 +213,7 @@ public class ChannelNotificationSettings extends NotificationSettingsBase {
     private void setupVibrate() {
         mVibrate = (RestrictedSwitchPreference) findPreference(KEY_VIBRATE);
         mVibrate.setDisabledByAdmin(mSuspendedAppsAdmin);
+        mVibrate.setEnabled(!mVibrate.isDisabledByAdmin() && isChannelConfigurable(mChannel));
         mVibrate.setChecked(mChannel.shouldVibrate());
         mVibrate.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
@@ -191,6 +230,7 @@ public class ChannelNotificationSettings extends NotificationSettingsBase {
     private void setupRingtone() {
         mRingtone = (NotificationSoundPreference) findPreference(KEY_RINGTONE);
         mRingtone.setRingtone(mChannel.getSound());
+        mRingtone.setEnabled(isChannelConfigurable(mChannel));
         mRingtone.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -243,15 +283,17 @@ public class ChannelNotificationSettings extends NotificationSettingsBase {
         mImportance = findPreference(KEY_IMPORTANCE);
         Bundle channelArgs = new Bundle();
         channelArgs.putInt(AppInfoBase.ARG_PACKAGE_UID, mUid);
-        channelArgs.putBoolean(AppHeader.EXTRA_HIDE_INFO_BUTTON, true);
         channelArgs.putString(AppInfoBase.ARG_PACKAGE_NAME, mPkg);
         channelArgs.putString(Settings.EXTRA_CHANNEL_ID, mChannel.getId());
-        Intent channelIntent = Utils.onBuildStartFragmentIntent(getActivity(),
-                ChannelImportanceSettings.class.getName(),
-                channelArgs, null, R.string.notification_importance_title, null,
-                false, getMetricsCategory());
-        mImportance.setIntent(channelIntent);
-        mImportance.setEnabled(mSuspendedAppsAdmin == null);
+        mImportance.setEnabled(mSuspendedAppsAdmin == null && isChannelConfigurable(mChannel));
+        // Set up intent to show importance selection only if this setting is enabled.
+        if (mImportance.isEnabled()) {
+            Intent channelIntent = Utils.onBuildStartFragmentIntent(getActivity(),
+                    ChannelImportanceSettings.class.getName(),
+                    channelArgs, null, R.string.notification_importance_title, null,
+                    false, getMetricsCategory());
+            mImportance.setIntent(channelIntent);
+        }
         mImportance.setSummary(getImportanceSummary(mChannel.getImportance()));
     }
 
@@ -309,7 +351,9 @@ public class ChannelNotificationSettings extends NotificationSettingsBase {
         if (mRingtone != null) {
             mRingtone.onActivityResult(requestCode, resultCode, data);
         }
-        mImportance.setSummary(getImportanceSummary(mChannel.getImportance()));
+        if (mChannel != null) {
+            mImportance.setSummary(getImportanceSummary(mChannel.getImportance()));
+        }
     }
 
     boolean canPulseLight() {
@@ -345,7 +389,7 @@ public class ChannelNotificationSettings extends NotificationSettingsBase {
         if (mAppLink != null) {
             setVisible(mAppLink, checkCanBeVisible(NotificationManager.IMPORTANCE_MIN));
         }
-        if (mFooter !=null) {
+        if (mFooter != null) {
             setVisible(mFooter, checkCanBeVisible(NotificationManager.IMPORTANCE_MIN));
         }
     }

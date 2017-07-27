@@ -26,10 +26,10 @@ import com.android.settings.R;
 import com.android.settings.SettingsPreferenceFragment;
 import com.android.settings.applications.AppInfoBase;
 import com.android.settings.applications.LayoutPreference;
-import com.android.settings.widget.FooterPreference;
 import com.android.settings.widget.SwitchBar;
 import com.android.settingslib.RestrictedLockUtils;
 import com.android.settingslib.RestrictedSwitchPreference;
+import com.android.settingslib.widget.FooterPreference;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -263,13 +263,10 @@ abstract public class NotificationSettingsBase extends SettingsPreferenceFragmen
     }
 
     protected void addAppLinkPref() {
-        if (mAppRow.settingsIntent != null) {
-            mAppLink = new Preference(getPrefContext());
-            mAppLink.setKey(KEY_APP_LINK);
-            mAppLink.setOrder(500);
+        if (mAppRow.settingsIntent != null && mAppLink == null) {
+            addPreferencesFromResource(R.xml.inapp_notification_settings);
+            mAppLink = (Preference) findPreference(KEY_APP_LINK);
             mAppLink.setIntent(mAppRow.settingsIntent);
-            mAppLink.setTitle(mContext.getString(R.string.app_settings_link));
-            getPreferenceScreen().addPreference(mAppLink);
         }
     }
 
@@ -293,6 +290,8 @@ abstract public class NotificationSettingsBase extends SettingsPreferenceFragmen
     private void setupImportanceToggle() {
         mImportanceToggle = (RestrictedSwitchPreference) findPreference(KEY_ALLOW_SOUND);
         mImportanceToggle.setDisabledByAdmin(mSuspendedAppsAdmin);
+        mImportanceToggle.setEnabled(isChannelConfigurable(mChannel)
+                && !mImportanceToggle.isDisabledByAdmin());
         mImportanceToggle.setChecked(mChannel.getImportance() >= IMPORTANCE_DEFAULT
                 || mChannel.getImportance() == IMPORTANCE_UNSPECIFIED);
         mImportanceToggle.setOnPreferenceChangeListener(
@@ -313,6 +312,7 @@ abstract public class NotificationSettingsBase extends SettingsPreferenceFragmen
     protected void setupPriorityPref(boolean priority) {
         mPriority = (RestrictedSwitchPreference) findPreference(KEY_BYPASS_DND);
         mPriority.setDisabledByAdmin(mSuspendedAppsAdmin);
+        mPriority.setEnabled(isChannelConfigurable(mChannel) && !mPriority.isDisabledByAdmin());
         mPriority.setChecked(priority);
         mPriority.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
@@ -444,10 +444,15 @@ abstract public class NotificationSettingsBase extends SettingsPreferenceFragmen
         return lockscreenSecure;
     }
 
+    protected boolean isChannelConfigurable(NotificationChannel channel) {
+        return !channel.getId().equals(mAppRow.lockedChannelId);
+    }
+
     protected boolean isChannelBlockable(boolean systemApp, NotificationChannel channel) {
         if (!mAppRow.systemApp) {
             return true;
         }
+
         return channel.isBlockableSystem()
                 || channel.getImportance() == NotificationManager.IMPORTANCE_NONE;
     }

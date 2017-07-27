@@ -42,6 +42,7 @@ import android.widget.TabHost.TabSpec;
 import android.widget.TabWidget;
 import android.widget.Toast;
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
+import com.android.internal.telephony.IccCardConstants.State;
 import com.android.internal.telephony.Phone;
 import com.android.internal.telephony.PhoneFactory;
 import com.android.internal.telephony.TelephonyIntents;
@@ -160,7 +161,6 @@ public class IccLockSettings extends SettingsPreferenceFragment
 
         if (Utils.isMonkeyRunning()) {
             finish();
-            return;
         }
 
         addPreferencesFromResource(R.xml.sim_lock_settings);
@@ -247,11 +247,32 @@ public class IccLockSettings extends SettingsPreferenceFragment
     }
 
     private void updatePreferences() {
-        mPinDialog.setEnabled(mPhone != null);
-        mPinToggle.setEnabled(mPhone != null);
-
+<<<<<<< HEAD
         if (mPhone != null) {
+            if (mPhone.getIccCard().getState() != State.READY) {
+                // if SIM State is NOT READY, it is not possible to interact with UICC app
+                // for enabling/disabling PIN so greyout PIN options.
+                mPinToggle.setEnabled(false);
+                mPinDialog.setEnabled(false);
+            } else {
+                mPinToggle.setEnabled(true);
+                mPinDialog.setEnabled(true);
+            }
             mPinToggle.setChecked(mPhone.getIccCard().getIccLockEnabled());
+        } else {
+            mPinDialog.setEnabled(false);
+            mPinToggle.setEnabled(false);
+=======
+        if (mPinDialog != null) {
+            mPinDialog.setEnabled(mPhone != null);
+        }
+        if (mPinToggle != null) {
+            mPinToggle.setEnabled(mPhone != null);
+
+            if (mPhone != null) {
+                mPinToggle.setChecked(mPhone.getIccCard().getIccLockEnabled());
+            }
+>>>>>>> 23dd351091fa4d8909543a0b95c332505f2053d2
         }
     }
 
@@ -281,6 +302,11 @@ public class IccLockSettings extends SettingsPreferenceFragment
     public void onPause() {
         super.onPause();
         getContext().unregisterReceiver(mSimStateReceiver);
+    }
+
+    @Override
+    protected int getHelpResource() {
+        return R.string.help_url_icc_lock;
     }
 
     @Override

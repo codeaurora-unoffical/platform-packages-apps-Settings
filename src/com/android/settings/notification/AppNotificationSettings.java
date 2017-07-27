@@ -16,10 +16,6 @@
 
 package com.android.settings.notification;
 
-import static android.app.NotificationManager.IMPORTANCE_LOW;
-import static android.app.NotificationManager.IMPORTANCE_NONE;
-import static android.app.NotificationManager.IMPORTANCE_UNSPECIFIED;
-
 import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
@@ -38,24 +34,25 @@ import android.view.View;
 import android.widget.Switch;
 
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
-import com.android.settings.AppHeader;
 import com.android.settings.R;
 import com.android.settings.Utils;
-import com.android.settings.applications.AppHeaderController;
 import com.android.settings.applications.AppInfoBase;
 import com.android.settings.applications.LayoutPreference;
 import com.android.settings.notification.NotificationBackend.AppRow;
-import com.android.settings.overlay.FeatureFactory;
-import com.android.settings.widget.FooterPreference;
+import com.android.settings.widget.EntityHeaderController;
 import com.android.settings.widget.MasterSwitchPreference;
 import com.android.settings.widget.SwitchBar;
 import com.android.settingslib.RestrictedSwitchPreference;
+import com.android.settingslib.widget.FooterPreference;
 
-import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import static android.app.NotificationManager.IMPORTANCE_LOW;
+import static android.app.NotificationManager.IMPORTANCE_NONE;
+import static android.app.NotificationManager.IMPORTANCE_UNSPECIFIED;
 
 /** These settings are per app, so should not be returned in global search results. */
 public class AppNotificationSettings extends NotificationSettingsBase {
@@ -95,7 +92,6 @@ public class AppNotificationSettings extends NotificationSettingsBase {
         getPreferenceScreen().setOrderingAsAdded(true);
         setupBlock();
         addHeaderPref();
-        addAppLinkPref();
 
         mShowLegacyChannelConfig = mBackend.onlyHasDefaultChannel(mAppRow.pkg, mAppRow.uid);
         if (mShowLegacyChannelConfig) {
@@ -120,6 +116,7 @@ public class AppNotificationSettings extends NotificationSettingsBase {
                         return;
                     }
                     populateChannelList();
+                    addAppLinkPref();
                 }
             }.execute();
         }
@@ -128,25 +125,35 @@ public class AppNotificationSettings extends NotificationSettingsBase {
     }
 
     private void addHeaderPref() {
-        ArrayMap<String, AppRow> rows = new ArrayMap<String, AppRow>();
+        ArrayMap<String, AppRow> rows = new ArrayMap<>();
         rows.put(mAppRow.pkg, mAppRow);
         collectConfigActivities(rows);
         final Activity activity = getActivity();
-        final Preference pref = FeatureFactory.getFactory(activity)
-                .getApplicationFeatureProvider(activity)
-                .newAppHeaderController(this /* fragment */, null /* appHeader */)
+        final Preference pref = EntityHeaderController
+                .newInstance(activity, this /* fragment */, null /* header */)
+                .setRecyclerView(getListView(), getLifecycle())
                 .setIcon(mAppRow.icon)
                 .setLabel(mAppRow.label)
                 .setPackageName(mAppRow.pkg)
                 .setUid(mAppRow.uid)
-                .setButtonActions(AppHeaderController.ActionType.ACTION_APP_INFO,
-                        AppHeaderController.ActionType.ACTION_NOTIF_PREFERENCE)
+                .setHasAppInfoLink(true)
+                .setButtonActions(EntityHeaderController.ActionType.ACTION_NONE,
+                        EntityHeaderController.ActionType.ACTION_NOTIF_PREFERENCE)
                 .done(activity, getPrefContext());
         pref.setKey(KEY_HEADER);
         getPreferenceScreen().addPreference(pref);
     }
 
     private void populateChannelList() {
+        if (!mChannelGroups.isEmpty()) {
+            // If there's anything in mChannelGroups, we've called populateChannelList twice.
+            // Clear out existing channels and log.
+            Log.w(TAG, "Notification channel group posted twice to settings - old size " +
+                    mChannelGroups.size() + ", new size " + mChannelGroupList.size());
+            for (Preference p : mChannelGroups) {
+                getPreferenceScreen().removePreference(p);
+            }
+        }
         if (mChannelGroupList.isEmpty()) {
             PreferenceCategory groupCategory = new PreferenceCategory(getPrefContext());
             groupCategory.setTitle(R.string.notification_channels);
@@ -204,14 +211,14 @@ public class AppNotificationSettings extends NotificationSettingsBase {
         MasterSwitchPreference channelPref = new MasterSwitchPreference(
                 getPrefContext());
         channelPref.setSwitchEnabled(mSuspendedAppsAdmin == null
-                &&  isChannelBlockable(mAppRow.systemApp, channel));
+                && isChannelBlockable(mAppRow.systemApp, channel)
+                && isChannelConfigurable(channel));
         channelPref.setKey(channel.getId());
         channelPref.setTitle(channel.getName());
         channelPref.setChecked(channel.getImportance() != IMPORTANCE_NONE);
         channelPref.setSummary(getImportanceSummary(channel));
         Bundle channelArgs = new Bundle();
         channelArgs.putInt(AppInfoBase.ARG_PACKAGE_UID, mUid);
-        channelArgs.putBoolean(AppHeader.EXTRA_HIDE_INFO_BUTTON, true);
         channelArgs.putString(AppInfoBase.ARG_PACKAGE_NAME, mPkg);
         channelArgs.putString(Settings.EXTRA_CHANNEL_ID, channel.getId());
         Intent channelIntent = Utils.onBuildStartFragmentIntent(getActivity(),
@@ -330,15 +337,15 @@ public class AppNotificationSettings extends NotificationSettingsBase {
             case NotificationManager.IMPORTANCE_NONE:
                 return getContext().getString(R.string.notification_toggle_off);
             case NotificationManager.IMPORTANCE_MIN:
-                return getContext().getString(R.string.notification_importance_min_title);
+                return getContext().getString(R.string.notification_importance_min);
             case NotificationManager.IMPORTANCE_LOW:
-                return getContext().getString(R.string.notification_importance_low_title);
+                return getContext().getString(R.string.notification_importance_low);
             case NotificationManager.IMPORTANCE_DEFAULT:
-                return getContext().getString(R.string.notification_importance_default_title);
+                return getContext().getString(R.string.notification_importance_default);
             case NotificationManager.IMPORTANCE_HIGH:
             case NotificationManager.IMPORTANCE_MAX:
             default:
-                return getContext().getString(R.string.notification_importance_high_title);
+                return getContext().getString(R.string.notification_importance_high);
         }
 
     }

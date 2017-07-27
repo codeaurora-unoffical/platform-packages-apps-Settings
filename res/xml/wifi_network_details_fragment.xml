@@ -18,10 +18,11 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:settings="http://schemas.android.com/apk/res/com.android.settings" >
 
-    <!-- Connected Network Header -->
-    <Preference
-            android:key="connection_detail"
-            android:layout="@layout/connection_detail_pref"/>
+    <com.android.settings.applications.LayoutPreference
+        android:key="connection_header"
+        android:layout="@layout/settings_entity_header"
+        android:selectable="false"
+        android:order="-10000"/>
 
     <!-- General Details Category -->
     <PreferenceCategory
@@ -29,7 +30,7 @@
         <!-- Buttons -->
         <com.android.settings.applications.LayoutPreference
             android:key="buttons"
-            android:layout="@layout/two_buttons_panel"
+            android:layout="@layout/wifi_network_details_two_buttons_panel"
             android:selectable="false" />
 
         <com.android.settings.wifi.WifiDetailPreference
@@ -82,8 +83,12 @@
 
     <!-- IPv6 Details -->
     <PreferenceCategory
-            android:key="ipv6_details_category"
+            android:key="ipv6_category"
             android:title="@string/wifi_details_ipv6_address_header"
-            android:selectable="false"/>
+            android:selectable="false">
+        <Preference
+                android:key="ipv6_addresses"
+                android:selectable="false"/>
+    </PreferenceCategory>
 
 </PreferenceScreen>

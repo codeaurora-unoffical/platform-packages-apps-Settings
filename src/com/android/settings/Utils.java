@@ -25,6 +25,7 @@ import android.annotation.Nullable;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.AppGlobals;
+import android.app.AppOpsManager;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.app.IActivityManager;
@@ -51,6 +52,9 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.fingerprint.FingerprintManager;
+import android.icu.text.MeasureFormat;
+import android.icu.util.Measure;
+import android.icu.util.MeasureUnit;
 import android.net.ConnectivityManager;
 import android.net.LinkProperties;
 import android.net.Network;
@@ -109,6 +113,7 @@ import com.android.internal.util.UserIcons;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.settings.password.FingerprintManagerWrapper;
 import com.android.settings.password.IFingerprintManager;
+import com.android.settings.bluetooth.BluetoothSettings;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -596,7 +601,12 @@ public final class Utils extends com.android.settingslib.Utils {
             Bundle args, String titleResPackageName, int titleResId, CharSequence title,
             boolean isShortcut, int sourceMetricsCategory) {
         Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.setClass(context, SubSettings.class);
+        if (BluetoothSettings.class.getName().equals(fragmentName)) {
+            intent.setClass(context, SubSettings.BluetoothSubSettings.class);
+            intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_AS_SUBSETTING, true);
+         } else {
+             intent.setClass(context, SubSettings.class);
+         }
         intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT, fragmentName);
         intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS, args);
         intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_TITLE_RES_PACKAGE_NAME,
@@ -609,7 +619,8 @@ public final class Utils extends com.android.settingslib.Utils {
     }
 
     /**
-     * Returns the managed profile of the current user or null if none found.
+     * Returns the managed profile of the current user or {@code null} if none is found or a profile
+     * exists but it is disabled.
      */
     public static UserHandle getManagedProfile(UserManager userManager) {
         List<UserHandle> userProfiles = userManager.getUserProfiles();
@@ -622,6 +633,29 @@ public final class Utils extends com.android.settingslib.Utils {
             final UserInfo userInfo = userManager.getUserInfo(profile.getIdentifier());
             if (userInfo.isManagedProfile()) {
                 return profile;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns the managed profile of the current user or {@code null} if none is found. Unlike
+     * {@link #getManagedProfile} this method returns enabled and disabled managed profiles.
+     */
+    public static UserHandle getManagedProfileWithDisabled(UserManager userManager) {
+        // TODO: Call getManagedProfileId from here once Robolectric supports
+        // API level 24 and UserManager.getProfileIdsWithDisabled can be Mocked (to avoid having
+        // yet another implementation that loops over user profiles in this method). In the meantime
+        // we need to use UserManager.getProfiles that is available on API 23 (the one currently
+        // used for Settings Robolectric tests).
+        final int myUserId = UserHandle.myUserId();
+        List<UserInfo> profiles = userManager.getProfiles(myUserId);
+        final int count = profiles.size();
+        for (int i = 0; i < count; i++) {
+            final UserInfo profile = profiles.get(i);
+            if (profile.isManagedProfile()
+                    && profile.getUserHandle().getIdentifier() != myUserId) {
+                return profile.getUserHandle();
             }
         }
         return null;
@@ -803,33 +837,36 @@ public final class Utils extends com.android.settingslib.Utils {
             minutes = seconds / SECONDS_PER_MINUTE;
             seconds -= minutes * SECONDS_PER_MINUTE;
         }
-        if (withSeconds) {
-            if (days > 0) {
-                sb.append(context.getString(R.string.battery_history_days,
-                        days, hours, minutes, seconds));
-            } else if (hours > 0) {
-                sb.append(context.getString(R.string.battery_history_hours,
-                        hours, minutes, seconds));
-            } else if (minutes > 0) {
-                sb.append(context.getString(R.string.battery_history_minutes, minutes, seconds));
-            } else {
-                sb.append(context.getString(R.string.battery_history_seconds, seconds));
-            }
-        } else {
-            if (days > 0) {
-                sb.append(context.getString(R.string.battery_history_days_no_seconds,
-                        days, hours, minutes));
-            } else if (hours > 0) {
-                sb.append(context.getString(R.string.battery_history_hours_no_seconds,
-                        hours, minutes));
-            } else {
-                sb.append(context.getString(R.string.battery_history_minutes_no_seconds, minutes));
 
-                // Add ttsSpan if it only have minute value, because it will be read as "meters"
-                TtsSpan ttsSpan = new TtsSpan.MeasureBuilder().setNumber(minutes)
-                        .setUnit("minute").build();
-                sb.setSpan(ttsSpan, 0, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            }
+        final ArrayList<Measure> measureList = new ArrayList(4);
+        if (days > 0) {
+            measureList.add(new Measure(days, MeasureUnit.DAY));
+        }
+        if (hours > 0) {
+            measureList.add(new Measure(hours, MeasureUnit.HOUR));
+        }
+        if (minutes > 0) {
+            measureList.add(new Measure(minutes, MeasureUnit.MINUTE));
+        }
+        if (withSeconds && seconds > 0) {
+            measureList.add(new Measure(seconds, MeasureUnit.SECOND));
+        }
+        if (measureList.size() == 0) {
+            // Everything addable was zero, so nothing was added. We add a zero.
+            measureList.add(new Measure(0, withSeconds ? MeasureUnit.SECOND : MeasureUnit.MINUTE));
+        }
+        final Measure[] measureArray = measureList.toArray(new Measure[measureList.size()]);
+
+        final Locale locale = context.getResources().getConfiguration().locale;
+        final MeasureFormat measureFormat = MeasureFormat.getInstance(
+                locale, MeasureFormat.FormatWidth.NARROW);
+        sb.append(measureFormat.formatMeasures(measureArray));
+
+        if (measureArray.length == 1 && MeasureUnit.MINUTE.equals(measureArray[0].getUnit())) {
+            // Add ttsSpan if it only have minute value, because it will be read as "meters"
+            final TtsSpan ttsSpan = new TtsSpan.MeasureBuilder().setNumber(minutes)
+                    .setUnit("minute").build();
+            sb.setSpan(ttsSpan, 0, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
 
         return sb;
@@ -925,41 +962,6 @@ public final class Utils extends com.android.settingslib.Utils {
         return result;
     }
 
-    public static void handleLoadingContainer(View loading, View doneLoading, boolean done,
-            boolean animate) {
-        setViewShown(loading, !done, animate);
-        setViewShown(doneLoading, done, animate);
-    }
-
-    private static void setViewShown(final View view, boolean shown, boolean animate) {
-        if (animate) {
-            Animation animation = AnimationUtils.loadAnimation(view.getContext(),
-                    shown ? android.R.anim.fade_in : android.R.anim.fade_out);
-            if (shown) {
-                view.setVisibility(View.VISIBLE);
-            } else {
-                animation.setAnimationListener(new AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        view.setVisibility(View.INVISIBLE);
-                    }
-                });
-            }
-            view.startAnimation(animation);
-        } else {
-            view.clearAnimation();
-            view.setVisibility(shown ? View.VISIBLE : View.INVISIBLE);
-        }
-    }
-
     /**
      * Returns the application info of the currently installed MDM package.
      */
@@ -1018,7 +1020,24 @@ public final class Utils extends com.android.settingslib.Utils {
             return getCredentialOwnerUserId(context);
         }
         int userId = bundle.getInt(Intent.EXTRA_USER_ID, UserHandle.myUserId());
-        return enforceSameOwner(context, userId);
+        if (userId == LockPatternUtils.USER_FRP) {
+            return enforceSystemUser(context, userId);
+        } else {
+            return enforceSameOwner(context, userId);
+        }
+    }
+
+    /**
+     * Returns the given user id if the current user is the system user.
+     *
+     * @throws SecurityException if the current user is not the system user.
+     */
+    public static int enforceSystemUser(Context context, int userId) {
+        if (UserHandle.myUserId() == UserHandle.USER_SYSTEM) {
+            return userId;
+        }
+        throw new SecurityException("Given user id " + userId + " must only be used from "
+                + "USER_SYSTEM, but current user is " + UserHandle.myUserId());
     }
 
     /**

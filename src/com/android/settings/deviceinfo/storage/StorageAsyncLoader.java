@@ -22,9 +22,10 @@ import static android.content.pm.ApplicationInfo.CATEGORY_VIDEO;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
-import android.content.pm.UserInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.UserInfo;
 import android.os.UserHandle;
+import android.util.ArraySet;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -34,6 +35,8 @@ import com.android.settings.utils.AsyncLoader;
 import com.android.settingslib.applications.StorageStatsSource;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -48,6 +51,7 @@ public class StorageAsyncLoader
     private String mUuid;
     private StorageStatsSource mStatsManager;
     private PackageManagerWrapper mPackageManager;
+    private ArraySet<String> mSeenPackages;
 
     public StorageAsyncLoader(Context context, UserManagerWrapper userManager,
             String uuid, StorageStatsSource source, PackageManagerWrapper pm) {
@@ -64,8 +68,18 @@ public class StorageAsyncLoader
     }
 
     private SparseArray<AppsStorageResult> loadApps() {
+        mSeenPackages = new ArraySet<>();
         SparseArray<AppsStorageResult> result = new SparseArray<>();
         List<UserInfo> infos = mUserManager.getUsers();
+        // Sort the users by user id ascending.
+        Collections.sort(
+                infos,
+                new Comparator<UserInfo>() {
+                    @Override
+                    public int compare(UserInfo userInfo, UserInfo otherUser) {
+                        return Integer.compare(userInfo.id, otherUser.id);
+                    }
+                });
         for (int i = 0, userCount = infos.size(); i < userCount; i++) {
             UserInfo info = infos.get(i);
             result.put(info.id, getStorageResultForUser(info.id));
@@ -87,45 +101,54 @@ public class StorageAsyncLoader
                 stats = mStatsManager.getStatsForPackage(mUuid, app.packageName, myUser);
             } catch (NameNotFoundException | IOException e) {
                 // This may happen if the package was removed during our calculation.
-                Log.w("App unexpectedly not found", e);
+                Log.w(TAG, "App unexpectedly not found", e);
                 continue;
             }
 
-            long attributedAppSizeInBytes = stats.getDataBytes();
-            // This matches how the package manager calculates sizes -- by zeroing out code sizes of
-            // system apps which are not updated. My initial tests suggest that this results in the
-            // original code size being counted for updated system apps when they shouldn't, but
-            // I am not sure how to avoid this problem without specifically going in to find that
-            // code size.
-            if (!app.isSystemApp() || app.isUpdatedSystemApp()) {
-                attributedAppSizeInBytes += stats.getCodeBytes();
-            } else {
-                result.systemSize += stats.getCodeBytes();
+            final long dataSize = stats.getDataBytes();
+            final long cacheQuota = mStatsManager.getCacheQuotaBytes(mUuid, app.uid);
+            final long cacheBytes = stats.getCacheBytes();
+            long blamedSize = dataSize;
+            // Technically, we could overages as freeable on the storage settings screen.
+            // If the app is using more cache than its quota, we would accidentally subtract the
+            // overage from the system size (because it shows up as unused) during our attribution.
+            // Thus, we cap the attribution at the quota size.
+            if (cacheQuota < cacheBytes) {
+                blamedSize = blamedSize - cacheBytes + cacheQuota;
             }
+
+            // This isn't quite right because it slams the first user by user id with the whole code
+            // size, but this ensures that we count all apps seen once.
+            if (!mSeenPackages.contains(app.packageName)) {
+                blamedSize += stats.getCodeBytes();
+                mSeenPackages.add(app.packageName);
+            }
+
             switch (app.category) {
                 case CATEGORY_GAME:
-                    result.gamesSize += attributedAppSizeInBytes;
+                    result.gamesSize += blamedSize;
                     break;
                 case CATEGORY_AUDIO:
-                    result.musicAppsSize += attributedAppSizeInBytes;
+                    result.musicAppsSize += blamedSize;
                     break;
                 case CATEGORY_VIDEO:
-                    result.videoAppsSize += attributedAppSizeInBytes;
+                    result.videoAppsSize += blamedSize;
                     break;
                 default:
                     // The deprecated game flag does not set the category.
                     if ((app.flags & ApplicationInfo.FLAG_IS_GAME) != 0) {
-                        result.gamesSize += attributedAppSizeInBytes;
+                        result.gamesSize += blamedSize;
                         break;
                     }
-                    result.otherAppsSize += attributedAppSizeInBytes;
+                    result.otherAppsSize += blamedSize;
                     break;
             }
         }
 
         Log.d(TAG, "Loading external stats");
         try {
-            result.externalStats = mStatsManager.getExternalStorageStats(mUuid, UserHandle.of(userId));
+            result.externalStats = mStatsManager.getExternalStorageStats(mUuid,
+                    UserHandle.of(userId));
         } catch (IOException e) {
             Log.w(TAG, e);
         }
@@ -142,7 +165,7 @@ public class StorageAsyncLoader
         public long musicAppsSize;
         public long videoAppsSize;
         public long otherAppsSize;
-        public long systemSize;
+        public long cacheSize;
         public StorageStatsSource.ExternalStorageStats externalStats;
     }
 
