@@ -16,29 +16,23 @@
 
 package com.android.settings.dashboard.suggestions;
 
-import android.app.AutomaticZenRule;
 import android.app.KeyguardManager;
-import android.app.NotificationManager;
 import android.app.WallpaperManager;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.hardware.fingerprint.FingerprintManager;
-import android.provider.Settings;
 import android.support.annotation.VisibleForTesting;
 
 import com.android.ims.ImsManager;
 import com.android.settings.Settings.FingerprintEnrollSuggestionActivity;
 import com.android.settings.Settings.ScreenLockSuggestionActivity;
 import com.android.settings.Settings.WifiCallingSuggestionActivity;
-import com.android.settings.Settings.ZenModeAutomationSuggestionActivity;
 import com.android.settings.Utils;
 import com.android.settings.fingerprint.FingerprintSuggestionActivity;
 import com.android.settings.overlay.FeatureFactory;
 import com.android.settings.wallpaper.WallpaperSuggestionActivity;
 import com.android.settingslib.drawer.Tile;
-
-import java.util.Collection;
 
 /**
  * The Home of all stupidly dynamic Settings Suggestions checks.
@@ -58,19 +52,19 @@ public class SuggestionsChecks {
     public boolean isSuggestionComplete(Tile suggestion) {
         ComponentName component = suggestion.intent.getComponent();
         String className = component.getClassName();
-        if (className.equals(ZenModeAutomationSuggestionActivity.class.getName())) {
-            return hasEnabledZenAutoRules();
-        } else if (className.equals(WallpaperSuggestionActivity.class.getName())) {
+        if (className.equals(WallpaperSuggestionActivity.class.getName())) {
             return hasWallpaperSet();
         } else if (className.equals(WifiCallingSuggestionActivity.class.getName())) {
             return isWifiCallingUnavailableOrEnabled();
         } else if (className.equals(FingerprintSuggestionActivity.class.getName())) {
-            return isNotSingleFingerprintEnrolled() || !isFingerprintEnabled();
+            return !Utils.hasFingerprintHardware(mContext) || !isFingerprintEnabled()
+                    || isNotSingleFingerprintEnrolled();
         } else if (className.equals(ScreenLockSuggestionActivity.class.getName())) {
             return isDeviceSecured();
         } else if (className.equals(FingerprintEnrollSuggestionActivity.class.getName())) {
-            FingerprintManager manager = Utils.getFingerprintManagerOrNull(mContext);
-            if (manager == null || !isFingerprintEnabled()) {
+            final FingerprintManager manager = Utils.getFingerprintManagerOrNull(mContext);
+            if (manager == null || !isFingerprintEnabled()
+                    || !Utils.hasFingerprintHardware(mContext)) {
                 return true;
             }
             return manager.hasEnrolledFingerprints();
@@ -99,17 +93,6 @@ public class SuggestionsChecks {
         }
         return ImsManager.isWfcEnabledByUser(mContext)
                 && ImsManager.isNonTtyOrTtyOnVolteEnabled(mContext);
-    }
-
-    private boolean hasEnabledZenAutoRules() {
-        Collection<AutomaticZenRule> zenRules =
-                NotificationManager.from(mContext).getAutomaticZenRules().values();
-        for (AutomaticZenRule rule : zenRules) {
-            if (rule.isEnabled()) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @VisibleForTesting

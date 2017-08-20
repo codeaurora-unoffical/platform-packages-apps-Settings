@@ -33,7 +33,6 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.nfc.NfcAdapter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.UserHandle;
@@ -50,7 +49,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toolbar;
-
 import com.android.internal.util.ArrayUtils;
 import com.android.settings.Settings.WifiSettingsActivity;
 import com.android.settings.backup.BackupSettingsActivity;
@@ -62,13 +60,11 @@ import com.android.settings.dashboard.DashboardSummary;
 import com.android.settings.development.DevelopmentSettings;
 import com.android.settings.overlay.FeatureFactory;
 import com.android.settings.sim.SimSettings;
-import com.android.settings.search.DynamicIndexableContentMonitor;
 import com.android.settings.search.SearchActivity;
 import com.android.settings.wfd.WifiDisplaySettings;
 import com.android.settings.widget.SwitchBar;
 import com.android.settingslib.drawer.DashboardCategory;
 import com.android.settingslib.drawer.SettingsDrawerActivity;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -79,8 +75,6 @@ public class SettingsActivity extends SettingsDrawerActivity
         ButtonBarHandler, FragmentManager.OnBackStackChangedListener, OnClickListener {
 
     private static final String LOG_TAG = "Settings";
-
-    public static final int LOADER_ID_INDEXABLE_CONTENT_MONITOR = 1;
 
     // Constants for state save/restore
     private static final String SAVE_KEY_CATEGORIES = ":settings:categories";
@@ -187,8 +181,6 @@ public class SettingsActivity extends SettingsDrawerActivity
             }
         }
     };
-
-    private DynamicIndexableContentMonitor mDynamicIndexableContentMonitor;
 
     private SwitchBar mSwitchBar;
 
@@ -542,10 +534,6 @@ public class SettingsActivity extends SettingsDrawerActivity
                 mDevelopmentPreferencesListener);
 
         registerReceiver(mBatteryInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-        if (mDynamicIndexableContentMonitor == null) {
-            mDynamicIndexableContentMonitor = new DynamicIndexableContentMonitor();
-        }
-        mDynamicIndexableContentMonitor.register(this, LOADER_ID_INDEXABLE_CONTENT_MONITOR);
 
         updateTilesList();
     }
@@ -557,9 +545,6 @@ public class SettingsActivity extends SettingsDrawerActivity
                 mDevelopmentPreferencesListener);
         mDevelopmentPreferencesListener = null;
         unregisterReceiver(mBatteryInfoReceiver);
-        if (mDynamicIndexableContentMonitor != null) {
-            mDynamicIndexableContentMonitor.unregister(this, LOADER_ID_INDEXABLE_CONTENT_MONITOR);
-        }
     }
 
     @Override
@@ -813,10 +798,33 @@ public class SettingsActivity extends SettingsDrawerActivity
                 pm.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH), isAdmin)
                 || somethingChanged;
 
-        somethingChanged = setTileEnabled(new ComponentName(packageName,
-                        Settings.DataUsageSummaryActivity.class.getName()),
-                Utils.isBandwidthControlEnabled(), isAdmin)
-                || somethingChanged;
+        boolean isDataPlanFeatureEnabled = FeatureFactory.getFactory(this)
+                .getDataPlanFeatureProvider()
+                .isEnabled();
+
+        // When the data plan feature flag is turned on we disable DataUsageSummaryActivity
+        // and enable DataPlanUsageSummaryActivity. When the feature flag is turned off we do the
+        // reverse.
+
+        // Disable DataUsageSummaryActivity if the data plan feature flag is turned on otherwise
+        // disable DataPlanUsageSummaryActivity.
+        somethingChanged = setTileEnabled(
+                new ComponentName(packageName,
+                        isDataPlanFeatureEnabled
+                                ? Settings.DataUsageSummaryActivity.class.getName()
+                                : Settings.DataPlanUsageSummaryActivity.class.getName()),
+                false /* enabled */,
+                isAdmin) || somethingChanged;
+
+        // Enable DataUsageSummaryActivity if the data plan feature flag is turned on otherwise
+        // enable DataPlanUsageSummaryActivity.
+        somethingChanged = setTileEnabled(
+                new ComponentName(packageName,
+                        isDataPlanFeatureEnabled
+                                ? Settings.DataPlanUsageSummaryActivity.class.getName()
+                                : Settings.DataUsageSummaryActivity.class.getName()),
+                Utils.isBandwidthControlEnabled() /* enabled */,
+                isAdmin) || somethingChanged;
 
         somethingChanged = setTileEnabled(new ComponentName(packageName,
                         Settings.SimSettingsActivity.class.getName()),
@@ -846,13 +854,6 @@ public class SettingsActivity extends SettingsDrawerActivity
         somethingChanged = setTileEnabled(new ComponentName(packageName,
                         Settings.DateTimeSettingsActivity.class.getName()),
                 !UserManager.isDeviceInDemoMode(this), isAdmin)
-                || somethingChanged;
-        NfcAdapter adapter = NfcAdapter.getDefaultAdapter(this);
-        somethingChanged = setTileEnabled(new ComponentName(packageName,
-                        Settings.PaymentSettingsActivity.class.getName()),
-                pm.hasSystemFeature(PackageManager.FEATURE_NFC)
-                        && pm.hasSystemFeature(PackageManager.FEATURE_NFC_HOST_CARD_EMULATION)
-                        && adapter != null && adapter.isEnabled(), isAdmin)
                 || somethingChanged;
 
         somethingChanged = setTileEnabled(new ComponentName(packageName,

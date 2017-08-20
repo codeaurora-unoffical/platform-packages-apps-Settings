@@ -22,7 +22,7 @@ import android.provider.SearchIndexableResource;
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
 import com.android.settings.dashboard.DashboardFragment;
-import com.android.settings.gestures.AssistGesturePreferenceController;
+import com.android.settings.gestures.AssistGestureSettingsPreferenceController;
 import com.android.settings.search.BaseSearchIndexProvider;
 import com.android.settings.search.Indexable;
 import com.android.settingslib.core.AbstractPreferenceController;
@@ -71,16 +71,16 @@ public class ManageAssist extends DashboardFragment {
     private static List<AbstractPreferenceController> buildPreferenceControllers(Context context,
             Lifecycle lifecycle) {
         final List<AbstractPreferenceController> controllers = new ArrayList<>();
-        controllers.add(new DefaultAssistPreferenceController(context));
-        controllers.add(new AssistGesturePreferenceController(context, lifecycle, KEY_ASSIST,
-                true /* assistOnly */));
+        controllers.add(new DefaultAssistPreferenceController(context, "default_assist",
+                true /* showSetting */));
+        controllers.add(new AssistGestureSettingsPreferenceController(context, lifecycle,
+                KEY_ASSIST, true /* assistOnly */));
         controllers.add(new AssistContextPreferenceController(context, lifecycle));
         controllers.add(new AssistScreenshotPreferenceController(context, lifecycle));
         controllers.add(new AssistFlashScreenPreferenceController(context, lifecycle));
         controllers.add(new DefaultVoiceInputPreferenceController(context, lifecycle));
         return controllers;
     }
-
 
     public static final Indexable.SearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new BaseSearchIndexProvider() {

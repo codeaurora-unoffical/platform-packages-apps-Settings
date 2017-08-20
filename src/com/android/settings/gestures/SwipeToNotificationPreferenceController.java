@@ -21,13 +21,20 @@ import android.content.SharedPreferences;
 import android.provider.Settings;
 import android.support.v7.preference.Preference;
 
-import com.android.settings.overlay.FeatureFactory;
+import com.android.settings.Utils;
 import com.android.settingslib.core.lifecycle.Lifecycle;
+
+import static android.provider.Settings.Secure.SYSTEM_NAVIGATION_KEYS_ENABLED;
 
 public class SwipeToNotificationPreferenceController extends GesturePreferenceController {
 
+    private static final int ON = 1;
+    private static final int OFF = 0;
+
     private static final String PREF_KEY_VIDEO = "gesture_swipe_down_fingerprint_video";
     private final String mSwipeDownFingerPrefKey;
+
+    private static final String SECURE_KEY = SYSTEM_NAVIGATION_KEYS_ENABLED;
 
     public SwipeToNotificationPreferenceController(Context context, Lifecycle lifecycle,
             String key) {
@@ -42,7 +49,7 @@ public class SwipeToNotificationPreferenceController extends GesturePreferenceCo
     }
 
     private static boolean isGestureAvailable(Context context) {
-        return context.getResources()
+        return Utils.hasFingerprintHardware(context) && context.getResources()
                 .getBoolean(com.android.internal.R.bool.config_supportSystemNavigationKeys);
     }
 
@@ -58,20 +65,30 @@ public class SwipeToNotificationPreferenceController extends GesturePreferenceCo
 
     @Override
     public boolean isAvailable() {
-        return isGestureAvailable(mContext);
+        return SwipeToNotificationPreferenceController.isAvailable(mContext);
     }
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
-        Settings.Secure.putInt(mContext.getContentResolver(),
-                Settings.Secure.SYSTEM_NAVIGATION_KEYS_ENABLED, (boolean) newValue ? 1 : 0);
+        setSwipeToNotification(mContext, (boolean) newValue);
         return true;
     }
 
     @Override
     protected boolean isSwitchPrefEnabled() {
-        return Settings.Secure.getInt(mContext.getContentResolver(),
-                Settings.Secure.SYSTEM_NAVIGATION_KEYS_ENABLED, 1)
-                == 1;
+        return isSwipeToNotificationOn(mContext);
+    }
+
+    public static boolean isSwipeToNotificationOn(Context context) {
+        return Settings.Secure.getInt(context.getContentResolver(), SECURE_KEY, OFF) == ON;
+    }
+
+    public static boolean setSwipeToNotification(Context context, boolean isEnabled) {
+        return Settings.Secure.putInt(
+                context.getContentResolver(), SECURE_KEY, isEnabled ? ON : OFF);
+    }
+
+    public static boolean isAvailable(Context context) {
+        return isGestureAvailable(context);
     }
 }

@@ -25,10 +25,8 @@ import android.content.pm.PackageManager;
 import android.provider.Settings.Secure;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
-import android.text.format.DateUtils;
 import android.util.Log;
 
-import com.android.internal.hardware.AmbientDisplayConfiguration;
 import com.android.internal.logging.nano.MetricsProto;
 import com.android.settings.Settings.AmbientDisplayPickupSuggestionActivity;
 import com.android.settings.Settings.AmbientDisplaySuggestionActivity;
@@ -56,15 +54,8 @@ public class SuggestionFeatureProviderImpl implements SuggestionFeatureProvider 
 
     private static final String SHARED_PREF_FILENAME = "suggestions";
 
-    // Suggestion category name and expiration threshold for first impression type. Needs to keep
-    // in sync with suggestion_ordering.xml
-    private static final String CATEGORY_FIRST_IMPRESSION =
-            "com.android.settings.suggested.category.FIRST_IMPRESSION";
-    private static final long FIRST_IMPRESSION_EXPIRE_DAY_IN_MILLIS = 14 * DateUtils.DAY_IN_MILLIS;
-
     private final SuggestionRanker mSuggestionRanker;
     private final MetricsFeatureProvider mMetricsFeatureProvider;
-    private final AmbientDisplayConfiguration mAmbientDisplayConfig;
 
     @Override
     public boolean isSuggestionEnabled(Context context) {
@@ -116,7 +107,6 @@ public class SuggestionFeatureProviderImpl implements SuggestionFeatureProvider 
                 new SuggestionFeaturizer(new EventStore(appContext)));
         mMetricsFeatureProvider = FeatureFactory.getFactory(appContext)
                 .getMetricsFeatureProvider();
-        mAmbientDisplayConfig = new AmbientDisplayConfiguration(appContext);
     }
 
     @Override
@@ -144,31 +134,13 @@ public class SuggestionFeatureProviderImpl implements SuggestionFeatureProvider 
                 context, MetricsProto.MetricsEvent.ACTION_SETTINGS_DISMISS_SUGGESTION,
                 getSuggestionIdentifier(context, suggestion));
 
-        boolean isSmartSuggestionEnabled = isSmartSuggestionEnabled(context);
-        if (isSmartSuggestionEnabled) {
-            // Disable smart suggestion if we are still showing first impression suggestions.
-            isSmartSuggestionEnabled = !isShowingFirstImpressionSuggestion(context);
-        }
-        if (!parser.dismissSuggestion(suggestion, isSmartSuggestionEnabled)) {
+        if (!parser.dismissSuggestion(suggestion)) {
             return;
         }
         context.getPackageManager().setComponentEnabledSetting(
                 suggestion.intent.getComponent(),
                 PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                 PackageManager.DONT_KILL_APP);
-    }
-
-    private boolean isShowingFirstImpressionSuggestion(Context context) {
-        final String keySetupTime = CATEGORY_FIRST_IMPRESSION + SuggestionParser.SETUP_TIME;
-        final long currentTime = System.currentTimeMillis();
-        final SharedPreferences sharedPrefs = getSharedPrefs(context);
-        if (!sharedPrefs.contains(keySetupTime)) {
-            return true;
-        }
-        final long setupTime = sharedPrefs.getLong(keySetupTime, 0);
-        final long elapsedTime = currentTime - setupTime;
-        Log.d(TAG, "Day " + elapsedTime / DateUtils.DAY_IN_MILLIS + " for first impression");
-        return elapsedTime <= FIRST_IMPRESSION_EXPIRE_DAY_IN_MILLIS;
     }
 
     @Override

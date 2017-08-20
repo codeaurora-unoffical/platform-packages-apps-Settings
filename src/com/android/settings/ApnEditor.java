@@ -120,9 +120,7 @@ public class ApnEditor extends SettingsPreferenceFragment
     private boolean mReadOnlyApn;
     private boolean mDeletableApn;
 
-
     private static final String APN_DEFALUT_VALUES_STRING_ARRAY = "apn_default_values_strings_array";
-    private String mUserEnteredApnType;
 
     /**
      * Standard projection for the interesting columns of a normal note.
@@ -152,6 +150,7 @@ public class ApnEditor extends SettingsPreferenceFragment
             Telephony.Carriers.MVNO_TYPE,   // 21
             Telephony.Carriers.MVNO_MATCH_DATA,  // 22
             Telephony.Carriers.EDITED,   // 23
+            Telephony.Carriers.USER_EDITABLE,    //24
             Utils.PERSISTENT,   //24
             Utils.READ_ONLY   //25
     };
@@ -199,8 +198,9 @@ public class ApnEditor extends SettingsPreferenceFragment
     private static final int MVNO_TYPE_INDEX = 21;
     private static final int MVNO_MATCH_DATA_INDEX = 22;
     private static final int EDITED_INDEX = 23;
-    private static final int PERSISTENT_INDEX = 24;
-    private static final int READONLY_INDEX = 25;
+    private static final int USER_EDITABLE_INDEX = 24;
+    private static final int PERSISTENT_INDEX = 25;
+    private static final int READONLY_INDEX = 26;
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -241,7 +241,6 @@ public class ApnEditor extends SettingsPreferenceFragment
         mReadOnlyApn = false;
         mReadOnlyApnTypes = null;
         mReadOnlyApnFields = null;
-        mUserEnteredApnType = null;
 
         CarrierConfigManager configManager = (CarrierConfigManager)
                 getSystemService(Context.CARRIER_CONFIG_SERVICE);
@@ -320,7 +319,8 @@ public class ApnEditor extends SettingsPreferenceFragment
         Log.d(TAG, "onCreate: EDITED " + mCursor.getInt(EDITED_INDEX));
         // if it's not a USER_EDITED apn, check if it's read-only
         if (mCursor.getInt(EDITED_INDEX) != Telephony.Carriers.USER_EDITED &&
-                apnTypesMatch(mReadOnlyApnTypes, mCursor.getString(TYPE_INDEX)) ||
+                (mCursor.getInt(USER_EDITABLE_INDEX) == 0 ||
+                apnTypesMatch(mReadOnlyApnTypes, mCursor.getString(TYPE_INDEX))) ||
                 mCursor.getInt(READONLY_INDEX) == 1) {
             Log.d(TAG, "onCreate: apnTypesMatch; read-only APN");
             mReadOnlyApn = true;
@@ -1195,15 +1195,11 @@ public class ApnEditor extends SettingsPreferenceFragment
     }
 
     private String getUserEnteredApnType() {
-        if (mUserEnteredApnType != null) {
-            return mUserEnteredApnType;
-        }
-
         // if user has not specified a type, map it to "ALL APN TYPES THAT ARE NOT READ-ONLY"
-        mUserEnteredApnType = mApnType.getText();
-        if (mUserEnteredApnType != null) mUserEnteredApnType = mUserEnteredApnType.trim();
-        if ((TextUtils.isEmpty(mUserEnteredApnType)
-                || PhoneConstants.APN_TYPE_ALL.equals(mUserEnteredApnType))
+        String userEnteredApnType = mApnType.getText();
+        if (userEnteredApnType != null) userEnteredApnType = userEnteredApnType.trim();
+        if ((TextUtils.isEmpty(userEnteredApnType)
+                || PhoneConstants.APN_TYPE_ALL.equals(userEnteredApnType))
                 && !ArrayUtils.isEmpty(mReadOnlyApnTypes)) {
             StringBuilder editableApnTypes = new StringBuilder();
             List<String> readOnlyApnTypes = Arrays.asList(mReadOnlyApnTypes);
@@ -1221,12 +1217,12 @@ public class ApnEditor extends SettingsPreferenceFragment
                     editableApnTypes.append(apnType);
                 }
             }
-            mUserEnteredApnType = editableApnTypes.toString();
+            userEnteredApnType = editableApnTypes.toString();
             Log.d(TAG, "getUserEnteredApnType: changed apn type to editable apn types: "
-                    + mUserEnteredApnType);
+                    + userEnteredApnType);
         }
 
-        return mUserEnteredApnType;
+        return userEnteredApnType;
     }
 
     public static class ErrorDialog extends InstrumentedDialogFragment {

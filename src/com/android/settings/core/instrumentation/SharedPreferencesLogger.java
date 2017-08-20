@@ -108,7 +108,7 @@ public class SharedPreferencesLogger implements SharedPreferences {
     }
 
     private void logValue(String key, Object value, boolean forceLog) {
-        final String prefKey = mTag + "/" + key;
+        final String prefKey = buildPrefKey(mTag, key);
         if (!forceLog && !mPreferenceKeySet.contains(prefKey)) {
             // Pref key doesn't exist in set, this is initial display so we skip metrics but
             // keeps track of this key.
@@ -116,26 +116,35 @@ public class SharedPreferencesLogger implements SharedPreferences {
             return;
         }
         // TODO: Remove count logging to save some resource.
-        mMetricsFeature.count(mContext, prefKey + "|" + value, 1);
+        mMetricsFeature.count(mContext, buildCountName(prefKey, value), 1);
 
         final Pair<Integer, Object> valueData;
         if (value instanceof Long) {
-            valueData = Pair.create(MetricsEvent.FIELD_SETTINGS_PREFERENCE_CHANGE_LONG_VALUE,
-                    value);
+            final Long longVal = (Long) value;
+            final int intVal;
+            if (longVal > Integer.MAX_VALUE) {
+                intVal = Integer.MAX_VALUE;
+            } else if (longVal < Integer.MIN_VALUE) {
+                intVal = Integer.MIN_VALUE;
+            } else {
+                intVal = longVal.intValue();
+            }
+            valueData = Pair.create(MetricsEvent.FIELD_SETTINGS_PREFERENCE_CHANGE_INT_VALUE,
+                    intVal);
         } else if (value instanceof Integer) {
-            valueData = Pair.create(MetricsEvent.FIELD_SETTINGS_PREFERENCE_CHANGE_LONG_VALUE,
-                    ((Integer) value).longValue());
+            valueData = Pair.create(MetricsEvent.FIELD_SETTINGS_PREFERENCE_CHANGE_INT_VALUE,
+                    value);
         } else if (value instanceof Boolean) {
-            valueData = Pair.create(MetricsEvent.FIELD_SETTINGS_PREFERENCE_CHANGE_LONG_VALUE,
-                    (Boolean) value ? 1L : 0L);
+            valueData = Pair.create(MetricsEvent.FIELD_SETTINGS_PREFERENCE_CHANGE_INT_VALUE,
+                    (Boolean) value ? 1 : 0);
         } else if (value instanceof Float) {
             valueData = Pair.create(MetricsEvent.FIELD_SETTINGS_PREFERENCE_CHANGE_FLOAT_VALUE,
                     value);
-        } else if (value instanceof String){
-            valueData = Pair.create(MetricsEvent.FIELD_SETTINGS_PREFERENCE_CHANGE_VALUE,
-                    value);
+        } else if (value instanceof String) {
+            Log.d(LOG_TAG, "Tried to log string preference " + prefKey + " = " + value);
+            valueData = null;
         } else {
-            Log.w(LOG_TAG, "Tried to log unloggable object"  + value);
+            Log.w(LOG_TAG, "Tried to log unloggable object" + value);
             valueData = null;
         }
         if (valueData != null) {
@@ -155,6 +164,14 @@ public class SharedPreferencesLogger implements SharedPreferences {
 
     private void safeLogValue(String key, String value) {
         new AsyncPackageCheck().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, key, value);
+    }
+
+    public static String buildCountName(String prefKey, Object value) {
+        return prefKey + "|" + value;
+    }
+
+    public static String buildPrefKey(String tag, String key) {
+        return tag + "/" + key;
     }
 
     private class AsyncPackageCheck extends AsyncTask<String, Void, Void> {

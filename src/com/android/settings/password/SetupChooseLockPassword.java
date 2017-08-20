@@ -18,10 +18,12 @@ package com.android.settings.password;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -42,6 +44,8 @@ import com.android.setupwizardlib.util.WizardManagerHelper;
  * those changes.
  */
 public class SetupChooseLockPassword extends ChooseLockPassword {
+
+    private static final String TAG = "SetupChooseLockPassword";
 
     public static Intent modifyIntentForSetup(
             Context context,
@@ -80,16 +84,19 @@ public class SetupChooseLockPassword extends ChooseLockPassword {
         @Override
         public void onViewCreated(View view, Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
+            final Activity activity = getActivity();
+            ChooseLockGenericController chooseLockGenericController =
+                    new ChooseLockGenericController(activity, mUserId);
+            boolean anyOptionsShown = chooseLockGenericController.getVisibleScreenLockTypes(
+                    DevicePolicyManager.PASSWORD_QUALITY_SOMETHING, false).size() > 0;
+            boolean showOptionsButton = activity.getIntent().getBooleanExtra(
+                    ChooseLockGenericFragment.EXTRA_SHOW_OPTIONS_BUTTON, false);
 
-            if (mForFingerprint) {
-                mCancelButton.setVisibility(View.GONE);
-            } else {
-                mCancelButton.setText(R.string.skip_label);
+            if (!anyOptionsShown) {
+                Log.w(TAG, "Visible screen lock types is empty!");
             }
 
-            boolean showOptionsButton = getActivity().getIntent().getBooleanExtra(
-                    ChooseLockGenericFragment.EXTRA_SHOW_OPTIONS_BUTTON, false);
-            if (showOptionsButton) {
+            if (showOptionsButton && anyOptionsShown) {
                 mOptionsButton = view.findViewById(R.id.screen_lock_options);
                 mOptionsButton.setVisibility(View.VISIBLE);
                 mOptionsButton.setOnClickListener(this);
@@ -176,6 +183,12 @@ public class SetupChooseLockPassword extends ChooseLockPassword {
         @Override
         protected void updateUi() {
             super.updateUi();
+            if (mForFingerprint) {
+                mCancelButton.setVisibility(View.GONE);
+            } else {
+                mCancelButton.setText(R.string.skip_label);
+            }
+
             if (mOptionsButton != null) {
                 mOptionsButton.setVisibility(
                         mUiStage == Stage.Introduction ? View.VISIBLE : View.GONE);

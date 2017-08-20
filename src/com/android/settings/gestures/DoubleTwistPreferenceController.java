@@ -30,10 +30,12 @@ import android.text.TextUtils;
 
 import com.android.settings.R;
 import com.android.settings.Utils;
-import com.android.settings.overlay.FeatureFactory;
 import com.android.settingslib.core.lifecycle.Lifecycle;
 
 public class DoubleTwistPreferenceController extends GesturePreferenceController {
+
+    private final int ON = 1;
+    private final int OFF = 0;
 
     private static final String PREF_KEY_VIDEO = "gesture_double_twist_video";
     private final String mDoubleTwistPrefKey;
@@ -50,7 +52,7 @@ public class DoubleTwistPreferenceController extends GesturePreferenceController
                 || prefs.getBoolean(DoubleTwistGestureSettings.PREF_KEY_SUGGESTION_COMPLETE, false);
     }
 
-    private static boolean isGestureAvailable(Context context) {
+    public static boolean isGestureAvailable(Context context) {
         final Resources resources = context.getResources();
         final String name = resources.getString(R.string.gesture_double_twist_sensor_name);
         final String vendor = resources.getString(R.string.gesture_double_twist_sensor_vendor);
@@ -83,26 +85,31 @@ public class DoubleTwistPreferenceController extends GesturePreferenceController
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
-        final int enabled = (boolean) newValue ? 1 : 0;
-        Settings.Secure.putInt(mContext.getContentResolver(),
+        final int enabled = (boolean) newValue ? ON : OFF;
+        setDoubleTwistPreference(mContext, mUserManager, enabled);
+        return true;
+    }
+
+    public static void setDoubleTwistPreference(Context context, UserManager userManager,
+            int enabled) {
+        Settings.Secure.putInt(context.getContentResolver(),
                 Settings.Secure.CAMERA_DOUBLE_TWIST_TO_FLIP_ENABLED, enabled);
-        final int managedProfileUserId = getManagedProfileUserId();
+        final int managedProfileUserId = getManagedProfileId(userManager);
         if (managedProfileUserId != UserHandle.USER_NULL) {
-            Settings.Secure.putIntForUser(mContext.getContentResolver(),
+            Settings.Secure.putIntForUser(context.getContentResolver(),
                 Settings.Secure.CAMERA_DOUBLE_TWIST_TO_FLIP_ENABLED, enabled, managedProfileUserId);
         }
-        return true;
     }
 
     @Override
     protected boolean isSwitchPrefEnabled() {
         final int doubleTwistEnabled = Settings.Secure.getInt(mContext.getContentResolver(),
-                Settings.Secure.CAMERA_DOUBLE_TWIST_TO_FLIP_ENABLED, 1);
+                Settings.Secure.CAMERA_DOUBLE_TWIST_TO_FLIP_ENABLED, ON);
         return doubleTwistEnabled != 0;
     }
 
     @VisibleForTesting
-    int getManagedProfileUserId() {
-        return Utils.getManagedProfileId(mUserManager, UserHandle.myUserId());
+    public static int getManagedProfileId(UserManager userManager) {
+        return Utils.getManagedProfileId(userManager, UserHandle.myUserId());
     }
 }

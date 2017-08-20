@@ -15,6 +15,10 @@
  */
 package com.android.settings.network;
 
+import static android.os.UserManager.DISALLOW_CONFIG_TETHERING;
+import static com.android.settingslib.RestrictedLockUtils.checkIfRestrictionEnforced;
+import static com.android.settingslib.RestrictedLockUtils.hasBaseUserRestriction;
+
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothPan;
 import android.bluetooth.BluetoothProfile;
@@ -45,11 +49,6 @@ import com.android.settingslib.core.lifecycle.events.OnPause;
 import com.android.settingslib.core.lifecycle.events.OnResume;
 
 import java.util.concurrent.atomic.AtomicReference;
-
-import static android.os.UserManager.DISALLOW_CONFIG_TETHERING;
-
-import static com.android.settingslib.RestrictedLockUtils.checkIfRestrictionEnforced;
-import static com.android.settingslib.RestrictedLockUtils.hasBaseUserRestriction;
 
 public class TetherPreferenceController extends AbstractPreferenceController implements
         PreferenceControllerMixin, LifecycleObserver, OnCreate, OnResume, OnPause, OnDestroy {
@@ -89,8 +88,7 @@ public class TetherPreferenceController extends AbstractPreferenceController imp
     public TetherPreferenceController(Context context, Lifecycle lifecycle) {
         super(context);
         mBluetoothPan = new AtomicReference<>();
-        mAdminDisallowedTetherConfig = checkIfRestrictionEnforced(
-                context, DISALLOW_CONFIG_TETHERING, UserHandle.myUserId()) != null;
+        mAdminDisallowedTetherConfig = isTetherConfigDisallowed(context);
         mConnectivityManager =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -169,6 +167,11 @@ public class TetherPreferenceController extends AbstractPreferenceController imp
         if (profile != null && mBluetoothAdapter != null) {
             mBluetoothAdapter.closeProfileProxy(BluetoothProfile.PAN, profile);
         }
+    }
+
+    public static boolean isTetherConfigDisallowed(Context context) {
+        return checkIfRestrictionEnforced(
+                context, DISALLOW_CONFIG_TETHERING, UserHandle.myUserId()) != null;
     }
 
     @VisibleForTesting

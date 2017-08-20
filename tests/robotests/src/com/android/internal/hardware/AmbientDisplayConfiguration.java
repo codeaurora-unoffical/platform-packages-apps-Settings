@@ -34,6 +34,10 @@ public class AmbientDisplayConfiguration {
         return true;
     }
 
+    public boolean pulseOnPickupCanBeModified(int user) {
+        return true;
+    }
+
     public boolean pulseOnDoubleTapAvailable() {
         return true;
     }
@@ -55,6 +59,10 @@ public class AmbientDisplayConfiguration {
     }
 
     public boolean alwaysOnAvailable() {
+        return true;
+    }
+
+    public boolean alwaysOnAvailableForUser(int user) {
         return true;
     }
 

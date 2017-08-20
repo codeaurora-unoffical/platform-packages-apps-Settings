@@ -136,14 +136,19 @@ public class BatteryInfo {
 
     public static void getBatteryInfo(final Context context, final Callback callback,
             boolean shortString) {
+        final long startTime = System.currentTimeMillis();
         BatteryStatsHelper statsHelper = new BatteryStatsHelper(context, true);
         statsHelper.create((Bundle) null);
+        BatteryUtils.logRuntime(LOG_TAG, "time to make batteryStatsHelper", startTime);
         BatteryInfo.getBatteryInfo(context, callback, statsHelper, shortString);
     }
 
     public static void getBatteryInfo(final Context context, final Callback callback,
             BatteryStatsHelper statsHelper, boolean shortString) {
-        getBatteryInfo(context, callback, statsHelper.getStats(), shortString);
+        final long startTime = System.currentTimeMillis();
+        BatteryStats stats = statsHelper.getStats();
+        BatteryUtils.logRuntime(LOG_TAG, "time for getStats", startTime);
+        getBatteryInfo(context, callback, stats, shortString);
     }
 
     public static void getBatteryInfo(final Context context, final Callback callback,
@@ -181,7 +186,9 @@ public class BatteryInfo {
 
             @Override
             protected void onPostExecute(BatteryInfo batteryInfo) {
+                final long startTime = System.currentTimeMillis();
                 callback.onBatteryInfoLoaded(batteryInfo);
+                BatteryUtils.logRuntime(LOG_TAG, "time for callback", startTime);
             }
         }.execute();
     }
@@ -212,10 +219,8 @@ public class BatteryInfo {
                 CharSequence timeString = Utils.formatElapsedTime(context,
                         BatteryUtils.convertUsToMs(drainTimeUs), false /* withSeconds */);
                 info.remainingLabel = TextUtils.expandTemplate(context.getText(shortString ?
-                        (basedOnUsage ?
-                                R.string.power_remaining_duration_only_short_enhanced :
-                                R.string.power_remaining_duration_only_short) :
-                        (basedOnUsage ?
+                                R.string.power_remaining_duration_only_short :
+                         (basedOnUsage ?
                                 R.string.power_remaining_duration_only_enhanced :
                                 R.string.power_remaining_duration_only)), timeString);
                 info.chargeLabel = TextUtils.expandTemplate(context.getText(

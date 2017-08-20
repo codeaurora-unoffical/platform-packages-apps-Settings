@@ -32,6 +32,8 @@ import android.util.Log;
 import android.util.Pair;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -47,6 +49,7 @@ import com.android.settings.Utils;
 import com.android.settings.core.InstrumentedFragment;
 import com.android.settings.core.instrumentation.MetricsFeatureProvider;
 import com.android.settings.overlay.FeatureFactory;
+import com.android.settings.widget.ActionBarShadowController;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,8 +82,12 @@ public class SearchFragment extends InstrumentedFragment implements SearchView.O
     static final int LOADER_ID_DATABASE = 1;
     @VisibleForTesting
     static final int LOADER_ID_INSTALLED_APPS = 2;
+    @VisibleForTesting
+    static final int LOADER_ID_ACCESSIBILITY_SERVICES = 3;
+    @VisibleForTesting
+    static final int LOADER_ID_INPUT_DEVICES = 4;
 
-    private static final int NUM_QUERY_LOADERS = 2;
+    private static final int NUM_QUERY_LOADERS = 4;
 
     @VisibleForTesting
     AtomicInteger mUnfinishedLoadersCount = new AtomicInteger(NUM_QUERY_LOADERS);
@@ -103,7 +110,7 @@ public class SearchFragment extends InstrumentedFragment implements SearchView.O
     @VisibleForTesting
     SearchFeatureProvider mSearchFeatureProvider;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     SearchResultsAdapter mSearchAdapter;
 
     @VisibleForTesting
@@ -138,6 +145,7 @@ public class SearchFragment extends InstrumentedFragment implements SearchView.O
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        long startTime = System.currentTimeMillis();
         setHasOptionsMenu(true);
 
         final LoaderManager loaderManager = getLoaderManager();
@@ -162,6 +170,15 @@ public class SearchFragment extends InstrumentedFragment implements SearchView.O
         } else {
             Log.w(TAG, "Cannot update the Indexer as we are running low on storage space!");
         }
+        if (SettingsSearchIndexablesProvider.DEBUG) {
+            Log.d(TAG, "onCreate spent " + (System.currentTimeMillis() - startTime) + " ms");
+        }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        mSavedQueryController.buildMenuItem(menu);
     }
 
     @Override
@@ -203,6 +220,8 @@ public class SearchFragment extends InstrumentedFragment implements SearchView.O
             params.setMarginStart(0);
             editFrame.setLayoutParams(params);
         }
+        ActionBarShadowController.attachToRecyclerView(
+                view.findViewById(R.id.search_bar_container), getLifecycle(), mResultsRecyclerView);
         return view;
     }
 
@@ -266,6 +285,8 @@ public class SearchFragment extends InstrumentedFragment implements SearchView.O
             final LoaderManager loaderManager = getLoaderManager();
             loaderManager.destroyLoader(LOADER_ID_DATABASE);
             loaderManager.destroyLoader(LOADER_ID_INSTALLED_APPS);
+            loaderManager.destroyLoader(LOADER_ID_ACCESSIBILITY_SERVICES);
+            loaderManager.destroyLoader(LOADER_ID_INPUT_DEVICES);
             mShowingSavedQuery = true;
             mSavedQueryController.loadSavedQueries();
             mSearchFeatureProvider.hideFeedbackButton();
@@ -294,6 +315,10 @@ public class SearchFragment extends InstrumentedFragment implements SearchView.O
                 return mSearchFeatureProvider.getDatabaseSearchLoader(activity, mQuery);
             case LOADER_ID_INSTALLED_APPS:
                 return mSearchFeatureProvider.getInstalledAppSearchLoader(activity, mQuery);
+            case LOADER_ID_ACCESSIBILITY_SERVICES:
+                return mSearchFeatureProvider.getAccessibilityServiceResultLoader(activity, mQuery);
+            case LOADER_ID_INPUT_DEVICES:
+                return mSearchFeatureProvider.getInputDeviceResultLoader(activity, mQuery);
             default:
                 return null;
         }
@@ -326,8 +351,13 @@ public class SearchFragment extends InstrumentedFragment implements SearchView.O
             mSavedQueryController.loadSavedQueries();
         } else {
             final LoaderManager loaderManager = getLoaderManager();
-            loaderManager.initLoader(LOADER_ID_DATABASE, null, this);
-            loaderManager.initLoader(LOADER_ID_INSTALLED_APPS, null, this);
+            loaderManager.initLoader(LOADER_ID_DATABASE, null /* args */, this /* callback */);
+            loaderManager.initLoader(
+                    LOADER_ID_INSTALLED_APPS, null /* args */, this /* callback */);
+            loaderManager.initLoader(
+                    LOADER_ID_ACCESSIBILITY_SERVICES, null /* args */, this /* callback */);
+            loaderManager.initLoader(
+                    LOADER_ID_INPUT_DEVICES, null /* args */, this /* callback */);
         }
 
         requery();
@@ -361,16 +391,16 @@ public class SearchFragment extends InstrumentedFragment implements SearchView.O
         onQueryTextChange(queryString);
     }
 
-    public void onRemoveSavedQueryClicked(CharSequence title) {
-        mSavedQueryController.removeQuery(title.toString());
-    }
-
     private void restartLoaders() {
         mShowingSavedQuery = false;
         final LoaderManager loaderManager = getLoaderManager();
         mUnfinishedLoadersCount.set(NUM_QUERY_LOADERS);
         loaderManager.restartLoader(LOADER_ID_DATABASE, null /* args */, this /* callback */);
         loaderManager.restartLoader(LOADER_ID_INSTALLED_APPS, null /* args */, this /* callback */);
+        loaderManager.restartLoader(LOADER_ID_ACCESSIBILITY_SERVICES, null /* args */,
+                this /* callback */);
+        loaderManager.restartLoader(LOADER_ID_INPUT_DEVICES, null /* args */,
+                this /* callback */);
     }
 
     public String getQuery() {

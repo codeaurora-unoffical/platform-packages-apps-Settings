@@ -22,7 +22,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AuthenticatorDescription;
 import android.app.Activity;
-import android.app.FragmentManager;
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -38,6 +38,7 @@ import android.os.UserManager;
 import android.provider.Settings;
 import android.support.annotation.VisibleForTesting;
 import android.telephony.euicc.EuiccManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,7 +55,6 @@ import android.widget.TextView;
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.password.ChooseLockSettingsHelper;
 import com.android.settings.password.ConfirmLockPattern;
-import com.android.settings.widget.CarrierDemoPasswordDialogFragment;
 import com.android.settingslib.RestrictedLockUtils;
 
 import java.util.List;
@@ -69,8 +69,7 @@ import java.util.List;
  *
  * This is the initial screen.
  */
-public class MasterClear extends OptionsMenuFragment
-        implements CarrierDemoPasswordDialogFragment.Callback {
+public class MasterClear extends OptionsMenuFragment {
     private static final String TAG = "MasterClear";
 
     private static final int KEYGUARD_REQUEST = 55;
@@ -82,8 +81,6 @@ public class MasterClear extends OptionsMenuFragment
     private Button mInitiateButton;
     private View mExternalStorageContainer;
     @VisibleForTesting CheckBox mExternalStorage;
-    private View mEsimStorageContainer;
-    @VisibleForTesting CheckBox mEsimStorage;
     private ScrollView mScrollView;
 
     private final OnGlobalLayoutListener mOnGlobalLayoutListener = new OnGlobalLayoutListener() {
@@ -127,7 +124,8 @@ public class MasterClear extends OptionsMenuFragment
     void showFinalConfirmation() {
         Bundle args = new Bundle();
         args.putBoolean(ERASE_EXTERNAL_EXTRA, mExternalStorage.isChecked());
-        args.putBoolean(ERASE_ESIMS_EXTRA, mEsimStorage.isChecked());
+        // TODO: Offer the user a choice to wipe eSIMs when it is technically feasible to do so.
+        args.putBoolean(ERASE_ESIMS_EXTRA, true);
         ((SettingsActivity) getActivity()).startPreferencePanel(
                 this, MasterClearConfirm.class.getName(),
                 args, R.string.master_clear_confirm_title, null, null, 0);
@@ -137,26 +135,27 @@ public class MasterClear extends OptionsMenuFragment
      * If the user clicks to begin the reset sequence, we next require a
      * keyguard confirmation if the user has currently enabled one.  If there
      * is no keyguard available, we simply go to the final confirmation prompt.
+     *
+     * If the user is in demo mode, route to the demo mode app for confirmation.
      */
-    private final Button.OnClickListener mInitiateListener = new Button.OnClickListener() {
+    @VisibleForTesting
+    protected final Button.OnClickListener mInitiateListener = new Button.OnClickListener() {
 
-        public void onClick(View v) {
-            if ( Utils.isCarrierDemoUser(v.getContext())) {
-                // Require the carrier password before displaying the final confirmation.
-                final FragmentManager fm = getChildFragmentManager();
-                if (fm != null && !fm.isDestroyed()) {
-                    new CarrierDemoPasswordDialogFragment().show(fm, null /* tag */);
+        public void onClick(View view) {
+            final Context context = view.getContext();
+            if (Utils.isDemoUser(context)) {
+                final ComponentName componentName = Utils.getDeviceOwnerComponent(context);
+                if (componentName != null) {
+                    final Intent requestFactoryReset = new Intent()
+                            .setPackage(componentName.getPackageName())
+                            .setAction(Intent.ACTION_FACTORY_RESET);
+                    context.startActivity(requestFactoryReset);
                 }
             } else if (!runKeyguardConfirmation(KEYGUARD_REQUEST)) {
                 showFinalConfirmation();
             }
         }
     };
-
-    @Override
-    public void onPasswordVerified() {
-        showFinalConfirmation();
-    }
 
     /**
      * In its initial state, the activity presents a button for the user to
@@ -175,8 +174,6 @@ public class MasterClear extends OptionsMenuFragment
         mInitiateButton.setOnClickListener(mInitiateListener);
         mExternalStorageContainer = mContentView.findViewById(R.id.erase_external_container);
         mExternalStorage = (CheckBox) mContentView.findViewById(R.id.erase_external);
-        mEsimStorageContainer = mContentView.findViewById(R.id.erase_esim_container);
-        mEsimStorage = (CheckBox) mContentView.findViewById(R.id.erase_esim);
         mScrollView = (ScrollView) mContentView.findViewById(R.id.master_clear_scrollview);
 
         /*
@@ -211,15 +208,11 @@ public class MasterClear extends OptionsMenuFragment
         }
 
         if (showWipeEuicc()) {
-            mEsimStorageContainer.setOnClickListener(new View.OnClickListener() {
+            final View esimAlsoErased = mContentView.findViewById(R.id.also_erases_esim);
+            esimAlsoErased.setVisibility(View.VISIBLE);
 
-                @Override
-                public void onClick(View v) {
-                    mEsimStorage.toggle();
-                }
-            });
-        } else {
-            mEsimStorageContainer.setVisibility(View.GONE);
+            final View noCancelMobilePlan = mContentView.findViewById(R.id.no_cancel_mobile_plan);
+            noCancelMobilePlan.setVisibility(View.VISIBLE);
         }
 
         final UserManager um = (UserManager) getActivity().getSystemService(Context.USER_SERVICE);
@@ -245,11 +238,10 @@ public class MasterClear extends OptionsMenuFragment
     }
 
     /**
-     * Whether to show the checkbox to wipe the eUICC.
+     * Whether to show strings indicating that the eUICC will be wiped.
      *
-     * <p>We show the checkbox on any device which supports eUICC as long as either the eUICC was
-     * ever provisioned (that is, at least one profile was ever downloaded onto it), or if the user
-     * has enabled development mode.
+     * <p>We show the strings on any device which supports eUICC as long as the eUICC was ever
+     * provisioned (that is, at least one profile was ever downloaded onto it).
      */
     @VisibleForTesting
     boolean showWipeEuicc() {
@@ -258,8 +250,7 @@ public class MasterClear extends OptionsMenuFragment
             return false;
         }
         ContentResolver cr = context.getContentResolver();
-        return Settings.Global.getInt(cr, Settings.Global.EUICC_PROVISIONED, 0) != 0
-                || Settings.Global.getInt(cr, Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0) != 0;
+        return Settings.Global.getInt(cr, Settings.Global.EUICC_PROVISIONED, 0) != 0;
     }
 
     @VisibleForTesting
@@ -397,7 +388,7 @@ public class MasterClear extends OptionsMenuFragment
         final UserManager um = UserManager.get(context);
         final boolean disallow = !um.isAdminUser() || RestrictedLockUtils.hasBaseUserRestriction(
                 context, UserManager.DISALLOW_FACTORY_RESET, UserHandle.myUserId());
-        if (disallow && !Utils.isCarrierDemoUser(context)) {
+        if (disallow && !Utils.isDemoUser(context)) {
             return inflater.inflate(R.layout.master_clear_disallowed_screen, null);
         } else if (admin != null) {
             View view = inflater.inflate(R.layout.admin_support_details_empty_view, null);
