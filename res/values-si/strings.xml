@@ -341,7 +341,7 @@
     <string name="Accounts_settings_title" msgid="1643879107901699406">"ගිණුම්"</string>
     <string name="location_settings_title" msgid="1369675479310751735">"ස්ථානය"</string>
     <string name="account_settings_title" msgid="626177544686329806">"ගිණුම්"</string>
-    <string name="security_settings_title" msgid="4918904614964215087">"ආරක්ෂාව සහ පිහිටීම"</string>
+    <string name="security_settings_title" msgid="4918904614964215087">"ආරක්ෂාව සහ ස්ථානය"</string>
     <string name="encryption_and_credential_settings_title" msgid="6514904533438791561">"සංකේතනය සහ අක්තපත්‍ර"</string>
     <string name="encryption_and_credential_settings_summary" product="default" msgid="8721883002237981248">"දුරකතනය සංකේතනය කර ඇත"</string>
     <string name="encryption_and_credential_settings_summary" product="tablet" msgid="7200428573872395685">"උපාංගය සංකේතිතයි"</string>
@@ -1335,7 +1335,7 @@
     <string name="restore_default_apn_completed" msgid="2824775307377604897">"සුපුරුදු APN සැකසීම නැවත සැකසීම සම්පූර්ණ කරන ලදි."</string>
     <string name="reset_dashboard_title" msgid="6254873816990678620">"යළි සැකසීමේ විකල්ප"</string>
     <string name="reset_dashboard_summary" msgid="4851012632493522755">"ජාල, යෙදුම්, හෝ උපාංගය යළි සැකසිය හැකිය"</string>
-    <string name="reset_network_title" msgid="6166025966016873843">"Wi-Fi, ජංගම සහ බ්ලූටූත් යළි සකසන්න"</string>
+    <string name="reset_network_title" msgid="6166025966016873843">"Wi-Fi, ජංගම, බ්ලූටූත් යළි සක."</string>
     <string name="reset_network_desc" msgid="5547979398298881406">"මෙය, පහත ඒවා ඇතුළුව සියලු ජාල සැකසීම් යළි සකසනු ඇත:\n\n"<li>"Wi‑Fi"</li>\n<li>"ජංගම දත්ත"</li>\n<li>"බ්ලූටූත්"</li></string>
     <string name="reset_network_button_text" msgid="2035676527471089853">"සැකසීම් යළි පිහිටුවන ලදි"</string>
     <string name="reset_network_final_desc" msgid="6388371121099245116">"සියලු ජාල සැකසීම් යළි පිහිටුවන්නද? ඔබට මෙම ක්‍රියාව ආපසු හැරවිය නොහැකිය!"</string>
@@ -2888,7 +2888,8 @@
     <string name="app_notifications_title" msgid="5810577805218003760">"යෙදුම් දැනුම්දීම්"</string>
     <string name="notification_channel_title" msgid="2260666541030178452">"දැනුම්දීම් ප්‍රවර්ගය"</string>
     <string name="notification_importance_title" msgid="848692592679312666">"වැදගත්කම"</string>
-    <string name="notification_importance_unspecified" msgid="2196023702875112081">"යෙදුමට තීරණය කිරීමට ඉඩ දෙන්න"</string>
+    <!-- no translation found for notification_importance_unspecified (6622173510486113958) -->
+    <skip />
     <string name="notification_importance_blocked" msgid="7938180808339386300">"දැනුම්දීම් කිසිදා නොපෙන්වන්න"</string>
     <string name="notification_importance_min" msgid="5455049524984686275">"ශබ්ද හෝ දෘශ්‍ය බාධා නැත"</string>
     <string name="notification_importance_low" msgid="8881468429453766553">"ශබ්ද නැත"</string>
@@ -3220,7 +3221,7 @@
     <string name="usb_use_charging_only" msgid="2180443097365214467">"මෙම උපාංගය ආරෝපණය කිරීම"</string>
     <string name="usb_use_charging_only_desc" msgid="3066256793008540627">"මෙම උපාංගය දැන් ආරෝපනය කරන්න"</string>
     <string name="usb_use_power_only" msgid="6426550616883919530">"බලය සැපයීම"</string>
-    <string name="usb_use_power_only_desc" msgid="3461232831015575152">"සම්බන්ධිත උපාංගය ආරෝපණය කරන්න. වැඩ කරන්නේ USB ආරෝපණය වෙත සහය දක්වන උපාංග සමඟ පමණි."</string>
+    <string name="usb_use_power_only_desc" msgid="3461232831015575152">"සම්බන්ධිත උපාංගය ආරෝපණය කරන්න. වැඩ කරන්නේ USB ආරෝපණයට  සහය දක්වන උපාංග සමඟ පමණි."</string>
     <string name="usb_use_file_transfers" msgid="7409600791007250137">"ගොනු මාරු කිරීම"</string>
     <string name="usb_use_file_transfers_desc" msgid="4235764784331804488">"වෙනත් උපාංගයකට ගොනු මාරු කරන්න"</string>
     <string name="usb_use_photo_transfers" msgid="7794775645350330454">"ඡායාරූප හුවමාරුව (PTP)"</string>
