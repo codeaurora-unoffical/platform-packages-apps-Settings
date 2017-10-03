@@ -13,21 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.android.settings.dashboard.suggestions;
 
-package com.android.settings.applications;
+import android.util.Pair;
 
-import android.content.pm.UserInfo;
+import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 
-import java.util.List;
+public class SuggestionLogHelper {
 
-/**
- * This interface replicates a subset of the android.os.UserManager. The interface
- * exists so that we can use a thin wrapper around the UserManager in production code and a mock in
- * tests. We cannot directly mock or shadow the UserManager, because some of the methods we rely on
- * are newer than the API version supported by Robolectric or are hidden.
- */
-public interface UserManagerWrapper {
-    UserInfo getPrimaryUser();
-    List<UserInfo> getUsers();
-    List<UserInfo> getProfiles(int userHandle);
+    public static Pair<Integer, Object>[] getSuggestionTaggedData(boolean enabled) {
+        return new Pair[]{
+                Pair.create(
+                        MetricsEvent.FIELD_SETTINGS_SMART_SUGGESTIONS_ENABLED, enabled ? 1 : 0)};
+    }
 }
