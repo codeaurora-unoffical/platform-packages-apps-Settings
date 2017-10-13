@@ -62,6 +62,9 @@ public final class BluetoothPairingDialog extends AlertActivity implements
     private static final int BLUETOOTH_PASSKEY_MAX_LENGTH = 6;
     private static final int PAIRING_POPUP_TIMEOUT = 35000;
     private static final int MESSAGE_DELAYED_DISMISS = 1;
+    private static final String SYSTEM_DIALOG_REASON_KEY = "reason";
+    private static final String SYSTEM_DIALOG_REASON_HOME_KEY = "homekey";
+    private static final String SYSTEM_DIALOG_REASON_RECENTAPPS_KEY = "recentapps";
 
     private LocalBluetoothManager mBluetoothManager;
     private CachedBluetoothDeviceManager mCachedDeviceManager;
@@ -71,7 +74,7 @@ public final class BluetoothPairingDialog extends AlertActivity implements
     private EditText mPairingView;
     private Button mOkButton;
     private LocalBluetoothProfile mPbapClientProfile;
-
+    private boolean mCancelDialog;
 
     /**
      * Dismiss the dialog if the bond state changes to bonded or none,
@@ -93,6 +96,14 @@ public final class BluetoothPairingDialog extends AlertActivity implements
                 if (device == null || device.equals(mDevice)) {
                     dismiss();
                 }
+            } else if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action)) {
+                String reason = intent.getStringExtra(SYSTEM_DIALOG_REASON_KEY);
+                if (reason == null || reason.equals(SYSTEM_DIALOG_REASON_RECENTAPPS_KEY)) {
+                    mCancelDialog = false;
+                }
+                else if (reason.equals(SYSTEM_DIALOG_REASON_HOME_KEY) && mCancelDialog) {
+                    onCancel();
+                }
             }
         }
     };
@@ -100,6 +111,7 @@ public final class BluetoothPairingDialog extends AlertActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setFinishOnTouchOutside(false);
 
         Intent intent = getIntent();
         if (!intent.getAction().equals(BluetoothDevice.ACTION_PAIRING_REQUEST))
@@ -175,6 +187,7 @@ public final class BluetoothPairingDialog extends AlertActivity implements
          */
         registerReceiver(mReceiver, new IntentFilter(BluetoothDevice.ACTION_PAIRING_CANCEL));
         registerReceiver(mReceiver, new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED));
+        registerReceiver(mReceiver, new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS));
     }
 
     private void createUserEntryDialog() {
@@ -375,6 +388,12 @@ public final class BluetoothPairingDialog extends AlertActivity implements
             byte[] pinBytes = BluetoothDevice.convertPinToBytes(mPairingKey);
             mDevice.setPin(pinBytes);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mCancelDialog = true;
     }
 
     @Override
