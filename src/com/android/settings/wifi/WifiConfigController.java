@@ -551,6 +551,12 @@ public class WifiConfigController implements TextWatcher,
             case AccessPoint.SECURITY_EAP:
                 config.allowedKeyManagement.set(KeyMgmt.WPA_EAP);
                 config.allowedKeyManagement.set(KeyMgmt.IEEE8021X);
+                if (mAccessPoint.isFils256Supported()) {
+                    config.allowedKeyManagement.set(KeyMgmt.FILS_SHA256);
+                }
+                if (mAccessPoint.isFils384Supported()) {
+                    config.allowedKeyManagement.set(KeyMgmt.FILS_SHA384);
+                }
                 config.enterpriseConfig = new WifiEnterpriseConfig();
                 int eapMethod = mEapMethodSpinner.getSelectedItemPosition();
                 int phase2Method = mPhase2Spinner.getSelectedItemPosition();
@@ -663,6 +669,9 @@ public class WifiConfigController implements TextWatcher,
                 } else {
                     // clear password
                     config.enterpriseConfig.setPassword(mPasswordView.getText().toString());
+                }
+                if (mAccessPoint.isFils256Supported() || mAccessPoint.isFils384Supported()) {
+                    config.enterpriseConfig.setFieldValue(WifiEnterpriseConfig.EAP_ERP, "1");
                 }
                 break;
             default:
@@ -942,8 +951,13 @@ public class WifiConfigController implements TextWatcher,
                 } else {
                     setSelection(mEapUserCertSpinner, userCert);
                 }
-                mEapIdentityView.setText(enterpriseConfig.getIdentity());
-                mEapAnonymousView.setText(enterpriseConfig.getAnonymousIdentity());
+                // Don't set (Anonymous)Identity to GUI if EAP method is SIM/AKA/AKA_PRIME
+                if (eapMethod != Eap.SIM
+                        && eapMethod != Eap.AKA
+                        && eapMethod != Eap.AKA_PRIME) {
+                    mEapIdentityView.setText(enterpriseConfig.getIdentity());
+                    mEapAnonymousView.setText(enterpriseConfig.getAnonymousIdentity());
+                }
             } else {
                 mPhase2Spinner = (Spinner) mView.findViewById(R.id.phase2);
                 showEapFieldsByMethod(mEapMethodSpinner.getSelectedItemPosition());
@@ -1030,7 +1044,10 @@ public class WifiConfigController implements TextWatcher,
             case WIFI_EAP_METHOD_SIM:
             case WIFI_EAP_METHOD_AKA:
             case WIFI_EAP_METHOD_AKA_PRIME:
-                WifiConfiguration config = mAccessPoint.getConfig();
+                WifiConfiguration config = null;
+                if (mAccessPoint != null) {
+                    config = mAccessPoint.getConfig();
+                }
                 ArrayAdapter<String> eapSimAdapter = new ArrayAdapter<String>(
                          mContext, android.R.layout.simple_spinner_item,
                          mSimDisplayNames.toArray(new String[mSimDisplayNames.size()])
