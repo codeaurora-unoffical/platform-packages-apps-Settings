@@ -53,6 +53,10 @@ public class BluetoothPermissionActivity extends AlertActivity implements
     private BluetoothDevice mDevice;
     private String mReturnPackage = null;
     private String mReturnClass = null;
+    private static final String SYSTEM_DIALOG_REASON_KEY = "reason";
+    private static final String SYSTEM_DIALOG_REASON_HOME_KEY = "homekey";
+    private static final String SYSTEM_DIALOG_REASON_RECENTAPPS_KEY = "recentapps";
+    private boolean mCancelDialog;
 
     private int mRequestType = 0;
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -65,6 +69,13 @@ public class BluetoothPermissionActivity extends AlertActivity implements
                 if (requestType != mRequestType) return;
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 if (mDevice.equals(device)) dismissDialog();
+            } else if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action)) {
+                String reason = intent.getStringExtra(SYSTEM_DIALOG_REASON_KEY);
+                if (reason == null || reason.equals(SYSTEM_DIALOG_REASON_RECENTAPPS_KEY)) {
+                    mCancelDialog = false;
+                } else if (reason.equals(SYSTEM_DIALOG_REASON_HOME_KEY) && mCancelDialog ) {
+                    onNegative();
+                }
             }
         }
     };
@@ -86,7 +97,7 @@ public class BluetoothPermissionActivity extends AlertActivity implements
             finish();
             return;
         }
-
+        setFinishOnTouchOutside(false);
         mDevice = i.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
         mReturnPackage = i.getStringExtra(BluetoothDevice.EXTRA_PACKAGE_NAME);
         mReturnClass = i.getStringExtra(BluetoothDevice.EXTRA_CLASS_NAME);
@@ -111,9 +122,15 @@ public class BluetoothPermissionActivity extends AlertActivity implements
         }
         registerReceiver(mReceiver,
                          new IntentFilter(BluetoothDevice.ACTION_CONNECTION_ACCESS_CANCEL));
+        registerReceiver(mReceiver, new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS));
         mReceiverRegistered = true;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        mCancelDialog = true;
+    }
 
     private void showDialog(String title, int requestType)
     {
