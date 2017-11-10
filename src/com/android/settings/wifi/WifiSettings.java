@@ -797,6 +797,7 @@ public class WifiSettings extends RestrictedSettingsFragment
             key.append(accessPoint.getSsidStr());
         } else {
             key.append(bssid);
+            key.append(',').append(accessPoint.getSsidStr());
         }
         key.append(',').append(accessPoint.getSecurity());
         return key.toString();
