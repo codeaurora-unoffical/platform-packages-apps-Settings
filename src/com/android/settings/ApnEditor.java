@@ -106,7 +106,6 @@ public class ApnEditor extends SettingsPreferenceFragment
     private Uri mUri;
     private Cursor mCursor;
     private boolean mNewApn;
-    private boolean mFirstTime;
     private boolean mApnDisable = false;
     private int mSubId;
     private Resources mRes;
@@ -222,7 +221,6 @@ public class ApnEditor extends SettingsPreferenceFragment
                 SubscriptionManager.INVALID_SUBSCRIPTION_ID);
         mDisableEditor = intent.getBooleanExtra("DISABLE_EDITOR", false);
 
-        mFirstTime = icicle == null;
         mReadOnlyApn = false;
         mReadOnlyApnTypes = null;
         mReadOnlyApnFields = null;
@@ -247,7 +245,7 @@ public class ApnEditor extends SettingsPreferenceFragment
             }
             mUri = uri;
         } else if (action.equals(Intent.ACTION_INSERT)) {
-            if (mFirstTime || icicle.getInt(SAVED_POS) == 0) {
+            if (icicle == null || icicle.getInt(SAVED_POS) == 0) {
                 Uri uri = intent.getData();
                 if (!uri.isPathPrefixMatch(Telephony.Carriers.CONTENT_URI)) {
                     Log.e(TAG, "Insert request not for carrier table. Uri: " + uri);
@@ -467,87 +465,84 @@ public class ApnEditor extends SettingsPreferenceFragment
     }
 
     private void fillUi() {
-        if (mFirstTime) {
-            mFirstTime = false;
-            // Fill in all the values from the db in both text editor and summary
-            mName.setText(mCursor.getString(NAME_INDEX));
-            mApn.setText(mCursor.getString(APN_INDEX));
-            mProxy.setText(mCursor.getString(PROXY_INDEX));
-            mPort.setText(mCursor.getString(PORT_INDEX));
-            mUser.setText(mCursor.getString(USER_INDEX));
-            mServer.setText(mCursor.getString(SERVER_INDEX));
-            mPassword.setText(mCursor.getString(PASSWORD_INDEX));
-            mMmsProxy.setText(mCursor.getString(MMSPROXY_INDEX));
-            mMmsPort.setText(mCursor.getString(MMSPORT_INDEX));
-            mMmsc.setText(mCursor.getString(MMSC_INDEX));
-            mMcc.setText(mCursor.getString(MCC_INDEX));
-            mMnc.setText(mCursor.getString(MNC_INDEX));
-            mApnType.setText(mCursor.getString(TYPE_INDEX));
-            if (mNewApn) {
-                String numeric = mTelephonyManager.getSimOperator(mSubId);
-                // MCC is first 3 chars and then in 2 - 3 chars of MNC
-                if (numeric != null && numeric.length() > 4) {
-                    // Country code
-                    String mcc = numeric.substring(0, 3);
-                    // Network code
-                    String mnc = numeric.substring(3);
-                    // Auto populate MNC and MCC for new entries, based on what SIM reports
-                    mMcc.setText(mcc);
-                    mMnc.setText(mnc);
-                    mCurMnc = mnc;
-                    mCurMcc = mcc;
-                }
+        // Fill in all the values from the db in both text editor and summary
+        mName.setText(mCursor.getString(NAME_INDEX));
+        mApn.setText(mCursor.getString(APN_INDEX));
+        mProxy.setText(mCursor.getString(PROXY_INDEX));
+        mPort.setText(mCursor.getString(PORT_INDEX));
+        mUser.setText(mCursor.getString(USER_INDEX));
+        mServer.setText(mCursor.getString(SERVER_INDEX));
+        mPassword.setText(mCursor.getString(PASSWORD_INDEX));
+        mMmsProxy.setText(mCursor.getString(MMSPROXY_INDEX));
+        mMmsPort.setText(mCursor.getString(MMSPORT_INDEX));
+        mMmsc.setText(mCursor.getString(MMSC_INDEX));
+        mMcc.setText(mCursor.getString(MCC_INDEX));
+        mMnc.setText(mCursor.getString(MNC_INDEX));
+        mApnType.setText(mCursor.getString(TYPE_INDEX));
+        if (mNewApn) {
+            String numeric = mTelephonyManager.getSimOperator(mSubId);
+            // MCC is first 3 chars and then in 2 - 3 chars of MNC
+            if (numeric != null && numeric.length() > 4) {
+                // Country code
+                String mcc = numeric.substring(0, 3);
+                // Network code
+                String mnc = numeric.substring(3);
+                // Auto populate MNC and MCC for new entries, based on what SIM reports
+                mMcc.setText(mcc);
+                mMnc.setText(mnc);
+                mCurMnc = mnc;
+                mCurMcc = mcc;
             }
-            int authVal = mCursor.getInt(AUTH_TYPE_INDEX);
-            if (authVal != -1) {
-                mAuthType.setValueIndex(authVal);
-            } else {
-                mAuthType.setValue(null);
-            }
-            if (mNewApn && getResources().getBoolean(R.bool.config_default_apn_for_new)) {
-                mProtocol.setValueIndex(DEFAULT_IPV4V6_INDEX);
-                mRoamingProtocol.setValueIndex(DEFAULT_IPV4V6_INDEX);
-            } else {
-                mProtocol.setValue(mCursor.getString(PROTOCOL_INDEX));
-                mRoamingProtocol.setValue(mCursor.getString(ROAMING_PROTOCOL_INDEX));
-            }
-            mCarrierEnabled.setChecked(mCursor.getInt(CARRIER_ENABLED_INDEX)==1);
-            mBearerInitialVal = mCursor.getInt(BEARER_INDEX);
+        }
+        int authType = mCursor.getInt(AUTH_TYPE_INDEX);
+        if (authType != -1) {
+            mAuthType.setValueIndex(authType);
+        } else {
+            mAuthType.setValue(null);
+        }
+        if (mNewApn && getResources().getBoolean(R.bool.config_default_apn_for_new)) {
+            mProtocol.setValueIndex(DEFAULT_IPV4V6_INDEX);
+            mRoamingProtocol.setValueIndex(DEFAULT_IPV4V6_INDEX);
+        } else {
+            mProtocol.setValue(mCursor.getString(PROTOCOL_INDEX));
+            mRoamingProtocol.setValue(mCursor.getString(ROAMING_PROTOCOL_INDEX));
+        }
+        mCarrierEnabled.setChecked(mCursor.getInt(CARRIER_ENABLED_INDEX)==1);
+        mBearerInitialVal = mCursor.getInt(BEARER_INDEX);
 
-            HashSet<String> bearers = new HashSet<String>();
-            int bearerBitmask = mCursor.getInt(BEARER_BITMASK_INDEX);
-            if (bearerBitmask == 0) {
-                if (mBearerInitialVal == 0) {
-                    bearers.add("" + 0);
+        HashSet<String> bearers = new HashSet<String>();
+        int bearerBitmask = mCursor.getInt(BEARER_BITMASK_INDEX);
+        if (bearerBitmask == 0) {
+            if (mBearerInitialVal == 0) {
+                bearers.add("" + 0);
+            }
+        } else {
+            int i = 1;
+            while (bearerBitmask != 0) {
+                if ((bearerBitmask & 1) == 1) {
+                    bearers.add("" + i);
                 }
-            } else {
-                int i = 1;
-                while (bearerBitmask != 0) {
-                    if ((bearerBitmask & 1) == 1) {
-                        bearers.add("" + i);
-                    }
-                    bearerBitmask >>= 1;
-                    i++;
-                }
+                bearerBitmask >>= 1;
+                i++;
             }
+        }
 
-            if (mBearerInitialVal != 0 && bearers.contains("" + mBearerInitialVal) == false) {
-                // add mBearerInitialVal to bearers
-                bearers.add("" + mBearerInitialVal);
-            }
-            mBearerMulti.setValues(bearers);
+        if (mBearerInitialVal != 0 && bearers.contains("" + mBearerInitialVal) == false) {
+            // add mBearerInitialVal to bearers
+            bearers.add("" + mBearerInitialVal);
+        }
+        mBearerMulti.setValues(bearers);
 
-            mMvnoType.setValue(mCursor.getString(MVNO_TYPE_INDEX));
-            mMvnoMatchData.setEnabled(false);
-            mMvnoMatchData.setText(mCursor.getString(MVNO_MATCH_DATA_INDEX));
-            if (mNewApn && mMvnoTypeStr != null && mMvnoMatchDataStr != null) {
-                mMvnoType.setValue(mMvnoTypeStr);
-                mMvnoMatchData.setText(mMvnoMatchDataStr);
-            }
-            String localizedName = ApnSettings.getLocalizedName(getActivity(), mCursor,NAME_INDEX);
-            if (!TextUtils.isEmpty(localizedName)) {
-                mName.setText(localizedName);
-            }
+        mMvnoType.setValue(mCursor.getString(MVNO_TYPE_INDEX));
+        mMvnoMatchData.setEnabled(false);
+        mMvnoMatchData.setText(mCursor.getString(MVNO_MATCH_DATA_INDEX));
+        if (mNewApn && mMvnoTypeStr != null && mMvnoMatchDataStr != null) {
+            mMvnoType.setValue(mMvnoTypeStr);
+            mMvnoMatchData.setText(mMvnoMatchDataStr);
+        }
+        String localizedName = ApnSettings.getLocalizedName(getActivity(), mCursor,NAME_INDEX);
+        if (!TextUtils.isEmpty(localizedName)) {
+            mName.setText(localizedName);
         }
 
         mName.setSummary(checkNull(mName.getText()));
