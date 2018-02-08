@@ -184,6 +184,7 @@
         <item name="android:alertDialogTheme">@style/Theme.AlertDialog</item>
 
         <item name="*android:lockPatternStyle">@style/LockPatternStyle.Setup</item>
+        <item name="android:windowNoTitle">false</item>
     </style>
 
     <style name="Theme.SubSettings" parent="Theme.Settings">
