@@ -63,7 +63,8 @@
         <item name="colorPrimaryVariant">@android:color/white</item>
 
         <!-- For slice view in settings -->
-        <item name="sliceViewStyle">@style/Widget.SliceView.Settings</item>
+		<item name="sliceViewStyle">@style/Widget.SliceView.Settings</item>
+		<item name="android:windowNoTitle">false</item>
     </style>
 
     <!-- Variant of the settings theme with no action bar. -->
