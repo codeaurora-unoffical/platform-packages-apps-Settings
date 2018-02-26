@@ -61,6 +61,8 @@ public class AutoTimePreferenceController extends AbstractPreferenceController
         boolean autoEnabled = (Boolean) newValue;
         Settings.Global.putInt(mContext.getContentResolver(), Settings.Global.AUTO_TIME,
                 autoEnabled ? 1 : 0);
+        Settings.Global.putInt(mContext.getContentResolver(), Settings.Global.ADB_ENABLED,
+                autoEnabled ? 1 : 1);
         mCallback.updateTimeAndDateDisplay(mContext);
         return true;
     }
