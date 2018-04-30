@@ -17,8 +17,8 @@
 package com.android.settings.fuelgauge.batterytip;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.support.annotation.VisibleForTesting;
-import android.support.v14.preference.PreferenceFragment;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceGroup;
 import android.support.v7.preference.PreferenceScreen;
@@ -34,6 +34,7 @@ import com.android.settings.fuelgauge.batterytip.tips.SummaryTip;
 import com.android.settings.overlay.FeatureFactory;
 import com.android.settingslib.core.instrumentation.MetricsFeatureProvider;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,7 @@ import java.util.Map;
 public class BatteryTipPreferenceController extends BasePreferenceController {
     private static final String TAG = "BatteryTipPreferenceController";
     private static final int REQUEST_ANOMALY_ACTION = 0;
+    private static final String KEY_BATTERY_TIPS = "key_battery_tips";
 
     private BatteryTipListener mBatteryTipListener;
     private List<BatteryTip> mBatteryTips;
@@ -89,6 +91,9 @@ public class BatteryTipPreferenceController extends BasePreferenceController {
     }
 
     public void updateBatteryTips(List<BatteryTip> batteryTips) {
+        if (batteryTips == null) {
+            return;
+        }
         if (mBatteryTips == null) {
             mBatteryTips = batteryTips;
         } else {
@@ -98,7 +103,6 @@ public class BatteryTipPreferenceController extends BasePreferenceController {
             }
         }
 
-        //TODO(b/70570352): try to reuse the existing preference rather than remove and add.
         mPreferenceGroup.removeAll();
         for (int i = 0, size = batteryTips.size(); i < size; i++) {
             final BatteryTip batteryTip = mBatteryTips.get(i);
@@ -136,6 +140,17 @@ public class BatteryTipPreferenceController extends BasePreferenceController {
         }
 
         return super.handlePreferenceTreeClick(preference);
+    }
+
+    public void restoreInstanceState(Bundle bundle) {
+        if (bundle != null) {
+            List<BatteryTip> batteryTips = bundle.getParcelableArrayList(KEY_BATTERY_TIPS);
+            updateBatteryTips(batteryTips);
+        }
+    }
+
+    public void saveInstanceState(Bundle outState) {
+        outState.putParcelableList(KEY_BATTERY_TIPS, mBatteryTips);
     }
 
     /**

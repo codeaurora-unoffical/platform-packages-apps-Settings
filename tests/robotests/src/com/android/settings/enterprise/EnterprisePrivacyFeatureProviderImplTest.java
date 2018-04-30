@@ -21,12 +21,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
+import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.UserInfo;
 import android.content.res.Resources;
+import android.net.ConnectivityManager;
 import android.net.ProxyInfo;
 import android.os.UserHandle;
 import android.os.UserManager;
@@ -35,8 +37,6 @@ import android.text.SpannableStringBuilder;
 
 import com.android.settings.R;
 import com.android.settings.testutils.SettingsRobolectricTestRunner;
-import com.android.settings.wrapper.ConnectivityManagerWrapper;
-import com.android.settings.wrapper.DevicePolicyManagerWrapper;
 import com.android.settingslib.wrapper.PackageManagerWrapper;
 
 import org.junit.Before;
@@ -68,11 +68,11 @@ public class EnterprisePrivacyFeatureProviderImplTest {
     private List<UserInfo> mProfiles = new ArrayList<>();
 
     private @Mock Context mContext;
-    private @Mock DevicePolicyManagerWrapper mDevicePolicyManager;
+    private @Mock DevicePolicyManager mDevicePolicyManager;
     private @Mock PackageManagerWrapper mPackageManagerWrapper;
     private @Mock PackageManager mPackageManager;
     private @Mock UserManager mUserManager;
-    private @Mock ConnectivityManagerWrapper mConnectivityManger;
+    private @Mock ConnectivityManager mConnectivityManger;
     private Resources mResources;
 
     private EnterprisePrivacyFeatureProvider mProvider;
@@ -126,7 +126,7 @@ public class EnterprisePrivacyFeatureProviderImplTest {
         SpannableStringBuilder disclosure = new SpannableStringBuilder();
         disclosure.append(mResources.getString(R.string.do_disclosure_generic));
         disclosure.append(mResources.getString(R.string.do_disclosure_learn_more_separator));
-        disclosure.append(mResources.getString(R.string.do_disclosure_learn_more),
+        disclosure.append(mResources.getString(R.string.learn_more),
                 new EnterprisePrivacyFeatureProviderImpl.EnterprisePrivacySpan(mContext), 0);
         when(mDevicePolicyManager.getDeviceOwnerComponentOnAnyUser()).thenReturn(OWNER);
         when(mDevicePolicyManager.getDeviceOwnerOrganizationName()).thenReturn(null);
@@ -136,7 +136,7 @@ public class EnterprisePrivacyFeatureProviderImplTest {
         disclosure.append(mResources.getString(R.string.do_disclosure_with_name,
                 OWNER_ORGANIZATION));
         disclosure.append(mResources.getString(R.string.do_disclosure_learn_more_separator));
-        disclosure.append(mResources.getString(R.string.do_disclosure_learn_more),
+        disclosure.append(mResources.getString(R.string.learn_more),
                 new EnterprisePrivacyFeatureProviderImpl.EnterprisePrivacySpan(mContext), 0);
         when(mDevicePolicyManager.getDeviceOwnerOrganizationName()).thenReturn(OWNER_ORGANIZATION);
         assertThat(mProvider.getDeviceOwnerDisclosure()).isEqualTo(disclosure);
@@ -345,6 +345,15 @@ public class EnterprisePrivacyFeatureProviderImplTest {
         mProfiles.add(new UserInfo(MANAGED_PROFILE_USER_ID, "", "", UserInfo.FLAG_MANAGED_PROFILE));
         assertThat(mProvider.getNumberOfActiveDeviceAdminsForCurrentUserAndManagedProfile())
                 .isEqualTo(3);
+    }
+
+    @Test
+    public void testAreBackupsMandatory() {
+        assertThat(mProvider.areBackupsMandatory()).isFalse();
+        ComponentName transportComponent = new ComponentName("test", "test");
+        when(mDevicePolicyManager.getMandatoryBackupTransport())
+                .thenReturn(transportComponent);
+        assertThat(mProvider.areBackupsMandatory()).isTrue();
     }
 
     private void resetAndInitializePackageManagerWrapper() {

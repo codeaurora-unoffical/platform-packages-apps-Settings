@@ -121,11 +121,11 @@ public class RestrictAppPreferenceControllerTest {
 
         mRestrictAppPreferenceController.updateState(mPreference);
 
-        assertThat(mPreference.getSummary()).isEqualTo("1 app");
+        assertThat(mPreference.getSummary()).isEqualTo("Limiting battery usage for 1 app");
     }
 
     @Test
-    public void testUpdateState_twoRestrictedAppsForPrimaryUser_showCorrectSummary() {
+    public void testUpdateState_twoRestrictedAppsForPrimaryUser_visibleAndShowCorrectSummary() {
         mPackageOpsList.add(mRestrictedPackageOps);
         mPackageOpsList.add(mRestrictedPackageOps);
         mPackageOpsList.add(mAllowedPackageOps);
@@ -134,7 +134,8 @@ public class RestrictAppPreferenceControllerTest {
 
         mRestrictAppPreferenceController.updateState(mPreference);
 
-        assertThat(mPreference.getSummary()).isEqualTo("2 apps");
+        assertThat(mPreference.getSummary()).isEqualTo("Limiting battery usage for 2 apps");
+        assertThat(mPreference.isVisible()).isTrue();
     }
 
     @Test
@@ -146,7 +147,7 @@ public class RestrictAppPreferenceControllerTest {
 
         mRestrictAppPreferenceController.updateState(mPreference);
 
-        assertThat(mPreference.getSummary()).isEqualTo("1 app");
+        assertThat(mPreference.getSummary()).isEqualTo("Limiting battery usage for 1 app");
         assertThat(mRestrictAppPreferenceController.mAppInfos).containsExactly(
                 new AppInfo.Builder()
                         .setUid(RESTRICTED_UID)
@@ -155,13 +156,13 @@ public class RestrictAppPreferenceControllerTest {
     }
 
     @Test
-    public void testUpdateState_zeroRestrictApp_disabled() {
+    public void testUpdateState_zeroRestrictApp_inVisible() {
         mPackageOpsList.add(mAllowedPackageOps);
         doReturn(mPackageOpsList).when(mAppOpsManager).getPackagesForOps(any());
 
         mRestrictAppPreferenceController.updateState(mPreference);
 
-        assertThat(mPreference.isEnabled()).isFalse();
+        assertThat(mPreference.isVisible()).isFalse();
     }
 
     @Test

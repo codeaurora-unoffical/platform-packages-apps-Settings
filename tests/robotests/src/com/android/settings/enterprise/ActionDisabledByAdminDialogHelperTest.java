@@ -94,7 +94,7 @@ public class ActionDisabledByAdminDialogHelperTest {
         mHelper.showAdminPolicies(admin, mActivity);
         final Intent intent = mActivityShadow.getNextStartedActivity();
         assertEquals(intent.getComponent(), new ComponentName(mActivity,
-                        Settings.DeviceAdminSettingsActivity.class.getName()));
+                Settings.DeviceAdminSettingsActivity.class.getName()));
     }
 
     @Test
@@ -128,6 +128,10 @@ public class ActionDisabledByAdminDialogHelperTest {
         assertEquals(Shadows.shadowOf(textView).innerText(),
                 mActivity.getString(R.string.disabled_by_policy_title_turn_off_backups));
 
+        mHelper.setAdminSupportTitle(view, DevicePolicyManager.POLICY_SUSPEND_PACKAGES);
+        assertEquals(Shadows.shadowOf(textView).innerText(),
+                mActivity.getString(R.string.disabled_by_policy_title_suspend_packages));
+
         mHelper.setAdminSupportTitle(view, "another restriction");
         assertEquals(Shadows.shadowOf(textView).innerText(),
                 mActivity.getString(R.string.disabled_by_policy_title));
@@ -139,9 +143,7 @@ public class ActionDisabledByAdminDialogHelperTest {
 
     @Test
     public void testSetAdminSupportDetails() {
-        final DevicePolicyManager dpm = RuntimeEnvironment.application.getSystemService(
-                DevicePolicyManager.class);
-        final ShadowDevicePolicyManager dpmShadow = Shadow.extract(dpm);
+        final ShadowDevicePolicyManager dpmShadow = ShadowDevicePolicyManager.getShadow();
         final UserManager userManager = RuntimeEnvironment.application.getSystemService(
                 UserManager.class);
         final ShadowUserManager userManagerShadow = Shadow.extract(userManager);
@@ -165,9 +167,7 @@ public class ActionDisabledByAdminDialogHelperTest {
 
     @Test
     public void testSetAdminSupportDetailsNotAdmin() {
-        final DevicePolicyManager dpm = RuntimeEnvironment.application.getSystemService(
-                DevicePolicyManager.class);
-        final ShadowDevicePolicyManager dpmShadow = Shadow.extract(dpm);
+        final ShadowDevicePolicyManager dpmShadow = ShadowDevicePolicyManager.getShadow();
         final UserManager userManager = RuntimeEnvironment.application.getSystemService(
                 UserManager.class);
         final ShadowUserManager userManagerShadow = Shadow.extract(userManager);

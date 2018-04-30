@@ -166,6 +166,10 @@ public abstract class BluetoothDeviceUpdater implements BluetoothCallback {
     public void onActiveDeviceChanged(CachedBluetoothDevice activeDevice, int bluetoothProfile) {
     }
 
+    @Override
+    public void onAudioModeChanged() {
+    }
+
     /**
      * Set the context to generate the {@link Preference}, so it could get the correct theme.
      */
