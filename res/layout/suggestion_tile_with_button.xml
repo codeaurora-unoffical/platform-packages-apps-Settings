@@ -46,16 +46,22 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="6dp" />
 
-            <ImageView
+            <FrameLayout
                 android:id="@+id/close_button"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:alpha="0.54"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_alignParentEnd="true"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:contentDescription="@string/dlg_close"
-                android:src="@drawable/ic_suggestion_close_button"/>
+                android:paddingTop="8dp"
+                android:paddingEnd="8dp"
+                android:orientation="horizontal"
+                android:contentDescription="@string/dlg_close">
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="end|top"
+                    android:alpha="0.54"
+                    android:src="@drawable/ic_suggestion_close_button"/>
+            </FrameLayout>
 
         </RelativeLayout>
 
@@ -80,15 +86,18 @@
             android:singleLine="true"
             android:textAppearance="@style/TextAppearance.SuggestionSummary" />
 
-        <Button
-            android:id="@android:id/primary"
-            style="@style/ActionPrimaryButton"
-            android:layout_gravity="center"
+        <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="18dp"
-            android:text="@string/suggestion_button_text" />
+            style="@style/SuggestionCardButton">
+            <Button
+                android:id="@android:id/primary"
+                style="@style/ActionPrimaryButton"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/suggestion_button_text" />
+        </FrameLayout>
 
     </LinearLayout>
 

@@ -27,7 +27,6 @@ import android.support.v7.preference.PreferenceScreen;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.telephony.SubscriptionPlan;
-import android.telephony.TelephonyManager;
 import android.text.BidiFormatter;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -86,8 +85,7 @@ public class DataUsageSummary extends DataUsageBaseFragment implements Indexable
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-
-        final Context context = getContext();
+        Context context = getContext();
 
         boolean hasMobileData = DataUsageUtils.hasMobileData(context);
 
@@ -101,18 +99,33 @@ public class DataUsageSummary extends DataUsageBaseFragment implements Indexable
         if (!hasMobileData || !isAdmin()) {
             removePreference(KEY_RESTRICT_BACKGROUND);
         }
-        if (hasMobileData) {
-            SubscriptionInfo subInfo
-                    = services.mSubscriptionManager.getDefaultDataSubscriptionInfo();
-            if (subInfo != null) {
-                addMobileSection(subInfo.getSubscriptionId());
-            }
-        }
         boolean hasWifiRadio = DataUsageUtils.hasWifiRadio(context);
-        if (hasWifiRadio) {
+        if (hasMobileData) {
+            List<SubscriptionInfo> subscriptions =
+                    services.mSubscriptionManager.getActiveSubscriptionInfoList();
+            if (subscriptions == null || subscriptions.size() == 0) {
+                addMobileSection(defaultSubId);
+            }
+            for (int i = 0; subscriptions != null && i < subscriptions.size(); i++) {
+                SubscriptionInfo subInfo = subscriptions.get(i);
+                if (subscriptions.size() > 1) {
+                    addMobileSection(subInfo.getSubscriptionId(), subInfo);
+                } else {
+                    addMobileSection(subInfo.getSubscriptionId());
+                }
+            }
+            if (DataUsageUtils.hasSim(context) && hasWifiRadio) {
+                // If the device has a SIM installed, the data usage section shows usage for mobile,
+                // and the WiFi section is added if there is a WiFi radio - legacy behavior.
+                addWifiSection();
+            }
+            // Do not add the WiFi section if either there is no WiFi radio (obviously) or if no
+            // SIM is installed. In the latter case the data usage section will show WiFi usage and
+            // there should be no explicit WiFi section added.
+        } else if (hasWifiRadio) {
             addWifiSection();
         }
-        if (hasEthernet(context)) {
+        if (DataUsageUtils.hasEthernet(context)) {
             addEthernetSection();
         }
         setHasOptionsMenu(true);
@@ -170,7 +183,8 @@ public class DataUsageSummary extends DataUsageBaseFragment implements Indexable
         return controllers;
     }
 
-    private void addMobileSection(int subId) {
+    @VisibleForTesting
+    void addMobileSection(int subId) {
         addMobileSection(subId, null);
     }
 
@@ -185,7 +199,8 @@ public class DataUsageSummary extends DataUsageBaseFragment implements Indexable
         }
     }
 
-    private void addWifiSection() {
+    @VisibleForTesting
+    void addWifiSection() {
         TemplatePreferenceCategory category = (TemplatePreferenceCategory)
                 inflatePreferences(R.xml.data_usage_wifi);
         category.setTemplate(NetworkTemplate.buildTemplateWifiWildcard(), 0, services);
@@ -235,7 +250,7 @@ public class DataUsageSummary extends DataUsageBaseFragment implements Indexable
         final int FLAGS = Spannable.SPAN_INCLUSIVE_INCLUSIVE;
 
         final Formatter.BytesResult usedResult = Formatter.formatBytes(context.getResources(),
-                usageLevel, Formatter.FLAG_CALCULATE_ROUNDED);
+                usageLevel, Formatter.FLAG_CALCULATE_ROUNDED | Formatter.FLAG_IEC_UNITS);
         final SpannableString enlargedValue = new SpannableString(usedResult.value);
         enlargedValue.setSpan(new RelativeSizeSpan(larger), 0, enlargedValue.length(), FLAGS);
 
@@ -298,22 +313,30 @@ public class DataUsageSummary extends DataUsageBaseFragment implements Indexable
         @Override
         public void setListening(boolean listening) {
             if (listening) {
-                TelephonyManager telephonyManager = (TelephonyManager) mActivity
-                        .getSystemService(Context.TELEPHONY_SERVICE);
-                final int simState = telephonyManager.getSimState();
-                // Note that pulling the SIM card returns UNKNOWN, not ABSENT.
-                if (simState == TelephonyManager.SIM_STATE_ABSENT
-                        || simState == TelephonyManager.SIM_STATE_UNKNOWN) {
-                    mSummaryLoader.setSummary(this, null);
-                } else {
+                if (DataUsageUtils.hasSim(mActivity)) {
                     mSummaryLoader.setSummary(this,
                             mActivity.getString(R.string.data_usage_summary_format,
                                     formatUsedData()));
+                } else {
+                    final DataUsageController.DataUsageInfo info =
+                            mDataController
+                                    .getDataUsageInfo(NetworkTemplate.buildTemplateWifiWildcard());
+
+                    if (info == null) {
+                        mSummaryLoader.setSummary(this, null);
+                    } else {
+                        final CharSequence wifiFormat = mActivity
+                                .getText(R.string.data_usage_wifi_format);
+                        final CharSequence sizeText =
+                                DataUsageUtils.formatDataUsage(mActivity, info.usageLevel);
+                        mSummaryLoader.setSummary(this,
+                                TextUtils.expandTemplate(wifiFormat, sizeText));
+                    }
                 }
             }
         }
 
-        private String formatUsedData() {
+        private CharSequence formatUsedData() {
             SubscriptionManager subscriptionManager = (SubscriptionManager) mActivity
                 .getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE);
             int defaultSubId = subscriptionManager.getDefaultSubscriptionId();
@@ -326,19 +349,19 @@ public class DataUsageSummary extends DataUsageBaseFragment implements Indexable
                 return formatFallbackData();
             }
             if (DataUsageSummaryPreferenceController.unlimited(dfltPlan.getDataLimitBytes())) {
-                return Formatter.formatFileSize(mActivity, dfltPlan.getDataUsageBytes());
+                return DataUsageUtils.formatDataUsage(mActivity, dfltPlan.getDataUsageBytes());
             } else {
                 return Utils.formatPercentage(dfltPlan.getDataUsageBytes(),
                     dfltPlan.getDataLimitBytes());
             }
         }
 
-        private String formatFallbackData() {
+        private CharSequence formatFallbackData() {
             DataUsageController.DataUsageInfo info = mDataController.getDataUsageInfo();
             if (info == null) {
-                return Formatter.formatFileSize(mActivity, 0);
+                return DataUsageUtils.formatDataUsage(mActivity, 0);
             } else if (info.limitLevel <= 0) {
-                return Formatter.formatFileSize(mActivity, info.usageLevel);
+                return DataUsageUtils.formatDataUsage(mActivity, info.usageLevel);
             } else {
                 return Utils.formatPercentage(info.usageLevel, info.limitLevel);
             }

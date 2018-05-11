@@ -16,6 +16,8 @@
 
 package com.android.settings;
 
+import static com.android.settingslib.RestrictedLockUtils.EnforcedAdmin;
+
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
@@ -27,11 +29,14 @@ import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.RecoverySystem;
 import android.os.UserHandle;
 import android.os.UserManager;
+import android.provider.Telephony;
 import android.support.annotation.VisibleForTesting;
 import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,13 +46,10 @@ import android.widget.Toast;
 import com.android.ims.ImsManager;
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.internal.telephony.PhoneConstants;
-import com.android.settings.enterprise.ActionDisabledByAdminDialogHelper;
-import com.android.settings.wrapper.RecoverySystemWrapper;
 import com.android.settings.core.InstrumentedFragment;
+import com.android.settings.enterprise.ActionDisabledByAdminDialogHelper;
+import com.android.settings.network.ApnSettings;
 import com.android.settingslib.RestrictedLockUtils;
-import com.android.settingslib.utils.ThreadUtils;
-
-import static com.android.settingslib.RestrictedLockUtils.EnforcedAdmin;
 
 /**
  * Confirm and execute a reset of the network settings to a clean "just out of the box"
@@ -65,7 +67,6 @@ public class ResetNetworkConfirm extends InstrumentedFragment {
     private int mSubId = SubscriptionManager.INVALID_SUBSCRIPTION_ID;
     @VisibleForTesting boolean mEraseEsim;
     @VisibleForTesting EraseEsimAsyncTask mEraseEsimTask;
-    @VisibleForTesting static RecoverySystemWrapper mRecoverySystem;
 
     /**
      * Async task used to erase all the eSIM profiles from the phone. If error happens during
@@ -82,7 +83,7 @@ public class ResetNetworkConfirm extends InstrumentedFragment {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            return mRecoverySystem.wipeEuiccData(mContext, mPackageName);
+            return RecoverySystem.wipeEuiccData(mContext, mPackageName);
         }
 
         @Override
@@ -153,8 +154,19 @@ public class ResetNetworkConfirm extends InstrumentedFragment {
                      SubscriptionManager.getPhoneId(mSubId)).factoryReset();
             restoreDefaultApn(context);
             esimFactoryReset(context, context.getPackageName());
+            // There has been issues when Sms raw table somehow stores orphan
+            // fragments. They lead to garbled message when new fragments come
+            // in and combied with those stale ones. In case this happens again,
+            // user can reset all network settings which will clean up this table.
+            cleanUpSmsRawTable(context);
         }
     };
+
+    private void cleanUpSmsRawTable(Context context) {
+        ContentResolver resolver = context.getContentResolver();
+        Uri uri = Uri.withAppendedPath(Telephony.Sms.CONTENT_URI, "raw/permanentDelete");
+        resolver.delete(uri, null, null);
+    }
 
     @VisibleForTesting
     void esimFactoryReset(Context context, String packageName) {
@@ -219,7 +231,6 @@ public class ResetNetworkConfirm extends InstrumentedFragment {
                     SubscriptionManager.INVALID_SUBSCRIPTION_ID);
             mEraseEsim = args.getBoolean(MasterClear.ERASE_ESIMS_EXTRA);
         }
-        mRecoverySystem = new RecoverySystemWrapper();
     }
 
     @Override

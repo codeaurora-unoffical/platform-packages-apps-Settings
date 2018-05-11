@@ -13,6 +13,9 @@
  */
 package com.android.settings.display;
 
+import static com.android.settingslib.display.BrightnessUtils.GAMMA_SPACE_MAX;
+import static com.android.settingslib.display.BrightnessUtils.convertLinearToGamma;
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.ContentObserver;
@@ -31,7 +34,6 @@ import android.support.v7.preference.PreferenceScreen;
 import android.util.Log;
 
 import com.android.settings.core.PreferenceControllerMixin;
-import com.android.settings.wrapper.PowerManagerWrapper;
 import com.android.settingslib.core.AbstractPreferenceController;
 import com.android.settingslib.core.lifecycle.Lifecycle;
 import com.android.settingslib.core.lifecycle.LifecycleObserver;
@@ -64,29 +66,23 @@ public class BrightnessLevelPreferenceController extends AbstractPreferenceContr
     }
 
     private ContentObserver mBrightnessObserver =
-        new ContentObserver(new Handler(Looper.getMainLooper())) {
-            @Override
-            public void onChange(boolean selfChange) {
-                updatedSummary(mPreference);
-            }
-        };
+            new ContentObserver(new Handler(Looper.getMainLooper())) {
+                @Override
+                public void onChange(boolean selfChange) {
+                    updatedSummary(mPreference);
+                }
+            };
 
     public BrightnessLevelPreferenceController(Context context, Lifecycle lifecycle) {
-        this(context, lifecycle, new PowerManagerWrapper(
-                (PowerManager) context.getSystemService(Context.POWER_SERVICE)));
-    }
-
-    @VisibleForTesting
-    public BrightnessLevelPreferenceController(Context context, Lifecycle lifecycle,
-            PowerManagerWrapper powerManagerWrapper) {
         super(context);
         if (lifecycle != null) {
             lifecycle.addObserver(this);
         }
-        mMinBrightness = powerManagerWrapper.getMinimumScreenBrightnessSetting();
-        mMaxBrightness = powerManagerWrapper.getMaximumScreenBrightnessSetting();
-        mMinVrBrightness = powerManagerWrapper.getMinimumScreenBrightnessForVrSetting();
-        mMaxVrBrightness = powerManagerWrapper.getMaximumScreenBrightnessForVrSetting();
+        PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        mMinBrightness = powerManager.getMinimumScreenBrightnessSetting();
+        mMaxBrightness = powerManager.getMaximumScreenBrightnessSetting();
+        mMinVrBrightness = powerManager.getMinimumScreenBrightnessForVrSetting();
+        mMaxVrBrightness = powerManager.getMaximumScreenBrightnessForVrSetting();
         mContentResolver = mContext.getContentResolver();
     }
 
@@ -110,6 +106,7 @@ public class BrightnessLevelPreferenceController extends AbstractPreferenceContr
     public void updateState(Preference preference) {
         updatedSummary(preference);
     }
+
     @Override
     public void onStart() {
         mContentResolver.registerContentObserver(BRIGHTNESS_URI, false, mBrightnessObserver);
@@ -129,15 +126,18 @@ public class BrightnessLevelPreferenceController extends AbstractPreferenceContr
     }
 
     private double getCurrentBrightness() {
+        final int value;
         if (isInVrMode()) {
-            final double value = System.getInt(mContentResolver, System.SCREEN_BRIGHTNESS_FOR_VR,
-                    mMaxBrightness);
-            return getPercentage(value, mMinVrBrightness, mMaxVrBrightness);
+            value = convertLinearToGamma(System.getInt(mContentResolver,
+                    System.SCREEN_BRIGHTNESS_FOR_VR, mMaxBrightness),
+                    mMinVrBrightness, mMaxVrBrightness);
         } else {
-            final double value = Settings.System.getInt(mContentResolver, System.SCREEN_BRIGHTNESS,
-                    mMinBrightness);
-            return getPercentage(value, mMinBrightness, mMaxBrightness);
+            value = convertLinearToGamma(Settings.System.getInt(mContentResolver,
+                    System.SCREEN_BRIGHTNESS, mMinBrightness),
+                    mMinBrightness, mMaxBrightness);
+
         }
+        return getPercentage(value, 0, GAMMA_SPACE_MAX);
     }
 
     private double getPercentage(double value, int min, int max) {

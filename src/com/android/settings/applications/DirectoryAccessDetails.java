@@ -44,8 +44,10 @@ import android.os.storage.StorageManager;
 import android.os.storage.VolumeInfo;
 import android.support.v14.preference.SwitchPreference;
 import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceGroupAdapter;
 import android.support.v7.preference.Preference.OnPreferenceChangeListener;
 import android.support.v7.preference.Preference.OnPreferenceClickListener;
+import android.support.v7.preference.PreferenceCategory;
 import android.text.TextUtils;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.preference.PreferenceScreen;
@@ -63,8 +65,10 @@ import com.android.settingslib.applications.AppUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Detailed settings for an app's directory access permissions (A.K.A Scoped Directory Access).
@@ -117,9 +121,15 @@ public class DirectoryAccessDetails extends AppInfoBase {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final Context context = getPrefContext();
         addPreferencesFromResource(R.xml.directory_access_details);
+
+    }
+
+    @Override
+    protected boolean refreshUi() {
+        final Context context = getPrefContext();
         final PreferenceScreen prefsGroup = getPreferenceScreen();
+        prefsGroup.removeAll();
 
         final Map<String, ExternalVolume> externalVolumes = new HashMap<>();
 
@@ -131,15 +141,14 @@ public class DirectoryAccessDetails extends AppInfoBase {
                 TABLE_PERMISSIONS_COLUMNS, null, new String[] { mPackageName }, null)) {
             if (cursor == null) {
                 Log.w(TAG, "Didn't get cursor for " + mPackageName);
-                return;
+                return true;
             }
             final int count = cursor.getCount();
             if (count == 0) {
-                if (DEBUG) {
-                    Log.d(TAG, "No permissions for " + mPackageName);
-                }
-                // TODO(b/72055774): display empty message
-                return;
+                // This setting screen should not be reached if there was no permission, so just
+                // ignore it
+                Log.w(TAG, "No permissions for " + mPackageName);
+                return true;
             }
 
             while (cursor.moveToNext()) {
@@ -160,9 +169,14 @@ public class DirectoryAccessDetails extends AppInfoBase {
                 }
 
                 if (uuid == null) {
-                    // Primary storage entry: add right away
-                    prefsGroup.addPreference(newPreference(context, dir, providerUri,
-                            /* uuid= */ null, dir, granted));
+                    if (dir == null) {
+                        // Sanity check, shouldn't happen
+                        Log.wtf(TAG, "Ignoring permission on primary storage root");
+                    } else {
+                        // Primary storage entry: add right away
+                        prefsGroup.addPreference(newPreference(context, dir, providerUri,
+                                /* uuid= */ null, dir, granted, /* children= */ null));
+                    }
                 } else {
                     // External volume entry: save it for later.
                     ExternalVolume externalVolume = externalVolumes.get(uuid);
@@ -187,7 +201,7 @@ public class DirectoryAccessDetails extends AppInfoBase {
 
         if (externalVolumes.isEmpty()) {
             // We're done!
-            return;
+            return true;
         }
 
         // Add entries from external volumes
@@ -197,7 +211,7 @@ public class DirectoryAccessDetails extends AppInfoBase {
         final List<VolumeInfo> volumes = sm.getVolumes();
         if (volumes.isEmpty()) {
             Log.w(TAG, "StorageManager returned no secondary volumes");
-            return;
+            return true;
         }
         final Map<String, String> volumeNames = new HashMap<>(volumes.size());
         for (VolumeInfo volume : volumes) {
@@ -222,46 +236,56 @@ public class DirectoryAccessDetails extends AppInfoBase {
                 continue;
             }
             // First add the pref for the whole volume...
-            // TODO(b/72055774): add separator
-            prefsGroup.addPreference(newPreference(context, volumeName, providerUri, volume.uuid,
-                    /* dir= */ null, volume.granted));
-            // TODO(b/72055774): make sure children are gone when parent is toggled on - should be
-            // handled automatically if we're refreshing the activity on change, otherwise we'll
-            // need to explicitly remove them
+            final PreferenceCategory category = new PreferenceCategory(context);
+            prefsGroup.addPreference(category);
+            final Set<SwitchPreference> children = new HashSet<>(volume.children.size());
+            category.addPreference(newPreference(context, volumeName, providerUri, volume.uuid,
+                    /* dir= */ null, volume.granted, children));
 
             // ... then the children prefs
             volume.children.forEach((pair) -> {
                 final String dir = pair.first;
                 final String name = context.getResources()
                         .getString(R.string.directory_on_volume, volumeName, dir);
-                prefsGroup
-                        .addPreference(newPreference(context, name, providerUri, volume.uuid,
-                                dir, pair.second));
+                final SwitchPreference childPref =
+                        newPreference(context, name, providerUri, volume.uuid, dir, pair.second,
+                                /* children= */ null);
+                category.addPreference(childPref);
+                children.add(childPref);
             });
         }
+        return true;
     }
 
     private SwitchPreference newPreference(Context context, String title, Uri providerUri,
-            String uuid, String dir, boolean granted) {
+            String uuid, String dir, boolean granted, @Nullable Set<SwitchPreference> children) {
         final SwitchPreference pref = new SwitchPreference(context);
         pref.setKey(String.format("%s:%s", uuid, dir));
         pref.setTitle(title);
         pref.setChecked(granted);
         pref.setOnPreferenceChangeListener((unused, value) -> {
-            resetDoNotAskAgain(context, value, providerUri, uuid, dir);
+            if (!Boolean.class.isInstance(value)) {
+                // Sanity check
+                Log.wtf(TAG, "Invalid value from switch: " + value);
+                return true;
+            }
+            final boolean newValue = ((Boolean) value).booleanValue();
+
+            resetDoNotAskAgain(context, newValue, providerUri, uuid, dir);
+            if (children != null) {
+                // When parent is granted, children should be hidden; and vice versa
+                final boolean newChildValue = !newValue;
+                for (SwitchPreference child : children) {
+                    child.setVisible(newChildValue);
+                }
+            }
             return true;
         });
         return pref;
     }
 
-    private void resetDoNotAskAgain(Context context, Object value, Uri providerUri,
+    private void resetDoNotAskAgain(Context context, boolean newValue, Uri providerUri,
             @Nullable String uuid, @Nullable String directory) {
-        if (!Boolean.class.isInstance(value)) {
-            // Sanity check
-            Log.wtf(TAG, "Invalid value from switch: " + value);
-            return;
-        }
-        final boolean newValue = ((Boolean) value).booleanValue();
         if (DEBUG) {
             Log.d(TAG, "Asking " + providerUri  + " to update " + uuid + "/" + directory + " to "
                     + newValue);
@@ -273,11 +297,6 @@ public class DirectoryAccessDetails extends AppInfoBase {
         if (DEBUG) {
             Log.d(TAG, "Updated " + updated + " entries for " + uuid + "/" + directory);
         }
-    }
-
-    @Override
-    protected boolean refreshUi() {
-        return true;
     }
 
     @Override

@@ -64,8 +64,6 @@ public class DndPreferenceControllerTest {
     private UserManager mUm;
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private PreferenceScreen mScreen;
-    @Mock
-    private Lifecycle mLifecycle;
 
     private DndPreferenceController mController;
 
@@ -76,54 +74,23 @@ public class DndPreferenceControllerTest {
         shadowApplication.setSystemService(Context.NOTIFICATION_SERVICE, mNm);
         shadowApplication.setSystemService(Context.USER_SERVICE, mUm);
         mContext = RuntimeEnvironment.application;
-        mController = spy(new DndPreferenceController(mContext, mLifecycle, mBackend));
+        mController = spy(new DndPreferenceController(mContext, mBackend));
     }
 
     @Test
-    public void testNoCrashIfNoOnResume() {
-        mController.isAvailable();
-        mController.updateState(mock(RestrictedSwitchPreference.class));
-        mController.onPreferenceChange(mock(RestrictedSwitchPreference.class), true);
-        mController.onResume();
-    }
-
-    @Test
-    public void testIsAvailable_notIfNotImportant_noVisEffects() {
+    public void testIsAvailable_app() {
         when(mNm.getNotificationPolicy()).thenReturn(new NotificationManager.Policy(0, 0, 0, 0));
         NotificationBackend.AppRow appRow = new NotificationBackend.AppRow();
-        NotificationChannel channel = new NotificationChannel("", "", IMPORTANCE_LOW);
-        mController.onResume();
-        mController.onResume(appRow, channel, null, null);
+        mController.onResume(appRow, null, null, null);
         assertFalse(mController.isAvailable());
     }
 
     @Test
-    public void testIsAvailable_notIfNotImportant_visEffects() {
+    public void testIsAvailable_channel() {
         when(mNm.getNotificationPolicy()).thenReturn(new NotificationManager.Policy(0, 0, 0, 1));
         NotificationBackend.AppRow appRow = new NotificationBackend.AppRow();
-        NotificationChannel channel = new NotificationChannel("", "", IMPORTANCE_MIN);
-        mController.onResume();
-        mController.onResume(appRow, channel, null, null);
-        assertFalse(mController.isAvailable());
-    }
-
-    @Test
-    public void testIsAvailable_importance_noVisEffects() {
-        when(mNm.getNotificationPolicy()).thenReturn(new NotificationManager.Policy(0, 0, 0, 0));
-        NotificationBackend.AppRow appRow = new NotificationBackend.AppRow();
-        NotificationChannel channel = new NotificationChannel("", "", IMPORTANCE_DEFAULT);
-        mController.onResume();
-        mController.onResume(appRow, channel, null, null);
-        assertTrue(mController.isAvailable());
-    }
-
-    @Test
-    public void testIsAvailable_important_visEffects() {
-        when(mNm.getNotificationPolicy()).thenReturn(new NotificationManager.Policy(0, 0, 0, 1));
-        assertTrue(mNm.getNotificationPolicy().suppressedVisualEffects != 0);
-        NotificationBackend.AppRow appRow = new NotificationBackend.AppRow();
-        NotificationChannel channel = new NotificationChannel("", "", IMPORTANCE_LOW);
-        mController.onResume();
+        NotificationChannel channel =
+                new NotificationChannel(DEFAULT_CHANNEL_ID, "", IMPORTANCE_MIN);
         mController.onResume(appRow, channel, null, null);
         assertTrue(mController.isAvailable());
     }

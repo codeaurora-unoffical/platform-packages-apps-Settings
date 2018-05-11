@@ -67,8 +67,6 @@ public class RestrictAppPreferenceControllerTest {
     @Mock
     private AppOpsManager.PackageOps mOtherUserPackageOps;
     @Mock
-    private SettingsActivity mSettingsActivity;
-    @Mock
     private InstrumentedPreferenceFragment mFragment;
     @Mock
     private UserManager mUserManager;
@@ -102,9 +100,9 @@ public class RestrictAppPreferenceControllerTest {
         mContext = spy(RuntimeEnvironment.application);
         doReturn(mAppOpsManager).when(mContext).getSystemService(Context.APP_OPS_SERVICE);
         doReturn(mUserManager).when(mContext).getSystemService(UserManager.class);
-        doReturn(mContext).when(mSettingsActivity).getApplicationContext();
+        doReturn(mContext).when(mFragment).getContext();
         mRestrictAppPreferenceController =
-                new RestrictAppPreferenceController(mSettingsActivity, mFragment);
+                new RestrictAppPreferenceController(mFragment);
         mPackageOpsList = new ArrayList<>();
         mPreference = new Preference(mContext);
         mPreference.setKey(mRestrictAppPreferenceController.getPreferenceKey());
@@ -121,11 +119,11 @@ public class RestrictAppPreferenceControllerTest {
 
         mRestrictAppPreferenceController.updateState(mPreference);
 
-        assertThat(mPreference.getSummary()).isEqualTo("1 app");
+        assertThat(mPreference.getSummary()).isEqualTo("Limiting battery usage for 1 app");
     }
 
     @Test
-    public void testUpdateState_twoRestrictedAppsForPrimaryUser_showCorrectSummary() {
+    public void testUpdateState_twoRestrictedAppsForPrimaryUser_visibleAndShowCorrectSummary() {
         mPackageOpsList.add(mRestrictedPackageOps);
         mPackageOpsList.add(mRestrictedPackageOps);
         mPackageOpsList.add(mAllowedPackageOps);
@@ -134,7 +132,8 @@ public class RestrictAppPreferenceControllerTest {
 
         mRestrictAppPreferenceController.updateState(mPreference);
 
-        assertThat(mPreference.getSummary()).isEqualTo("2 apps");
+        assertThat(mPreference.getSummary()).isEqualTo("Limiting battery usage for 2 apps");
+        assertThat(mPreference.isVisible()).isTrue();
     }
 
     @Test
@@ -146,7 +145,7 @@ public class RestrictAppPreferenceControllerTest {
 
         mRestrictAppPreferenceController.updateState(mPreference);
 
-        assertThat(mPreference.getSummary()).isEqualTo("1 app");
+        assertThat(mPreference.getSummary()).isEqualTo("Limiting battery usage for 1 app");
         assertThat(mRestrictAppPreferenceController.mAppInfos).containsExactly(
                 new AppInfo.Builder()
                         .setUid(RESTRICTED_UID)
@@ -155,13 +154,13 @@ public class RestrictAppPreferenceControllerTest {
     }
 
     @Test
-    public void testUpdateState_zeroRestrictApp_disabled() {
+    public void testUpdateState_zeroRestrictApp_inVisible() {
         mPackageOpsList.add(mAllowedPackageOps);
         doReturn(mPackageOpsList).when(mAppOpsManager).getPackagesForOps(any());
 
         mRestrictAppPreferenceController.updateState(mPreference);
 
-        assertThat(mPreference.isEnabled()).isFalse();
+        assertThat(mPreference.isVisible()).isFalse();
     }
 
     @Test
@@ -170,7 +169,7 @@ public class RestrictAppPreferenceControllerTest {
 
         mRestrictAppPreferenceController.handlePreferenceTreeClick(mPreference);
 
-        verify(mSettingsActivity).startActivity(intent.capture());
+        verify(mContext).startActivity(intent.capture());
         assertThat(intent.getValue().getStringExtra(EXTRA_SHOW_FRAGMENT))
                 .isEqualTo(RestrictedAppDetails.class.getName());
         assertThat(intent.getValue().getIntExtra(EXTRA_SHOW_FRAGMENT_TITLE_RESID, -1))

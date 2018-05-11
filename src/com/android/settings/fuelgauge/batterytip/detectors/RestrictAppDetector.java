@@ -24,6 +24,8 @@ import com.android.settings.fuelgauge.batterytip.AnomalyDatabaseHelper;
 import com.android.settings.fuelgauge.batterytip.AppInfo;
 import com.android.settings.fuelgauge.batterytip.BatteryDatabaseManager;
 import com.android.settings.fuelgauge.batterytip.BatteryTipPolicy;
+import com.android.settings.fuelgauge.batterytip.tips.AppLabelPredicate;
+import com.android.settings.fuelgauge.batterytip.tips.AppRestrictionPredicate;
 import com.android.settings.fuelgauge.batterytip.tips.BatteryTip;
 import com.android.settings.fuelgauge.batterytip.tips.RestrictAppTip;
 
@@ -40,10 +42,17 @@ public class RestrictAppDetector implements BatteryTipDetector {
     private BatteryTipPolicy mPolicy;
     @VisibleForTesting
     BatteryDatabaseManager mBatteryDatabaseManager;
+    private Context mContext;
+
+    private AppRestrictionPredicate mAppRestrictionPredicate;
+    private AppLabelPredicate mAppLabelPredicate;
 
     public RestrictAppDetector(Context context, BatteryTipPolicy policy) {
+        mContext = context;
         mPolicy = policy;
         mBatteryDatabaseManager = BatteryDatabaseManager.getInstance(context);
+        mAppRestrictionPredicate = new AppRestrictionPredicate(context);
+        mAppLabelPredicate = new AppLabelPredicate(context);
     }
 
     @Override
@@ -56,6 +65,8 @@ public class RestrictAppDetector implements BatteryTipDetector {
             final long oneDayBeforeMs = System.currentTimeMillis() - DateUtils.DAY_IN_MILLIS;
             final List<AppInfo> highUsageApps = mBatteryDatabaseManager.queryAllAnomalies(
                     oneDayBeforeMs, AnomalyDatabaseHelper.State.NEW);
+            // Remove it if it doesn't have label or been restricted
+            highUsageApps.removeIf(mAppLabelPredicate.or(mAppRestrictionPredicate));
             if (!highUsageApps.isEmpty()) {
                 // If there are new anomalies, show them
                 return new RestrictAppTip(BatteryTip.StateType.NEW, highUsageApps);
@@ -63,6 +74,8 @@ public class RestrictAppDetector implements BatteryTipDetector {
                 // Otherwise, show auto-handled one if it exists
                 final List<AppInfo> autoHandledApps = mBatteryDatabaseManager.queryAllAnomalies(
                         oneDayBeforeMs, AnomalyDatabaseHelper.State.AUTO_HANDLED);
+                // Remove it if it doesn't have label or unrestricted
+                autoHandledApps.removeIf(mAppLabelPredicate.or(mAppRestrictionPredicate.negate()));
                 return new RestrictAppTip(autoHandledApps.isEmpty() ? BatteryTip.StateType.INVISIBLE
                         : BatteryTip.StateType.HANDLED, autoHandledApps);
             }

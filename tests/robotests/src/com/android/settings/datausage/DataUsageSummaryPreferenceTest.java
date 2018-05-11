@@ -18,10 +18,15 @@ package com.android.settings.datausage;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.net.NetworkTemplate;
+import android.os.Bundle;
 import android.support.v7.preference.PreferenceViewHolder;
+import android.telephony.SubscriptionManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -30,6 +35,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.settings.R;
+import com.android.settings.SettingsActivity;
+import com.android.settings.SubSettings;
 import com.android.settings.testutils.SettingsRobolectricTestRunner;
 import com.android.settings.testutils.shadow.SettingsShadowResourcesImpl;
 import com.android.settingslib.Utils;
@@ -38,8 +45,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowActivity;
 
 import java.util.concurrent.TimeUnit;
 
@@ -203,7 +213,7 @@ public class DataUsageSummaryPreferenceTest {
     }
 
     @Test
-    public void testSetUsageInfo_withRecentCarrierUpdate_doesNotSetCarrierInfoWarningColorAndFont() {
+    public void setUsageInfo_withRecentCarrierUpdate_doesNotSetCarrierInfoWarningColorAndFont() {
         final long updateTime = System.currentTimeMillis() - TimeUnit.HOURS.toMillis(1);
         mCarrierInfo = (TextView) mHolder.findViewById(R.id.carrier_and_update);
         mSummaryPreference.setUsageInfo(mCycleEnd, updateTime, DUMMY_CARRIER, 1 /* numPlans */,
@@ -351,33 +361,111 @@ public class DataUsageSummaryPreferenceTest {
     public void testSetUsageAndRemainingInfo_withUsageInfo_dataUsageAndRemainingShown() {
         mSummaryPreference.setUsageInfo(mCycleEnd, mUpdateTime, DUMMY_CARRIER, 1 /* numPlans */,
                 new Intent());
-        mSummaryPreference.setUsageNumbers(1000000L, 10000000L, true);
+        mSummaryPreference.setUsageNumbers(
+                BillingCycleSettings.MIB_IN_BYTES,
+                10 * BillingCycleSettings.MIB_IN_BYTES,
+                true /* hasMobileData */);
 
         bindViewHolder();
         assertThat(mDataUsed.getText().toString()).isEqualTo("1.00 MB used");
         assertThat(mDataRemaining.getText().toString()).isEqualTo("9.00 MB left");
+        final int colorId = Utils.getColorAttr(mContext, android.R.attr.colorAccent);
+        assertThat(mDataRemaining.getCurrentTextColor()).isEqualTo(colorId);
     }
 
     @Test
     public void testSetUsageInfo_withDataOverusage() {
         mSummaryPreference.setUsageInfo(mCycleEnd, mUpdateTime, DUMMY_CARRIER, 1 /* numPlans */,
                 new Intent());
-        mSummaryPreference.setUsageNumbers(11_000_000L, 10_000_000L, true);
+        mSummaryPreference.setUsageNumbers(
+                11 * BillingCycleSettings.MIB_IN_BYTES,
+                10 * BillingCycleSettings.MIB_IN_BYTES,
+                true /* hasMobileData */);
 
         bindViewHolder();
         assertThat(mDataUsed.getText().toString()).isEqualTo("11.00 MB used");
         assertThat(mDataRemaining.getText().toString()).isEqualTo("1.00 MB over");
+        final int colorId = Utils.getColorAttr(mContext, android.R.attr.colorError);
+        assertThat(mDataRemaining.getCurrentTextColor()).isEqualTo(colorId);
     }
 
     @Test
     public void testSetUsageInfo_withUsageInfo_dataUsageShown() {
         mSummaryPreference.setUsageInfo(mCycleEnd, mUpdateTime, DUMMY_CARRIER, 0 /* numPlans */,
                 new Intent());
-        mSummaryPreference.setUsageNumbers(1000000L, -1L, true);
+        mSummaryPreference.setUsageNumbers(
+                BillingCycleSettings.MIB_IN_BYTES, -1L, true /* hasMobileData */);
 
         bindViewHolder();
         assertThat(mDataUsed.getText().toString()).isEqualTo("1.00 MB used");
         assertThat(mDataRemaining.getText()).isEqualTo("");
+    }
+
+    @Test
+    public void testSetAppIntent_toMdpApp_intentCorrect() {
+        final Activity activity = Robolectric.setupActivity(Activity.class);
+        final Intent intent = new Intent(SubscriptionManager.ACTION_MANAGE_SUBSCRIPTION_PLANS);
+        intent.setPackage("test-owner.example.com");
+        intent.putExtra(SubscriptionManager.EXTRA_SUBSCRIPTION_INDEX, 42);
+
+        mSummaryPreference.setUsageInfo(mCycleEnd, mUpdateTime, DUMMY_CARRIER, 0 /* numPlans */,
+                intent);
+
+        bindViewHolder();
+        assertThat(mLaunchButton.getVisibility()).isEqualTo(View.VISIBLE);
+        assertThat(mLaunchButton.getText())
+                .isEqualTo(mContext.getString(R.string.launch_mdp_app_text));
+
+        mLaunchButton.callOnClick();
+        ShadowActivity shadowActivity = Shadows.shadowOf(activity);
+        Intent startedIntent = shadowActivity.getNextStartedActivity();
+        assertThat(startedIntent.getAction())
+                .isEqualTo(SubscriptionManager.ACTION_MANAGE_SUBSCRIPTION_PLANS);
+        assertThat(startedIntent.getPackage()).isEqualTo("test-owner.example.com");
+        assertThat(startedIntent.getIntExtra(SubscriptionManager.EXTRA_SUBSCRIPTION_INDEX, -1))
+                .isEqualTo(42);
+    }
+
+    @Test
+    public void testSetWifiMode_withUsageInfo_dataUsageShown() {
+        final int daysLeft = 3;
+        final long cycleEnd = System.currentTimeMillis() + TimeUnit.DAYS.toMillis(daysLeft)
+                + TimeUnit.HOURS.toMillis(1);
+        final Activity activity = Robolectric.setupActivity(Activity.class);
+        mSummaryPreference.setUsageInfo(cycleEnd, mUpdateTime, DUMMY_CARRIER, 0 /* numPlans */,
+                new Intent());
+        mSummaryPreference.setUsageNumbers(1000000L, -1L, true);
+        final String cycleText = "The quick fox";
+        mSummaryPreference.setWifiMode(true, cycleText);
+
+        bindViewHolder();
+        assertThat(mUsageTitle.getText().toString())
+                .isEqualTo(mContext.getString(R.string.data_usage_wifi_title));
+        assertThat(mUsageTitle.getVisibility()).isEqualTo(View.VISIBLE);
+        assertThat(mCycleTime.getVisibility()).isEqualTo(View.VISIBLE);
+        assertThat(mCycleTime.getText()).isEqualTo(cycleText);
+        assertThat(mCarrierInfo.getVisibility()).isEqualTo(View.GONE);
+        assertThat(mDataLimits.getVisibility()).isEqualTo(View.GONE);
+        assertThat(mLaunchButton.getVisibility()).isEqualTo(View.VISIBLE);
+        assertThat(mLaunchButton.getText())
+                .isEqualTo(mContext.getString(R.string.launch_wifi_text));
+
+        mLaunchButton.callOnClick();
+        ShadowActivity shadowActivity = Shadows.shadowOf(activity);
+        Intent startedIntent = shadowActivity.getNextStartedActivity();
+        assertThat(startedIntent.getComponent()).isEqualTo(new ComponentName("com.android.settings",
+                SubSettings.class.getName()));
+
+        final Bundle expect = new Bundle(1);
+        expect.putParcelable(DataUsageList.EXTRA_NETWORK_TEMPLATE,
+                NetworkTemplate.buildTemplateWifiWildcard());
+        final Bundle actual = startedIntent
+                .getBundleExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS);
+        assertThat((NetworkTemplate) actual.getParcelable(DataUsageList.EXTRA_NETWORK_TEMPLATE))
+                .isEqualTo(NetworkTemplate.buildTemplateWifiWildcard());
+
+        assertThat(startedIntent.getCharSequenceExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_TITLE))
+                .isEqualTo(mContext.getString(R.string.wifi_data_usage));
     }
 
     private void bindViewHolder() {

@@ -30,6 +30,8 @@ import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Process;
 import android.os.StatsDimensionsValue;
@@ -58,9 +60,11 @@ import java.util.concurrent.TimeUnit;
 /** A JobService to store anomaly data to anomaly database */
 public class AnomalyDetectionJobService extends JobService {
     private static final String TAG = "AnomalyDetectionService";
-    private static final int UID_NULL = 0;
-    private static final int STATSD_UID_FILED = 1;
     private static final int ON = 1;
+    @VisibleForTesting
+    static final int UID_NULL = -1;
+    @VisibleForTesting
+    static final int STATSD_UID_FILED = 1;
 
     @VisibleForTesting
     static final long MAX_DELAY_MS = TimeUnit.MINUTES.toMillis(30);
@@ -70,7 +74,7 @@ public class AnomalyDetectionJobService extends JobService {
         final ComponentName component = new ComponentName(context,
                 AnomalyDetectionJobService.class);
         final JobInfo.Builder jobBuilder =
-                new JobInfo.Builder(R.id.job_anomaly_detection, component)
+                new JobInfo.Builder(R.integer.job_anomaly_detection, component)
                         .setOverrideDeadline(MAX_DELAY_MS);
 
         if (jobScheduler.enqueue(jobBuilder.build(), new JobWorkItem(intent))
@@ -96,6 +100,7 @@ public class AnomalyDetectionJobService extends JobService {
                     .getFactory(this).getPowerUsageFeatureProvider(this);
             final MetricsFeatureProvider metricsFeatureProvider = FeatureFactory
                     .getFactory(this).getMetricsFeatureProvider();
+            batteryUtils.initBatteryStatsHelper(batteryStatsHelper, null /* bundle */, userManager);
 
             for (JobWorkItem item = params.dequeueWork(); item != null;
                     item = params.dequeueWork()) {
@@ -131,6 +136,7 @@ public class AnomalyDetectionJobService extends JobService {
                 StatsManager.EXTRA_STATS_BROADCAST_SUBSCRIBER_COOKIES);
         final AnomalyInfo anomalyInfo = new AnomalyInfo(
                 !ArrayUtils.isEmpty(cookies) ? cookies.get(0) : "");
+        final PackageManager packageManager = context.getPackageManager();
         Log.i(TAG, "Extra stats value: " + intentDimsValue.toString());
 
         try {
@@ -141,19 +147,27 @@ public class AnomalyDetectionJobService extends JobService {
                     : Settings.Global.getInt(contentResolver,
                             Settings.Global.APP_AUTO_RESTRICTION_ENABLED, ON) == ON;
             final String packageName = batteryUtils.getPackageName(uid);
-            if (!powerWhitelistBackend.isSysWhitelistedExceptIdle(packageName)
-                    && !isSystemUid(uid)) {
-                boolean anomalyDetected = true;
-                if (anomalyInfo.anomalyType == StatsManagerConfig.AnomalyType.EXCESSIVE_BG) {
-                    if (!batteryUtils.isPreOApp(packageName)
-                            || !batteryUtils.isAppHeavilyUsed(batteryStatsHelper, userManager, uid,
-                            policy.excessiveBgDrainPercentage)) {
-                        // Don't report if it is not legacy app or haven't used much battery
-                        anomalyDetected = false;
-                    }
-                }
+            final long versionCode = batteryUtils.getAppLongVersionCode(packageName);
 
-                if (anomalyDetected) {
+            final boolean anomalyDetected;
+            if (isExcessiveBackgroundAnomaly(anomalyInfo)) {
+                anomalyDetected = batteryUtils.isPreOApp(packageName)
+                        && batteryUtils.isAppHeavilyUsed(batteryStatsHelper, userManager, uid,
+                        policy.excessiveBgDrainPercentage);
+            } else {
+                anomalyDetected = true;
+            }
+
+            if (anomalyDetected) {
+                if (batteryUtils.shouldHideAnomaly(powerWhitelistBackend, uid)) {
+                    metricsFeatureProvider.action(context,
+                            MetricsProto.MetricsEvent.ACTION_ANOMALY_IGNORED,
+                            packageName,
+                            Pair.create(MetricsProto.MetricsEvent.FIELD_CONTEXT,
+                                    anomalyInfo.anomalyType),
+                            Pair.create(MetricsProto.MetricsEvent.FIELD_APP_VERSION_CODE,
+                                    versionCode));
+                } else {
                     if (autoFeatureOn && anomalyInfo.autoRestriction) {
                         // Auto restrict this app
                         batteryUtils.setForceAppStandby(uid, packageName,
@@ -169,8 +183,10 @@ public class AnomalyDetectionJobService extends JobService {
                     metricsFeatureProvider.action(context,
                             MetricsProto.MetricsEvent.ACTION_ANOMALY_TRIGGERED,
                             packageName,
-                            Pair.create(MetricsProto.MetricsEvent.FIELD_CONTEXT,
-                                    anomalyInfo.anomalyType));
+                            Pair.create(MetricsProto.MetricsEvent.FIELD_ANOMALY_TYPE,
+                                    anomalyInfo.anomalyType),
+                            Pair.create(MetricsProto.MetricsEvent.FIELD_APP_VERSION_CODE,
+                                    versionCode));
                 }
             }
         } catch (NullPointerException | IndexOutOfBoundsException e) {
@@ -188,7 +204,6 @@ public class AnomalyDetectionJobService extends JobService {
      */
     @VisibleForTesting
     int extractUidFromStatsDimensionsValue(StatsDimensionsValue statsDimensionsValue) {
-        //TODO(b/73172999): Add robo test for this method
         if (statsDimensionsValue == null) {
             return UID_NULL;
         }
@@ -210,8 +225,8 @@ public class AnomalyDetectionJobService extends JobService {
         return UID_NULL;
     }
 
-    private boolean isSystemUid(int uid) {
-        final int appUid = UserHandle.getAppId(uid);
-        return appUid >= Process.ROOT_UID && appUid < Process.FIRST_APPLICATION_UID;
+    private boolean isExcessiveBackgroundAnomaly(AnomalyInfo anomalyInfo) {
+        return anomalyInfo.anomalyType
+                == StatsManagerConfig.AnomalyType.EXCESSIVE_BACKGROUND_SERVICE;
     }
 }

@@ -113,4 +113,53 @@ public class WifiTetherPasswordPreferenceControllerTest {
         assertThat(mController.getPassword()).isEqualTo(config.preSharedKey);
         assertThat(mPreference.getSummary()).isEqualTo(config.preSharedKey);
     }
+
+    @Test
+    public void getSecuritySettingForPassword_returnCorrectType() {
+        // valid wpa2 password
+        mController.displayPreference(mScreen);
+        assertThat(mController.getSecuritySettingForPassword())
+                .isEqualTo(WifiConfiguration.KeyMgmt.WPA2_PSK);
+
+        // password which is empty returns NONE
+        mConfig = new WifiConfiguration();
+        mConfig.SSID = "test_1234";
+        mConfig.preSharedKey = "";
+        when(mContext.getSystemService(Context.WIFI_SERVICE)).thenReturn(mWifiManager);
+        when(mWifiManager.getWifiApConfiguration()).thenReturn(mConfig);
+        mController = new WifiTetherPasswordPreferenceController(mContext, mListener);
+
+        mController.displayPreference(mScreen);
+        assertThat(mController.getSecuritySettingForPassword())
+                .isEqualTo(WifiConfiguration.KeyMgmt.NONE);
+
+        // default for unsupported types is wpa2
+        mConfig = new WifiConfiguration();
+        mConfig.SSID = "test_1234";
+        mConfig.preSharedKey = "short";
+        when(mContext.getSystemService(Context.WIFI_SERVICE)).thenReturn(mWifiManager);
+        when(mWifiManager.getWifiApConfiguration()).thenReturn(mConfig);
+        mController = new WifiTetherPasswordPreferenceController(mContext, mListener);
+
+        mController.displayPreference(mScreen);
+        assertThat(mController.getSecuritySettingForPassword())
+                .isEqualTo(WifiConfiguration.KeyMgmt.WPA2_PSK);
+    }
+
+    @Test
+    public void updateDisplay_shouldSetInputType() {
+        // Set controller password to anything and verify is set.
+        mController.displayPreference(mScreen);
+        mController.onPreferenceChange(mPreference, "1");
+        assertThat(mController.getPassword()).isEqualTo("1");
+
+        // Create a new config using different password
+        final WifiConfiguration config = new WifiConfiguration();
+        config.preSharedKey = "test_1234";
+        when(mWifiManager.getWifiApConfiguration()).thenReturn(config);
+
+        // Call updateDisplay and verify it's changed.
+        mController.updateDisplay();
+        assertThat(mPreference.isPassword()).isTrue();
+    }
 }
