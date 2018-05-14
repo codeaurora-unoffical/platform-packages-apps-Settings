@@ -71,19 +71,19 @@ public class BatteryManagerPreferenceControllerTest {
     @Test
     public void updateState_smartBatteryOnWithoutRestriction_showSummary() {
         when(mFeatureFactory.powerUsageFeatureProvider.isSmartBatterySupported()).thenReturn(true);
-        Settings.Global.putInt(mContext.getContentResolver(), Settings.Global.APP_STANDBY_ENABLED,
-                ON);
+        Settings.Global.putInt(mContext.getContentResolver(),
+                Settings.Global.ADAPTIVE_BATTERY_MANAGEMENT_ENABLED, ON);
 
         mController.updateState(mPreference);
 
-        assertThat(mPreference.getSummary()).isEqualTo("On / Restricting apps automatically");
+        assertThat(mPreference.getSummary()).isEqualTo("On / Detecting when apps drain battery");
     }
 
     @Test
     public void updateState_smartBatteryOff_showSummary() {
         when(mFeatureFactory.powerUsageFeatureProvider.isSmartBatterySupported()).thenReturn(true);
-        Settings.Global.putInt(mContext.getContentResolver(), Settings.Global.APP_STANDBY_ENABLED,
-                OFF);
+        Settings.Global.putInt(mContext.getContentResolver(),
+                Settings.Global.ADAPTIVE_BATTERY_MANAGEMENT_ENABLED, OFF);
 
         mController.updateState(mPreference);
 

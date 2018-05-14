@@ -72,6 +72,29 @@ public class ZenModeSettingsTest {
     }
 
     @Test
+    public void testBlockedEffectsSummary_none() {
+        NotificationManager.Policy policy = new NotificationManager.Policy(0, 0, 0, 0);
+        assertEquals(mContext.getString(R.string.zen_mode_restrict_notifications_summary_muted),
+                mBuilder.getBlockedEffectsSummary(policy));
+    }
+
+    @Test
+    public void testBlockedEffectsSummary_some() {
+        NotificationManager.Policy policy = new NotificationManager.Policy(
+                0, 0, 0, NotificationManager.Policy.SUPPRESSED_EFFECT_PEEK);
+        assertEquals(mContext.getString(R.string.zen_mode_restrict_notifications_summary_custom),
+                mBuilder.getBlockedEffectsSummary(policy));
+    }
+
+    @Test
+    public void testBlockedEffectsSummary_all() {
+        NotificationManager.Policy policy = new NotificationManager.Policy(
+                0, 0, 0, 511);
+        assertEquals(mContext.getString(R.string.zen_mode_restrict_notifications_summary_hidden),
+                mBuilder.getBlockedEffectsSummary(policy));
+    }
+
+    @Test
     public void searchProvider_shouldIndexDefaultXml() {
         final List<SearchIndexableResource> sir = ZenModeSettings.SEARCH_INDEX_DATA_PROVIDER
                 .getXmlResourcesToIndex(mContext, true /* enabled */);

@@ -193,6 +193,7 @@ public class ChooseLockPassword extends SettingsActivity {
         private int mPasswordMinLengthToFulfillAllPolicies = 0;
         protected int mUserId;
         private boolean mHideDrawer = false;
+        private byte[] mPasswordHistoryHashFactor;
         /**
          * Password requirements that we need to verify.
          */
@@ -241,7 +242,6 @@ public class ChooseLockPassword extends SettingsActivity {
         static final int NOT_ENOUGH_DIGITS = 1 << 9;
         static final int NOT_ENOUGH_SYMBOLS = 1 << 10;
         static final int NOT_ENOUGH_NON_LETTER = 1 << 11;
-        static final int BLACKLISTED = 1 << 12;
 
         /**
          * Keep track internally of where the user is in choosing a pattern.
@@ -668,7 +668,8 @@ public class ChooseLockPassword extends SettingsActivity {
                     }
                 }
                 // Is the password recently used?
-                if (mLockPatternUtils.checkPasswordHistory(password, mUserId)) {
+                if (mLockPatternUtils.checkPasswordHistory(password, getPasswordHistoryHashFactor(),
+                        mUserId)) {
                     errorCode |= RECENTLY_USED;
                 }
             }
@@ -728,17 +729,19 @@ public class ChooseLockPassword extends SettingsActivity {
                 }
             }
 
-            // Only check the blacklist if the password is otherwise valid. Checking the blacklist
-            // can be expensive and it is not useful to report the fact it is on a blacklist if it
-            // couldn't be set anyway.
-            if (errorCode == NO_ERROR) {
-                if (mLockPatternUtils.getDevicePolicyManager()
-                        .isPasswordBlacklisted(mUserId, password)) {
-                    errorCode |= BLACKLISTED;
-                }
-            }
-
             return errorCode;
+        }
+
+        /**
+         * Lazily compute and return the history hash factor of the current user (mUserId), used for
+         * password history check.
+         */
+        private byte[] getPasswordHistoryHashFactor() {
+            if (mPasswordHistoryHashFactor == null) {
+                mPasswordHistoryHashFactor = mLockPatternUtils.getPasswordHistoryHashFactor(
+                        mCurrentPassword, mUserId);
+            }
+            return mPasswordHistoryHashFactor;
         }
 
         public void handleNext() {
@@ -855,11 +858,6 @@ public class ChooseLockPassword extends SettingsActivity {
             if ((errorCode & RECENTLY_USED) > 0) {
                 messages.add(getString((mIsAlphaMode) ? R.string.lockpassword_password_recently_used
                         : R.string.lockpassword_pin_recently_used));
-            }
-            if ((errorCode & BLACKLISTED) > 0) {
-                messages.add(getString((mIsAlphaMode)
-                        ? R.string.lockpassword_password_blacklisted_by_admin
-                        : R.string.lockpassword_pin_blacklisted_by_admin));
             }
             return messages.toArray(new String[0]);
         }

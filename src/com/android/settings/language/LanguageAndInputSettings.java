@@ -35,7 +35,6 @@ import com.android.settings.R;
 import com.android.settings.applications.defaultapps.DefaultAutofillPreferenceController;
 import com.android.settings.dashboard.DashboardFragment;
 import com.android.settings.dashboard.SummaryLoader;
-import com.android.settings.inputmethod.GameControllerPreferenceController;
 import com.android.settings.inputmethod.PhysicalKeyboardPreferenceController;
 import com.android.settings.inputmethod.SpellCheckerPreferenceController;
 import com.android.settings.inputmethod.VirtualKeyboardPreferenceController;
@@ -105,7 +104,7 @@ public class LanguageAndInputSettings extends DashboardFragment {
         controllers.add(virtualKeyboardPreferenceController);
         controllers.add(physicalKeyboardPreferenceController);
         controllers.add(new PreferenceCategoryController(context,
-                KEY_KEYBOARDS_CATEGORY,
+                KEY_KEYBOARDS_CATEGORY).setChildren(
                 Arrays.asList(virtualKeyboardPreferenceController,
                         physicalKeyboardPreferenceController)));
 
@@ -116,24 +115,13 @@ public class LanguageAndInputSettings extends DashboardFragment {
         final PointerSpeedController pointerController = new PointerSpeedController(context);
         controllers.add(pointerController);
         controllers.add(new PreferenceCategoryController(context,
-                KEY_POINTER_AND_TTS_CATEGORY,
+                KEY_POINTER_AND_TTS_CATEGORY).setChildren(
                 Arrays.asList(pointerController, ttsPreferenceController)));
 
         // Input Assistance
         controllers.add(new SpellCheckerPreferenceController(context));
         controllers.add(new DefaultAutofillPreferenceController(context));
         controllers.add(new UserDictionaryPreferenceController(context));
-
-        // Game Controller
-        final GameControllerPreferenceController gameControllerPreferenceController
-                = new GameControllerPreferenceController(context);
-        if (lifecycle != null) {
-            lifecycle.addObserver(gameControllerPreferenceController);
-        }
-        controllers.add(gameControllerPreferenceController);
-        controllers.add(new PreferenceCategoryController(context,
-                KEY_GAME_CONTROLLER_CATEGORY,
-                Arrays.asList(gameControllerPreferenceController)));
 
         return controllers;
     }

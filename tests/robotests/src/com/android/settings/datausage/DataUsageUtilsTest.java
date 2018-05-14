@@ -22,6 +22,8 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.telephony.TelephonyManager;
+import android.util.DataUnit;
 
 import com.android.settings.testutils.SettingsRobolectricTestRunner;
 
@@ -37,6 +39,8 @@ public final class DataUsageUtilsTest {
 
     @Mock
     private ConnectivityManager mManager;
+    @Mock
+    private TelephonyManager mTelephonyManager;
     private Context mContext;
 
     @Before
@@ -45,6 +49,7 @@ public final class DataUsageUtilsTest {
         ShadowApplication shadowContext = ShadowApplication.getInstance();
         mContext = shadowContext.getApplicationContext();
         shadowContext.setSystemService(Context.CONNECTIVITY_SERVICE, mManager);
+        shadowContext.setSystemService(Context.TELEPHONY_SERVICE, mTelephonyManager);
     }
 
     @Test
@@ -59,5 +64,27 @@ public final class DataUsageUtilsTest {
         when(mManager.isNetworkSupported(anyInt())).thenReturn(false);
         boolean hasMobileData = DataUsageUtils.hasMobileData(mContext);
         assertThat(hasMobileData).isFalse();
+    }
+
+    @Test
+    public void hasSim_simStateReady() {
+        when(mTelephonyManager.getSimState()).thenReturn(TelephonyManager.SIM_STATE_READY);
+        boolean hasSim = DataUsageUtils.hasSim(mContext);
+        assertThat(hasSim).isTrue();
+    }
+
+    @Test
+    public void hasSim_simStateMissing() {
+        when(mTelephonyManager.getSimState()).thenReturn(TelephonyManager.SIM_STATE_ABSENT);
+        boolean hasSim = DataUsageUtils.hasSim(mContext);
+        assertThat(hasSim).isFalse();
+    }
+
+    @Test
+    public void formatDataUsage_useIECUnit() {
+        final CharSequence formattedDataUsage = DataUsageUtils.formatDataUsage(
+                mContext, DataUnit.GIBIBYTES.toBytes(1));
+
+        assertThat(formattedDataUsage).isEqualTo("1.00 GB");
     }
 }

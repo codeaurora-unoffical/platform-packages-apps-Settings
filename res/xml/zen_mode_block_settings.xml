@@ -18,43 +18,41 @@
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:key="zen_mode_block_settings_page"
-    android:title="@string/zen_mode_behavior_settings_title">
-
-    <!-- sound vibration -->
-    <CheckBoxPreference
-        android:key="zen_effect_sound"
-        android:title="@string/zen_mode_block_effect_sound"
-        android:enabled="false" />
+    android:title="@string/zen_mode_what_to_block_title">
 
    <PreferenceCategory
-       android:title="@string/zen_mode_block_effects_title"
-       android:key="zen_mode_block_vis_effects">
+       android:title="@string/zen_mode_block_effects_screen_off"
+       android:key="zen_mode_block_screen_off">
 
-       <CheckBoxPreference
+       <com.android.settings.widget.DisabledCheckBoxPreference
            android:key="zen_effect_intent"
            android:title="@string/zen_mode_block_effect_intent" />
 
-       <CheckBoxPreference
+       <com.android.settings.widget.DisabledCheckBoxPreference
            android:key="zen_effect_light"
            android:title="@string/zen_mode_block_effect_light" />
 
-       <CheckBoxPreference
-           android:key="zen_effect_peek"
-           android:title="@string/zen_mode_block_effect_peek" />
-
-       <CheckBoxPreference
-           android:key="zen_effect_status"
-           android:title="@string/zen_mode_block_effect_status" />
-
-       <CheckBoxPreference
-           android:key="zen_effect_badge"
-           android:title="@string/zen_mode_block_effect_badge" />
-
-       <CheckBoxPreference
+       <com.android.settings.widget.DisabledCheckBoxPreference
            android:key="zen_effect_ambient"
            android:title="@string/zen_mode_block_effect_ambient" />
 
-       <CheckBoxPreference
+   </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/zen_mode_block_effects_screen_on"
+        android:key="zen_mode_block_screen_on">
+       <com.android.settings.widget.DisabledCheckBoxPreference
+           android:key="zen_effect_badge"
+           android:title="@string/zen_mode_block_effect_badge" />
+
+        <com.android.settings.widget.DisabledCheckBoxPreference
+            android:key="zen_effect_status"
+            android:title="@string/zen_mode_block_effect_status" />
+
+        <com.android.settings.widget.DisabledCheckBoxPreference
+            android:key="zen_effect_peek"
+            android:title="@string/zen_mode_block_effect_peek" />
+
+       <com.android.settings.widget.DisabledCheckBoxPreference
            android:key="zen_effect_list"
            android:title="@string/zen_mode_block_effect_list" />
    </PreferenceCategory>

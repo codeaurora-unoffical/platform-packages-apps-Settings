@@ -16,6 +16,7 @@
 
 package com.android.settings.notification;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.support.v7.preference.CheckBoxPreference;
 import android.support.v7.preference.Preference;
@@ -23,6 +24,7 @@ import android.support.v7.preference.PreferenceScreen;
 
 import com.android.settings.core.PreferenceControllerMixin;
 import com.android.settingslib.core.lifecycle.Lifecycle;
+import com.android.settings.widget.DisabledCheckBoxPreference;
 
 public class ZenModeVisEffectPreferenceController
         extends AbstractZenModePreferenceController
@@ -51,6 +53,10 @@ public class ZenModeVisEffectPreferenceController
 
     @Override
     public boolean isAvailable() {
+        if (mEffect == NotificationManager.Policy.SUPPRESSED_EFFECT_LIGHTS) {
+            return mContext.getResources()
+                    .getBoolean(com.android.internal.R.bool.config_intrusiveNotificationLed);
+        }
         return true;
     }
 
@@ -73,9 +79,9 @@ public class ZenModeVisEffectPreferenceController
         if (parentSuppressed) {
             ((CheckBoxPreference) preference).setChecked(parentSuppressed);
             onPreferenceChange(preference, parentSuppressed);
-            preference.setEnabled(false);
+            ((DisabledCheckBoxPreference) preference).enableCheckbox(false);
         } else {
-            preference.setEnabled(true);
+            ((DisabledCheckBoxPreference) preference).enableCheckbox(true);
             ((CheckBoxPreference) preference).setChecked(suppressed);
         }
     }

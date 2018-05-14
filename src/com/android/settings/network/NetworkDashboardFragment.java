@@ -25,9 +25,8 @@ import android.app.Fragment;
 import android.content.Context;
 import android.provider.SearchIndexableResource;
 import android.support.annotation.VisibleForTesting;
+import android.text.BidiFormatter;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 
 import com.android.internal.logging.nano.MetricsProto;
 import com.android.settings.R;
@@ -48,11 +47,6 @@ public class NetworkDashboardFragment extends DashboardFragment implements
         MobilePlanPreferenceHost {
 
     private static final String TAG = "NetworkDashboardFrag";
-    private static final int MENU_NETWORK_RESET = Menu.FIRST;
-    private static final int MENU_PRIVATE_DNS = Menu.FIRST + 1;
-
-    private NetworkResetActionMenuController mNetworkResetController;
-    private PrivateDnsMenuController mPrivateDnsMenuController;
 
     @Override
     public int getMetricsCategory() {
@@ -72,21 +66,13 @@ public class NetworkDashboardFragment extends DashboardFragment implements
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mNetworkResetController = new NetworkResetActionMenuController(context, MENU_NETWORK_RESET);
-        mPrivateDnsMenuController = new PrivateDnsMenuController(getFragmentManager(),
-                MENU_PRIVATE_DNS);
+
+        use(AirplaneModePreferenceController.class).setFragment(this);
     }
 
     @Override
     public int getHelpResource() {
         return R.string.help_url_network_dashboard;
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        mNetworkResetController.buildMenuItem(menu);
-        mPrivateDnsMenuController.buildMenuItem(menu);
     }
 
     @Override
@@ -99,8 +85,6 @@ public class NetworkDashboardFragment extends DashboardFragment implements
     private static List<AbstractPreferenceController> buildPreferenceControllers(Context context,
             Lifecycle lifecycle, MetricsFeatureProvider metricsFeatureProvider, Fragment fragment,
             MobilePlanPreferenceHost mobilePlanHost) {
-        final AirplaneModePreferenceController airplaneModePreferenceController =
-                new AirplaneModePreferenceController(context, fragment);
         final MobilePlanPreferenceController mobilePlanPreferenceController =
                 new MobilePlanPreferenceController(context, mobilePlanHost);
         final WifiMasterSwitchPreferenceController wifiPreferenceController =
@@ -109,23 +93,25 @@ public class NetworkDashboardFragment extends DashboardFragment implements
                 new MobileNetworkPreferenceController(context);
         final VpnPreferenceController vpnPreferenceController =
                 new VpnPreferenceController(context);
+        final PrivateDnsPreferenceController privateDnsPreferenceController =
+                new PrivateDnsPreferenceController(context);
 
         if (lifecycle != null) {
-            lifecycle.addObserver(airplaneModePreferenceController);
             lifecycle.addObserver(mobilePlanPreferenceController);
             lifecycle.addObserver(wifiPreferenceController);
             lifecycle.addObserver(mobileNetworkPreferenceController);
             lifecycle.addObserver(vpnPreferenceController);
+            lifecycle.addObserver(privateDnsPreferenceController);
         }
 
         final List<AbstractPreferenceController> controllers = new ArrayList<>();
-        controllers.add(airplaneModePreferenceController);
         controllers.add(mobileNetworkPreferenceController);
         controllers.add(new TetherPreferenceController(context, lifecycle));
         controllers.add(vpnPreferenceController);
         controllers.add(new ProxyPreferenceController(context));
         controllers.add(mobilePlanPreferenceController);
         controllers.add(wifiPreferenceController);
+        controllers.add(privateDnsPreferenceController);
         return controllers;
     }
 
@@ -187,7 +173,8 @@ public class NetworkDashboardFragment extends DashboardFragment implements
         @Override
         public void setListening(boolean listening) {
             if (listening) {
-                String summary = mContext.getString(R.string.wifi_settings_title);
+                String summary = BidiFormatter.getInstance()
+                        .unicodeWrap(mContext.getString(R.string.wifi_settings_title));
                 if (mMobileNetworkPreferenceController.isAvailable()) {
                     final String mobileSettingSummary = mContext.getString(
                             R.string.network_dashboard_summary_mobile);

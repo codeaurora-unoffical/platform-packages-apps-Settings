@@ -83,6 +83,7 @@ public class VolumeSeekBarPreference extends SeekBarPreference {
     public void setStream(int stream) {
         mStream = stream;
         setMax(mAudioManager.getStreamMaxVolume(mStream));
+        setMin(mAudioManager.getStreamMinVolume(mStream));
         setProgress(mAudioManager.getStreamVolume(mStream));
     }
 
@@ -147,20 +148,10 @@ public class VolumeSeekBarPreference extends SeekBarPreference {
         mVolumizer.start();
         mVolumizer.setSeekBar(mSeekBar);
         updateIconView();
-        mCallback.onStreamValueChanged(mStream, mSeekBar.getProgress());
         updateSuppressionText();
         if (!isEnabled()) {
             mSeekBar.setEnabled(false);
             mVolumizer.stop();
-        }
-    }
-
-    // during initialization, this preference is the SeekBar listener
-    @Override
-    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromTouch) {
-        super.onProgressChanged(seekBar, progress, fromTouch);
-        if (mCallback != null) {
-            mCallback.onStreamValueChanged(mStream, progress);
         }
     }
 
@@ -205,8 +196,7 @@ public class VolumeSeekBarPreference extends SeekBarPreference {
         if (mSuppressionTextView != null && mSeekBar != null) {
             mSuppressionTextView.setText(mSuppressionText);
             final boolean showSuppression = !TextUtils.isEmpty(mSuppressionText);
-            mSuppressionTextView.setVisibility(showSuppression ? View.VISIBLE : View.INVISIBLE);
-            mSeekBar.setVisibility(showSuppression ? View.INVISIBLE : View.VISIBLE);
+            mSuppressionTextView.setVisibility(showSuppression ? View.VISIBLE : View.GONE);
         }
     }
 

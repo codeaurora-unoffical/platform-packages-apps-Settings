@@ -16,6 +16,7 @@
 
 package com.android.settings.wifi;
 
+import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -25,7 +26,6 @@ import android.net.wifi.WifiConfiguration;
 import android.provider.Settings;
 import android.text.TextUtils;
 
-import com.android.settings.wrapper.DevicePolicyManagerWrapper;
 import com.android.settingslib.wrapper.PackageManagerWrapper;
 
 public class WifiUtils {
@@ -50,10 +50,11 @@ public class WifiUtils {
         return ssid.length() < SSID_ASCII_MIN_LENGTH;
     }
 
-    public static boolean isPasswordValid(String password) {
+    public static boolean isHotspotPasswordValid(String password) {
         if (TextUtils.isEmpty(password)) {
-            return false;
+            return true;
         }
+
         final int length = password.length();
         return length >= PASSWORD_MIN_LENGTH && length <= PASSWORD_MAX_LENGTH;
     }
@@ -69,7 +70,8 @@ public class WifiUtils {
             return false;
         }
 
-        final DevicePolicyManagerWrapper dpm = DevicePolicyManagerWrapper.from(context);
+        final DevicePolicyManager dpm =
+                (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
         final PackageManagerWrapper pm = new PackageManagerWrapper(context.getPackageManager());
 
         // Check if device has DPM capability. If it has and dpm is still null, then we

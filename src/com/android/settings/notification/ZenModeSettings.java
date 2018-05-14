@@ -25,6 +25,7 @@ import android.provider.SearchIndexableResource;
 import android.provider.Settings;
 import android.service.notification.ZenModeConfig;
 import android.support.annotation.VisibleForTesting;
+import android.support.v7.preference.CheckBoxPreference;
 
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
@@ -40,6 +41,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public class ZenModeSettings extends ZenModeSettingsBase {
+    private static final String KEY_SOUND = "zen_effect_sound";
+    @Override
+    public void onResume() {
+        super.onResume();
+        CheckBoxPreference soundPreference =
+                (CheckBoxPreference) getPreferenceScreen().findPreference(KEY_SOUND);
+        if (soundPreference != null) {
+            soundPreference.setChecked(true);
+        }
+    }
+
     @Override
     protected int getPreferenceScreenResId() {
         return R.xml.zen_mode_settings;
@@ -107,7 +119,7 @@ public class ZenModeSettings extends ZenModeSettingsBase {
             } else if (numCategories == 3){
                 String secondaryText = mContext.getString(R.string.join_two_unrelated_items,
                         enabledCategories.get(0), enabledCategories.get(1).toLowerCase());
-                return mContext.getString(R.string.join_two_items, secondaryText,
+                return mContext.getString(R.string.join_many_items_last, secondaryText,
                         enabledCategories.get(2).toLowerCase());
             } else {
                 String secondaryText = mContext.getString(R.string.join_many_items_middle,
@@ -124,7 +136,7 @@ public class ZenModeSettings extends ZenModeSettingsBase {
 
             if (zenMode != Settings.Global.ZEN_MODE_OFF) {
                 ZenModeConfig config = NotificationManager.from(mContext).getZenModeConfig();
-                String description = ZenModeConfig.getDescription(mContext, true, config);
+                String description = ZenModeConfig.getDescription(mContext, true, config, false);
 
                 if (description == null) {
                     return mContext.getString(R.string.zen_mode_sound_summary_on);
@@ -148,13 +160,14 @@ public class ZenModeSettings extends ZenModeSettingsBase {
         String getBlockedEffectsSummary(Policy policy) {
             if (policy.suppressedVisualEffects == 0) {
                 return mContext.getResources().getString(
-                        R.string.zen_mode_block_effect_summary_sound);
+                        R.string.zen_mode_restrict_notifications_summary_muted);
             } else if (Policy.areAllVisualEffectsSuppressed(policy.suppressedVisualEffects)) {
                 return mContext.getResources().getString(
-                        R.string.zen_mode_block_effect_summary_all);
+                        R.string.zen_mode_restrict_notifications_summary_hidden);
+            } else {
+                return mContext.getResources().getString(
+                        R.string.zen_mode_restrict_notifications_summary_custom);
             }
-            return mContext.getResources().getString(
-                    R.string.zen_mode_block_effect_summary_some);
         }
 
         String getAutomaticRulesSummary() {

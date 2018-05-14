@@ -25,6 +25,7 @@ import android.os.Message;
 import android.os.UserHandle;
 import android.preference.SeekBarVolumizer;
 import android.provider.SearchIndexableResource;
+import android.support.annotation.VisibleForTesting;
 import android.support.v7.preference.Preference;
 import android.text.TextUtils;
 
@@ -50,8 +51,22 @@ public class SoundSettings extends DashboardFragment {
 
     private static final int SAMPLE_CUTOFF = 2000;  // manually cap sample playback at 2 seconds
 
-    private final VolumePreferenceCallback mVolumeCallback = new VolumePreferenceCallback();
-    private final H mHandler = new H();
+    @VisibleForTesting
+    static final int STOP_SAMPLE = 1;
+
+    @VisibleForTesting
+    final VolumePreferenceCallback mVolumeCallback = new VolumePreferenceCallback();
+    @VisibleForTesting
+    final Handler mHandler = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case STOP_SAMPLE:
+                    mVolumeCallback.stopSample();
+                    break;
+            }
+        }
+    };
 
     private RingtonePreference mRequestPreference;
 
@@ -109,7 +124,7 @@ public class SoundSettings extends DashboardFragment {
 
     @Override
     protected List<AbstractPreferenceController> createPreferenceControllers(Context context) {
-        return buildPreferenceControllers(context, this, mVolumeCallback, getLifecycle());
+        return buildPreferenceControllers(context, this, getLifecycle());
     }
 
     @Override
@@ -128,6 +143,21 @@ public class SoundSettings extends DashboardFragment {
         }
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        ArrayList<VolumeSeekBarPreferenceController> volumeControllers = new ArrayList<>();
+        volumeControllers.add(use(AlarmVolumePreferenceController.class));
+        volumeControllers.add(use(MediaVolumePreferenceController.class));
+        volumeControllers.add(use(RingVolumePreferenceController.class));
+        volumeControllers.add(use(NotificationVolumePreferenceController.class));
+
+        for (VolumeSeekBarPreferenceController controller : volumeControllers) {
+            controller.setCallback(mVolumeCallback);
+            getLifecycle().addObserver(controller);
+        }
+    }
+
     // === Volumes ===
 
     final class VolumePreferenceCallback implements VolumeSeekBarPreference.Callback {
@@ -140,14 +170,17 @@ public class SoundSettings extends DashboardFragment {
             }
             mCurrent = sbv;
             if (mCurrent != null) {
-                mHandler.removeMessages(H.STOP_SAMPLE);
-                mHandler.sendEmptyMessageDelayed(H.STOP_SAMPLE, SAMPLE_CUTOFF);
+                mHandler.removeMessages(STOP_SAMPLE);
+                mHandler.sendEmptyMessageDelayed(STOP_SAMPLE, SAMPLE_CUTOFF);
             }
         }
 
         @Override
         public void onStreamValueChanged(int stream, int progress) {
-            // noop
+            if (mCurrent != null) {
+                mHandler.removeMessages(STOP_SAMPLE);
+                mHandler.sendEmptyMessageDelayed(STOP_SAMPLE, SAMPLE_CUTOFF);
+            }
         }
 
         public void stopSample() {
@@ -157,39 +190,13 @@ public class SoundSettings extends DashboardFragment {
         }
     }
 
-    // === Callbacks ===
-
-
-    private final class H extends Handler {
-        private static final int STOP_SAMPLE = 1;
-
-        private H() {
-            super(Looper.getMainLooper());
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case STOP_SAMPLE:
-                    mVolumeCallback.stopSample();
-                    break;
-            }
-        }
-    }
-
     private static List<AbstractPreferenceController> buildPreferenceControllers(Context context,
-            SoundSettings fragment, VolumeSeekBarPreference.Callback callback,
-            Lifecycle lifecycle) {
+            SoundSettings fragment, Lifecycle lifecycle) {
         final List<AbstractPreferenceController> controllers = new ArrayList<>();
         controllers.add(new ZenModePreferenceController(context, lifecycle, KEY_ZEN_MODE));
         controllers.add(new VibrateWhenRingPreferenceController(context));
 
-        // === Volumes ===
-        controllers.add(new AlarmVolumePreferenceController(context, callback, lifecycle));
-        controllers.add(new MediaVolumePreferenceController(context, callback, lifecycle));
-        controllers.add(
-                new NotificationVolumePreferenceController(context, callback, lifecycle));
-        controllers.add(new RingVolumePreferenceController(context, callback, lifecycle));
+        // Volumes are added via xml
 
         // === Phone & notification ringtone ===
         controllers.add(new PhoneRingtonePreferenceController(context));
@@ -204,8 +211,6 @@ public class SoundSettings extends DashboardFragment {
                 new DialPadTonePreferenceController(context, fragment, lifecycle);
         final ScreenLockSoundPreferenceController screenLockSoundPreferenceController =
                 new ScreenLockSoundPreferenceController(context, fragment, lifecycle);
-        final ChargingSoundPreferenceController chargingSoundPreferenceController =
-                new ChargingSoundPreferenceController(context, fragment, lifecycle);
         final DockingSoundPreferenceController dockingSoundPreferenceController =
                 new DockingSoundPreferenceController(context, fragment, lifecycle);
         final TouchSoundPreferenceController touchSoundPreferenceController =
@@ -221,7 +226,6 @@ public class SoundSettings extends DashboardFragment {
 
         controllers.add(dialPadTonePreferenceController);
         controllers.add(screenLockSoundPreferenceController);
-        controllers.add(chargingSoundPreferenceController);
         controllers.add(dockingSoundPreferenceController);
         controllers.add(touchSoundPreferenceController);
         controllers.add(vibrateOnTouchPreferenceController);
@@ -229,10 +233,9 @@ public class SoundSettings extends DashboardFragment {
         controllers.add(bootSoundPreferenceController);
         controllers.add(emergencyTonePreferenceController);
         controllers.add(new PreferenceCategoryController(context,
-                "other_sounds_and_vibrations_category",
+                "other_sounds_and_vibrations_category").setChildren(
                 Arrays.asList(dialPadTonePreferenceController,
                         screenLockSoundPreferenceController,
-                        chargingSoundPreferenceController,
                         dockingSoundPreferenceController,
                         touchSoundPreferenceController,
                         vibrateOnTouchPreferenceController,
@@ -259,7 +262,7 @@ public class SoundSettings extends DashboardFragment {
                 public List<AbstractPreferenceController> createPreferenceControllers(
                         Context context) {
                     return buildPreferenceControllers(context, null /* fragment */,
-                            null /* callback */, null /* lifecycle */);
+                            null /* lifecycle */);
                 }
 
                 @Override

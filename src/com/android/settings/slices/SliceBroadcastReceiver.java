@@ -22,6 +22,7 @@ import static com.android.settings.slices.SettingsSliceProvider.ACTION_WIFI_CHAN
 import static com.android.settings.slices.SettingsSliceProvider.EXTRA_SLICE_KEY;
 import static com.android.settings.slices.SettingsSliceProvider.EXTRA_SLICE_PLATFORM_DEFINED;
 
+import android.app.slice.Slice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -31,14 +32,13 @@ import android.os.Handler;
 import android.provider.SettingsSlicesContract;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Pair;
 
+import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.core.BasePreferenceController;
 import com.android.settings.core.SliderPreferenceController;
 import com.android.settings.core.TogglePreferenceController;
-
-import android.app.slice.Slice;
-
-import androidx.slice.core.SliceHints;
+import com.android.settings.overlay.FeatureFactory;
 
 /**
  * Responds to actions performed on slices and notifies slices of updates in state changes.
@@ -54,16 +54,17 @@ public class SliceBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         final String action = intent.getAction();
         final String key = intent.getStringExtra(EXTRA_SLICE_KEY);
-        final boolean isPlatformDefined = intent.getBooleanExtra(EXTRA_SLICE_PLATFORM_DEFINED,
+        final boolean isPlatformSlice = intent.getBooleanExtra(EXTRA_SLICE_PLATFORM_DEFINED,
                 false /* default */);
 
         switch (action) {
             case ACTION_TOGGLE_CHANGED:
-                handleToggleAction(context, key, isPlatformDefined);
+                final boolean isChecked = intent.getBooleanExtra(Slice.EXTRA_TOGGLE_STATE, false);
+                handleToggleAction(context, key, isChecked, isPlatformSlice);
                 break;
             case ACTION_SLIDER_CHANGED:
-                int newPosition = intent.getIntExtra(SliceHints.EXTRA_RANGE_VALUE, -1);
-                handleSliderAction(context, key, newPosition);
+                final int newPosition = intent.getIntExtra(Slice.EXTRA_RANGE_VALUE, -1);
+                handleSliderAction(context, key, newPosition, isPlatformSlice);
                 break;
             case ACTION_WIFI_CHANGED:
                 WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
@@ -81,7 +82,8 @@ public class SliceBroadcastReceiver extends BroadcastReceiver {
         }
     }
 
-    private void handleToggleAction(Context context, String key, boolean isPlatformSlice) {
+    private void handleToggleAction(Context context, String key, boolean isChecked,
+            boolean isPlatformSlice) {
         if (TextUtils.isEmpty(key)) {
             throw new IllegalStateException("No key passed to Intent for toggle controller");
         }
@@ -93,19 +95,21 @@ public class SliceBroadcastReceiver extends BroadcastReceiver {
         }
 
         if (!controller.isAvailable()) {
-            Log.d(TAG, "Can't update " + key + " since the setting is unavailable");
+            Log.w(TAG, "Can't update " + key + " since the setting is unavailable");
             updateUri(context, key, isPlatformSlice);
+            return;
         }
 
         // TODO post context.getContentResolver().notifyChanged(uri, null) in the Toggle controller
         // so that it's automatically broadcast to any slice.
         final TogglePreferenceController toggleController = (TogglePreferenceController) controller;
-        final boolean currentValue = toggleController.isChecked();
-        toggleController.setChecked(!currentValue);
+        toggleController.setChecked(isChecked);
+        logSliceValueChange(context, key, isChecked ? 1 : 0);
         updateUri(context, key, isPlatformSlice);
     }
 
-    private void handleSliderAction(Context context, String key, int newPosition) {
+    private void handleSliderAction(Context context, String key, int newPosition,
+            boolean isPlatformSlice) {
         if (TextUtils.isEmpty(key)) {
             throw new IllegalArgumentException(
                     "No key passed to Intent for slider controller. Use extra: " + EXTRA_SLICE_KEY);
@@ -121,6 +125,12 @@ public class SliceBroadcastReceiver extends BroadcastReceiver {
             throw new IllegalArgumentException("Slider action passed for a non-slider key: " + key);
         }
 
+        if (!controller.isAvailable()) {
+            Log.w(TAG, "Can't update " + key + " since the setting is unavailable");
+            updateUri(context, key, isPlatformSlice);
+            return;
+        }
+
         final SliderPreferenceController sliderController = (SliderPreferenceController) controller;
         final int maxSteps = sliderController.getMaxSteps();
         if (newPosition < 0 || newPosition > maxSteps) {
@@ -130,6 +140,20 @@ public class SliceBroadcastReceiver extends BroadcastReceiver {
         }
 
         sliderController.setSliderPosition(newPosition);
+        logSliceValueChange(context, key, newPosition);
+    }
+
+    /**
+     * Log Slice value update events into MetricsFeatureProvider. The logging schema generally
+     * follows the pattern in SharedPreferenceLogger.
+     */
+    private void logSliceValueChange(Context context, String sliceKey, int newValue) {
+        final Pair<Integer, Object> namePair = Pair.create(
+                MetricsEvent.FIELD_SETTINGS_PREFERENCE_CHANGE_NAME, sliceKey);
+        final Pair<Integer, Object> valuePair = Pair.create(
+                MetricsEvent.FIELD_SETTINGS_PREFERENCE_CHANGE_INT_VALUE, newValue);
+        FeatureFactory.getFactory(context).getMetricsFeatureProvider()
+                .action(context, MetricsEvent.ACTION_SETTINGS_SLICE_CHANGED, namePair, valuePair);
     }
 
     private BasePreferenceController getPreferenceController(Context context, String key) {

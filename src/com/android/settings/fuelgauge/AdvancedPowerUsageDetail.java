@@ -54,7 +54,6 @@ import com.android.settings.fuelgauge.anomaly.AnomalyUtils;
 import com.android.settings.fuelgauge.batterytip.BatteryTipPreferenceController;
 import com.android.settings.fuelgauge.batterytip.tips.BatteryTip;
 import com.android.settings.widget.EntityHeaderController;
-import com.android.settings.wrapper.DevicePolicyManagerWrapper;
 import com.android.settingslib.applications.AppUtils;
 import com.android.settingslib.applications.ApplicationsState;
 import com.android.settingslib.core.AbstractPreferenceController;
@@ -88,7 +87,6 @@ public class AdvancedPowerUsageDetail extends DashboardFragment implements
 
     private static final String KEY_PREF_FOREGROUND = "app_usage_foreground";
     private static final String KEY_PREF_BACKGROUND = "app_usage_background";
-    private static final String KEY_PREF_POWER_USAGE = "app_power_usage";
     private static final String KEY_PREF_HEADER = "header_view";
 
     private static final int REQUEST_UNINSTALL = 0;
@@ -110,13 +108,11 @@ public class AdvancedPowerUsageDetail extends DashboardFragment implements
     @VisibleForTesting
     Preference mBackgroundPreference;
     @VisibleForTesting
-    Preference mPowerUsagePreference;
-    @VisibleForTesting
     AnomalySummaryPreferenceController mAnomalySummaryPreferenceController;
     private AppButtonsPreferenceController mAppButtonsPreferenceController;
     private BackgroundActivityPreferenceController mBackgroundActivityPreferenceController;
 
-    private DevicePolicyManagerWrapper mDpm;
+    private DevicePolicyManager mDpm;
     private UserManager mUserManager;
     private PackageManager mPackageManager;
     private List<Anomaly> mAnomalies;
@@ -167,7 +163,8 @@ public class AdvancedPowerUsageDetail extends DashboardFragment implements
                 .launch();
     }
 
-    private static @UserIdInt int getUserIdToLaunchAdvancePowerUsageDetail(BatterySipper bs) {
+    private static @UserIdInt
+    int getUserIdToLaunchAdvancePowerUsageDetail(BatterySipper bs) {
         if (bs.drainType == BatterySipper.DrainType.USER) {
             return ActivityManager.getCurrentUser();
         }
@@ -206,8 +203,7 @@ public class AdvancedPowerUsageDetail extends DashboardFragment implements
         super.onAttach(activity);
 
         mState = ApplicationsState.getInstance(getActivity().getApplication());
-        mDpm = new DevicePolicyManagerWrapper(
-                (DevicePolicyManager) activity.getSystemService(Context.DEVICE_POLICY_SERVICE));
+        mDpm = (DevicePolicyManager) activity.getSystemService(Context.DEVICE_POLICY_SERVICE);
         mUserManager = (UserManager) activity.getSystemService(Context.USER_SERVICE);
         mPackageManager = activity.getPackageManager();
         mBatteryUtils = BatteryUtils.getInstance(getContext());
@@ -222,7 +218,6 @@ public class AdvancedPowerUsageDetail extends DashboardFragment implements
                 (SettingsActivity) getActivity(), this);
         mForegroundPreference = findPreference(KEY_PREF_FOREGROUND);
         mBackgroundPreference = findPreference(KEY_PREF_BACKGROUND);
-        mPowerUsagePreference = findPreference(KEY_PREF_POWER_USAGE);
         mHeaderPreference = (LayoutPreference) findPreference(KEY_PREF_HEADER);
 
         if (mPackageName != null) {
@@ -298,8 +293,6 @@ public class AdvancedPowerUsageDetail extends DashboardFragment implements
         mBackgroundPreference.setSummary(
                 TextUtils.expandTemplate(getText(R.string.battery_active_for),
                         StringUtil.formatElapsedTime(context, backgroundTimeMs, false)));
-        mPowerUsagePreference.setSummary(
-                getString(R.string.battery_detail_power_percentage, usagePercent, powerMah));
     }
 
     @Override

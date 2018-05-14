@@ -19,6 +19,7 @@ package com.android.settings.fuelgauge.batterytip.detectors;
 import android.content.Context;
 import android.os.BatteryStats;
 import android.support.annotation.VisibleForTesting;
+import android.text.format.DateUtils;
 
 import com.android.internal.os.BatterySipper;
 import com.android.internal.os.BatteryStatsHelper;
@@ -33,6 +34,7 @@ import com.android.settings.fuelgauge.batterytip.tips.HighUsageTip;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Detector whether to show summary tip. This detector should be executed as the last
@@ -42,29 +44,31 @@ public class HighUsageDetector implements BatteryTipDetector {
     private BatteryTipPolicy mPolicy;
     private BatteryStatsHelper mBatteryStatsHelper;
     private List<AppInfo> mHighUsageAppList;
-    private Context mContext;
     @VisibleForTesting
     HighUsageDataParser mDataParser;
     @VisibleForTesting
     BatteryUtils mBatteryUtils;
+    @VisibleForTesting
+    boolean mDischarging;
 
     public HighUsageDetector(Context context, BatteryTipPolicy policy,
-            BatteryStatsHelper batteryStatsHelper) {
-        mContext = context;
+            BatteryStatsHelper batteryStatsHelper, boolean discharging) {
         mPolicy = policy;
         mBatteryStatsHelper = batteryStatsHelper;
         mHighUsageAppList = new ArrayList<>();
         mBatteryUtils = BatteryUtils.getInstance(context);
         mDataParser = new HighUsageDataParser(mPolicy.highUsagePeriodMs,
                 mPolicy.highUsageBatteryDraining);
+        mDischarging = discharging;
     }
 
     @Override
     public BatteryTip detect() {
-        final long screenUsageTimeMs = mBatteryUtils.calculateScreenUsageTime(mBatteryStatsHelper);
-        if (mPolicy.highUsageEnabled) {
+        final long lastFullChargeTimeMs = mBatteryUtils.calculateLastFullChargeTime(
+                mBatteryStatsHelper, System.currentTimeMillis());
+        if (mPolicy.highUsageEnabled && mDischarging) {
             parseBatteryData();
-            if (mDataParser.isDeviceHeavilyUsed()) {
+            if (mDataParser.isDeviceHeavilyUsed() || mPolicy.testHighUsageTip) {
                 final List<BatterySipper> batterySippers = mBatteryStatsHelper.getUsageList();
                 for (int i = 0, size = batterySippers.size(); i < size; i++) {
                     final BatterySipper batterySipper = batterySippers.get(i);
@@ -72,22 +76,32 @@ public class HighUsageDetector implements BatteryTipDetector {
                         final long foregroundTimeMs = mBatteryUtils.getProcessTimeMs(
                                 BatteryUtils.StatusType.FOREGROUND, batterySipper.uidObj,
                                 BatteryStats.STATS_SINCE_CHARGED);
-                        mHighUsageAppList.add(new AppInfo.Builder()
-                                .setUid(batterySipper.getUid())
-                                .setPackageName(
-                                        mBatteryUtils.getPackageName(batterySipper.getUid()))
-                                .setScreenOnTimeMs(foregroundTimeMs)
-                                .build());
+                        if (foregroundTimeMs >= DateUtils.MINUTE_IN_MILLIS) {
+                            mHighUsageAppList.add(new AppInfo.Builder()
+                                    .setUid(batterySipper.getUid())
+                                    .setPackageName(
+                                            mBatteryUtils.getPackageName(batterySipper.getUid()))
+                                    .setScreenOnTimeMs(foregroundTimeMs)
+                                    .build());
+                        }
                     }
                 }
 
+                // When in test mode, add an app if necessary
+                if (mPolicy.testHighUsageTip && mHighUsageAppList.isEmpty()) {
+                    mHighUsageAppList.add(new AppInfo.Builder()
+                            .setPackageName("com.android.settings")
+                            .setScreenOnTimeMs(TimeUnit.HOURS.toMillis(3))
+                            .build());
+                }
+
+                Collections.sort(mHighUsageAppList, Collections.reverseOrder());
                 mHighUsageAppList = mHighUsageAppList.subList(0,
                         Math.min(mPolicy.highUsageAppCount, mHighUsageAppList.size()));
-                Collections.sort(mHighUsageAppList, Collections.reverseOrder());
             }
         }
 
-        return new HighUsageTip(screenUsageTimeMs, mHighUsageAppList);
+        return new HighUsageTip(lastFullChargeTimeMs, mHighUsageAppList);
     }
 
     @VisibleForTesting

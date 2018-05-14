@@ -42,12 +42,14 @@ public class RestrictAppTip extends BatteryTip {
     public RestrictAppTip(@StateType int state, List<AppInfo> restrictApps) {
         super(TipType.APP_RESTRICTION, state, state == StateType.NEW /* showDialog */);
         mRestrictAppList = restrictApps;
+        mNeedUpdate = false;
     }
 
     public RestrictAppTip(@StateType int state, AppInfo appInfo) {
         super(TipType.APP_RESTRICTION, state, state == StateType.NEW /* showDialog */);
         mRestrictAppList = new ArrayList<>();
         mRestrictAppList.add(appInfo);
+        mNeedUpdate = false;
     }
 
     @VisibleForTesting
@@ -98,6 +100,9 @@ public class RestrictAppTip extends BatteryTip {
             // If anomaly becomes invisible, show it as handled
             mState = StateType.HANDLED;
             mShowDialog = false;
+        } else {
+            mState = tip.getState();
+            mShowDialog = tip.shouldShowDialog();
         }
     }
 
