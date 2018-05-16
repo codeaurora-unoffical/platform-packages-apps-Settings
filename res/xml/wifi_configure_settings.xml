@@ -38,6 +38,16 @@
             android:summary="@string/wifi_notify_open_networks_summary" />
 
     <SwitchPreference
+        android:key="enable_hs2_rel1"
+        android:title="@string/wifi_enable_hs2_rel1_title"
+        android:persistent="false" />
+
+    <SwitchPreference
+        android:key="enable_hs2"
+        android:title="@string/wifi_enable_hs2_title"
+        android:persistent="false"/>
+
+    <SwitchPreference
         android:key="wifi_cellular_data_fallback"
         android:title="@string/wifi_cellular_data_fallback_title"
         android:summary="@string/wifi_cellular_data_fallback_summary"/>
