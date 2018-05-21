@@ -28,6 +28,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.provider.Telephony;
+import android.support.annotation.VisibleForTesting;
 import android.support.v14.preference.MultiSelectListPreference;
 import android.support.v14.preference.SwitchPreference;
 import android.support.v7.preference.EditTextPreference;
@@ -47,7 +48,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnKeyListener;
 
-import com.android.internal.annotations.VisibleForTesting;
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.internal.telephony.PhoneConstants;
 import com.android.internal.util.ArrayUtils;
@@ -312,6 +312,9 @@ public class ApnEditor extends SettingsPreferenceFragment
             mApnData = getApnDataFromUri(uri);
         } else {
             mApnData = new ApnData(sProjection.length);
+            if (action.equals(Intent.ACTION_INSERT)) {
+                setDefaultData();
+            }
         }
 
         mTelephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
@@ -331,13 +334,23 @@ public class ApnEditor extends SettingsPreferenceFragment
             disableFields(mReadOnlyApnFields);
         }
 
-        mDeletableApn = mApnData.getInteger(PERSISTENT_INDEX) != 1;
+        mDeletableApn = (mApnData.getInteger(PERSISTENT_INDEX, 0)) != 1;
 
         for (int i = 0; i < getPreferenceScreen().getPreferenceCount(); i++) {
             getPreferenceScreen().getPreference(i).setOnPreferenceChangeListener(this);
         }
 
         fillUI(icicle == null);
+    }
+
+    @VisibleForTesting
+    static String formatInteger(String value) {
+        try {
+            final int intValue = Integer.parseInt(value);
+            return String.format("%d", intValue);
+        } catch (NumberFormatException e) {
+            return value;
+        }
     }
 
     /**
@@ -582,8 +595,8 @@ public class ApnEditor extends SettingsPreferenceFragment
         mMmsProxy.setSummary(checkNull(mMmsProxy.getText()));
         mMmsPort.setSummary(checkNull(mMmsPort.getText()));
         mMmsc.setSummary(checkNull(mMmsc.getText()));
-        mMcc.setSummary(checkNull(mMcc.getText()));
-        mMnc.setSummary(checkNull(mMnc.getText()));
+        mMcc.setSummary(formatInteger(checkNull(mMcc.getText())));
+        mMnc.setSummary(formatInteger(checkNull(mMnc.getText())));
         mApnType.setSummary(checkNull(mApnType.getText()));
 
         String authVal = mAuthType.getValue();
@@ -627,20 +640,6 @@ public class ApnEditor extends SettingsPreferenceFragment
             String[] values = getResources().getStringArray(R.array.apn_protocol_entries);
             try {
                 return values[protocolIndex];
-            } catch (ArrayIndexOutOfBoundsException e) {
-                return null;
-            }
-        }
-    }
-
-    private String bearerDescription(String raw) {
-        int mBearerIndex = mBearerMulti.findIndexOfValue(raw);
-        if (mBearerIndex == -1) {
-            return null;
-        } else {
-            String[] values = getResources().getStringArray(R.array.bearer_entries);
-            try {
-                return values[mBearerIndex];
             } catch (ArrayIndexOutOfBoundsException e) {
                 return null;
             }
@@ -1179,26 +1178,40 @@ public class ApnEditor extends SettingsPreferenceFragment
         return sNotSet.equals(value) ? null : value;
     }
 
-    private ContentValues getDefaultValue(){
-        ContentValues contentValues = new ContentValues();
+    private void setDefaultData() {
         CarrierConfigManager configManager = (CarrierConfigManager)
                 getSystemService(Context.CARRIER_CONFIG_SERVICE);
         if (configManager != null) {
             PersistableBundle b = configManager.getConfigForSubId(mSubId);
             if (b != null) {
-                PersistableBundle defaultValues = b.getPersistableBundle(APN_DEFALUT_VALUES_STRING_ARRAY);
-                if(defaultValues != null && !defaultValues.isEmpty()){
+                PersistableBundle defaultValues = b.getPersistableBundle(
+                        APN_DEFALUT_VALUES_STRING_ARRAY);
+                if (defaultValues != null && !defaultValues.isEmpty()) {
                     Set<String> keys = defaultValues.keySet();
-                    for(String key : keys){
-                        if(fieldValidate(key)){
-                            contentValues.put(key, defaultValues.getString(key));
+                    for (String key : keys) {
+                        if (fieldValidate(key)) {
+                            setAppData(key, defaultValues.get(key));
                         }
                     }
                 }
             }
         }
-        contentValues.put(Telephony.Carriers.EDITED, Telephony.Carriers.USER_EDITED);
-        return contentValues;
+    }
+
+    private void setAppData(String key, Object object) {
+        int index = findIndexOfKey(key);
+        if (index >= 0) {
+            mApnData.setObject(index, object);
+        }
+    }
+
+    private int findIndexOfKey(String key) {
+        for(int i = 0; i < sProjection.length; i++) {
+            if (sProjection[i].equals(key)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private boolean fieldValidate(String field){
@@ -1266,12 +1279,19 @@ public class ApnEditor extends SettingsPreferenceFragment
         }
     }
 
-    private ApnData getApnDataFromUri(Uri uri) {
-        ApnData apnData;
-        try (Cursor cursor = getActivity().managedQuery(
-                uri, sProjection, null /* selection */, null /* sortOrder */)) {
-            cursor.moveToFirst();
-            apnData = new ApnData(uri, cursor);
+    @VisibleForTesting
+    ApnData getApnDataFromUri(Uri uri) {
+        ApnData apnData = null;
+        try (Cursor cursor = getContentResolver().query(
+                uri,
+                sProjection,
+                null /* selection */,
+                null /* selectionArgs */,
+                null /* sortOrder */)) {
+            if (cursor != null) {
+                cursor.moveToFirst();
+                apnData = new ApnData(uri, cursor);
+            }
         }
 
         if (apnData == null) {
@@ -1338,6 +1358,10 @@ public class ApnEditor extends SettingsPreferenceFragment
 
         String getString(int index) {
             return (String) mData[index];
+        }
+
+        void setObject(int index, Object value) {
+            mData[index] = value;
         }
     }
 }

@@ -25,7 +25,9 @@ import android.os.storage.VolumeInfo;
 import android.view.View;
 import android.widget.Button;
 
+import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
+import com.android.settings.overlay.FeatureFactory;
 
 public class StorageWizardInit extends StorageWizardBase {
     private Button mExternal;
@@ -45,7 +47,7 @@ public class StorageWizardInit extends StorageWizardBase {
         mIsPermittedToAdopt = UserManager.get(this).isAdminUser()
                 && !ActivityManager.isUserAMonkey();
 
-        setHeaderText(R.string.storage_wizard_init_v2_title, mDisk.getShortDescription());
+        setHeaderText(R.string.storage_wizard_init_v2_title, getDiskShortDescription());
 
         mExternal = requireViewById(R.id.storage_wizard_init_external);
         mInternal = requireViewById(R.id.storage_wizard_init_internal);
@@ -55,7 +57,6 @@ public class StorageWizardInit extends StorageWizardBase {
         if (!mDisk.isAdoptable()) {
             // If not adoptable, we only have one choice
             onNavigateExternal(null);
-            finish();
         } else if (!mIsPermittedToAdopt) {
             // TODO: Show a message about why this is disabled for guest and
             // that only an admin user can adopt an sd card.
@@ -69,6 +70,12 @@ public class StorageWizardInit extends StorageWizardBase {
     }
 
     public void onNavigateExternal(View view) {
+        if (view != null) {
+            // User made an explicit choice for external
+            FeatureFactory.getFactory(this).getMetricsFeatureProvider().action(this,
+                    MetricsEvent.ACTION_STORAGE_INIT_EXTERNAL);
+        }
+
         if (mVolume != null && mVolume.getType() == VolumeInfo.TYPE_PUBLIC
                 && mVolume.getState() != VolumeInfo.STATE_UNMOUNTABLE) {
             // Remember that user made decision
@@ -77,6 +84,7 @@ public class StorageWizardInit extends StorageWizardBase {
             final Intent intent = new Intent(this, StorageWizardReady.class);
             intent.putExtra(DiskInfo.EXTRA_DISK_ID, mDisk.getId());
             startActivity(intent);
+            finish();
 
         } else {
             // Gotta format to get there
@@ -85,6 +93,12 @@ public class StorageWizardInit extends StorageWizardBase {
     }
 
     public void onNavigateInternal(View view) {
+        if (view != null) {
+            // User made an explicit choice for internal
+            FeatureFactory.getFactory(this).getMetricsFeatureProvider().action(this,
+                    MetricsEvent.ACTION_STORAGE_INIT_INTERNAL);
+        }
+
         StorageWizardFormatConfirm.showPrivate(this, mDisk.getId());
     }
 }
