@@ -16,7 +16,7 @@
 package com.android.settings.connecteddevice;
 
 import static com.android.settings.core.BasePreferenceController.AVAILABLE;
-import static com.android.settings.core.BasePreferenceController.DISABLED_UNSUPPORTED;
+import static com.android.settings.core.BasePreferenceController.UNSUPPORTED_ON_DEVICE;
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.Mockito.doReturn;
@@ -27,6 +27,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.support.v7.preference.PreferenceManager;
 import com.android.settings.bluetooth.BluetoothDeviceUpdater;
+import com.android.settings.connecteddevice.dock.DockUpdater;
 import com.android.settings.dashboard.DashboardFragment;
 import com.android.settings.testutils.SettingsRobolectricTestRunner;
 import com.android.settingslib.core.lifecycle.Lifecycle;
@@ -47,6 +48,8 @@ public class SavedDeviceGroupControllerTest {
     private DashboardFragment mDashboardFragment;
     @Mock
     private BluetoothDeviceUpdater mBluetoothDeviceUpdater;
+    @Mock
+    private DockUpdater mSavedDockUpdater;
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private PreferenceManager mPreferenceManager;
     @Mock
@@ -67,6 +70,7 @@ public class SavedDeviceGroupControllerTest {
         doReturn(mPackageManager).when(mContext).getPackageManager();
         mSavedDeviceGroupController = new SavedDeviceGroupController(mContext);
         mSavedDeviceGroupController.setBluetoothDeviceUpdater(mBluetoothDeviceUpdater);
+        mSavedDeviceGroupController.setSavedDockUpdater(mSavedDockUpdater);
     }
 
     @Test
@@ -74,18 +78,20 @@ public class SavedDeviceGroupControllerTest {
         // register the callback in onStart()
         mSavedDeviceGroupController.onStart();
         verify(mBluetoothDeviceUpdater).registerCallback();
+        verify(mSavedDockUpdater).registerCallback();
     }
     @Test
     public void testUnregister() {
         // unregister the callback in onStop()
         mSavedDeviceGroupController.onStop();
         verify(mBluetoothDeviceUpdater).unregisterCallback();
+        verify(mSavedDockUpdater).unregisterCallback();
     }
     @Test
     public void testGetAvailabilityStatus_noBluetoothFeature_returnUnSupported() {
         doReturn(false).when(mPackageManager).hasSystemFeature(PackageManager.FEATURE_BLUETOOTH);
         assertThat(mSavedDeviceGroupController.getAvailabilityStatus()).isEqualTo(
-                DISABLED_UNSUPPORTED);
+                UNSUPPORTED_ON_DEVICE);
     }
     @Test
     public void testGetAvailabilityStatus_BluetoothFeature_returnSupported() {

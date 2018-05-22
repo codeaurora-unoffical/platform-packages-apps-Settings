@@ -727,6 +727,10 @@
                 <action android:name="android.settings.ZEN_MODE_SETTINGS" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+            <intent-filter android:priority="1">
+                <action android:name="android.settings.ZEN_MODE_PRIORITY_SETTINGS" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -739,27 +743,10 @@
         </activity>
 
         <activity
-            android:name="Settings$ZenModeBlockedEffectsSettingsActivity"
-            android:label="@string/zen_mode_what_to_block_title"
-            android:icon="@drawable/ic_settings_notifications"
-            android:exported="true"
-            android:taskAffinity="com.android.settings"
-            android:parentActivityName="Settings">
-            <intent-filter android:priority="1">
-                <action android:name="android.settings.ZEN_MODE_BLOCKED_EFFECTS_SETTINGS" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-            <meta-data android:name="com.android.settings.FRAGMENT_CLASS"
-                       android:value="com.android.settings.notification.ZenModeBlockedEffectsSettings" />
-            <meta-data android:name="com.android.settings.PRIMARY_PROFILE_CONTROLLED"
-                       android:value="true" />
-        </activity>
-
-        <activity
             android:name=".notification.ZenOnboardingActivity"
             android:label="@string/zen_onboarding_dnd_visual_disturbances_header"
             android:icon="@drawable/ic_settings_notifications"
-            android:theme="@style/Theme.Settings.NoActionBar"
+            android:theme="@*android:style/Theme.DeviceDefault.Settings.Dialog.NoActionBar"
             android:exported="true"
             android:taskAffinity="com.android.settings"
             android:parentActivityName="Settings">
@@ -767,23 +754,6 @@
                 <action android:name="android.settings.ZEN_MODE_ONBOARDING" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-        </activity>
-
-        <activity
-            android:name="Settings$ZenModeBehaviorSettingsActivity"
-            android:label="@string/zen_mode_behavior_settings_title"
-            android:icon="@drawable/ic_settings_notifications"
-            android:exported="true"
-            android:taskAffinity="com.android.settings"
-            android:parentActivityName="Settings">
-            <intent-filter android:priority="1">
-                <action android:name="android.settings.ZEN_MODE_PRIORITY_SETTINGS" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-            <meta-data android:name="com.android.settings.FRAGMENT_CLASS"
-                android:value="com.android.settings.notification.ZenModeBehaviorSettings" />
-            <meta-data android:name="com.android.settings.PRIMARY_PROFILE_CONTROLLED"
-                android:value="true" />
         </activity>
 
         <activity
@@ -1780,6 +1750,7 @@
                 android:resource="@string/suggested_fingerprint_lock_settings_title" />
             <meta-data android:name="com.android.settings.summary"
                 android:resource="@string/suggested_fingerprint_lock_settings_summary" />
+            <meta-data android:name="com.android.settings.icon_tintable" android:value="true" />
         </activity>
 
         <activity android:name=".password.ChooseLockGeneric$InternalActivity"
@@ -1879,39 +1850,39 @@
 
         <!-- Exported for SystemUI to launch into -->
         <activity android:name=".deviceinfo.StorageWizardInit"
-                android:theme="@style/GlifTheme.Light"
+                android:theme="@style/GlifV3Theme.Light"
                 android:taskAffinity="com.android.settings.storage_wizard"
                 android:exported="true"
                 android:permission="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
         <activity android:name=".deviceinfo.StorageWizardFormatProgress"
-                android:theme="@style/GlifTheme.Light"
+                android:theme="@style/GlifV3Theme.Light"
                 android:taskAffinity="com.android.settings.storage_wizard"
                 android:exported="false" />
         <activity android:name=".deviceinfo.StorageWizardFormatSlow"
-                android:theme="@style/GlifTheme.Light"
+                android:theme="@style/GlifV3Theme.Light"
                 android:taskAffinity="com.android.settings.storage_wizard"
                 android:exported="false" />
         <activity android:name=".deviceinfo.StorageWizardMigrateConfirm"
-                android:theme="@style/GlifTheme.Light"
+                android:theme="@style/GlifV3Theme.Light"
                 android:taskAffinity="com.android.settings.storage_wizard"
                 android:exported="false" />
         <activity android:name=".deviceinfo.StorageWizardMigrateProgress"
-                android:theme="@style/GlifTheme.Light"
+                android:theme="@style/GlifV3Theme.Light"
                 android:taskAffinity="com.android.settings.storage_wizard"
                 android:exported="true"
                 android:permission="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
         <activity android:name=".deviceinfo.StorageWizardReady"
-                android:theme="@style/GlifTheme.Light"
+                android:theme="@style/GlifV3Theme.Light"
                 android:taskAffinity="com.android.settings.storage_wizard"
                 android:exported="true"
                 android:permission="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
 
         <activity android:name=".deviceinfo.StorageWizardMoveConfirm"
-                android:theme="@style/GlifTheme.Light"
+                android:theme="@style/GlifV3Theme.Light"
                 android:taskAffinity="com.android.settings.storage_wizard"
                 android:exported="false" />
         <activity android:name=".deviceinfo.StorageWizardMoveProgress"
-                android:theme="@style/GlifTheme.Light"
+                android:theme="@style/GlifV3Theme.Light"
                 android:taskAffinity="com.android.settings.storage_wizard"
                 android:exported="true"
                 android:permission="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
@@ -3191,6 +3162,9 @@
             android:name=".SettingsDumpService"
             android:exported="true"
             android:permission="android.permission.DUMP" />
+
+         <service android:name=".search.DeviceIndexUpdateJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <!-- Quick Settings tiles for Developer Options -->
         <service

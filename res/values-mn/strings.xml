@@ -292,8 +292,7 @@
     <string name="forget" msgid="1400428660472591263">"Мартах"</string>
     <string name="save" msgid="879993180139353333">"Хадгалах"</string>
     <string name="done" msgid="6942539184162713160">"Гүйцэтгэв"</string>
-    <!-- no translation found for apply (1577045208487259229) -->
-    <skip />
+    <string name="apply" msgid="1577045208487259229">"Хэрэгжүүлэх"</string>
     <string name="settings_label" msgid="1626402585530130914">"Тохиргоо"</string>
     <string name="settings_label_launcher" msgid="8344735489639482340">"Тохиргоо"</string>
     <string name="settings_shortcut" msgid="3936651951364030415">"Тохиргооны товчилбор"</string>
@@ -1455,7 +1454,7 @@
     <string name="reset_esim_error_msg" msgid="8434956817922668388">"eSIM-г алдааны улмаас шинэчилж чадсангүй."</string>
     <string name="master_clear_title" msgid="3531267871084279512">"Бүх өгөгдлийг устгах (үйлдвэрийн тохиргоогоор шинэчлэх)"</string>
     <string name="master_clear_desc" product="tablet" msgid="9146059417023157222">"Энэ таны таблетын "<b>"дотоод сангаас"</b>"таны \n\n"<li>"Google акаунт"</li>\n<li>"Системийн болон апп өгөгдөл болон тохиргоо"</li>\n<li>"Татаж авсан апп-уудыг"</li>" оруулан бүх өгөгдлийг устгах болно"</string>
-    <string name="master_clear_desc" product="default" msgid="4800386183314202571">"Энэ таны утасны "<b>"дотоод сангаас"</b>" таны \n\n"<li>" дараах бүх өгөгдлийг устгах болно: Google бүртгэл"</li>\n<li>"Системийн болон апп өгөгдөл болон тохиргоо"</li>\n<li>"Татаж авсан аппууд"</li></string>
+    <string name="master_clear_desc" product="default" msgid="4800386183314202571">"Энэ таны утасны "<b>"дотоод сангаас"</b>" таны \n\n дараах бүх өгөгдлийг устгах болно: "<li>" Google бүртгэл"</li>\n<li>"Системийн болон апп өгөгдөл болон тохиргоо"</li>\n<li>"Татаж авсан аппууд"</li></string>
     <string name="master_clear_accounts" product="default" msgid="6412857499147999073">\n\n"Та одоогоор дараах бүртгэлүүдээр нэвтэрсэн байна:\n"</string>
     <string name="master_clear_other_users_present" product="default" msgid="5161423070702470742">\n\n"Энэ төхөөрөмж дээр өөр хэрэглэгчид байна.\n"</string>
     <string name="master_clear_desc_also_erases_external" msgid="1903185203791274237"><li>"Хөгжим"</li>\n<li>"Зураг"</li>\n<li>"Бусад хэрэглэгчийн өгөгдөл"</li></string>
@@ -1625,7 +1624,7 @@
     <string name="lockpattern_settings_title" msgid="3207750489460466680">"Тайлах хээ"</string>
     <string name="lockpattern_settings_enable_title" msgid="6920616873671115281">"Загвар шаардах"</string>
     <string name="lockpattern_settings_enable_summary" msgid="1165707416664252167">"Дэлгэцийг тайлахын тулд хээгээ зурна уу"</string>
-    <string name="lockpattern_settings_enable_visible_pattern_title" msgid="2615606088906120711">"Хэлхээг харуулах"</string>
+    <string name="lockpattern_settings_enable_visible_pattern_title" msgid="2615606088906120711">"Хээг харуулах"</string>
     <string name="lockpattern_settings_enable_visible_pattern_title_profile" msgid="4864525074768391381">"Профайлын зурган түгжээг харагддаг болгох"</string>
     <string name="lockpattern_settings_enable_tactile_feedback_title" msgid="4389015658335522989">"Дарахад чичрэх"</string>
     <string name="lockpattern_settings_enable_power_button_instantly_locks" msgid="5735444062633666327">"Асаах товч шууд түгжигдэнэ"</string>
@@ -2103,10 +2102,10 @@
     <string name="background_activity_summary_whitelisted" msgid="1079899502347973947">"Дэвсгэрийн хэрэглээг хязгаарлах боломжгүй"</string>
     <string name="background_activity_warning_dialog_title" msgid="2216249969149568871">"Арын үйл ажиллагааг хязгаарлах уу?"</string>
     <string name="background_activity_warning_dialog_text" msgid="7049624449246121981">"Та арын үйл ажиллагааг аппад хязгаарласан тохиолдолд апп буруу ажиллаж болзошгүй"</string>
-    <string name="device_screen_usage" msgid="3386088035570409683">"Бүрэн цэнэглэснээс хойших дэлгэц ашиглалт"</string>
+    <string name="device_screen_usage" msgid="3386088035570409683">"Бүрэн цэнэглэснээс хойшхи дэлгэц ашиглалт"</string>
     <string name="device_screen_consumption" msgid="4607589286438986687">"Дэлгэцийн хэрэглээ"</string>
     <string name="device_cellular_network" msgid="4724773411762382950">"Мобайл сүлжээний скан"</string>
-    <string name="power_usage_list_summary" msgid="6393929085382334341">"Бүрэн цэнэглэснээс хойших аппын ашиглалт (<xliff:g id="RELATIVE_TIME">^1</xliff:g>)"</string>
+    <string name="power_usage_list_summary" msgid="6393929085382334341">"Бүрэн цэнэглэснээс хойшхи аппын ашиглалт (<xliff:g id="RELATIVE_TIME">^1</xliff:g>)"</string>
     <string name="power_usage_list_summary_device" msgid="4461926045610455423">"Бүрэн цэнэглэснээс хойших төхөөрөмжийн ашиглалт (<xliff:g id="RELATIVE_TIME">^1</xliff:g>)"</string>
     <string name="screen_usage_summary" msgid="6687403051423153550">"Бүрэн цэнэглэснээс хойших дэлгэцийг асаалттай байлгасан хугацаа"</string>
     <string name="device_usage_list_summary" msgid="5623036661468763251">"Бүрэн цэнэглэснээс хойших төхөөрөмжийн ашиглалт"</string>
@@ -2402,10 +2401,10 @@
     <string name="credentials_reset_summary" msgid="3369361230171260282">"Бүх сертификатыг устгах"</string>
     <string name="trusted_credentials" msgid="4266945289534242402">"Итгэмжлэгдсэн жуухууд"</string>
     <string name="trusted_credentials_summary" msgid="6735221351155686632">"Итгэлтэй CA сертификатуудыг харуулах"</string>
-    <string name="user_credentials" msgid="3719013347787187083">"Хэрэглэгчийн өгөгдөл"</string>
+    <string name="user_credentials" msgid="3719013347787187083">"Хэрэглэгчийн итгэмжлэл"</string>
     <string name="user_credentials_summary" msgid="7271228342106080167">"Хадгалсан өгөгдлийг харах, өөрчлөх"</string>
     <string name="advanced_security_title" msgid="2434776238010578865">"Дэлгэрэнгүй"</string>
-    <string name="credential_storage_type" msgid="8629968543494001364">"Хадгалалтын сангийн төрөл"</string>
+    <string name="credential_storage_type" msgid="8629968543494001364">"Хадгалах сангийн төрөл"</string>
     <string name="credential_storage_type_hardware" msgid="6077193544333904427">"Техник хангамжаар дэмжигдсэн"</string>
     <string name="credential_storage_type_software" msgid="4403117271207715378">"Зөвхөн програм"</string>
     <string name="credentials_settings_not_available" msgid="7968275634486624215">"Энэ хэрэглэгчид итгэмжлэл байхгүй байна"</string>
@@ -2512,7 +2511,7 @@
     <string name="background_data_dialog_message" msgid="6981661606680941633">"Далд өгөгдлийг идэвхгүйжүүлэх нь зайны цэнэг зарцуулалтыг багасгаж дата ашиглалтыг бууруулна. Зарим апп-ууд далд өгөгдлийн холболтыг ашиглаж байж магадгүй."</string>
     <string name="sync_automatically" msgid="1682730255435062059">"Апп өгөгдлийг автоматаар синк хийх"</string>
     <string name="sync_enabled" msgid="4551148952179416813">"Синк идэвхтэй"</string>
-    <string name="sync_disabled" msgid="8511659877596511991">"Синк хийлт идэвхгүй"</string>
+    <string name="sync_disabled" msgid="8511659877596511991">"Синк хийх унтраалттай"</string>
     <string name="sync_error" msgid="5060969083117872149">"Синкийн алдаа"</string>
     <string name="last_synced" msgid="4242919465367022234">"Хамгийн сүүлд синк хийгдсэн <xliff:g id="LAST_SYNC_TIME">%1$s</xliff:g>"</string>
     <string name="sync_in_progress" msgid="5151314196536070569">"Одоо синк хийж байна…"</string>
@@ -3026,7 +3025,7 @@
     <string name="sound_settings_example_summary" msgid="2404914514266523165">"Хонх дуугаргах түвшин 80%-д"</string>
     <string name="media_volume_option_title" msgid="2811531786073003825">"Медиа дууны хэмжээ"</string>
     <string name="call_volume_option_title" msgid="1265865226974255384">"Дуудлагын дууны түвшин"</string>
-    <string name="alarm_volume_option_title" msgid="8219324421222242421">"Сэрүүлгийн дууны хэмжээ"</string>
+    <string name="alarm_volume_option_title" msgid="8219324421222242421">"Сэрүүлгийн дууны түвшин"</string>
     <string name="ring_volume_option_title" msgid="6767101703671248309">"Хонхны дууны хэмжээ"</string>
     <string name="notification_volume_option_title" msgid="6064656124416882130">"Мэдэгдлийн дууны хэмжээ"</string>
     <string name="ringtone_title" msgid="5379026328015343686">"Утасны хонхны ая"</string>
@@ -3076,7 +3075,28 @@
     <string name="zen_mode_summary_combination" msgid="8715563402849273459">"<xliff:g id="MODE">%1$s</xliff:g>: <xliff:g id="EXIT_CONDITION">%2$s</xliff:g>"</string>
     <string name="zen_mode_visual_interruptions_settings_title" msgid="6751708745442997940">"Харааны саадыг блоклох"</string>
     <string name="zen_mode_visual_signals_settings_subtitle" msgid="6308824824208120508">"Харагдаж буй дохиог зөвшөөрөх"</string>
-    <string name="zen_mode_what_to_block_title" msgid="7078190101807944693">"Харааны саадыг блоклох"</string>
+    <!-- no translation found for zen_mode_settings_category (3982039687186952865) -->
+    <skip />
+    <string name="zen_mode_restrict_notifications_title" msgid="478040192977063582">"Мэдэгдэл"</string>
+    <!-- no translation found for zen_mode_restrict_notifications_mute (8649062661635246283) -->
+    <skip />
+    <!-- no translation found for zen_mode_restrict_notifications_mute_summary (8450964969807231275) -->
+    <skip />
+    <!-- no translation found for zen_mode_restrict_notifications_mute_footer (3465600930732602159) -->
+    <skip />
+    <!-- no translation found for zen_mode_restrict_notifications_hide (9070829387109283980) -->
+    <skip />
+    <!-- no translation found for zen_mode_restrict_notifications_hide_summary (3832808022882158781) -->
+    <skip />
+    <!-- no translation found for zen_mode_restrict_notifications_hide_footer (6559283246372102465) -->
+    <skip />
+    <string name="zen_mode_restrict_notifications_custom" msgid="7498689167767941034">"Захиалгат"</string>
+    <string name="zen_mode_restrict_notifications_enable_custom" msgid="4250962169561739747">"Захиалгат тохиргоог идэвхжүүлэх"</string>
+    <string name="zen_mode_restrict_notifications_disable_custom" msgid="6676997522330453597">"Захиалгат тохиргоог устгах"</string>
+    <string name="zen_mode_restrict_notifications_summary_muted" msgid="4678779044896459009">"Харагдах болно"</string>
+    <string name="zen_mode_restrict_notifications_summary_custom" msgid="7416121534987213074">"Хэсэгчлэн нуусан"</string>
+    <string name="zen_mode_restrict_notifications_summary_hidden" msgid="7805339105802282234">"Нуусан"</string>
+    <string name="zen_mode_what_to_block_title" msgid="5480903548365697159">"Захиалгат хязгаарлалт"</string>
     <string name="zen_mode_block_effects_screen_on" msgid="4659484530849212827">"Дэлгэц асаалттай үед"</string>
     <string name="zen_mode_block_effects_screen_off" msgid="4276414460889400625">"Дэлгэц унтраалттай үед"</string>
     <string name="zen_mode_block_effect_sound" msgid="7383953383758025895">"Хонхны ая болон чичиргээний дууг хаах"</string>
@@ -3121,13 +3141,40 @@
       <item quantity="other"><xliff:g id="ON_COUNT">%d</xliff:g> дүрмийг автоматаар асааж болно</item>
       <item quantity="one">1 дүрмийг автоматаар асааж болно</item>
     </plurals>
-    <string name="zen_onboarding_ok" msgid="4332223974819182383">"Ок"</string>
+    <!-- no translation found for zen_category_behavior (2989256030084350296) -->
+    <skip />
+    <!-- no translation found for zen_category_exceptions (7601136604273265629) -->
+    <skip />
+    <!-- no translation found for zen_category_schedule (9000447592251450453) -->
+    <skip />
+    <!-- no translation found for zen_sound_title (424490228488531372) -->
+    <skip />
+    <!-- no translation found for zen_sound_footer (7621745273287208979) -->
+    <skip />
+    <!-- no translation found for zen_sound_category_title (4336596939661729188) -->
+    <skip />
+    <!-- no translation found for zen_sound_all_muted (4850363350480968114) -->
+    <skip />
+    <!-- no translation found for zen_sound_none_muted (3938508512103612527) -->
+    <skip />
+    <!-- no translation found for zen_sound_one_allowed (8447313454438932276) -->
+    <skip />
+    <!-- no translation found for zen_sound_two_allowed (980491120444358550) -->
+    <skip />
+    <!-- no translation found for zen_sound_three_allowed (3455767205934547985) -->
+    <skip />
+    <!-- no translation found for zen_msg_event_reminder_title (5137894077488924820) -->
+    <skip />
+    <!-- no translation found for zen_msg_event_reminder_footer (3242847055412790819) -->
+    <skip />
+    <string name="zen_onboarding_ok" msgid="4157146842078658361">"Шинэчлэх"</string>
+    <string name="zen_onboarding_no_update" msgid="3103752501952811308">"Бүү шинэчил"</string>
+    <string name="zen_onboarding_dnd_visual_disturbances_description" msgid="4051020254348888576">"Таны утас таныг анхаарлаа төвлөрөхөд туслахын тулд илүү их зүйл хийх боломжтой.\n\nТохиргоог дараахад шинэчилнэ үү:\n\n- Мэдэгдлийг бүрмөсөн нуух\n\n- Одтой харилцагчдын дуудлагыг зөвшөөрч дуудлага хийгчийг давтах"</string>
+    <string name="zen_onboarding_dnd_visual_disturbances_header" msgid="4243599835234481809">"Бүү саад бол горимыг шинэчлэх үү?"</string>
     <string name="zen_onboarding_settings" msgid="9046451821239946868">"Тохиргоо"</string>
     <string name="zen_onboarding_more_options" msgid="7880013502169957729">"Та үүнийг цаашид Тохиргооны хэсэгт өөрчлөх боломжтой."</string>
     <string name="zen_onboarding_screen_on_title" msgid="6058737686680609254">"Дэлгэц асаалттай үед хориглох"</string>
     <string name="zen_onboarding_screen_off_title" msgid="3153498025037206166">"Дэлгэц унтраалттай үед хориглох"</string>
-    <string name="zen_onboarding_dnd_visual_disturbances_description" msgid="1941519590822188992">"Бүү саад бол горим нь сонсохыг хүсэхгүй дууг хориглоод зогсохгүй харагдах зүйлсийг хориглох боломжтой. Энэ нь танд унтах, төвлөрөх буюу эсвэл утсандаа зарцуулах цагаа багасгахаар оролдох үед тусалж болзошгүй."</string>
-    <string name="zen_onboarding_dnd_visual_disturbances_header" msgid="1442575104084675243">"Дуу болон харагдах зүйлсийг хориглох"</string>
     <string name="zen_onboarding_screen_off_summary" msgid="5393041573999488088">"Мэдэгдэл ирэхэд дэлгэцийг асаах эсвэл сэрээх хэрэггүй"</string>
     <string name="zen_onboarding_screen_on_summary" msgid="4351138746406623307">"Утасны үндсэн үйл ажиллагаа, төлөвөөс бусад бүх мэдэгдлийг бүү харуул"</string>
     <string name="sound_work_settings" msgid="6774324553228566442">"Ажлын профайлын дуу"</string>
@@ -3154,12 +3201,12 @@
     <string name="lock_screen_notifications_title" msgid="2583595963286467672">"Түгжигдсэн дэлгэцэд"</string>
     <string name="locked_work_profile_notification_title" msgid="8327882003361551992">"Ажлын профайлыг түгжсэн үед"</string>
     <string name="lock_screen_notifications_summary_show" msgid="6407527697810672847">"Бүх мэдэгдлийн агуулгыг харуулах"</string>
-    <string name="lock_screen_notifications_summary_hide" msgid="8301305044690264958">"Мэдрэг агуулгыг нуух"</string>
+    <string name="lock_screen_notifications_summary_hide" msgid="8301305044690264958">"Эмзэг, хурц агуулгыг нуух"</string>
     <string name="lock_screen_notifications_summary_disable" msgid="859628910427886715">"Огт мэдэгдэл харуулахгүй"</string>
     <string name="lock_screen_notifications_interstitial_message" msgid="6164532459432182244">"Таны төхөөрөмж түгжээтэй үед мэдэгдлийг хэрхэн харуулах вэ?"</string>
     <string name="lock_screen_notifications_interstitial_title" msgid="1416589393106326972">"Мэдэгдэл"</string>
     <string name="lock_screen_notifications_summary_show_profile" msgid="835870815661120772">"Ажлын мэдэгдлийн бүх агуулгыг харуулах"</string>
-    <string name="lock_screen_notifications_summary_hide_profile" msgid="2005907007779384635">"Ажлын мэдрэг агуулгыг нуух"</string>
+    <string name="lock_screen_notifications_summary_hide_profile" msgid="2005907007779384635">"Ажлын эмзэг, хурц агуулгыг нуух"</string>
     <string name="lock_screen_notifications_interstitial_message_profile" msgid="8307705621027472346">"Таны төхөөрөмж түгжээтэй үед та профайлын мэдэгдлээ хэрхэн харахыг хүсэж байна вэ?"</string>
     <string name="lock_screen_notifications_interstitial_title_profile" msgid="3169806586032521333">"Профайлын мэдэгдэл"</string>
     <string name="notifications_title" msgid="8086372779371204971">"Мэдэгдэл"</string>
@@ -3257,7 +3304,7 @@
     <string name="notification_channel_sound_title" msgid="3899212238513507941">"Ая"</string>
     <string name="zen_mode_rule_delete_button" msgid="903658142711011617">"Устгах"</string>
     <string name="zen_mode_rule_rename_button" msgid="4642843370946599164">"Нэр өөрчлөх"</string>
-    <string name="zen_mode_rule_name" msgid="5149068059383837549">"Горимын нэр"</string>
+    <string name="zen_mode_rule_name" msgid="5149068059383837549">"Дүрмийн нэр"</string>
     <string name="zen_mode_rule_name_hint" msgid="3781174510556433384">"Дүрмийн нэрийг оруулах"</string>
     <string name="zen_mode_rule_name_warning" msgid="4517805381294494314">"Дүрмийн нэрийг аль хэдийн ашигласан байна"</string>
     <string name="zen_mode_add_rule" msgid="9100929184624317193">"Горим нэмэх"</string>
@@ -3296,21 +3343,39 @@
     <string name="summary_range_symbol_combination" msgid="5695218513421897027">"<xliff:g id="START">%1$s</xliff:g> - <xliff:g id="END">%2$s</xliff:g>"</string>
     <string name="summary_range_verbal_combination" msgid="8467306662961568656">"<xliff:g id="START">%1$s</xliff:g> <xliff:g id="END">%2$s</xliff:g>"</string>
     <string name="zen_mode_calls" msgid="7051492091133751208">"Дуудлага"</string>
+    <!-- no translation found for zen_mode_calls_footer (3618700268458237781) -->
+    <skip />
     <string name="zen_mode_messages" msgid="5886440273537510894">"Зурвасууд"</string>
-    <string name="zen_mode_all_messages" msgid="6449223378976743208">"Бүх зурвас"</string>
-    <string name="zen_mode_selected_messages" msgid="8245990149599142281">"Сонгосон зурвасууд"</string>
+    <!-- no translation found for zen_mode_all_messages (8257021584561639816) -->
+    <skip />
+    <!-- no translation found for zen_mode_selected_messages (1047355526202106114) -->
+    <skip />
     <string name="zen_mode_from_anyone" msgid="2638322015361252161">"Хүн бүрээс"</string>
     <string name="zen_mode_from_contacts" msgid="2232335406106711637">"Зөвхөн харилцагчаас"</string>
     <string name="zen_mode_from_starred" msgid="2678345811950997027">"Зөвхөн одтой харилцагчаас"</string>
+    <!-- no translation found for zen_calls_summary_starred_repeat (4046151920710059778) -->
+    <skip />
+    <!-- no translation found for zen_calls_summary_contacts_repeat (1528716671301999084) -->
+    <skip />
+    <!-- no translation found for zen_calls_summary_repeat_only (7105261473107715445) -->
+    <skip />
     <string name="zen_mode_from_none" msgid="8219706639954614136">"Байхгүй"</string>
     <string name="zen_mode_alarms" msgid="2165302777886552926">"Сэрүүлэг"</string>
     <string name="zen_mode_media" msgid="8808264142134422380">"Медиа"</string>
     <string name="zen_mode_system" msgid="2541380718411593581">"Хүрэлтийн ая"</string>
     <string name="zen_mode_reminders" msgid="5458502056440485730">"Сануулагч"</string>
     <string name="zen_mode_events" msgid="7914446030988618264">"Үйл явдал"</string>
-    <string name="zen_mode_all_callers" msgid="584186167367236922">"Бүх дуудлага"</string>
-    <string name="zen_mode_selected_callers" msgid="3127598874060615742">"Сонгосон дуудлага хийгч"</string>
+    <!-- no translation found for zen_mode_all_callers (2378065871253871057) -->
+    <skip />
+    <!-- no translation found for zen_mode_contacts_callers (5569804103920394175) -->
+    <skip />
+    <!-- no translation found for zen_mode_starred_callers (1023167821338514140) -->
+    <skip />
     <string name="zen_mode_repeat_callers" msgid="5019521886428322131">"Давтан дуудлага хийгч"</string>
+    <!-- no translation found for zen_mode_calls_summary_one (2867689575419791866) -->
+    <skip />
+    <!-- no translation found for zen_mode_calls_summary_two (6592821501321201329) -->
+    <skip />
     <string name="zen_mode_repeat_callers_summary" msgid="239685342222975733">"Хэрэв нэг хүн <xliff:g id="MINUTES">%d</xliff:g> минутын дотор хоёр дахь удаагаа дуудлага хийвэл"</string>
     <string name="zen_mode_behavior_summary_custom" msgid="168127313238020146">"Тусгай"</string>
     <string name="zen_mode_when" msgid="2767193283311106373">"Автоматаар асаах"</string>
@@ -3342,7 +3407,7 @@
     <string name="restr_pin_enter_admin_pin" msgid="1085834515677448072">"Админы ПИН-г оруулах"</string>
     <string name="switch_on_text" msgid="1124106706920572386">"Идэвхтэй"</string>
     <string name="switch_off_text" msgid="1139356348100829659">"Идэвхгүй"</string>
-    <string name="screen_pinning_title" msgid="2292573232264116542">"Дэлгэц хадгалах"</string>
+    <string name="screen_pinning_title" msgid="2292573232264116542">"Дэлгэц тогтоох"</string>
     <string name="screen_pinning_description" msgid="1110847562111827766">"Энэ тохиргоо асаалттай үед та одоогийн дэлгэцийг тогтоохоо болих хүртлээ үргэлжлүүлэн харуулахын тулд дэлгэц тогтоох онцлогийг ашиглах боломжтой.\n\nДэлгэц тогтоох онцлогийг ашиглахын тулд:\n\n1. Дэлгэц тогтоох онцлог асаалттай эсэхийг шалгах\n\n2. Тоймыг нээх\n\n3. Дэлгэцийн дээд хэсгийн аппын дүрс тэмдгийг товшиж Тогтоох гэснийг товшино уу"</string>
     <string name="screen_pinning_unlock_pattern" msgid="8282268570060313339">"Тогтоосныг суллахаас өмнө түгжээ тайлах хээ асуух"</string>
     <string name="screen_pinning_unlock_pin" msgid="8757588350454795286">"Тогтоосныг суллахаас өмнө PIN асуух"</string>
@@ -3428,7 +3493,7 @@
     <string name="filter_notif_low_channels" msgid="4128487387390004604">"Категори: Бага ач холбогдолтой"</string>
     <string name="filter_notif_blocked_channels" msgid="5880190882221644289">"Категори: Унтраасан"</string>
     <string name="filter_notif_dnd_channels" msgid="1817930848881696728">"Категори: Бүү саад бол тохиргоог идэвхгүй болгодог"</string>
-    <string name="advanced_apps" msgid="4812975097124803873">"Боловсронгуй"</string>
+    <string name="advanced_apps" msgid="4812975097124803873">"Дэлгэрэнгүй"</string>
     <string name="configure_apps" msgid="6685680790825882528">"Апп тохируулах"</string>
     <string name="unknown_app" msgid="5275921288718717656">"Үл мэдэгдэх апп"</string>
     <string name="app_permissions" msgid="4148222031991883874">"Апп зөвшөөрөл"</string>
@@ -3656,7 +3721,7 @@
     <string name="backup_disabled" msgid="485189128759595412">"Нөөцлөлт идэвхгүй болсон"</string>
     <string name="android_version_summary" msgid="2935995161657697278">"Андройдын <xliff:g id="VERSION">%1$s</xliff:g> хувилбарт шинэчилсэн"</string>
     <string name="android_version_pending_update_summary" msgid="487831391976523090">"Шинэчлэх боломжтой"</string>
-    <string name="disabled_by_policy_title" msgid="8032916235573765969">"Энэ тохиргоог өөрчлөх боломжгүй"</string>
+    <string name="disabled_by_policy_title" msgid="627023216027648534">"Үйлдлийг зөвшөөрөөгүй"</string>
     <string name="disabled_by_policy_title_adjust_volume" msgid="3208724801293696486">"Дууны түвшнийг өөрчлөх боломжгүй"</string>
     <string name="disabled_by_policy_title_outgoing_calls" msgid="7919816644946067058">"Дуудлага хийх боломжгүй"</string>
     <string name="disabled_by_policy_title_sms" msgid="5733307423899610340">"SMS илгээх боломжгүй"</string>
@@ -3846,7 +3911,8 @@
     <string name="notification_suggestion_title" msgid="387052719462473500">"Түгжигдсэн дэлгэцийн мэдээллийг хянах"</string>
     <string name="notification_suggestion_summary" msgid="8521159741445416875">"Харуулах эсвэл нуух мэдэгдлийн агуулга"</string>
     <string name="page_tab_title_summary" msgid="4070309266374993258">"Бүгд"</string>
-    <string name="page_tab_title_support" msgid="8483187649355540109">"Дэмжлэг &amp; зөвлөгөө"</string>
+    <!-- no translation found for page_tab_title_support (4407600495101788249) -->
+    <skip />
     <string name="developer_smallest_width" msgid="7516950434587313360">"Хамгийн бага өргөн"</string>
     <string name="premium_sms_none" msgid="8268105565738040566">"Суулгасан апп гуравдагч талын SMS хандалтыг шаардаагүй байна"</string>
     <string name="premium_sms_warning" msgid="9086859595338944882">"Гуравдагч талын SMS нь таны оператор компанийн төлбөр дээр нэмэгдэж болно. Хэрэв та энэ апп-д зөвшөөрлийг идэвхжүүлбэл энэ апп-р гуравдагч тал SMS илгээх боломжтой болно."</string>

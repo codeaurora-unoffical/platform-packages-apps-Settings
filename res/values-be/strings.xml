@@ -296,8 +296,7 @@
     <string name="forget" msgid="1400428660472591263">"Iгнараваць"</string>
     <string name="save" msgid="879993180139353333">"Захаваць"</string>
     <string name="done" msgid="6942539184162713160">"Гатова"</string>
-    <!-- no translation found for apply (1577045208487259229) -->
-    <skip />
+    <string name="apply" msgid="1577045208487259229">"Ужыць"</string>
     <string name="settings_label" msgid="1626402585530130914">"Налады"</string>
     <string name="settings_label_launcher" msgid="8344735489639482340">"Налады"</string>
     <string name="settings_shortcut" msgid="3936651951364030415">"Ярлык налад"</string>
@@ -970,7 +969,7 @@
     <string name="wifi_hotspot_name_summary_connecting" msgid="3378299995508671967">"Ідзе ўключэнне <xliff:g id="WIFI_HOTSPOT_NAME">%1$s</xliff:g>…"</string>
     <string name="wifi_hotspot_name_summary_connected" msgid="3888672084861445362">"Іншыя прылады могуць падключацца да <xliff:g id="WIFI_HOTSPOT_NAME">%1$s</xliff:g>"</string>
     <string name="wifi_hotspot_password_title" msgid="8676859981917573801">"Пароль хот-спота"</string>
-    <string name="wifi_hotspot_ap_band_title" msgid="1165801173359290681">"Дыяпазон для пунктаў доступу"</string>
+    <string name="wifi_hotspot_ap_band_title" msgid="1165801173359290681">"Дыяпазон частот Wi-Fi"</string>
     <string name="wifi_hotspot_footer_info_regular" msgid="4789553667374849566">"Выкарыстоўвайце хот-спот для стварэння сеткі Wi‑Fi для іншых прылад. Хот-спот дае доступ да інтэрнэту праз падключэнне да мабільнай перадачы даных. Мабільны аператар можа спаганяць дадатковую плату."</string>
     <string name="wifi_hotspot_footer_info_local_only" msgid="857988412470694109">"Праграмы могуць ствараць хот-спот для абагульвання змесціва з прыладамі паблізу."</string>
     <string name="wifi_hotspot_auto_off_title" msgid="1590313508558948079">"Аўтаматычна выключыць хот-спот"</string>
@@ -1512,7 +1511,7 @@
     <string name="tether_settings_title_wifi" msgid="3277144155960302049">"Партатыўная кропка доступу"</string>
     <string name="tether_settings_title_bluetooth" msgid="355855408317564420">"Bluetooth-мадэм"</string>
     <string name="tether_settings_title_usb_bluetooth" msgid="5355828977109785001">"Мадэм"</string>
-    <string name="tether_settings_title_all" msgid="3058586928118801157">"Кропка доступу і мадэм"</string>
+    <string name="tether_settings_title_all" msgid="3058586928118801157">"Хот-спот і мадэм"</string>
     <string name="tether_settings_summary_hotspot_on_tether_on" msgid="930464462687425777">"Хот-спот і мадэм уключаны"</string>
     <string name="tether_settings_summary_hotspot_on_tether_off" msgid="3473671453891735907">"Хот-спот уключаны"</string>
     <string name="tether_settings_summary_hotspot_off_tether_on" msgid="1618256180720077354">"Мадэм"</string>
@@ -1734,7 +1733,7 @@
     <string name="default_emergency_app" msgid="1951760659640369980">"Праграма для экстранных сітуацый"</string>
     <string name="reset_app_preferences" msgid="1321050641018356925">"Скінуць налады праграм"</string>
     <string name="reset_app_preferences_title" msgid="6093179367325336662">"Скінуць налады праграм?"</string>
-    <string name="reset_app_preferences_desc" msgid="4822447731869201512">"Гэта скіне ўсе налады для:\n\n"<li>"адключаных праграм"</li>\n<li>"адключаных апавяшчэнняў з праграм"</li>\n<li>"перадвызначаных праграм"</li>\n<li>"абмежаванняў на перадачу даных у фонавым рэжыме"</li>\n<li>"любыя абмежаванні правоў доступу"</li>\n\n" Даныя праграм выдалены не будуць."</string>
+    <string name="reset_app_preferences_desc" msgid="4822447731869201512">"Будуць скінуты наступныя налады:\n\n"<li>"Адключаныя праграмы"</li>\n<li>"Адключаныя апавяшчэнні з праграм"</li>\n<li>"Перадвызначаныя праграмы"</li>\n<li>"Абмежаванні на перадачу даных у фонавым рэжыме"</li>\n<li>"Любыя абмежаванні правоў доступу"</li>\n\n" Даныя праграм выдалены не будуць."</string>
     <string name="reset_app_preferences_button" msgid="2559089511841281242">"Скінуць праграмы"</string>
     <string name="manage_space_text" msgid="8852711522447794676">"Кіраванне вольным месцам"</string>
     <string name="filter" msgid="2018011724373033887">"Фільтр"</string>
@@ -2452,7 +2451,7 @@
     <string name="gadget_brightness_state_half" msgid="3696671957608774204">"палова"</string>
     <string name="gadget_brightness_state_off" msgid="946382262872753084">"выкл."</string>
     <string name="vpn_settings_title" msgid="5662579425832406705">"VPN"</string>
-    <string name="credentials_title" msgid="4446234003860769883">"Сховішча ўліковых дадзеных"</string>
+    <string name="credentials_title" msgid="4446234003860769883">"Сховішча ўліковых даных"</string>
     <string name="credentials_install" product="nosdcard" msgid="466093273825150847">"Усталяваць са сховішча"</string>
     <string name="credentials_install" product="default" msgid="953914549998062317">"Усталёўка з SD-карты"</string>
     <string name="credentials_install_summary" product="nosdcard" msgid="4220422806818210676">"Усталяваць сертыфікаты са сховішча"</string>
@@ -2724,7 +2723,7 @@
     <string name="vpn_not_used" msgid="9094191054524660891">"(Не выкарыстоўваецца)"</string>
     <string name="vpn_no_ca_cert" msgid="8776029412793353361">"(не правяраць сервер)"</string>
     <string name="vpn_no_server_cert" msgid="2167487440231913330">"(атрыманыя з сервера)"</string>
-    <string name="vpn_always_on_invalid_reason_type" msgid="7574518311224455825">"VPN гэтага тыпу не можа заўсёды заставацца ўключанай"</string>
+    <string name="vpn_always_on_invalid_reason_type" msgid="7574518311224455825">"Такая сетка VPN не можа заўсёды заставацца ўключанай"</string>
     <string name="vpn_always_on_invalid_reason_server" msgid="477304620899799383">"Для заўсёды ўключанай VPN падыходзяць толькі адрасы сервераў, якія складаюцца з лічбаў"</string>
     <string name="vpn_always_on_invalid_reason_no_dns" msgid="2226648961940273294">"Для заўсёды ўключанай VPN павінен быць пазначаны DNS-сервер"</string>
     <string name="vpn_always_on_invalid_reason_dns" msgid="3551394495620249972">"Для заўсёды ўключанай VPN адрасы DNS-сервераў павінны складацца з лічбаў"</string>
@@ -2755,7 +2754,7 @@
     <string name="vpn_menu_edit" msgid="408275284159243490">"Рэдагаваць профiль"</string>
     <string name="vpn_menu_delete" msgid="8098021690546891414">"Выдаліць профіль"</string>
     <string name="vpn_menu_lockdown" msgid="7863024538064268139">"Заўсёды ўключаны VPN"</string>
-    <string name="vpn_no_vpns_added" msgid="5002741367858707244">"Няма дададзеных VPN"</string>
+    <string name="vpn_no_vpns_added" msgid="5002741367858707244">"Сеткі VPN не дададзены"</string>
     <string name="vpn_always_on_summary" msgid="2821344524094363617">"Заўсёды захоўваць падключэнне да VPN"</string>
     <string name="vpn_always_on_summary_not_supported" msgid="592304911378771510">"Не падтрымліваецца гэтай праграмай"</string>
     <string name="vpn_always_on_summary_active" msgid="8800736191241875669">"Заўсёды ўключана і актыўная"</string>
@@ -3147,7 +3146,28 @@
     <string name="zen_mode_summary_combination" msgid="8715563402849273459">"<xliff:g id="MODE">%1$s</xliff:g>: <xliff:g id="EXIT_CONDITION">%2$s</xliff:g>"</string>
     <string name="zen_mode_visual_interruptions_settings_title" msgid="6751708745442997940">"Блакіроўка візуальных апавяшчэнняў"</string>
     <string name="zen_mode_visual_signals_settings_subtitle" msgid="6308824824208120508">"Дазволіць візуальныя сігналы"</string>
-    <string name="zen_mode_what_to_block_title" msgid="7078190101807944693">"Блакіроўка візуальных апавяшчэнняў"</string>
+    <!-- no translation found for zen_mode_settings_category (3982039687186952865) -->
+    <skip />
+    <string name="zen_mode_restrict_notifications_title" msgid="478040192977063582">"Апавяшчэнні"</string>
+    <!-- no translation found for zen_mode_restrict_notifications_mute (8649062661635246283) -->
+    <skip />
+    <!-- no translation found for zen_mode_restrict_notifications_mute_summary (8450964969807231275) -->
+    <skip />
+    <!-- no translation found for zen_mode_restrict_notifications_mute_footer (3465600930732602159) -->
+    <skip />
+    <!-- no translation found for zen_mode_restrict_notifications_hide (9070829387109283980) -->
+    <skip />
+    <!-- no translation found for zen_mode_restrict_notifications_hide_summary (3832808022882158781) -->
+    <skip />
+    <!-- no translation found for zen_mode_restrict_notifications_hide_footer (6559283246372102465) -->
+    <skip />
+    <string name="zen_mode_restrict_notifications_custom" msgid="7498689167767941034">"Карыстальніцкія налады"</string>
+    <string name="zen_mode_restrict_notifications_enable_custom" msgid="4250962169561739747">"Уключыць карыстальніцкую наладу"</string>
+    <string name="zen_mode_restrict_notifications_disable_custom" msgid="6676997522330453597">"Выдаліць карыстальніцкую наладу"</string>
+    <string name="zen_mode_restrict_notifications_summary_muted" msgid="4678779044896459009">"Паказваць"</string>
+    <string name="zen_mode_restrict_notifications_summary_custom" msgid="7416121534987213074">"Часткова схаваць"</string>
+    <string name="zen_mode_restrict_notifications_summary_hidden" msgid="7805339105802282234">"Схаваць"</string>
+    <string name="zen_mode_what_to_block_title" msgid="5480903548365697159">"Карыстальніцкія абмежаванні"</string>
     <string name="zen_mode_block_effects_screen_on" msgid="4659484530849212827">"Калі экран уключаны"</string>
     <string name="zen_mode_block_effects_screen_off" msgid="4276414460889400625">"Калі экран выключаны"</string>
     <string name="zen_mode_block_effect_sound" msgid="7383953383758025895">"Адключыць гук і вібрацыю"</string>
@@ -3196,13 +3216,40 @@
       <item quantity="many">Аўтаматычна ўключаць могуць <xliff:g id="ON_COUNT">%d</xliff:g> правіл</item>
       <item quantity="other">Аўтаматычна ўключаць могуць <xliff:g id="ON_COUNT">%d</xliff:g> правіла</item>
     </plurals>
-    <string name="zen_onboarding_ok" msgid="4332223974819182383">"OK"</string>
+    <!-- no translation found for zen_category_behavior (2989256030084350296) -->
+    <skip />
+    <!-- no translation found for zen_category_exceptions (7601136604273265629) -->
+    <skip />
+    <!-- no translation found for zen_category_schedule (9000447592251450453) -->
+    <skip />
+    <!-- no translation found for zen_sound_title (424490228488531372) -->
+    <skip />
+    <!-- no translation found for zen_sound_footer (7621745273287208979) -->
+    <skip />
+    <!-- no translation found for zen_sound_category_title (4336596939661729188) -->
+    <skip />
+    <!-- no translation found for zen_sound_all_muted (4850363350480968114) -->
+    <skip />
+    <!-- no translation found for zen_sound_none_muted (3938508512103612527) -->
+    <skip />
+    <!-- no translation found for zen_sound_one_allowed (8447313454438932276) -->
+    <skip />
+    <!-- no translation found for zen_sound_two_allowed (980491120444358550) -->
+    <skip />
+    <!-- no translation found for zen_sound_three_allowed (3455767205934547985) -->
+    <skip />
+    <!-- no translation found for zen_msg_event_reminder_title (5137894077488924820) -->
+    <skip />
+    <!-- no translation found for zen_msg_event_reminder_footer (3242847055412790819) -->
+    <skip />
+    <string name="zen_onboarding_ok" msgid="4157146842078658361">"Абнавіць"</string>
+    <string name="zen_onboarding_no_update" msgid="3103752501952811308">"Не абнаўляць"</string>
+    <string name="zen_onboarding_dnd_visual_disturbances_description" msgid="4051020254348888576">"Ваш тэлефон можа дапамагчы вам сканцэнтравацца.\n\nЗмяніце налады наступным чынам:\n\n- Схаваць усе апавяшчэнні\n\n- Дазволіць выклікі з пазначаных кантактаў і абанентаў, якія выклікаюць паўторна"</string>
+    <string name="zen_onboarding_dnd_visual_disturbances_header" msgid="4243599835234481809">"Абнавіць рэжым \"Не турбаваць\"?"</string>
     <string name="zen_onboarding_settings" msgid="9046451821239946868">"Налады"</string>
     <string name="zen_onboarding_more_options" msgid="7880013502169957729">"Наладзіць можна і пазней у раздзеле \"Налады\"."</string>
     <string name="zen_onboarding_screen_on_title" msgid="6058737686680609254">"Блакіраваць, калі экран уключаны"</string>
     <string name="zen_onboarding_screen_off_title" msgid="3153498025037206166">"Блакіраваць, калі экран выключаны"</string>
-    <string name="zen_onboarding_dnd_visual_disturbances_description" msgid="1941519590822188992">"У рэжыме \"Не турбаваць\" блакіруюцца не толькі непажаданыя гукі, але і візуальныя элементы. Гэта асабліва карысна, калі карыстальнік спрабуе заснуць, хоча скараціць час карыстання тэлефонам ці яму нельга страчваць увагу."</string>
-    <string name="zen_onboarding_dnd_visual_disturbances_header" msgid="1442575104084675243">"Блакіраваць гукі і візуальныя элементы"</string>
     <string name="zen_onboarding_screen_off_summary" msgid="5393041573999488088">"Не згортваць і не ўключаць экран для апавяшчэнняў"</string>
     <string name="zen_onboarding_screen_on_summary" msgid="4351138746406623307">"Паказваць толькі апавяшчэнні пра базавыя дзеянні і статус тэлефона"</string>
     <string name="sound_work_settings" msgid="6774324553228566442">"Гукі працоўнага профілю"</string>
@@ -3381,21 +3428,39 @@
     <string name="summary_range_symbol_combination" msgid="5695218513421897027">"<xliff:g id="START">%1$s</xliff:g> – <xliff:g id="END">%2$s</xliff:g>"</string>
     <string name="summary_range_verbal_combination" msgid="8467306662961568656">"<xliff:g id="START">%1$s</xliff:g> – <xliff:g id="END">%2$s</xliff:g>"</string>
     <string name="zen_mode_calls" msgid="7051492091133751208">"Выклікі"</string>
+    <!-- no translation found for zen_mode_calls_footer (3618700268458237781) -->
+    <skip />
     <string name="zen_mode_messages" msgid="5886440273537510894">"Паведамленні"</string>
-    <string name="zen_mode_all_messages" msgid="6449223378976743208">"Усе паведамленні"</string>
-    <string name="zen_mode_selected_messages" msgid="8245990149599142281">"Выбраныя паведамленні"</string>
+    <!-- no translation found for zen_mode_all_messages (8257021584561639816) -->
+    <skip />
+    <!-- no translation found for zen_mode_selected_messages (1047355526202106114) -->
+    <skip />
     <string name="zen_mode_from_anyone" msgid="2638322015361252161">"Ад усіх"</string>
     <string name="zen_mode_from_contacts" msgid="2232335406106711637">"Толькі ад кантактаў"</string>
     <string name="zen_mode_from_starred" msgid="2678345811950997027">"Толькі ад кантактаў, пазначаных зоркай"</string>
+    <!-- no translation found for zen_calls_summary_starred_repeat (4046151920710059778) -->
+    <skip />
+    <!-- no translation found for zen_calls_summary_contacts_repeat (1528716671301999084) -->
+    <skip />
+    <!-- no translation found for zen_calls_summary_repeat_only (7105261473107715445) -->
+    <skip />
     <string name="zen_mode_from_none" msgid="8219706639954614136">"Ні ад каго"</string>
     <string name="zen_mode_alarms" msgid="2165302777886552926">"Будзільнікі"</string>
     <string name="zen_mode_media" msgid="8808264142134422380">"Медыя"</string>
     <string name="zen_mode_system" msgid="2541380718411593581">"Гукі пры дотыку"</string>
     <string name="zen_mode_reminders" msgid="5458502056440485730">"Напаміны"</string>
     <string name="zen_mode_events" msgid="7914446030988618264">"Падзеі"</string>
-    <string name="zen_mode_all_callers" msgid="584186167367236922">"Усе абаненты"</string>
-    <string name="zen_mode_selected_callers" msgid="3127598874060615742">"Выбраныя выклікі"</string>
+    <!-- no translation found for zen_mode_all_callers (2378065871253871057) -->
+    <skip />
+    <!-- no translation found for zen_mode_contacts_callers (5569804103920394175) -->
+    <skip />
+    <!-- no translation found for zen_mode_starred_callers (1023167821338514140) -->
+    <skip />
     <string name="zen_mode_repeat_callers" msgid="5019521886428322131">"Паўторныя выклікі"</string>
+    <!-- no translation found for zen_mode_calls_summary_one (2867689575419791866) -->
+    <skip />
+    <!-- no translation found for zen_mode_calls_summary_two (6592821501321201329) -->
+    <skip />
     <string name="zen_mode_repeat_callers_summary" msgid="239685342222975733">"Калі адзін і той жа чалавек тэлефануе другі раз за наступную колькасць хвілін: <xliff:g id="MINUTES">%d</xliff:g>"</string>
     <string name="zen_mode_behavior_summary_custom" msgid="168127313238020146">"Карыстальніцкія"</string>
     <string name="zen_mode_when" msgid="2767193283311106373">"Уключыць аўтаматычна"</string>
@@ -3740,7 +3805,7 @@
     <string name="screen_zoom_conversation_timestamp_3" msgid="3785674344762707688">"Аўторак, 18:02"</string>
     <string name="screen_zoom_conversation_timestamp_4" msgid="2511469395448561259">"Аўторак, 18:03"</string>
     <string name="disconnected" msgid="4836600637485526329">"Падключэння няма"</string>
-    <string name="data_usage_summary_format" msgid="7507047900192160585">"<xliff:g id="AMOUNT">%1$s</xliff:g> трафіку выкарыстана"</string>
+    <string name="data_usage_summary_format" msgid="7507047900192160585">"<xliff:g id="AMOUNT">%1$s</xliff:g> трафіка выкарыстана"</string>
     <string name="data_usage_wifi_format" msgid="5417296451392612860">"Wi-Fi выкарыстоўвае <xliff:g id="AMOUNT">^1</xliff:g>"</string>
     <plurals name="notification_summary" formatted="false" msgid="3941492005316143599">
       <item quantity="one">Выключаны для <xliff:g id="COUNT">%d</xliff:g> праграмы</item>
@@ -3764,7 +3829,7 @@
     <string name="backup_disabled" msgid="485189128759595412">"Рэзервовае капіраванне адключана"</string>
     <string name="android_version_summary" msgid="2935995161657697278">"Абноўлена да версіі Android <xliff:g id="VERSION">%1$s</xliff:g>"</string>
     <string name="android_version_pending_update_summary" msgid="487831391976523090">"Ёсць абнаўленне"</string>
-    <string name="disabled_by_policy_title" msgid="8032916235573765969">"Не ўдалося змяніць наладу"</string>
+    <string name="disabled_by_policy_title" msgid="627023216027648534">"Дзеянне не дапускаецца"</string>
     <string name="disabled_by_policy_title_adjust_volume" msgid="3208724801293696486">"Не ўдалося змяніць гучнасць"</string>
     <string name="disabled_by_policy_title_outgoing_calls" msgid="7919816644946067058">"Выклікі забаронены"</string>
     <string name="disabled_by_policy_title_sms" msgid="5733307423899610340">"Адпраўка SMS забаронена"</string>
@@ -3868,10 +3933,10 @@
     <string name="configure" msgid="1029654422228677273">"Наладзіць"</string>
     <string name="data_usage_other_apps" msgid="3272872663517382050">"Іншыя праграмы, уключаныя ў выкарыстанне даных"</string>
     <plurals name="data_saver_unrestricted_summary" formatted="false" msgid="2635267833484232703">
-      <item quantity="one"><xliff:g id="COUNT">%1$d</xliff:g> праграма можа выкарыстоўваць трафік неабмежавана, калі ўключана Эканомія трафіку</item>
-      <item quantity="few"><xliff:g id="COUNT">%1$d</xliff:g> праграмы могуць выкарыстоўваць трафік неабмежавана, калі ўключана Эканомія трафіку</item>
-      <item quantity="many"><xliff:g id="COUNT">%1$d</xliff:g> праграм могуць выкарыстоўваць трафік неабмежавана, калі ўключана Эканомія трафіку</item>
-      <item quantity="other"><xliff:g id="COUNT">%1$d</xliff:g> праграмы могуць выкарыстоўваць трафік неабмежавана, калі ўключана Эканомія трафіку</item>
+      <item quantity="one"><xliff:g id="COUNT">%1$d</xliff:g> праграма можа выкарыстоўваць трафік неабмежавана, калі ўключана Эканомія трафіка</item>
+      <item quantity="few"><xliff:g id="COUNT">%1$d</xliff:g> праграмы могуць выкарыстоўваць трафік неабмежавана, калі ўключана Эканомія трафіка</item>
+      <item quantity="many"><xliff:g id="COUNT">%1$d</xliff:g> праграм могуць выкарыстоўваць трафік неабмежавана, калі ўключана Эканомія трафіка</item>
+      <item quantity="other"><xliff:g id="COUNT">%1$d</xliff:g> праграмы могуць выкарыстоўваць трафік неабмежавана, калі ўключана Эканомія трафіка</item>
     </plurals>
     <string name="data_usage_title" msgid="3659356290392241789">"Асноўныя даныя"</string>
     <string name="data_usage_wifi_title" msgid="7063659423081820720">"Трафік Wi‑Fi"</string>
@@ -3966,7 +4031,8 @@
     <string name="notification_suggestion_title" msgid="387052719462473500">"Паказваць кантрольную інфармацыю на экране блакiроўцы"</string>
     <string name="notification_suggestion_summary" msgid="8521159741445416875">"Паказваць ці хаваць змесціва апавяшчэнняў"</string>
     <string name="page_tab_title_summary" msgid="4070309266374993258">"Усе"</string>
-    <string name="page_tab_title_support" msgid="8483187649355540109">"Падтрымка і парады"</string>
+    <!-- no translation found for page_tab_title_support (4407600495101788249) -->
+    <skip />
     <string name="developer_smallest_width" msgid="7516950434587313360">"Найменшая шырыня"</string>
     <string name="premium_sms_none" msgid="8268105565738040566">"Няма праграм з доступам да платных SMS"</string>
     <string name="premium_sms_warning" msgid="9086859595338944882">"За прэміум SMS-доступ з вас можа спаганяцца аплата, гэта можа павялічыць вашыя рахункі за паслугі аператара. Калі вы ўключыце дазвол для праграмы, вы будзеце мець магчымасць адпраўляць прэміум SMS з гэтай праграмы."</string>

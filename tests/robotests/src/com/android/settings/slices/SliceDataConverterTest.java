@@ -33,7 +33,7 @@ import android.text.TextUtils;
 import com.android.settings.R;
 import com.android.settings.accessibility.AccessibilitySettings;
 import com.android.settings.accessibility.AccessibilitySlicePreferenceController;
-import com.android.settings.search.FakeIndexProvider;
+import com.android.settings.testutils.FakeIndexProvider;
 import com.android.settings.search.SearchFeatureProvider;
 import com.android.settings.search.SearchFeatureProviderImpl;
 import com.android.settings.testutils.FakeFeatureFactory;
@@ -56,7 +56,6 @@ public class SliceDataConverterTest {
     private static final String FAKE_TITLE = "title";
     private static final String FAKE_SUMMARY = "summary";
     private static final String FAKE_SCREEN_TITLE = "screen_title";
-    private static final String FAKE_KEYWORDS = "a, b, c";
     private static final String FAKE_FRAGMENT_CLASSNAME = FakeIndexProvider.class.getName();
     private static final String FAKE_CONTROLLER_NAME = FakePreferenceController.class.getName();
     private static final String ACCESSIBILITY_FRAGMENT = AccessibilitySettings.class.getName();
@@ -118,7 +117,7 @@ public class SliceDataConverterTest {
         assertThat(fakeSlice.getTitle()).isEqualTo(FAKE_TITLE);
         assertThat(fakeSlice.getSummary()).isEqualTo(FAKE_SUMMARY);
         assertThat(fakeSlice.getScreenTitle()).isEqualTo(FAKE_SCREEN_TITLE);
-        assertThat(fakeSlice.getKeywords()).isEqualTo(FAKE_KEYWORDS);
+        assertThat(fakeSlice.getKeywords()).isNull();
         assertThat(fakeSlice.getIconResource()).isNotNull();
         assertThat(fakeSlice.getUri()).isNull();
         assertThat(fakeSlice.getFragmentClassName()).isEqualTo(FAKE_FRAGMENT_CLASSNAME);

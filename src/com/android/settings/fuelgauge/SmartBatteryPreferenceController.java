@@ -45,22 +45,22 @@ public class SmartBatteryPreferenceController extends BasePreferenceController i
     public int getAvailabilityStatus() {
         return mPowerUsageFeatureProvider.isSmartBatterySupported()
                 ? AVAILABLE
-                : DISABLED_UNSUPPORTED;
+                : UNSUPPORTED_ON_DEVICE;
     }
 
     @Override
     public void updateState(Preference preference) {
         super.updateState(preference);
         final boolean smartBatteryOn = Settings.Global.getInt(mContext.getContentResolver(),
-                Settings.Global.APP_STANDBY_ENABLED, ON) == ON;
+                Settings.Global.ADAPTIVE_BATTERY_MANAGEMENT_ENABLED, ON) == ON;
         ((SwitchPreference) preference).setChecked(smartBatteryOn);
     }
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         final boolean smartBatteryOn = (Boolean) newValue;
-        Settings.Global.putInt(mContext.getContentResolver(), Settings.Global.APP_STANDBY_ENABLED,
-                smartBatteryOn ? ON : OFF);
+        Settings.Global.putInt(mContext.getContentResolver(),
+                Settings.Global.ADAPTIVE_BATTERY_MANAGEMENT_ENABLED, smartBatteryOn ? ON : OFF);
         return true;
     }
 }

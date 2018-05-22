@@ -181,7 +181,7 @@
     <string name="connected_device_connected_title" msgid="5871712271201945606">"Текущие подключения"</string>
     <string name="connected_device_saved_title" msgid="688364359746674536">"Сохраненные устройства"</string>
     <string name="connected_device_add_device_title" msgid="7803521577708810621">"Добавить устройство"</string>
-    <string name="connected_device_add_device_summary" msgid="4041865900298680338">"Будет включен Bluetooth."</string>
+    <string name="connected_device_add_device_summary" msgid="4041865900298680338">"Будет включен Bluetooth"</string>
     <string name="connected_device_connections_title" msgid="5988939345181466770">"Настройки подключения"</string>
     <string name="connected_device_previously_connected_title" msgid="491765792822244604">"Ранее подключенные устройства"</string>
     <string name="date_and_time" msgid="9062980487860757694">"Дата и время"</string>
@@ -296,8 +296,7 @@
     <string name="forget" msgid="1400428660472591263">"Удалить"</string>
     <string name="save" msgid="879993180139353333">"Сохранить"</string>
     <string name="done" msgid="6942539184162713160">"Готово"</string>
-    <!-- no translation found for apply (1577045208487259229) -->
-    <skip />
+    <string name="apply" msgid="1577045208487259229">"Применить"</string>
     <string name="settings_label" msgid="1626402585530130914">"Настройки"</string>
     <string name="settings_label_launcher" msgid="8344735489639482340">"Настройки"</string>
     <string name="settings_shortcut" msgid="3936651951364030415">"Ярлык настроек"</string>
@@ -379,7 +378,7 @@
     <string name="location_settings_title" msgid="1369675479310751735">"Местоположение"</string>
     <string name="location_settings_master_switch_title" msgid="3560242980335542411">"Использовать местоположение"</string>
     <string name="account_settings_title" msgid="626177544686329806">"Аккаунты"</string>
-    <string name="security_settings_title" msgid="4918904614964215087">"Местоположение и защита"</string>
+    <string name="security_settings_title" msgid="4918904614964215087">"Защита и местоположение"</string>
     <string name="encryption_and_credential_settings_title" msgid="6514904533438791561">"Шифрование и учетные данные"</string>
     <string name="encryption_and_credential_settings_summary" product="default" msgid="8721883002237981248">"Телефон зашифрован"</string>
     <string name="decryption_settings_summary" product="default" msgid="5671817824042639849">"Шифрование не включено"</string>
@@ -506,7 +505,7 @@
     <string name="setup_lock_settings_picker_title" product="tablet" msgid="90329443364067215">"Защитите планшет"</string>
     <string name="setup_lock_settings_picker_title" product="device" msgid="2399952075134938929">"Защитите устройство"</string>
     <string name="setup_lock_settings_picker_title" product="default" msgid="1572244299605153324">"Защитите телефон"</string>
-    <string name="lock_settings_picker_fingerprint_added_security_message" msgid="5008939545428518367">"Для более надежной защиты настройте дополнительный способ блокировки экрана"</string>
+    <string name="lock_settings_picker_fingerprint_added_security_message" msgid="5008939545428518367">"Для более надежной защиты настройте дополнительный способ блокировки экрана."</string>
     <string name="setup_lock_settings_picker_message" product="tablet" msgid="8919671129189936210">"Чтобы никто не мог пользоваться этим устройством без вашего разрешения, активируйте его защиту. Выберите подходящий для вас способ блокировки экрана."</string>
     <string name="setup_lock_settings_picker_message" product="device" msgid="3787276514406353777">"Чтобы никто не мог пользоваться этим устройством без вашего разрешения, активируйте его защиту. Выберите подходящий для вас способ блокировки экрана."</string>
     <string name="setup_lock_settings_picker_message" product="default" msgid="3692856437543730446">"Чтобы никто не мог пользоваться этим устройством без вашего разрешения, активируйте его защиту. Выберите подходящий для вас способ блокировки экрана."</string>
@@ -667,10 +666,10 @@
     <string name="disabled_because_no_backup_security" msgid="6877660253409580377">"Сначала необходимо настроить блокировку экрана"</string>
     <string name="manage_trust_agents_summary" msgid="1475819820389620546">"Нет"</string>
     <plurals name="manage_trust_agents_summary_on" formatted="false" msgid="3935182396726101824">
-      <item quantity="one"><xliff:g id="COUNT">%d</xliff:g> активный промежуточный агент</item>
-      <item quantity="few"><xliff:g id="COUNT">%d</xliff:g> активных промежуточных агента</item>
-      <item quantity="many"><xliff:g id="COUNT">%d</xliff:g> активных промежуточных агентов</item>
-      <item quantity="other"><xliff:g id="COUNT">%d</xliff:g> активного промежуточного агента</item>
+      <item quantity="one"><xliff:g id="COUNT">%d</xliff:g> активный агент доверия</item>
+      <item quantity="few"><xliff:g id="COUNT">%d</xliff:g> активных агента доверия</item>
+      <item quantity="many"><xliff:g id="COUNT">%d</xliff:g> активных агентов доверия</item>
+      <item quantity="other"><xliff:g id="COUNT">%d</xliff:g> активного агента доверия</item>
     </plurals>
     <string name="bluetooth_quick_toggle_title" msgid="1037056952714061893">"Bluetooth"</string>
     <string name="bluetooth_quick_toggle_summary" msgid="5293641680139873341">"Включить Bluetooth"</string>
@@ -843,7 +842,7 @@
     <string name="wifi_setup_wps" msgid="8128702488486283957">"Автонастройка (WPS)"</string>
     <string name="wifi_settings_scanning_required_title" msgid="3815269816331500375">"Включить поиск сетей Wi‑Fi?"</string>
     <string name="wifi_settings_scanning_required_summary" msgid="6352918945128328916">"Чтобы подключаться к сетям Wi‑Fi автоматически, нужно включить поиск Wi‑Fi."</string>
-    <string name="wifi_settings_scanning_required_info" msgid="3155631874578023647">"Эта функция позволяет приложениям и сервисам искать сети Wi-Fi даже при отсутствии беспроводного подключения к Интернету. Включите ее, чтобы улучшить работу геолокационных функций и сервисов."</string>
+    <string name="wifi_settings_scanning_required_info" msgid="3155631874578023647">"Эта функция позволяет приложениям и сервисам искать беспроводные сети, даже когда Wi-Fi отключен. Это может улучшить работу функций и сервисов, использующих данные о местоположении."</string>
     <string name="wifi_settings_scanning_required_turn_on" msgid="1364287182804820646">"Да"</string>
     <string name="wifi_settings_scanning_required_enabled" msgid="5527653791584018157">"Поиск сетей Wi‑Fi включен"</string>
     <string name="wifi_show_advanced" msgid="3409422789616520979">"Расширенные настройки"</string>
@@ -2117,7 +2116,7 @@
     <string name="print_menu_item_add_printers" msgid="2890738028215834012">"Добавить принтеры"</string>
     <string name="print_feature_state_on" msgid="8098901852502441048">"Включено"</string>
     <string name="print_feature_state_off" msgid="7294876968403966040">"Отключено"</string>
-    <string name="print_menu_item_add_service" msgid="3811645167869797802">"Добавить службу печати"</string>
+    <string name="print_menu_item_add_service" msgid="3811645167869797802">"Добавить службу"</string>
     <string name="print_menu_item_add_printer" msgid="8251218970577291032">"Добавить принтер"</string>
     <string name="print_menu_item_search" msgid="7025589328240514553">"Поиск"</string>
     <string name="print_searching_for_printers" msgid="4680248496457576358">"Поиск принтеров"</string>
@@ -2479,7 +2478,7 @@
     <string name="credentials_erased" msgid="2907836028586342969">"Хранилище учетных данных очищено"</string>
     <string name="credentials_not_erased" msgid="7685932772284216097">"Не удалось очистить хранилище."</string>
     <string name="credentials_enabled" msgid="7588607413349978930">"Хранилище регистрационных данных включено."</string>
-    <string name="credentials_configure_lock_screen_hint" msgid="8058230497337529036">"Чтобы использовать хранилище учетных данных, необходимо сначала настроить блокировку экрана на устройстве"</string>
+    <string name="credentials_configure_lock_screen_hint" msgid="8058230497337529036">"Чтобы использовать хранилище учетных данных, необходимо сначала настроить блокировку экрана на устройстве."</string>
     <string name="credentials_configure_lock_screen_button" msgid="253239765216055321">"НАСТРОИТЬ БЛОКИРОВКУ"</string>
     <string name="usage_access_title" msgid="332333405495457839">"Приложения с доступом к данным"</string>
     <string name="emergency_tone_title" msgid="254495218194925271">"Сигнал набора номера при экстренных вызовах"</string>
@@ -2678,8 +2677,8 @@
     <string name="data_usage_warning_editor_title" msgid="3704136912240060339">"Настройка предупреждения"</string>
     <string name="data_usage_limit_editor_title" msgid="9153595142385030015">"Лимит трафика"</string>
     <string name="data_usage_limit_dialog_title" msgid="3023111643632996097">"Лимит трафика данных"</string>
-    <string name="data_usage_limit_dialog_mobile" product="tablet" msgid="4983487893343645667">"После достижения установленного лимита передача данных по мобильной сети будет отключена.\n\nПри выборе ограничения обратите внимание, что статистика оператора может отличаться от статистики планшета."</string>
-    <string name="data_usage_limit_dialog_mobile" product="default" msgid="3926320594049434225">"После достижения установленного лимита передача данных по мобильной сети будет отключена.\n\nПри выборе ограничения обратите внимание, что статистика оператора может отличаться от статистики телефона."</string>
+    <string name="data_usage_limit_dialog_mobile" product="tablet" msgid="4983487893343645667">"После достижения установленного лимита передача данных по мобильной сети будет отключена.\n\nПри выборе ограничения учитывайте, что статистика оператора может отличаться от статистики планшета."</string>
+    <string name="data_usage_limit_dialog_mobile" product="default" msgid="3926320594049434225">"После достижения установленного лимита передача данных по мобильной сети будет отключена.\n\nПри выборе ограничения учитывайте, что статистика оператора может отличаться от статистики телефона."</string>
     <string name="data_usage_restrict_background_title" msgid="2201315502223035062">"Ограничение фонового режима"</string>
     <string name="data_usage_restrict_background" msgid="434093644726734586">"Если ограничить передачу данных по мобильной сети в фоновом режиме, некоторые приложения и сервисы не будут работать без подключения к Wi-Fi."</string>
     <string name="data_usage_restrict_background_multiuser" product="tablet" msgid="7096707497743363380">"Если ограничить передачу данных по мобильной сети в фоновом режиме, некоторые приложения и сервисы не будут работать без подключения к Wi-Fi.\n\nНастройки будут изменены для всех пользователей планшета."</string>
@@ -3146,7 +3145,28 @@
     <string name="zen_mode_summary_combination" msgid="8715563402849273459">"<xliff:g id="MODE">%1$s</xliff:g>: <xliff:g id="EXIT_CONDITION">%2$s</xliff:g>"</string>
     <string name="zen_mode_visual_interruptions_settings_title" msgid="6751708745442997940">"Блокировка визуального оповещения"</string>
     <string name="zen_mode_visual_signals_settings_subtitle" msgid="6308824824208120508">"Включить визуальное оповещение"</string>
-    <string name="zen_mode_what_to_block_title" msgid="7078190101807944693">"Блокировка визуального оповещения"</string>
+    <!-- no translation found for zen_mode_settings_category (3982039687186952865) -->
+    <skip />
+    <string name="zen_mode_restrict_notifications_title" msgid="478040192977063582">"Уведомления"</string>
+    <!-- no translation found for zen_mode_restrict_notifications_mute (8649062661635246283) -->
+    <skip />
+    <!-- no translation found for zen_mode_restrict_notifications_mute_summary (8450964969807231275) -->
+    <skip />
+    <!-- no translation found for zen_mode_restrict_notifications_mute_footer (3465600930732602159) -->
+    <skip />
+    <!-- no translation found for zen_mode_restrict_notifications_hide (9070829387109283980) -->
+    <skip />
+    <!-- no translation found for zen_mode_restrict_notifications_hide_summary (3832808022882158781) -->
+    <skip />
+    <!-- no translation found for zen_mode_restrict_notifications_hide_footer (6559283246372102465) -->
+    <skip />
+    <string name="zen_mode_restrict_notifications_custom" msgid="7498689167767941034">"Специальные настройки"</string>
+    <string name="zen_mode_restrict_notifications_enable_custom" msgid="4250962169561739747">"Включить специальные настройки"</string>
+    <string name="zen_mode_restrict_notifications_disable_custom" msgid="6676997522330453597">"Отключить специальные настройки"</string>
+    <string name="zen_mode_restrict_notifications_summary_muted" msgid="4678779044896459009">"Показывать"</string>
+    <string name="zen_mode_restrict_notifications_summary_custom" msgid="7416121534987213074">"Скрывать частично"</string>
+    <string name="zen_mode_restrict_notifications_summary_hidden" msgid="7805339105802282234">"Скрывать"</string>
+    <string name="zen_mode_what_to_block_title" msgid="5480903548365697159">"Пользовательские ограничения"</string>
     <string name="zen_mode_block_effects_screen_on" msgid="4659484530849212827">"При включенном экране"</string>
     <string name="zen_mode_block_effects_screen_off" msgid="4276414460889400625">"При отключенном экране"</string>
     <string name="zen_mode_block_effect_sound" msgid="7383953383758025895">"Отключить звук и вибрацию"</string>
@@ -3195,13 +3215,40 @@
       <item quantity="many">Можно автоматически включить <xliff:g id="ON_COUNT">%d</xliff:g> правил.</item>
       <item quantity="other">Можно автоматически включить <xliff:g id="ON_COUNT">%d</xliff:g> правила.</item>
     </plurals>
-    <string name="zen_onboarding_ok" msgid="4332223974819182383">"ОК"</string>
+    <!-- no translation found for zen_category_behavior (2989256030084350296) -->
+    <skip />
+    <!-- no translation found for zen_category_exceptions (7601136604273265629) -->
+    <skip />
+    <!-- no translation found for zen_category_schedule (9000447592251450453) -->
+    <skip />
+    <!-- no translation found for zen_sound_title (424490228488531372) -->
+    <skip />
+    <!-- no translation found for zen_sound_footer (7621745273287208979) -->
+    <skip />
+    <!-- no translation found for zen_sound_category_title (4336596939661729188) -->
+    <skip />
+    <!-- no translation found for zen_sound_all_muted (4850363350480968114) -->
+    <skip />
+    <!-- no translation found for zen_sound_none_muted (3938508512103612527) -->
+    <skip />
+    <!-- no translation found for zen_sound_one_allowed (8447313454438932276) -->
+    <skip />
+    <!-- no translation found for zen_sound_two_allowed (980491120444358550) -->
+    <skip />
+    <!-- no translation found for zen_sound_three_allowed (3455767205934547985) -->
+    <skip />
+    <!-- no translation found for zen_msg_event_reminder_title (5137894077488924820) -->
+    <skip />
+    <!-- no translation found for zen_msg_event_reminder_footer (3242847055412790819) -->
+    <skip />
+    <string name="zen_onboarding_ok" msgid="4157146842078658361">"Включить"</string>
+    <string name="zen_onboarding_no_update" msgid="3103752501952811308">"Не включать"</string>
+    <string name="zen_onboarding_dnd_visual_disturbances_description" msgid="4051020254348888576">"Телефон поможет вам не отвлекаться.\n\nВыберите настройку:\n\n– скрывать все уведомления;\n\n– показывать звонки от избранных контактов и повторные звонки."</string>
+    <string name="zen_onboarding_dnd_visual_disturbances_header" msgid="4243599835234481809">"Включить режим \"Не беспокоить\"?"</string>
     <string name="zen_onboarding_settings" msgid="9046451821239946868">"Настройки"</string>
     <string name="zen_onboarding_more_options" msgid="7880013502169957729">"Изменить другие параметры этой функции можно в разделе настроек."</string>
     <string name="zen_onboarding_screen_on_title" msgid="6058737686680609254">"При включенном экране"</string>
     <string name="zen_onboarding_screen_off_title" msgid="3153498025037206166">"При отключенном экране"</string>
-    <string name="zen_onboarding_dnd_visual_disturbances_description" msgid="1941519590822188992">"В режиме \"Не беспокоить\" отключаются не только звуковые, но и текстовые оповещения. Эту функцию удобно использовать, когда вы хотите заснуть, сконцентрироваться на чем-то важном или просто меньше пользоваться телефоном."</string>
-    <string name="zen_onboarding_dnd_visual_disturbances_header" msgid="1442575104084675243">"Отключить звуковые и текстовые оповещения"</string>
     <string name="zen_onboarding_screen_off_summary" msgid="5393041573999488088">"Не включать экран и не показывать уведомления"</string>
     <string name="zen_onboarding_screen_on_summary" msgid="4351138746406623307">"Показывать уведомления только для основных функций телефона"</string>
     <string name="sound_work_settings" msgid="6774324553228566442">"Сигналы в рабочем профиле"</string>
@@ -3219,8 +3266,8 @@
     <string name="ringtones_category_preference_title" msgid="5675912303120102366">"Рингтоны"</string>
     <string name="other_sound_category_preference_title" msgid="2521096636124314015">"Другие звуки и вибросигналы"</string>
     <string name="configure_notification_settings" msgid="7616737397127242615">"Уведомления"</string>
-    <string name="recent_notifications" msgid="5660639387705060156">"Недавно отправляли"</string>
-    <string name="recent_notifications_see_all_title" msgid="8572160812124540326">"Показывать все за последние 7 дней"</string>
+    <string name="recent_notifications" msgid="5660639387705060156">"Недавно отправленные"</string>
+    <string name="recent_notifications_see_all_title" msgid="8572160812124540326">"Смотреть все за последние 7 дней"</string>
     <string name="advanced_section_header" msgid="8833934850242546903">"Расширенные настройки"</string>
     <string name="profile_section_header" msgid="2320848161066912001">"Рабочие уведомления"</string>
     <string name="notification_badging_title" msgid="5938709971403474078">"Показывать значки уведомлений"</string>
@@ -3380,21 +3427,39 @@
     <string name="summary_range_symbol_combination" msgid="5695218513421897027">"<xliff:g id="START">%1$s</xliff:g>–<xliff:g id="END">%2$s</xliff:g>"</string>
     <string name="summary_range_verbal_combination" msgid="8467306662961568656">"с <xliff:g id="START">%1$s</xliff:g> по <xliff:g id="END">%2$s</xliff:g>"</string>
     <string name="zen_mode_calls" msgid="7051492091133751208">"Вызовы"</string>
+    <!-- no translation found for zen_mode_calls_footer (3618700268458237781) -->
+    <skip />
     <string name="zen_mode_messages" msgid="5886440273537510894">"Сообщения"</string>
-    <string name="zen_mode_all_messages" msgid="6449223378976743208">"Все сообщения"</string>
-    <string name="zen_mode_selected_messages" msgid="8245990149599142281">"Выбранные сообщения"</string>
+    <!-- no translation found for zen_mode_all_messages (8257021584561639816) -->
+    <skip />
+    <!-- no translation found for zen_mode_selected_messages (1047355526202106114) -->
+    <skip />
     <string name="zen_mode_from_anyone" msgid="2638322015361252161">"От кого угодно"</string>
     <string name="zen_mode_from_contacts" msgid="2232335406106711637">"Только от контактов"</string>
     <string name="zen_mode_from_starred" msgid="2678345811950997027">"Только от помеченных контактов"</string>
+    <!-- no translation found for zen_calls_summary_starred_repeat (4046151920710059778) -->
+    <skip />
+    <!-- no translation found for zen_calls_summary_contacts_repeat (1528716671301999084) -->
+    <skip />
+    <!-- no translation found for zen_calls_summary_repeat_only (7105261473107715445) -->
+    <skip />
     <string name="zen_mode_from_none" msgid="8219706639954614136">"Ни от кого"</string>
     <string name="zen_mode_alarms" msgid="2165302777886552926">"Будильник"</string>
     <string name="zen_mode_media" msgid="8808264142134422380">"Мультимедиа"</string>
     <string name="zen_mode_system" msgid="2541380718411593581">"Звук нажатия на экран"</string>
     <string name="zen_mode_reminders" msgid="5458502056440485730">"Напоминания"</string>
     <string name="zen_mode_events" msgid="7914446030988618264">"Мероприятия"</string>
-    <string name="zen_mode_all_callers" msgid="584186167367236922">"Все абоненты"</string>
-    <string name="zen_mode_selected_callers" msgid="3127598874060615742">"Выбранные абоненты"</string>
+    <!-- no translation found for zen_mode_all_callers (2378065871253871057) -->
+    <skip />
+    <!-- no translation found for zen_mode_contacts_callers (5569804103920394175) -->
+    <skip />
+    <!-- no translation found for zen_mode_starred_callers (1023167821338514140) -->
+    <skip />
     <string name="zen_mode_repeat_callers" msgid="5019521886428322131">"Повторные вызовы"</string>
+    <!-- no translation found for zen_mode_calls_summary_one (2867689575419791866) -->
+    <skip />
+    <!-- no translation found for zen_mode_calls_summary_two (6592821501321201329) -->
+    <skip />
     <string name="zen_mode_repeat_callers_summary" msgid="239685342222975733">"Если абонент звонит повторно в течение <xliff:g id="MINUTES">%d</xliff:g> мин."</string>
     <string name="zen_mode_behavior_summary_custom" msgid="168127313238020146">"Пользовательские"</string>
     <string name="zen_mode_when" msgid="2767193283311106373">"Включать автоматически"</string>
@@ -3762,7 +3827,7 @@
     <string name="backup_disabled" msgid="485189128759595412">"Резервное копирование отключено"</string>
     <string name="android_version_summary" msgid="2935995161657697278">"Обновлено до Android <xliff:g id="VERSION">%1$s</xliff:g>"</string>
     <string name="android_version_pending_update_summary" msgid="487831391976523090">"Доступно обновление"</string>
-    <string name="disabled_by_policy_title" msgid="8032916235573765969">"Невозможно изменить настройку"</string>
+    <string name="disabled_by_policy_title" msgid="627023216027648534">"Действие запрещено"</string>
     <string name="disabled_by_policy_title_adjust_volume" msgid="3208724801293696486">"Невозможно изменить громкость"</string>
     <string name="disabled_by_policy_title_outgoing_calls" msgid="7919816644946067058">"Звонки запрещены"</string>
     <string name="disabled_by_policy_title_sms" msgid="5733307423899610340">"Отправка SMS запрещена"</string>
@@ -3855,11 +3920,11 @@
       <item quantity="many"><xliff:g id="COUNT">%1$d</xliff:g> ограничений</item>
       <item quantity="other"><xliff:g id="COUNT">%1$d</xliff:g> ограничения</item>
     </plurals>
-    <string name="operator_warning" msgid="1862988028996859195">"Статистика оператора связи может отличаться от статистики устройства"</string>
+    <string name="operator_warning" msgid="1862988028996859195">"Статистика оператора связи может отличаться от статистики устройства."</string>
     <string name="data_used_template" msgid="3245919669966296505">"Передано: <xliff:g id="ID_1">%1$s</xliff:g>"</string>
     <string name="set_data_warning" msgid="6115364758236594593">"Установить предупреждение"</string>
     <string name="data_warning" msgid="209133958008062117">"Предупреждение"</string>
-    <string name="data_warning_footnote" msgid="776341964125603711">"Значения параметров зависят от вашего устройства. Они могут отличаться от данных оператора связи."</string>
+    <string name="data_warning_footnote" msgid="776341964125603711">"Объем трафика измеряется вашим устройством. Значения могут отличаться от данных оператора связи."</string>
     <string name="set_data_limit" msgid="2901526323210516923">"Установить лимит трафика"</string>
     <string name="data_limit" msgid="1885406964934590552">"Лимит трафика"</string>
     <string name="data_usage_template" msgid="2923744765873163859">"Использовано <xliff:g id="ID_1">%1$s</xliff:g> (<xliff:g id="ID_2">%2$s</xliff:g>)"</string>
@@ -3964,7 +4029,8 @@
     <string name="notification_suggestion_title" msgid="387052719462473500">"Выберите параметры для информации на заблокированном экране"</string>
     <string name="notification_suggestion_summary" msgid="8521159741445416875">"Скрыть или показать содержание уведомлений"</string>
     <string name="page_tab_title_summary" msgid="4070309266374993258">"Все"</string>
-    <string name="page_tab_title_support" msgid="8483187649355540109">"Помощь и советы"</string>
+    <!-- no translation found for page_tab_title_support (4407600495101788249) -->
+    <skip />
     <string name="developer_smallest_width" msgid="7516950434587313360">"Минимальная ширина"</string>
     <string name="premium_sms_none" msgid="8268105565738040566">"Установленные приложения не запрашивали доступ к платным SMS"</string>
     <string name="premium_sms_warning" msgid="9086859595338944882">"Обратите внимание, что такие SMS могут оплачиваться дополнительно. Предоставив разрешение приложению, вы сможете отправлять платные SMS с его помощью."</string>
@@ -3975,7 +4041,7 @@
     <string name="demo_mode" msgid="2798762752209330277">"Интерфейс системы: деморежим"</string>
     <string name="dark_ui_mode" msgid="2112241426441807273">"Ночной режим"</string>
     <string name="dark_ui_mode_title" msgid="975299966259850992">"Использовать ночной режим"</string>
-    <string name="quick_settings_developer_tiles" msgid="5947788063262762448">"Фрагменты быстрых настроек"</string>
+    <string name="quick_settings_developer_tiles" msgid="5947788063262762448">"Элементы в быстрых настройках"</string>
     <string name="winscope_trace_quick_settings_title" msgid="1294290008255732032">"Трассировка Winscope"</string>
     <string name="support_country_format" msgid="4502523713489559595">"<xliff:g id="COUNTRY">%1$s</xliff:g> – <xliff:g id="LANGUAGE">%2$s</xliff:g>"</string>
     <string name="managed_profile_settings_title" msgid="2729481936758125054">"Настройки рабочего профиля"</string>
@@ -4017,7 +4083,7 @@
     <string name="double_twist_for_camera_mode_title" msgid="4877834147983530479">"Смена камеры"</string>
     <string name="double_twist_for_camera_mode_summary" msgid="122977081337563340"></string>
     <string name="double_twist_for_camera_suggestion_title" msgid="4689410222517954869">"Быстрое включение фронтальной камеры"</string>
-    <string name="swipe_up_to_switch_apps_title" msgid="2513907834903543667">"Коснитесь кнопки главного экрана и проведите вверх"</string>
+    <string name="swipe_up_to_switch_apps_title" msgid="2513907834903543667">"Коснуться кнопки главного экрана и провести вверх"</string>
     <string name="swipe_up_to_switch_apps_summary" msgid="5367798220225997418">"Коснитесь кнопки главного экрана и проведите вверх, чтобы переключаться между приложениями. Снова проведите вверх, чтобы увидеть все приложения. Жест работает на любом экране. Кнопка обзора в нижнем правом углу экрана больше не будет использоваться."</string>
     <string name="swipe_up_to_switch_apps_suggestion_title" msgid="1465200107913259595">"Попробуйте новую кнопку главного экрана"</string>
     <string name="swipe_up_to_switch_apps_suggestion_summary" msgid="4825314186907812743">"Использовать новый жест для перехода между приложениями"</string>
@@ -4202,7 +4268,7 @@
     <string name="change_wifi_state_title" msgid="3261945855372885427">"Управление сетями Wi-Fi"</string>
     <string name="change_wifi_state_app_detail_switch" msgid="7942268646980694224">"Разрешить приложению управлять сетями Wi-Fi"</string>
     <string name="change_wifi_state_app_detail_summary" msgid="8434262633905502679">"Разрешить этому приложению сканировать, добавлять и удалять сети Wi-Fi, выполнять к ним подключение, включать и отключать эту функцию, а также создавать локальные точки доступа."</string>
-    <string name="media_output_title" msgid="115223550977351699">"Включить"</string>
+    <string name="media_output_title" msgid="115223550977351699">"Где воспроизводить"</string>
     <string name="media_output_default_summary" msgid="8115153381240348279">"Это устройство"</string>
     <string name="media_output_summary" product="default" msgid="6839458453831567167">"На телефоне"</string>
     <string name="media_output_summary" product="tablet" msgid="7217221078578554515">"На планшете"</string>
@@ -4216,7 +4282,7 @@
     <string name="battery_suggestion_summary" msgid="4585677159811722359"></string>
     <string name="gesture_prevent_ringing_screen_title" msgid="7840226017975251549">"Отключить звук звонка"</string>
     <string name="gesture_prevent_ringing_title" msgid="2483159069038138740">"Кнопки питания и увеличения громкости (одновременно)"</string>
-    <string name="gesture_prevent_ringing_sound_title" msgid="5724512060316688779">"Отключение звука звонка"</string>
+    <string name="gesture_prevent_ringing_sound_title" msgid="5724512060316688779">"Быстрое отключение звука звонка"</string>
     <string name="prevent_ringing_option_vibrate" msgid="7286821846542822661">"Вибрация"</string>
     <string name="prevent_ringing_option_mute" msgid="7551545579059879853">"Без звука"</string>
     <string name="prevent_ringing_option_none" msgid="4656046650769569175">"Не менять настройки"</string>

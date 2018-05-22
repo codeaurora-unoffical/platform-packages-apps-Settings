@@ -292,8 +292,7 @@
     <string name="forget" msgid="1400428660472591263">"ລືມ"</string>
     <string name="save" msgid="879993180139353333">"ບັນທຶກ"</string>
     <string name="done" msgid="6942539184162713160">"ແລ້ວໆ"</string>
-    <!-- no translation found for apply (1577045208487259229) -->
-    <skip />
+    <string name="apply" msgid="1577045208487259229">"ນຳໃຊ້"</string>
     <string name="settings_label" msgid="1626402585530130914">"ການຕັ້ງຄ່າ"</string>
     <string name="settings_label_launcher" msgid="8344735489639482340">"ການຕັ້ງຄ່າ"</string>
     <string name="settings_shortcut" msgid="3936651951364030415">"ທາງລັດການຕັ້ງຄ່າ"</string>
@@ -308,8 +307,8 @@
     <string name="cellular_data_summary" msgid="4660351864416939504">"ອະນຸຍາດໃຫ້ໃຊ້ອິນເຕີເນັດມືຖື"</string>
     <string name="allow_data_usage_title" msgid="2238205944729213062">"​ອະ​ນຸ​ຍາດ​ໃຫ້​ມີ​ການ​ນຳ​ໃຊ້​ຂໍ້​ມູນ​ເມື່ອ​ໂຣມ​ມິງ"</string>
     <string name="roaming" msgid="3596055926335478572">"ການໂຣມມິງຂໍ້ມູນ"</string>
-    <string name="roaming_enable" msgid="3737380951525303961">"ເຊື່ອມຕໍ່ບໍລິການຂໍ້ມູນເມື່ອໃຊ້ໂຣມມິງ"</string>
-    <string name="roaming_disable" msgid="1295279574370898378">"ເຊື່ອມຕໍ່ບໍລິການຂໍ້ມູນເມື່ອໃຊ້ໂຣມມິງ"</string>
+    <string name="roaming_enable" msgid="3737380951525303961">"ເຊື່ອມຕໍ່ບໍລິການອິນເຕີເນັດເມື່ອໂຣມມິງຢູ່"</string>
+    <string name="roaming_disable" msgid="1295279574370898378">"ເຊື່ອມຕໍ່ບໍລິການອິນເຕີເນັດເມື່ອໂຣມມິງຢູ່"</string>
     <string name="roaming_reenable_message" msgid="9141007271031717369">"ທ່ານໄດ້ຖືກຕັດການເຊື່ອມຕໍ່ຂໍ້ມູນ ເນື່ອງຈາກທ່ານອອກຈາກເຄືອຂ່າຍໃນເຮືອນ ໂດຍປິດການໂຣມມິງຂໍ້ມູນໄວ້"</string>
     <string name="roaming_turn_it_on_button" msgid="4387601818162120589">"ເປີດໃຊ້ມັນ"</string>
     <string name="roaming_warning" msgid="4275443317524544705">"ທ່ານ​ອາດ​ຈະ​ເສຍ​ຄ່າ​ໃຊ້​ຈ່າຍ​ຫຼາຍ."</string>
@@ -1090,7 +1089,7 @@
     <string name="night_display_title" msgid="2626451512200357686">"ແສງກາງຄືນ"</string>
     <string name="night_display_text" msgid="1837277457033025056">"ຄຸນສົມບັດ ແສງກາງຄືນ ຈະໃສ່ສີໜ້າຈໍຂອງທ່ານເປັນສີແດງໃນເວລາກາງຄືນ. ນີ້ຈະເຮັດໃຫ້ສາມາດເບິ່ງໜ້າຈໍໄດ້ງ່າຍຂຶ້ນໃນສະພາບແສງໜ້ອຍ ແລະ ອາດຊ່ວຍໃຫ້ທ່ານນອນຫຼັບງ່າຍຂຶ້ນໄດ້ນຳ."</string>
     <string name="night_display_auto_mode_title" msgid="6574111412154833409">"ຕັ້ງເວລາ"</string>
-    <string name="night_display_auto_mode_never" msgid="2483761922928753400">"ບໍ່ມີ"</string>
+    <string name="night_display_auto_mode_never" msgid="2483761922928753400">"ບໍ່ໃຊ້"</string>
     <string name="night_display_auto_mode_custom" msgid="2379394568898721765">"ເປີດໃຊ້ໃນເວລາທີ່ກຳນົດເອງ"</string>
     <string name="night_display_auto_mode_twilight" msgid="589042813708244059">"ເປີດໃຊ້ນັບແຕ່ຕາເວັນຕົກຮອດຕາເວັນຂຶ້ນ"</string>
     <string name="night_display_start_time_title" msgid="8918016772613689584">"ເວລາເລີ່ມ"</string>
@@ -1144,12 +1143,12 @@
     <string name="doze_always_on_summary" msgid="6978257596231155345">"ສະແດງເວລາ, ໄອຄອນການແຈ້ງເຕືອນ ແລະ ຂໍ້ມູນອື່ນໆ. ເພີ່ມການໃຊ້ແບັດເຕີຣີ."</string>
     <string name="title_font_size" msgid="4405544325522105222">"ຂະໜາດຕົວອັກສອນ"</string>
     <string name="short_summary_font_size" msgid="6819778801232989076">"ເຮັດໃຫ້ຂໍ້ຄວາມໃຫຍ່ຂຶ້ນ ຫຼື ນ້ອຍລົງ"</string>
-    <string name="sim_lock_settings" msgid="3392331196873564292">"ການຕັ້ງຄ່າການລັອກ SIM card"</string>
-    <string name="sim_lock_settings_category" msgid="6242052161214271091">"ການລັອກ SIM card"</string>
+    <string name="sim_lock_settings" msgid="3392331196873564292">"ການຕັ້ງຄ່າການລັອກ SIM ກາດ"</string>
+    <string name="sim_lock_settings_category" msgid="6242052161214271091">"ການລັອກ SIM ກາດ"</string>
     <string name="sim_lock_settings_summary_off" msgid="8028944267104896401">"ປິດ"</string>
     <string name="sim_lock_settings_summary_on" msgid="39103355956342985">"ລັອກແລ້ວ"</string>
     <string name="sim_lock_settings_title" msgid="9018585580955414596">"ການລັອກ SIM card"</string>
-    <string name="sim_pin_toggle" msgid="1742123478029451888">"ລັອກ SIM card"</string>
+    <string name="sim_pin_toggle" msgid="1742123478029451888">"ລັອກ SIM ກາດ"</string>
     <string name="sim_lock_on" product="tablet" msgid="5058355081270397764">"ຕ້ອງມີລະຫັດ PIN ຈຶ່ງຈະໃຊ້ແທັບເລັດໄດ້"</string>
     <string name="sim_lock_on" product="default" msgid="2503536505568814324">"ຕ້ອງມີລະຫັດ PIN ເພື່ອໃຊ້ໂທລະສັບ"</string>
     <string name="sim_lock_off" product="tablet" msgid="2813800553917012356">"ຕ້ອງມີລະຫັດ PIN ເພື່ອໃຊ້ແທັບເລັດ"</string>
@@ -2139,7 +2138,7 @@
     <string name="battery_abnormal_location_summary" msgid="6552797246798806002">"ກຳລັງຮ້ອງຂໍສະຖານທີ່ເລື້ອຍໆ"</string>
     <string name="battery_abnormal_apps_summary" msgid="792553273248686972">"<xliff:g id="NUMBER">%1$d</xliff:g> ແອັບເຮັດວຽກຜິດປົກກະຕິ"</string>
     <string name="battery_tip_summary_title" msgid="7060523369832289878">"ແບັດເຕີຣີເຮັດວຽກປົກກະຕິ"</string>
-    <string name="battery_tip_summary_summary" msgid="7674026655453457">"ແອັບກຳລັງເຮັດວຽກຕາມປົກກະຕິ"</string>
+    <string name="battery_tip_summary_summary" msgid="7674026655453457">"ແອັບຕ່າງໆກຳລັງເຮັດວຽກຕາມປົກກະຕິ"</string>
     <string name="battery_tip_low_battery_title" msgid="5103420355109677385">"ຄວາມຈຸແບັດເຕີຣີເຫຼືອໜ້ອຍ"</string>
     <string name="battery_tip_low_battery_summary" msgid="4702986182940709150">"ແບັດເຕີຣີບໍ່ສາມາດໃຫ້ອາຍຸການນຳໃຊ້ທີ່ດີໄດ້"</string>
     <string name="battery_tip_smart_battery_title" product="default" msgid="2542822112725248683">"ປັບປຸງອາຍຸແບັດເຕີຣີຂອງໂທລະສັບທ່ານ"</string>
@@ -2585,7 +2584,7 @@
     <string name="data_usage_label_background" msgid="3225844085975764519">"ພື້ນຫຼັງ"</string>
     <string name="data_usage_app_restricted" msgid="3568465218866589705">"ຖືກຈຳກັດ"</string>
     <string name="data_usage_disable_mobile" msgid="8656552431969276305">"ປິດອິນເຕີເນັດມືຖືໄວ້ບໍ?"</string>
-    <string name="data_usage_disable_mobile_limit" msgid="4644364396844393848">"ຈຳກັດການໃຊ້ຂໍ້ມູນມືຖື"</string>
+    <string name="data_usage_disable_mobile_limit" msgid="4644364396844393848">"ຈຳກັດການໃຊ້ອິນເຕີເນັດມືຖື"</string>
     <string name="data_usage_disable_4g_limit" msgid="6233554774946681175">"ຈຳກັດການໃຊ້ຂໍ້ມູນ 4G"</string>
     <string name="data_usage_disable_3g_limit" msgid="2558557840444266906">"ຕັ້ງຄ່າກຳນົດຂໍ້ມູນ 2G-3G"</string>
     <string name="data_usage_disable_wifi_limit" msgid="1394901415264660888">"ຈຳກັດການໃຊ້ຂໍ້ມູນ Wi-Fi"</string>
@@ -2596,7 +2595,7 @@
     <string name="data_usage_tab_3g" msgid="6092169523081538718">"2G-3G"</string>
     <string name="data_usage_list_mobile" msgid="5588685410495019866">"ມືຖື"</string>
     <string name="data_usage_list_none" msgid="3933892774251050735">"ບໍ່ມີ"</string>
-    <string name="data_usage_enable_mobile" msgid="986782622560157977">"ຂໍ້​ມູນ​ມື​ຖື"</string>
+    <string name="data_usage_enable_mobile" msgid="986782622560157977">"ອິນເຕີເນັດມືຖື"</string>
     <string name="data_usage_enable_3g" msgid="6304006671869578254">"ຂໍ້ມູນ 2G-3G"</string>
     <string name="data_usage_enable_4g" msgid="3635854097335036738">"ຂໍ້ມູນ 4G"</string>
     <string name="data_roaming_enable_mobile" msgid="1523331545457578362">"ໂຣມມິງ"</string>
@@ -2614,7 +2613,7 @@
     <string name="data_usage_auto_sync_on_dialog" product="default" msgid="8651376294887142858">"ການ​ປ່ຽນ​ແປງ​ໃດໆ​ທີ່​ທ່ານ​ສ້າງ​ໃຫ້​ກັບ​ບັນ​ຊີ​ຂອງ​ທ່ານ​ໃນ​ເວັບ​ໄຊ​ຈະ​ຖືກ​ສຳ​ເນົາ​ໄປ​ທີ່​ໂທ​ລະ​ສັບ​ຂອງ​ທ່ານ​ໂດຍ​ອັດ​ຕະ​ໂນ​ມັດ.\n\nບາງ​ບັນ​ຊີ​ອາດ​ສຳ​ເນົາ​ການ​ປ່ຽນ​ແປງ​ທີ່​ທ່ານ​ສ້າງ​ໃນ​ໂທ​ລະ​ສັບ​ໄປ​ໃສ່​ໃນ​ເວັບ​ໄຊ​ໃຫ້​ໂດຍ​ອັດ​ຕະ​ໂນ​ມັດ. ນີ້​ເປັນ​ວິ​ທີ​ທີ່​ບັນ​ຊີ Google ເຮັດ​ວຽກ."</string>
     <string name="data_usage_auto_sync_off_dialog_title" msgid="9013139130490125793">"ປິດການຊິ້ງຂໍ້ມູນອັດຕະໂນມັດ?"</string>
     <string name="data_usage_auto_sync_off_dialog" msgid="4025938250775413864">"ນີ້ຈະເປັນການຖະໜອມການນຳໃຊ້ຂໍ້ມູນ ແລະແບັດເຕີຣີ ແຕ່ທ່ານຈະຕ້ອງໄດ້ຊິ້ງຂໍ້ມູນແຕ່ລະບັນຊີດ້ວຍຕົນເອງ ເພື່ອໃຫ້ເກັບກຳຂໍ້ມູນຫຼ້າສຸດ. ແລະທ່ານຈະບໍ່ໄດ້ຮັບການແຈ້ງເຕືອນ ເມື່ອມີການອັບເດດເກີດຂຶ້ນ."</string>
-    <string name="data_usage_cycle_editor_title" msgid="1373797281540188533">"ວັນທີຕັ້ງຄ່າຮອບການໃຊ້ຄືນໃໝ່"</string>
+    <string name="data_usage_cycle_editor_title" msgid="1373797281540188533">"ວັນທີຣີເຊັດຮອບ"</string>
     <string name="data_usage_cycle_editor_subtitle" msgid="5512903797979928416">"ວັນທີຂອງແຕ່ລະເດືອນ:"</string>
     <string name="data_usage_cycle_editor_positive" msgid="8821760330497941117">"ຕົກລົງ"</string>
     <string name="data_usage_warning_editor_title" msgid="3704136912240060339">"ຕັ້ງຄ່າການເຕືອນການນຳໃຊ້ຂໍ້ມູນ"</string>
@@ -2655,7 +2654,7 @@
     <string name="vpn_ipsec_user_cert" msgid="6880651510020187230">"ໃບຮັບຮອງຜູ່ໃຊ້ IPSec"</string>
     <string name="vpn_ipsec_ca_cert" msgid="91338213449148229">"ໃບຮັບຮອງ IPSec CA"</string>
     <string name="vpn_ipsec_server_cert" msgid="6599276718456935010">"ໃບຮັບຮອງເຊີບເວີ IPSec"</string>
-    <string name="vpn_show_options" msgid="7182688955890457003">"ສະແດງໂຕເລືອກຂັ້ນສູງ"</string>
+    <string name="vpn_show_options" msgid="7182688955890457003">"ສະແດງຕົວເລືອກຂັ້ນສູງ"</string>
     <string name="vpn_search_domains" msgid="5391995501541199624">"ໂດເມນຊອກຫາ DNS"</string>
     <string name="vpn_dns_servers" msgid="5570715561245741829">"ເຊີບເວີ DNS (ເຊັ່ນ: 8.8.8.8)"</string>
     <string name="vpn_routes" msgid="3818655448226312232">"ເສັ້ນທາງການສົ່ງຕໍ່ (ເຊັ່ນ: 10.0.0.0/8)"</string>
@@ -3076,7 +3075,28 @@
     <string name="zen_mode_summary_combination" msgid="8715563402849273459">"<xliff:g id="MODE">%1$s</xliff:g>: <xliff:g id="EXIT_CONDITION">%2$s</xliff:g>"</string>
     <string name="zen_mode_visual_interruptions_settings_title" msgid="6751708745442997940">"ບລັອກການລົບກວນທາງພາບ"</string>
     <string name="zen_mode_visual_signals_settings_subtitle" msgid="6308824824208120508">"ອະນຸຍາດສັນຍານພາບ"</string>
-    <string name="zen_mode_what_to_block_title" msgid="7078190101807944693">"ບລັອກການລົບກວນທາງພາບ"</string>
+    <!-- no translation found for zen_mode_settings_category (3982039687186952865) -->
+    <skip />
+    <string name="zen_mode_restrict_notifications_title" msgid="478040192977063582">"ການແຈ້ງເຕືອນ"</string>
+    <!-- no translation found for zen_mode_restrict_notifications_mute (8649062661635246283) -->
+    <skip />
+    <!-- no translation found for zen_mode_restrict_notifications_mute_summary (8450964969807231275) -->
+    <skip />
+    <!-- no translation found for zen_mode_restrict_notifications_mute_footer (3465600930732602159) -->
+    <skip />
+    <!-- no translation found for zen_mode_restrict_notifications_hide (9070829387109283980) -->
+    <skip />
+    <!-- no translation found for zen_mode_restrict_notifications_hide_summary (3832808022882158781) -->
+    <skip />
+    <!-- no translation found for zen_mode_restrict_notifications_hide_footer (6559283246372102465) -->
+    <skip />
+    <string name="zen_mode_restrict_notifications_custom" msgid="7498689167767941034">"ກຳນົດເອງ"</string>
+    <string name="zen_mode_restrict_notifications_enable_custom" msgid="4250962169561739747">"ເປີດການຕັ້ງຄ່າແບບກຳນົດເອງ"</string>
+    <string name="zen_mode_restrict_notifications_disable_custom" msgid="6676997522330453597">"ລຶບການຕັ້ງຄ່າແບບກຳນົດເອງອອກ"</string>
+    <string name="zen_mode_restrict_notifications_summary_muted" msgid="4678779044896459009">"ຈະປາກົດ"</string>
+    <string name="zen_mode_restrict_notifications_summary_custom" msgid="7416121534987213074">"ເຊື່ອງໄວ້ບາງສ່ວນ"</string>
+    <string name="zen_mode_restrict_notifications_summary_hidden" msgid="7805339105802282234">"ເຊື່ອງໄວ້"</string>
+    <string name="zen_mode_what_to_block_title" msgid="5480903548365697159">"ການຈຳກັດແບບກຳນົດເອງ"</string>
     <string name="zen_mode_block_effects_screen_on" msgid="4659484530849212827">"ເມື່ອເປີດໜ້າຈໍ"</string>
     <string name="zen_mode_block_effects_screen_off" msgid="4276414460889400625">"ເມື່ອໜ້າຈໍປິດ"</string>
     <string name="zen_mode_block_effect_sound" msgid="7383953383758025895">"ປິດສຽງ ແລະ ປິດການສັ່ນເຕືອນ"</string>
@@ -3121,13 +3141,40 @@
       <item quantity="other">ສາມາດເປີດ <xliff:g id="ON_COUNT">%d</xliff:g> ກົດໂດຍອັດຕະໂນມັດ</item>
       <item quantity="one">ສາມາດເປີດ 1 ກົດໂດຍອັດຕະໂນມັດ</item>
     </plurals>
-    <string name="zen_onboarding_ok" msgid="4332223974819182383">"ຕົກລົງ"</string>
+    <!-- no translation found for zen_category_behavior (2989256030084350296) -->
+    <skip />
+    <!-- no translation found for zen_category_exceptions (7601136604273265629) -->
+    <skip />
+    <!-- no translation found for zen_category_schedule (9000447592251450453) -->
+    <skip />
+    <!-- no translation found for zen_sound_title (424490228488531372) -->
+    <skip />
+    <!-- no translation found for zen_sound_footer (7621745273287208979) -->
+    <skip />
+    <!-- no translation found for zen_sound_category_title (4336596939661729188) -->
+    <skip />
+    <!-- no translation found for zen_sound_all_muted (4850363350480968114) -->
+    <skip />
+    <!-- no translation found for zen_sound_none_muted (3938508512103612527) -->
+    <skip />
+    <!-- no translation found for zen_sound_one_allowed (8447313454438932276) -->
+    <skip />
+    <!-- no translation found for zen_sound_two_allowed (980491120444358550) -->
+    <skip />
+    <!-- no translation found for zen_sound_three_allowed (3455767205934547985) -->
+    <skip />
+    <!-- no translation found for zen_msg_event_reminder_title (5137894077488924820) -->
+    <skip />
+    <!-- no translation found for zen_msg_event_reminder_footer (3242847055412790819) -->
+    <skip />
+    <string name="zen_onboarding_ok" msgid="4157146842078658361">"ອັບເດດ"</string>
+    <string name="zen_onboarding_no_update" msgid="3103752501952811308">"ບໍ່ອັບເດດ"</string>
+    <string name="zen_onboarding_dnd_visual_disturbances_description" msgid="4051020254348888576">"ໂທລະສັບຂອງທ່ານສາມາດເຮັດຫຍັງໄດ້ເພີ່ມເຕີມເພື່ອຊ່ວຍໃຫ້ທ່ານມີສະມາທິໄດ້.\n\nທ່ານສາມາດອັບເດດການຕັ້ງຄ່າເພື່ອ:\n\n- ເຊື່ອງການແຈ້ງເຕືອນທັງໝົດ\n\n- ອະນຸຍາດສາຍຈາກລາຍຊື່ຜູ້ຕິດຕໍ່ທີ່ມີດາວ ແລະ ຜູ້ທີ່ໂທຊ້ຳໆ"</string>
+    <string name="zen_onboarding_dnd_visual_disturbances_header" msgid="4243599835234481809">"ອັບເດດໂໝດຫ້າມລົບກວນບໍ?"</string>
     <string name="zen_onboarding_settings" msgid="9046451821239946868">"ການຕັ້ງຄ່າ"</string>
     <string name="zen_onboarding_more_options" msgid="7880013502169957729">"ທ່ານສາມາດປັບແຕ່ງໄດ້ຫຼາຍຂຶ້ນໃນການຕັ້ງຄ່າ."</string>
     <string name="zen_onboarding_screen_on_title" msgid="6058737686680609254">"ບລັອກເມື່ອເປີດໜ້າຈໍ"</string>
     <string name="zen_onboarding_screen_off_title" msgid="3153498025037206166">"ບລັອກເມື່ອປິດໜ້າຈໍ"</string>
-    <string name="zen_onboarding_dnd_visual_disturbances_description" msgid="1941519590822188992">"ໂໝດຫ້າມລົບກວນສາມາດເຮັດໄດ້ຫຼາຍກວ່າການບລັອກສຽງທີ່ບໍ່ຕ້ອງການ, ມັນສາມາດບລັອກພາບໄດ້ນຳ. ນີ້ອາດເປັນປະໂຫຍດຫາກທ່ານຢາກນອນ, ຕັ້ງໃຈເຮັດວຽກ ຫຼື ຈຳກັດເວລາທີ່ໃຊ້ໂທລະສັບຂອງທ່ານ."</string>
-    <string name="zen_onboarding_dnd_visual_disturbances_header" msgid="1442575104084675243">"ບລັອກພາບ ແລະ ສຽງ"</string>
     <string name="zen_onboarding_screen_off_summary" msgid="5393041573999488088">"ຢ່າເປີດໜ້າຈໍ ຫຼື ຕື່ນຂຶ້ນມາເມື່ອມີການແຈ້ງເຕືອນ"</string>
     <string name="zen_onboarding_screen_on_summary" msgid="4351138746406623307">"ຢ່າສະແດງການແຈ້ງເຕືອນເລີຍ, ຍົກເວັ້ນການເຮັດວຽກ ແລະ ສະຖານະພື້ນຖານຂອງໂທລະສັບ"</string>
     <string name="sound_work_settings" msgid="6774324553228566442">"ສຽງໂປຣໄຟລ໌ບ່ອນເຮັດວຽກ"</string>
@@ -3280,12 +3327,12 @@
     <string name="zen_mode_event_rule_calendar" msgid="8787906563769067418">"ໃນ​ລະ​ຫວ່າງ​ເຫດ​ການ​ສຳ​ລັບ"</string>
     <string name="zen_mode_event_rule_summary_calendar_template" msgid="5135844750232403975">"ໃນ​ລະ​ຫວ່າງ​ເຫດ​ການ​ສຳ​ລັບ <xliff:g id="CALENDAR">%1$s</xliff:g>"</string>
     <string name="zen_mode_event_rule_summary_any_calendar" msgid="4936646399126636358">"ປະ​ຕິ​ທິນ​ໃດ​ກໍໄດ້"</string>
-    <string name="zen_mode_event_rule_summary_reply_template" msgid="6590671260829837157">"ເມື່ອຕອບກັບໄປວ່າ <xliff:g id="REPLY">%1$s</xliff:g>"</string>
+    <string name="zen_mode_event_rule_summary_reply_template" msgid="6590671260829837157">"ເມື່ອຄຳຕອບແມ່ນ <xliff:g id="REPLY">%1$s</xliff:g>"</string>
     <string name="zen_mode_event_rule_calendar_any" msgid="6485568415998569885">"ປະ​ຕິ​ທິນ​ໃດ​ກໍໄດ້"</string>
-    <string name="zen_mode_event_rule_reply" msgid="5166322024212403739">"ບ່ອນ​ຕອບ​ຄືນ​ແມ່ນ"</string>
+    <string name="zen_mode_event_rule_reply" msgid="5166322024212403739">"ເມື່ອຄຳຕອບແມ່ນ"</string>
     <string name="zen_mode_event_rule_reply_any_except_no" msgid="8868873496008825961">"ຕົກລົງ, ອາດຈະ ຫຼື ຍັງບໍ່ໄດ້ຕອບ"</string>
-    <string name="zen_mode_event_rule_reply_yes_or_maybe" msgid="2769656565454495824">"ແມ່ນ​ແລ້ວ ຫຼື​ບາງ​ທີ"</string>
-    <string name="zen_mode_event_rule_reply_yes" msgid="1003598835878784659">"​ແມ່ນ​ແລ້ວ"</string>
+    <string name="zen_mode_event_rule_reply_yes_or_maybe" msgid="2769656565454495824">"ຕົກລົງ ຫຼື ອາດຈະ"</string>
+    <string name="zen_mode_event_rule_reply_yes" msgid="1003598835878784659">"ຕົກລົງ"</string>
     <string name="zen_mode_rule_not_found_text" msgid="8963662446092059836">"ບໍ່​ພົບ​ເງື່ອນ​ໄຂ."</string>
     <string name="zen_mode_rule_summary_enabled_combination" msgid="976098744828219297">"ຢູ່​ໃນ / <xliff:g id="MODE">%1$s</xliff:g>"</string>
     <string name="zen_mode_rule_summary_provider_combination" msgid="2101201392041867409">"<xliff:g id="PACKAGE">%1$s</xliff:g>\n<xliff:g id="SUMMARY">%2$s</xliff:g>"</string>
@@ -3298,21 +3345,39 @@
     <string name="summary_range_symbol_combination" msgid="5695218513421897027">"<xliff:g id="START">%1$s</xliff:g> - <xliff:g id="END">%2$s</xliff:g>"</string>
     <string name="summary_range_verbal_combination" msgid="8467306662961568656">"<xliff:g id="START">%1$s</xliff:g> ຫາ <xliff:g id="END">%2$s</xliff:g>"</string>
     <string name="zen_mode_calls" msgid="7051492091133751208">"​ການ​ໂທ"</string>
+    <!-- no translation found for zen_mode_calls_footer (3618700268458237781) -->
+    <skip />
     <string name="zen_mode_messages" msgid="5886440273537510894">"ຂໍ້​ຄວາມ"</string>
-    <string name="zen_mode_all_messages" msgid="6449223378976743208">"ຂໍ້​ຄວາມທັງໝົດ"</string>
-    <string name="zen_mode_selected_messages" msgid="8245990149599142281">"ຂໍ້​ຄວາມ​ເລືອກ​ໄວ້"</string>
+    <!-- no translation found for zen_mode_all_messages (8257021584561639816) -->
+    <skip />
+    <!-- no translation found for zen_mode_selected_messages (1047355526202106114) -->
+    <skip />
     <string name="zen_mode_from_anyone" msgid="2638322015361252161">"ຈາກທຸກຄົນ"</string>
     <string name="zen_mode_from_contacts" msgid="2232335406106711637">"ຈາກ​ລາຍ​ຊື່​ຕິດ​ຕໍ່​ເທົ່າ​ນັ້ນ"</string>
     <string name="zen_mode_from_starred" msgid="2678345811950997027">"ຈາກ​ລາຍ​ຊື່​ຕິດ​ຕໍ່​ໃສ່​ດາວ​ໄວ້​ເທົ່າ​ນັ້ນ"</string>
+    <!-- no translation found for zen_calls_summary_starred_repeat (4046151920710059778) -->
+    <skip />
+    <!-- no translation found for zen_calls_summary_contacts_repeat (1528716671301999084) -->
+    <skip />
+    <!-- no translation found for zen_calls_summary_repeat_only (7105261473107715445) -->
+    <skip />
     <string name="zen_mode_from_none" msgid="8219706639954614136">"ບໍ່ມີ"</string>
     <string name="zen_mode_alarms" msgid="2165302777886552926">"ໂມງປຸກ"</string>
     <string name="zen_mode_media" msgid="8808264142134422380">"ມີເດຍ"</string>
     <string name="zen_mode_system" msgid="2541380718411593581">"​ສຽງ​ສຳ​ຜັດ"</string>
     <string name="zen_mode_reminders" msgid="5458502056440485730">"ການແຈ້ງເຕືອນ"</string>
     <string name="zen_mode_events" msgid="7914446030988618264">"ກິດຈະກຳ"</string>
-    <string name="zen_mode_all_callers" msgid="584186167367236922">"ຜູ້​ໂທທັງ​ໝົດ"</string>
-    <string name="zen_mode_selected_callers" msgid="3127598874060615742">"ຜູ້​ໂທ​ທີ່​ເລືອກ​ໄວ້"</string>
+    <!-- no translation found for zen_mode_all_callers (2378065871253871057) -->
+    <skip />
+    <!-- no translation found for zen_mode_contacts_callers (5569804103920394175) -->
+    <skip />
+    <!-- no translation found for zen_mode_starred_callers (1023167821338514140) -->
+    <skip />
     <string name="zen_mode_repeat_callers" msgid="5019521886428322131">"ຜູ້ໂທຊ້ຳໆ"</string>
+    <!-- no translation found for zen_mode_calls_summary_one (2867689575419791866) -->
+    <skip />
+    <!-- no translation found for zen_mode_calls_summary_two (6592821501321201329) -->
+    <skip />
     <string name="zen_mode_repeat_callers_summary" msgid="239685342222975733">"ຫາກຄົນດຽວກັນໂທເທື່ອທີສອງພາຍໃນໄລຍະເວລາ <xliff:g id="MINUTES">%d</xliff:g> ນາທີ"</string>
     <string name="zen_mode_behavior_summary_custom" msgid="168127313238020146">"ກຳນົດເອງ"</string>
     <string name="zen_mode_when" msgid="2767193283311106373">"ເປີດ​ໂດຍ​ອັດ​ຕະ​ໂນ​ມັດ"</string>
@@ -3321,7 +3386,7 @@
     <string name="zen_mode_when_weeknights" msgid="8354070633893273783">"ຄືນ​ວັນ​ຈັນຫາ​ສຸກ"</string>
     <string name="zen_mode_start_time" msgid="8102602297273744441">"ເວລາເລີ່ມ"</string>
     <string name="zen_mode_end_time" msgid="8774327885892705505">"ເວລາສິ້ນສຸດ"</string>
-    <string name="zen_mode_end_time_next_day_summary_format" msgid="4201521691238728701">"<xliff:g id="FORMATTED_TIME">%s</xliff:g> ວັນ​ຕໍ່​ໄປ"</string>
+    <string name="zen_mode_end_time_next_day_summary_format" msgid="4201521691238728701">"<xliff:g id="FORMATTED_TIME">%s</xliff:g> ມື້ຖັດໄປ"</string>
     <string name="zen_mode_summary_alarms_only_indefinite" msgid="2061973221027570123">"ປ່ຽນ​ເປັນ​ໂມງ​ປຸກ​ເທົ່າ​ນັ້ນ​ຢ່າງ​ບໍ່​ມີ​ກຳ​ນົດ"</string>
     <plurals name="zen_mode_summary_alarms_only_by_minute" formatted="false" msgid="6122003583875424601">
       <item quantity="other">ປ່ຽນ​ເປັນ​ໂມງ​ປຸກ​ເປັນ​ເວ​ລາ <xliff:g id="DURATION">%1$d</xliff:g> ນາ​ທີເທົ່າ​ນັ້ນ (ຈົນ​ຮອດ <xliff:g id="FORMATTEDTIME_1">%2$s</xliff:g>)</item>
@@ -3658,7 +3723,7 @@
     <string name="backup_disabled" msgid="485189128759595412">"ການສຳຮອງຂໍ້ມູນຖືກປິດໃຊ້ແລ້ວ"</string>
     <string name="android_version_summary" msgid="2935995161657697278">"ອັບເດດເປັນ Android <xliff:g id="VERSION">%1$s</xliff:g> ແລ້ວ"</string>
     <string name="android_version_pending_update_summary" msgid="487831391976523090">"ມີອັບເດດໃໝ່"</string>
-    <string name="disabled_by_policy_title" msgid="8032916235573765969">"ບໍ່ສາມາດປ່ຽນການຕັ້ງຄ່ານີ້ໄດ້"</string>
+    <string name="disabled_by_policy_title" msgid="627023216027648534">"ບໍ່ອະນຸຍາດໃຫ້ດຳເນີນການ"</string>
     <string name="disabled_by_policy_title_adjust_volume" msgid="3208724801293696486">"ບໍ່ສາມາດປ່ຽນລະດັບສຽງໄດ້"</string>
     <string name="disabled_by_policy_title_outgoing_calls" msgid="7919816644946067058">"ບໍ່ອະນຸຍາດການໂທ"</string>
     <string name="disabled_by_policy_title_sms" msgid="5733307423899610340">"ບໍ່ອະນຸຍາດໃຫ້ໃຊ້ SMS"</string>
@@ -3757,7 +3822,7 @@
     <string name="data_usage_other_apps" msgid="3272872663517382050">"ແອັບອື່ນໆແມ່ນຮວມໃນການນຳໃຊ້"</string>
     <plurals name="data_saver_unrestricted_summary" formatted="false" msgid="2635267833484232703">
       <item quantity="other">ອະນຸຍາດໃຫ້ <xliff:g id="COUNT">%1$d</xliff:g> ແອັບໄດ້ຮັບອະນຸຍາດໃຫ້ໃຊ້ຂໍ້ມູນບໍ່ຈຳກັດ ເມື່ອຕົວປະຢັດຂໍ້ມູນເປີດຢູ່</item>
-      <item quantity="one">ອະນຸຍາດໃຫ້ 1 ແອັບໄດ້ຮັບອະນຸຍາດໃຫ້ໃຊ້ຂໍ້ມູນແບບບໍ່ຈຳກັດ ເມື່ອຕົວປະຢັດຂໍ້ມູນເປີດຢູ່</item>
+      <item quantity="one">ອະນຸຍາດໃຫ້ 1 ແອັບໄດ້ຮັບອະນຸຍາດໃຫ້ໃຊ້ຂໍ້ມູນແບບບໍ່ຈຳກັດ ເມື່ອຕົວປະຢັດອິນເຕີເນັດເປີດຢູ່</item>
     </plurals>
     <string name="data_usage_title" msgid="3659356290392241789">"ຂໍ້ມູນຫຼັກ"</string>
     <string name="data_usage_wifi_title" msgid="7063659423081820720">"ອິນເຕີເນັດ Wi‑Fi"</string>
@@ -3784,7 +3849,7 @@
     <string name="data_saver_off" msgid="6892309031162738794">"ປິດ"</string>
     <string name="data_saver_switch_title" msgid="836312690356005669">"ໃຊ້ຕົວປະຢັດອິນເຕີເນັດ"</string>
     <string name="unrestricted_app_title" msgid="4465437191723332066">"ການໃຊ້ຂໍ້ມູນແບບບໍ່ຈຳກັດ"</string>
-    <string name="unrestricted_app_summary" msgid="6458008993501723912">"ອະນຸຍາດການເຂົ້າເຖິງຂໍ້ມູນແບບບໍ່ຈຳກັດ ເມື່ອຕົວປະຢັດຂໍ້ມູນເປີດຢູ່"</string>
+    <string name="unrestricted_app_summary" msgid="6458008993501723912">"ອະນຸຍາດການເຂົ້າເຖິງຂໍ້ມູນແບບບໍ່ຈຳກັດ ເມື່ອຕົວປະຢັດອິນເຕີເນັດເປີດຢູ່"</string>
     <string name="home_app" msgid="4066188520886810030">"ແອັບໜ້າຫຼັກ"</string>
     <string name="no_default_home" msgid="7184117487704520238">"ບໍ່ມີໜ້າຫຼັກເລີ່ມຕົ້ນ"</string>
     <string name="lockpattern_settings_require_cred_before_startup" msgid="3832020101401318248">"ການເລີ່ມຕົ້ນຢ່າງປອດໄພ"</string>
@@ -3848,7 +3913,8 @@
     <string name="notification_suggestion_title" msgid="387052719462473500">"ຂໍ້ມູນການຄວບຄຸມໃນໜ້າຈໍລັອກ"</string>
     <string name="notification_suggestion_summary" msgid="8521159741445416875">"ສະແດງ ຫຼື ເຊື່ອງເນື້ອຫາການແຈ້ງເຕືອນ"</string>
     <string name="page_tab_title_summary" msgid="4070309266374993258">"ທັງໝົດ"</string>
-    <string name="page_tab_title_support" msgid="8483187649355540109">"ຊ່ວຍເຫຼືອ ແລະ ເຄັດລັບ"</string>
+    <!-- no translation found for page_tab_title_support (4407600495101788249) -->
+    <skip />
     <string name="developer_smallest_width" msgid="7516950434587313360">"ຄວາມກວ້າງນ້ອຍທີ່ສຸດ"</string>
     <string name="premium_sms_none" msgid="8268105565738040566">"ບໍ່ມີແອັບທີ່ຕິດຕັ້ງຮ້ອງຂໍການເຂົ້າເຖິງ SMS ແບບພຣີມຽມ"</string>
     <string name="premium_sms_warning" msgid="9086859595338944882">"SMS ແບບພຣີມຽມອາດເຮັດໃຫ້ທ່ານເສຍເງິນ ແລະ ຈະເພີ່ມຄ່າໃຊ້ຈ່າຍໃຫ້ກັບບິນຜູ້ໃຫ້ບໍລິການຂອງທ່ານ. ຫາກທ່ານເປີດໃຊ້ສິດອະນຸຍາດໃຫ້ກັບແອັບໃດໜຶ່ງ, ທ່ານຈະສາມາດສົ່ງ SMS ແບບພຣີມຽມໂດຍໃຊ້ແອັບນັ້ນໄດ້."</string>
@@ -4073,7 +4139,7 @@
     <string name="media_output_summary" product="device" msgid="5677420090811068649">"ອຸປະກອນ"</string>
     <string name="media_out_summary_ongoing_call_state" msgid="3533731701018680693">"ບໍ່ສາມາດໃຊ້ໄດ້ລະຫວ່າງການໂທ"</string>
     <string name="media_output_summary_unavailable" msgid="7970304720507697019">"ບໍ່ສາມາດໃຊ້ໄດ້"</string>
-    <string name="take_call_on_title" msgid="6066362463436122655">"Take call on"</string>
+    <string name="take_call_on_title" msgid="6066362463436122655">"ຮັບສາຍຢູ່"</string>
     <string name="battery_suggestion_title" product="tablet" msgid="752439050748267917">"ປັບປຸງອາຍຸແບັດເຕີຣີແທັບເລັດ"</string>
     <string name="battery_suggestion_title" product="device" msgid="1507272328369733005">"ປັບປຸງອາຍຸແບັດເຕີຣີອຸປະກອນ"</string>
     <string name="battery_suggestion_title" product="default" msgid="4038053023336285165">"ປັບປຸງອາຍຸແບັດເຕີຣີໂທລະສັບ"</string>
