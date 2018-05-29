@@ -88,23 +88,14 @@ public class ZenModeVisEffectsCustomPreferenceControllerTest {
     }
 
     @Test
-    public void isAvailable_menuOff_noVisEffects() {
+    public void isAvailable_noVisEffects() {
         mBackend.mPolicy = new NotificationManager.Policy(0, 0, 0, 0);
-        mController.mShowMenuSelected = false;
-        assertThat(mController.isAvailable()).isFalse();
-    }
-
-    @Test
-    public void isAvailable_menuOn_noVisEffects() {
-        mBackend.mPolicy = new NotificationManager.Policy(0, 0, 0, 0);
-        mController.mShowMenuSelected = true;
         assertThat(mController.isAvailable()).isTrue();
     }
 
     @Test
-    public void isAvailable_menuOn_visEffects() {
+    public void isAvailable_visEffects() {
         mBackend.mPolicy = new NotificationManager.Policy(0, 0, 0, 1);
-        mController.mShowMenuSelected = false;
         assertThat(mController.isAvailable()).isTrue();
     }
 
@@ -149,19 +140,5 @@ public class ZenModeVisEffectsCustomPreferenceControllerTest {
 
         verify(mockPref).setOnGearClickListener(any());
         verify(mockPref).setOnRadioButtonClickListener(any());
-    }
-
-    @Test
-    public void select() {
-        int interruptiveSuppressed = SUPPRESSED_EFFECT_FULL_SCREEN_INTENT
-                | SUPPRESSED_EFFECT_AMBIENT
-                | SUPPRESSED_EFFECT_LIGHTS
-                | SUPPRESSED_EFFECT_PEEK;
-        mBackend.mPolicy = new NotificationManager.Policy(0, 0, 0, 1);
-        mController.select();
-        verify(mBackend).savePolicy(anyInt(), anyInt(), anyInt(), eq(interruptiveSuppressed));
-        verify(mFeatureFactory.metricsFeatureProvider).action(eq(mContext),
-                eq(ACTION_ZEN_CUSTOM),
-                eq(true));
     }
 }

@@ -19,7 +19,6 @@ package com.android.settings.notification;
 import android.app.NotificationManager.Policy;
 import android.content.Context;
 import android.support.v7.preference.Preference;
-import android.support.v7.preference.PreferenceScreen;
 
 import com.android.internal.logging.nano.MetricsProto;
 import com.android.settings.R;
@@ -29,7 +28,6 @@ import com.android.settingslib.core.lifecycle.Lifecycle;
 public class ZenModeVisEffectsCustomPreferenceController
         extends AbstractZenModePreferenceController {
 
-    protected boolean mShowMenuSelected;
     protected static final int INTERRUPTIVE_EFFECTS = Policy.SUPPRESSED_EFFECT_AMBIENT
             | Policy.SUPPRESSED_EFFECT_PEEK
             | Policy.SUPPRESSED_EFFECT_LIGHTS
@@ -42,11 +40,7 @@ public class ZenModeVisEffectsCustomPreferenceController
 
     @Override
     public boolean isAvailable() {
-        if (mShowMenuSelected) {
-            return true;
-        }
-
-        return areCustomOptionsSelected();
+        return true;
     }
 
     @Override
@@ -57,20 +51,12 @@ public class ZenModeVisEffectsCustomPreferenceController
         pref.setChecked(areCustomOptionsSelected());
 
         pref.setOnGearClickListener(p -> {
-            new SubSettingLauncher(mContext)
-                    .setDestination(ZenModeBlockedEffectsSettings.class.getName())
-                    .setTitle(R.string.zen_mode_what_to_block_title)
-                    .setSourceMetricsCategory(MetricsProto.MetricsEvent.SETTINGS_ZEN_NOTIFICATIONS)
-                    .launch();
+            launchCustomSettings();
         });
 
         pref.setOnRadioButtonClickListener(p -> {
-            select();
+            launchCustomSettings();
         });
-    }
-
-    protected void setShownByMenu(boolean shown) {
-        mShowMenuSelected = shown;
     }
 
     protected boolean areCustomOptionsSelected() {
@@ -84,9 +70,14 @@ public class ZenModeVisEffectsCustomPreferenceController
     protected void select() {
         mMetricsFeatureProvider.action(mContext,
                 MetricsProto.MetricsEvent.ACTION_ZEN_CUSTOM, true);
-        mBackend.savePolicy(mBackend.mPolicy.priorityCategories,
-                mBackend.mPolicy.priorityCallSenders,
-                mBackend.mPolicy.priorityMessageSenders,
-                INTERRUPTIVE_EFFECTS);
+    }
+
+    private void launchCustomSettings() {
+        select();
+        new SubSettingLauncher(mContext)
+                .setDestination(ZenModeBlockedEffectsSettings.class.getName())
+                .setTitle(R.string.zen_mode_what_to_block_title)
+                .setSourceMetricsCategory(MetricsProto.MetricsEvent.SETTINGS_ZEN_NOTIFICATIONS)
+                .launch();
     }
 }

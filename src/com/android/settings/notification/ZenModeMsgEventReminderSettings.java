@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 The Android Open Source Project
+ * Copyright (C) 2018 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package com.android.settings.notification;
 
+import static android.app.NotificationManager.Policy.PRIORITY_CATEGORY_MESSAGES;
+
 import android.content.Context;
 import android.provider.SearchIndexableResource;
 
@@ -29,7 +31,7 @@ import com.android.settingslib.core.lifecycle.Lifecycle;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ZenModeBehaviorSettings extends ZenModeSettingsBase implements Indexable {
+public class ZenModeMsgEventReminderSettings extends ZenModeSettingsBase implements Indexable {
 
     @Override
     protected List<AbstractPreferenceController> createPreferenceControllers(Context context) {
@@ -39,23 +41,19 @@ public class ZenModeBehaviorSettings extends ZenModeSettingsBase implements Inde
     private static List<AbstractPreferenceController> buildPreferenceControllers(Context context,
             Lifecycle lifecycle) {
         List<AbstractPreferenceController> controllers = new ArrayList<>();
-        controllers.add(new ZenModeAlarmsPreferenceController(context, lifecycle));
-        controllers.add(new ZenModeMediaPreferenceController(context, lifecycle));
-        controllers.add(new ZenModeSystemPreferenceController(context, lifecycle));
         controllers.add(new ZenModeEventsPreferenceController(context, lifecycle));
         controllers.add(new ZenModeRemindersPreferenceController(context, lifecycle));
         controllers.add(new ZenModeMessagesPreferenceController(context, lifecycle));
-        controllers.add(new ZenModeCallsPreferenceController(context, lifecycle));
-        controllers.add(new ZenModeRepeatCallersPreferenceController(context, lifecycle,
-                context.getResources().getInteger(com.android.internal.R.integer
-                .config_zen_repeat_callers_threshold)));
-        controllers.add(new ZenModeBehaviorFooterPreferenceController(context, lifecycle));
+        controllers.add(new ZenModeStarredContactsPreferenceController(context, lifecycle,
+                PRIORITY_CATEGORY_MESSAGES));
+        controllers.add(new ZenModeBehaviorFooterPreferenceController(context, lifecycle,
+                R.string.zen_msg_event_reminder_footer));
         return controllers;
     }
 
     @Override
     protected int getPreferenceScreenResId() {
-        return R.xml.zen_mode_behavior_settings;
+        return R.xml.zen_mode_msg_event_reminder_settings;
     }
 
     @Override
@@ -75,7 +73,7 @@ public class ZenModeBehaviorSettings extends ZenModeSettingsBase implements Inde
                     final ArrayList<SearchIndexableResource> result = new ArrayList<>();
 
                     final SearchIndexableResource sir = new SearchIndexableResource(context);
-                    sir.xmlResId = R.xml.zen_mode_behavior_settings;
+                    sir.xmlResId = R.xml.zen_mode_msg_event_reminder_settings;
                     result.add(sir);
                     return result;
                 }
