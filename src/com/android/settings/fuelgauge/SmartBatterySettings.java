@@ -60,6 +60,11 @@ public class SmartBatterySettings extends DashboardFragment {
     }
 
     @Override
+    public int getHelpResource() {
+        return R.string.help_uri_smart_battery_settings;
+    }
+
+    @Override
     protected List<AbstractPreferenceController> createPreferenceControllers(Context context) {
         return buildPreferenceControllers(context, (SettingsActivity) getActivity(), this);
     }
@@ -71,7 +76,7 @@ public class SmartBatterySettings extends DashboardFragment {
         controllers.add(new SmartBatteryPreferenceController(context));
         if (settingsActivity != null && fragment != null) {
             controllers.add(
-                    new RestrictAppPreferenceController(settingsActivity, fragment));
+                    new RestrictAppPreferenceController(fragment));
         } else {
             controllers.add(new RestrictAppPreferenceController(context));
         }

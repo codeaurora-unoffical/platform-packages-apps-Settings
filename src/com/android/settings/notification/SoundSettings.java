@@ -48,7 +48,6 @@ public class SoundSettings extends DashboardFragment {
     private static final String SELECTED_PREFERENCE_KEY = "selected_preference";
     private static final int REQUEST_CODE = 200;
     private static final String KEY_ZEN_MODE = "zen_mode";
-
     private static final int SAMPLE_CUTOFF = 2000;  // manually cap sample playback at 2 seconds
 
     @VisibleForTesting
@@ -146,10 +145,17 @@ public class SoundSettings extends DashboardFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        use(AlarmVolumePreferenceController.class).setCallback(mVolumeCallback);
-        use(MediaVolumePreferenceController.class).setCallback(mVolumeCallback);
-        use(RingVolumePreferenceController.class).setCallback(mVolumeCallback);
-        use(NotificationVolumePreferenceController.class).setCallback(mVolumeCallback);
+        ArrayList<VolumeSeekBarPreferenceController> volumeControllers = new ArrayList<>();
+        volumeControllers.add(use(AlarmVolumePreferenceController.class));
+        volumeControllers.add(use(MediaVolumePreferenceController.class));
+        volumeControllers.add(use(RingVolumePreferenceController.class));
+        volumeControllers.add(use(NotificationVolumePreferenceController.class));
+        volumeControllers.add(use(CallVolumePreferenceController.class));
+
+        for (VolumeSeekBarPreferenceController controller : volumeControllers) {
+            controller.setCallback(mVolumeCallback);
+            getLifecycle().addObserver(controller);
+        }
     }
 
     // === Volumes ===
@@ -188,7 +194,6 @@ public class SoundSettings extends DashboardFragment {
             SoundSettings fragment, Lifecycle lifecycle) {
         final List<AbstractPreferenceController> controllers = new ArrayList<>();
         controllers.add(new ZenModePreferenceController(context, lifecycle, KEY_ZEN_MODE));
-        controllers.add(new VibrateWhenRingPreferenceController(context));
 
         // Volumes are added via xml
 

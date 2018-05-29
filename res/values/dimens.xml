@@ -191,6 +191,7 @@
 
     <!-- WiFi Preferences -->
     <dimen name="wifi_divider_height">1px</dimen>
+    <dimen name="wifi_ap_band_checkbox_padding">16dp</dimen>
 
     <!-- Color picker -->
     <dimen name="color_swatch_size">16dp</dimen>
@@ -287,7 +288,6 @@
     <!-- Padding for Gestures settings screen -->
     <dimen name="gestures_settings_padding_top_bottom">20dp</dimen>
     <dimen name="gestures_play_button_size">36dp</dimen>
-    <dimen name="gesture_animation_padding">0dp</dimen>
 
     <dimen name="password_requirement_textsize">14sp</dimen>
 

@@ -67,12 +67,12 @@ public class RestrictedAppDetails extends DashboardFragment {
     private final FooterPreferenceMixin mFooterPreferenceMixin =
             new FooterPreferenceMixin(this, getLifecycle());
 
-    public static void startRestrictedAppDetails(SettingsActivity caller,
-            InstrumentedPreferenceFragment fragment, List<AppInfo> appInfos) {
+    public static void startRestrictedAppDetails(InstrumentedPreferenceFragment fragment,
+            List<AppInfo> appInfos) {
         final Bundle args = new Bundle();
         args.putParcelableList(EXTRA_APP_INFO_LIST, appInfos);
 
-        new SubSettingLauncher(caller)
+        new SubSettingLauncher(fragment.getContext())
                 .setDestination(RestrictedAppDetails.class.getName())
                 .setArguments(args)
                 .setTitle(R.string.restricted_app_title)
@@ -122,6 +122,11 @@ public class RestrictedAppDetails extends DashboardFragment {
         return MetricsProto.MetricsEvent.FUELGAUGE_RESTRICTED_APP_DETAILS;
     }
 
+    @Override
+    public int getHelpResource() {
+        return R.string.help_uri_restricted_apps;
+    }
+
     @VisibleForTesting
     void refreshUi() {
         mRestrictedAppListGroup.removeAll();
@@ -133,7 +138,8 @@ public class RestrictedAppDetails extends DashboardFragment {
             try {
                 final ApplicationInfo applicationInfo = mPackageManager.getApplicationInfoAsUser(
                         appInfo.packageName, 0 /* flags */, UserHandle.getUserId(appInfo.uid));
-                checkBoxPreference.setChecked(true);
+                checkBoxPreference.setChecked(
+                        mBatteryUtils.isForceAppStandbyEnabled(appInfo.uid, appInfo.packageName));
                 checkBoxPreference.setTitle(mPackageManager.getApplicationLabel(applicationInfo));
                 checkBoxPreference.setIcon(
                         Utils.getBadgedIcon(mIconDrawableFactory, mPackageManager,

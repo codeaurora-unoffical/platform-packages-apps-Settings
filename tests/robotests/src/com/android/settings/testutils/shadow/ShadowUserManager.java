@@ -31,8 +31,10 @@ import org.robolectric.shadow.api.Shadow;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Implements(value = UserManager.class, inheritImplementationMethods = true)
 public class ShadowUserManager extends org.robolectric.shadows.ShadowUserManager {
@@ -40,12 +42,18 @@ public class ShadowUserManager extends org.robolectric.shadows.ShadowUserManager
     private SparseArray<UserInfo> mUserInfos = new SparseArray<>();
     private final List<String> mRestrictions = new ArrayList<>();
     private final Map<String, List<EnforcingUser>> mRestrictionSources = new HashMap<>();
-    private List<UserInfo> mUserProfileInfos = new ArrayList<>();
+    private final List<UserInfo> mUserProfileInfos = new ArrayList<>();
+    private final Set<Integer> mManagedProfiles = new HashSet<>();
+    private boolean mIsQuietModeEnabled = false;
 
     @Resetter
     public void reset() {
+        mUserInfos.clear();
         mRestrictions.clear();
         mUserProfileInfos.clear();
+        mRestrictionSources.clear();
+        mManagedProfiles.clear();
+        mIsQuietModeEnabled = false;
     }
 
     public void setUserInfo(int userHandle, UserInfo userInfo) {
@@ -94,5 +102,23 @@ public class ShadowUserManager extends org.robolectric.shadows.ShadowUserManager
     public void setUserRestrictionSources(
             String restrictionKey, UserHandle userHandle, List<EnforcingUser> enforcers) {
         mRestrictionSources.put(restrictionKey + userHandle.getIdentifier(), enforcers);
+    }
+
+    @Implementation
+    public boolean isManagedProfile(@UserIdInt int userId) {
+        return mManagedProfiles.contains(userId);
+    }
+
+    public void addManagedProfile(int userId) {
+        mManagedProfiles.add(userId);
+    }
+
+    @Implementation
+    public boolean isQuietModeEnabled(UserHandle userHandle) {
+        return mIsQuietModeEnabled;
+    }
+
+    public void setQuietModeEnabled(boolean enabled) {
+        mIsQuietModeEnabled = enabled;
     }
 }

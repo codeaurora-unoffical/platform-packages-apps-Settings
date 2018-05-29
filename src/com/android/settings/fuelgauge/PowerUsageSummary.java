@@ -16,6 +16,8 @@
 
 package com.android.settings.fuelgauge;
 
+import static com.android.settings.fuelgauge.BatteryBroadcastReceiver.BatteryUpdateType;
+
 import android.app.Activity;
 import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
@@ -25,6 +27,7 @@ import android.os.BatteryStats;
 import android.os.Bundle;
 import android.provider.SearchIndexableResource;
 import android.support.annotation.VisibleForTesting;
+import android.text.BidiFormatter;
 import android.text.format.Formatter;
 import android.util.SparseArray;
 import android.view.Menu;
@@ -107,7 +110,8 @@ public class PowerUsageSummary extends PowerUsageBase implements OnLongClickList
     BatteryHeaderPreferenceController mBatteryHeaderPreferenceController;
     @VisibleForTesting
     boolean mNeedUpdateBatteryTip;
-    private BatteryTipPreferenceController mBatteryTipPreferenceController;
+    @VisibleForTesting
+    BatteryTipPreferenceController mBatteryTipPreferenceController;
     private int mStatsType = BatteryStats.STATS_SINCE_CHARGED;
 
     @VisibleForTesting
@@ -213,8 +217,8 @@ public class PowerUsageSummary extends PowerUsageBase implements OnLongClickList
         mAnomalySparseArray = new SparseArray<>();
 
         restartBatteryInfoLoader();
-        mNeedUpdateBatteryTip = icicle == null;
         mBatteryTipPreferenceController.restoreInstanceState(icicle);
+        updateBatteryTipFlag(icicle);
     }
 
     @Override
@@ -275,7 +279,7 @@ public class PowerUsageSummary extends PowerUsageBase implements OnLongClickList
                 } else {
                     mStatsType = BatteryStats.STATS_SINCE_CHARGED;
                 }
-                refreshUi();
+                refreshUi(BatteryUpdateType.MANUAL);
                 return true;
             case MENU_ADVANCED_BATTERY:
                 new SubSettingLauncher(getContext())
@@ -289,14 +293,15 @@ public class PowerUsageSummary extends PowerUsageBase implements OnLongClickList
         }
     }
 
-    protected void refreshUi() {
+    protected void refreshUi(@BatteryUpdateType int refreshType) {
         final Context context = getContext();
         if (context == null) {
             return;
         }
 
-        // Only skip BatteryTipLoader for the first time when device is rotated
-        if (mNeedUpdateBatteryTip) {
+        // Skip BatteryTipLoader if device is rotated or only battery level change
+        if (mNeedUpdateBatteryTip
+                && refreshType != BatteryUpdateType.BATTERY_LEVEL) {
             restartBatteryTipLoader();
         } else {
             mNeedUpdateBatteryTip = true;
@@ -382,6 +387,11 @@ public class PowerUsageSummary extends PowerUsageBase implements OnLongClickList
         }
     }
 
+    @VisibleForTesting
+    void updateBatteryTipFlag(Bundle icicle) {
+        mNeedUpdateBatteryTip = icicle == null || mBatteryTipPreferenceController.needUpdate();
+    }
+
     @Override
     public boolean onLongClick(View view) {
         showBothEstimates();
@@ -390,21 +400,15 @@ public class PowerUsageSummary extends PowerUsageBase implements OnLongClickList
     }
 
     @Override
-    protected void restartBatteryStatsLoader() {
-        restartBatteryStatsLoader(true /* clearHeader */);
+    protected void restartBatteryStatsLoader(@BatteryUpdateType int refreshType) {
+        super.restartBatteryStatsLoader(refreshType);
+        mBatteryHeaderPreferenceController.quickUpdateHeaderPreference();
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         mBatteryTipPreferenceController.saveInstanceState(outState);
-    }
-
-    void restartBatteryStatsLoader(boolean clearHeader) {
-        super.restartBatteryStatsLoader();
-        if (clearHeader) {
-            mBatteryHeaderPreferenceController.quickUpdateHeaderPreference();
-        }
     }
 
     @Override
@@ -421,11 +425,11 @@ public class PowerUsageSummary extends PowerUsageBase implements OnLongClickList
             mContext = context;
             mLoader = loader;
             mBatteryBroadcastReceiver = new BatteryBroadcastReceiver(mContext);
-            mBatteryBroadcastReceiver.setBatteryChangedListener(() -> {
+            mBatteryBroadcastReceiver.setBatteryChangedListener(type -> {
                 BatteryInfo.getBatteryInfo(mContext, new BatteryInfo.Callback() {
                     @Override
                     public void onBatteryInfoLoaded(BatteryInfo info) {
-                        mLoader.setSummary(SummaryProvider.this, info.chargeLabel);
+                        mLoader.setSummary(SummaryProvider.this, getDashboardLabel(mContext, info));
                     }
                 }, true /* shortString */);
             });
@@ -439,6 +443,20 @@ public class PowerUsageSummary extends PowerUsageBase implements OnLongClickList
                 mBatteryBroadcastReceiver.unRegister();
             }
         }
+    }
+
+    @VisibleForTesting
+    static CharSequence getDashboardLabel(Context context, BatteryInfo info) {
+        CharSequence label;
+        final BidiFormatter formatter = BidiFormatter.getInstance();
+        if (info.remainingLabel == null) {
+            label = info.batteryPercentString;
+        } else {
+            label = context.getString(R.string.power_remaining_settings_home_page,
+                    formatter.unicodeWrap(info.batteryPercentString),
+                    formatter.unicodeWrap(info.remainingLabel));
+        }
+        return label;
     }
 
     public static final SearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =

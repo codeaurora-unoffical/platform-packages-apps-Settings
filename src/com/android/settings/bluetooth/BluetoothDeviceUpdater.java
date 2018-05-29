@@ -28,17 +28,15 @@ import com.android.settings.connecteddevice.DevicePreferenceCallback;
 import com.android.settings.core.SubSettingLauncher;
 import com.android.settings.dashboard.DashboardFragment;
 import com.android.settings.widget.GearPreference;
-import com.android.settingslib.bluetooth.A2dpProfile;
 import com.android.settingslib.bluetooth.BluetoothCallback;
 import com.android.settingslib.bluetooth.BluetoothDeviceFilter;
 import com.android.settingslib.bluetooth.CachedBluetoothDevice;
-import com.android.settingslib.bluetooth.HeadsetProfile;
 import com.android.settingslib.bluetooth.LocalBluetoothManager;
+import com.android.settingslib.bluetooth.LocalBluetoothProfileManager;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Update the bluetooth devices. It gets bluetooth event from {@link LocalBluetoothManager} using
@@ -48,7 +46,8 @@ import java.util.Objects;
  * In {@link BluetoothDeviceUpdater}, it uses {@link BluetoothDeviceFilter.Filter} to detect
  * whether the {@link CachedBluetoothDevice} is relevant.
  */
-public abstract class BluetoothDeviceUpdater implements BluetoothCallback {
+public abstract class BluetoothDeviceUpdater implements BluetoothCallback,
+        LocalBluetoothProfileManager.ServiceListener {
     private static final String TAG = "BluetoothDeviceUpdater";
     private static final String BLUETOOTH_SHOW_DEVICES_WITHOUT_NAMES_PROPERTY =
             "persist.bluetooth.showdeviceswithoutnames";
@@ -57,41 +56,14 @@ public abstract class BluetoothDeviceUpdater implements BluetoothCallback {
     protected final DevicePreferenceCallback mDevicePreferenceCallback;
     protected final Map<BluetoothDevice, Preference> mPreferenceMap;
     protected Context mPrefContext;
+    protected DashboardFragment mFragment;
 
     private final boolean mShowDeviceWithoutNames;
-    private DashboardFragment mFragment;
-    private Preference.OnPreferenceClickListener mDevicePreferenceClickListener = null;
-
+    
     @VisibleForTesting
     final GearPreference.OnGearClickListener mDeviceProfilesListener = pref -> {
-        final CachedBluetoothDevice device =
-                ((BluetoothDevicePreference) pref).getBluetoothDevice();
-        if (device == null) {
-            return;
-        }
-        final Bundle args = new Bundle();
-        args.putString(BluetoothDeviceDetailsFragment.KEY_DEVICE_ADDRESS,
-                device.getDevice().getAddress());
-
-        new SubSettingLauncher(mFragment.getContext())
-                .setDestination(BluetoothDeviceDetailsFragment.class.getName())
-                .setArguments(args)
-                .setTitle(R.string.device_details_title)
-                .setSourceMetricsCategory(mFragment.getMetricsCategory())
-                .launch();
-
+        launchDeviceDetails(pref);
     };
-
-    private class PreferenceClickListener implements
-        Preference.OnPreferenceClickListener {
-        @Override
-        public boolean onPreferenceClick(Preference preference) {
-            final CachedBluetoothDevice device =
-                ((BluetoothDevicePreference) preference).getBluetoothDevice();
-            Log.i(TAG, "OnPreferenceClickListener: device=" + device);
-            return device.setActive();
-        }
-    }
 
     public BluetoothDeviceUpdater(Context context, DashboardFragment fragment,
             DevicePreferenceCallback devicePreferenceCallback) {
@@ -107,7 +79,6 @@ public abstract class BluetoothDeviceUpdater implements BluetoothCallback {
                 BLUETOOTH_SHOW_DEVICES_WITHOUT_NAMES_PROPERTY, false);
         mPreferenceMap = new HashMap<>();
         mLocalManager = localManager;
-        mDevicePreferenceClickListener = new PreferenceClickListener();
     }
 
     /**
@@ -116,6 +87,7 @@ public abstract class BluetoothDeviceUpdater implements BluetoothCallback {
     public void registerCallback() {
         mLocalManager.setForegroundActivity(mFragment.getContext());
         mLocalManager.getEventManager().registerCallback(this);
+        mLocalManager.getProfileManager().addServiceListener(this);
         forceUpdate();
     }
 
@@ -125,6 +97,7 @@ public abstract class BluetoothDeviceUpdater implements BluetoothCallback {
     public void unregisterCallback() {
         mLocalManager.setForegroundActivity(null);
         mLocalManager.getEventManager().unregisterCallback(this);
+        mLocalManager.getProfileManager().removeServiceListener(this);
     }
 
     /**
@@ -152,7 +125,12 @@ public abstract class BluetoothDeviceUpdater implements BluetoothCallback {
     }
 
     @Override
-    public void onDeviceDeleted(CachedBluetoothDevice cachedDevice) {}
+    public void onDeviceDeleted(CachedBluetoothDevice cachedDevice) {
+        // Used to combine the hearing aid entries just after pairing. Once both the hearing aids
+        // get connected and their hiSyncId gets populated, this gets called for one of the
+        // 2 hearing aids so that only one entry in the connected devices list will be seen.
+        removePreference(cachedDevice);
+    }
 
     @Override
     public void onDeviceBondStateChanged(CachedBluetoothDevice cachedDevice, int bondState) {
@@ -170,6 +148,22 @@ public abstract class BluetoothDeviceUpdater implements BluetoothCallback {
     public void onAudioModeChanged() {
     }
 
+    @Override
+    public void onProfileConnectionStateChanged(CachedBluetoothDevice cachedDevice, int state,
+            int bluetoothProfile) {
+    }
+
+    @Override
+    public void onServiceConnected() {
+        // When bluetooth service connected update the UI
+        forceUpdate();
+    }
+
+    @Override
+    public void onServiceDisconnected() {
+
+    }
+
     /**
      * Set the context to generate the {@link Preference}, so it could get the correct theme.
      */
@@ -184,7 +178,7 @@ public abstract class BluetoothDeviceUpdater implements BluetoothCallback {
     public abstract boolean isFilterMatched(CachedBluetoothDevice cachedBluetoothDevice);
 
     /**
-     * Update whether to show {@cde cachedBluetoothDevice} in the list.
+     * Update whether to show {@link CachedBluetoothDevice} in the list.
      */
     protected void update(CachedBluetoothDevice cachedBluetoothDevice) {
         if (isFilterMatched(cachedBluetoothDevice)) {
@@ -205,7 +199,10 @@ public abstract class BluetoothDeviceUpdater implements BluetoothCallback {
                     new BluetoothDevicePreference(mPrefContext, cachedDevice,
                             mShowDeviceWithoutNames);
             btPreference.setOnGearClickListener(mDeviceProfilesListener);
-            btPreference.setOnPreferenceClickListener(mDevicePreferenceClickListener);
+            if (this instanceof Preference.OnPreferenceClickListener) {
+                btPreference.setOnPreferenceClickListener(
+                        (Preference.OnPreferenceClickListener)this);
+            }
             mPreferenceMap.put(device, btPreference);
             mDevicePreferenceCallback.onDeviceAdded(btPreference);
         }
@@ -220,5 +217,39 @@ public abstract class BluetoothDeviceUpdater implements BluetoothCallback {
             mDevicePreferenceCallback.onDeviceRemoved(mPreferenceMap.get(device));
             mPreferenceMap.remove(device);
         }
+    }
+
+    /**
+     * Get {@link CachedBluetoothDevice} from {@link Preference} and it is used to init
+     * {@link SubSettingLauncher} to launch {@link BluetoothDeviceDetailsFragment}
+     */
+    protected void launchDeviceDetails(Preference preference) {
+        final CachedBluetoothDevice device =
+                ((BluetoothDevicePreference) preference).getBluetoothDevice();
+        if (device == null) {
+            return;
+        }
+        final Bundle args = new Bundle();
+        args.putString(BluetoothDeviceDetailsFragment.KEY_DEVICE_ADDRESS,
+                device.getDevice().getAddress());
+
+        new SubSettingLauncher(mFragment.getContext())
+                .setDestination(BluetoothDeviceDetailsFragment.class.getName())
+                .setArguments(args)
+                .setTitle(R.string.device_details_title)
+                .setSourceMetricsCategory(mFragment.getMetricsCategory())
+                .launch();
+    }
+
+    /**
+     * @return {@code true} if {@code cachedBluetoothDevice} is connected
+     * and the bond state is bonded.
+     */
+    public boolean isDeviceConnected(CachedBluetoothDevice cachedDevice) {
+        if (cachedDevice == null) {
+            return false;
+        }
+        final BluetoothDevice device = cachedDevice.getDevice();
+        return device.getBondState() == BluetoothDevice.BOND_BONDED && device.isConnected();
     }
 }

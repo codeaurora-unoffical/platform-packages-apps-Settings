@@ -67,7 +67,7 @@
   </string-array>
   <string-array name="wifi_status">
     <item msgid="1922181315419294640"></item>
-    <item msgid="8934131797783724664">"Ricerca..."</item>
+    <item msgid="8934131797783724664">"Scansione in corso..."</item>
     <item msgid="8513729475867537913">"Connessione..."</item>
     <item msgid="515055375277271756">"Autenticazione..."</item>
     <item msgid="1943354004029184381">"Acquisizione indirizzo IP..."</item>
@@ -81,7 +81,7 @@
   </string-array>
   <string-array name="wifi_status_with_ssid">
     <item msgid="7714855332363650812"></item>
-    <item msgid="8878186979715711006">"Ricerca..."</item>
+    <item msgid="8878186979715711006">"Scansione in corso..."</item>
     <item msgid="355508996603873860">"Connessione a <xliff:g id="NETWORK_NAME">%1$s</xliff:g>..."</item>
     <item msgid="554971459996405634">"Autenticazione con <xliff:g id="NETWORK_NAME">%1$s</xliff:g>..."</item>
     <item msgid="7928343808033020343">"Acquisizione indirizzo IP da <xliff:g id="NETWORK_NAME">%1$s</xliff:g>..."</item>
@@ -117,7 +117,8 @@
   </string-array>
     <!-- no translation found for wifi_ap_band_config_full:0 (1085243288162893079) -->
     <!-- no translation found for wifi_ap_band_config_full:1 (5531376834915607202) -->
-    <!-- no translation found for wifi_ap_band_config_full:2 (3580217704310339410) -->
+    <!-- no translation found for wifi_ap_band_summary_full:0 (7176872102094020362) -->
+    <!-- no translation found for wifi_ap_band_summary_full:1 (311895158827229479) -->
     <!-- no translation found for wifi_ap_band_config_2G_only:0 (7006771583217001015) -->
     <!-- no translation found for wifi_ap_band_config_2G_only:1 (8904289885593822837) -->
   <string-array name="wifi_p2p_wps_setup">
@@ -398,7 +399,7 @@
   <string-array name="captioning_font_size_selector_titles">
     <item msgid="4800919809575254054">"Molto piccole"</item>
     <item msgid="6781094565687692782">"Piccole"</item>
-    <item msgid="8222123259497646551">"Normale"</item>
+    <item msgid="8222123259497646551">"Normali"</item>
     <item msgid="5813217276778560466">"Grandi"</item>
     <item msgid="9044232017390975191">"Molto grandi"</item>
   </string-array>
@@ -492,8 +493,10 @@
     <item msgid="8745603368609022803">"Considera misurata"</item>
     <item msgid="2266114985518865625">"Considera non misurata"</item>
   </string-array>
-    <!-- no translation found for wifi_hidden_entries:0 (234221371123852300) -->
-    <!-- no translation found for wifi_hidden_entries:1 (3863157480502955888) -->
+  <string-array name="wifi_hidden_entries">
+    <item msgid="234221371123852300">"No"</item>
+    <item msgid="3863157480502955888">"Sì"</item>
+  </string-array>
   <string-array name="dark_ui_mode_entries">
     <item msgid="146804192658443142">"Automatica (in base all\'ora del giorno)"</item>
     <item msgid="6620560879508595181">"Sempre attiva"</item>

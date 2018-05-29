@@ -1,4 +1,37 @@
 /*
+ *Copyright (c) 2018, The Linux Foundation. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted (subject to the limitations in the
+ * disclaimer below) provided that the following conditions are met:
+ *
+ *    * Redistributions of source code must retain the above copyright
+ *      notice, this list of conditions and the following disclaimer.
+ *
+ *    * Redistributions in binary form must reproduce the above
+ *      copyright notice, this list of conditions and the following
+ *      disclaimer in the documentation and/or other materials provided
+ *      with the distribution.
+ *
+ *    * Neither the name of The Linux Foundation nor the names of its
+ *      contributors may be used to endorse or promote products derived
+ *      from this software without specific prior written permission.
+
+ * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE
+ * GRANTED BY THIS LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT
+ * HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+ * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+ * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+/*
  * Copyright (C) 2016 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +55,6 @@ import android.support.annotation.VisibleForTesting;
 
 import com.android.internal.logging.nano.MetricsProto;
 import com.android.settings.R;
-import com.android.settings.bluetooth.BluetoothSwitchPreferenceController;
 import com.android.settings.dashboard.DashboardFragment;
 import com.android.settings.dashboard.SummaryLoader;
 import com.android.settings.nfc.NfcPreferenceController;
@@ -41,7 +73,7 @@ public class ConnectedDeviceDashboardFragment extends DashboardFragment {
     @VisibleForTesting
     static final String KEY_CONNECTED_DEVICES = "connected_device_list";
     @VisibleForTesting
-    static final String KEY_SAVED_DEVICES = "saved_device_list";
+    static final String KEY_AVAILABLE_DEVICES = "available_device_list";
 
     @Override
     public int getMetricsCategory() {
@@ -65,29 +97,29 @@ public class ConnectedDeviceDashboardFragment extends DashboardFragment {
 
     @Override
     protected List<AbstractPreferenceController> createPreferenceControllers(Context context) {
-        return buildPreferenceControllers(context, getLifecycle(), this);
+        return buildPreferenceControllers(context, getLifecycle());
     }
 
     private static List<AbstractPreferenceController> buildPreferenceControllers(Context context,
-            Lifecycle lifecycle, DashboardFragment dashboardFragment) {
+            Lifecycle lifecycle) {
         final List<AbstractPreferenceController> controllers = new ArrayList<>();
-        controllers.add(new ConnectedDeviceGroupController(context, dashboardFragment, lifecycle));
-        controllers.add(new SavedDeviceGroupController(context, dashboardFragment, lifecycle));
-
         final NfcPreferenceController nfcPreferenceController =
                 new NfcPreferenceController(context);
         controllers.add(nfcPreferenceController);
 
-        final BluetoothSwitchPreferenceController bluetoothPreferenceController =
-                new BluetoothSwitchPreferenceController(context);
-        controllers.add(bluetoothPreferenceController);
-
         if (lifecycle != null) {
             lifecycle.addObserver(nfcPreferenceController);
-            lifecycle.addObserver(bluetoothPreferenceController);
         }
 
         return controllers;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        use(AvailableMediaDeviceGroupController.class).init(this);
+        use(ConnectedDeviceGroupController.class).init(this);
+        use(SavedTwsDeviceGroupController.class).init(this);
     }
 
     @VisibleForTesting
@@ -143,16 +175,15 @@ public class ConnectedDeviceDashboardFragment extends DashboardFragment {
                 @Override
                 public List<AbstractPreferenceController> createPreferenceControllers(Context
                         context) {
-                    return buildPreferenceControllers(context, null /* lifecycle */,
-                            null /* dashboardFragment */);
+                    return buildPreferenceControllers(context, null /* lifecycle */);
                 }
 
                 @Override
                 public List<String> getNonIndexableKeys(Context context) {
                     List<String> keys = super.getNonIndexableKeys(context);
                     // Disable because they show dynamic data
+                    keys.add(KEY_AVAILABLE_DEVICES);
                     keys.add(KEY_CONNECTED_DEVICES);
-                    keys.add(KEY_SAVED_DEVICES);
                     return keys;
                 }
             };

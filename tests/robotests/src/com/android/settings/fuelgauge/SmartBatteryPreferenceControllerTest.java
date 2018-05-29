@@ -103,14 +103,16 @@ public class SmartBatteryPreferenceControllerTest {
         doReturn(false).when(mFeatureFactory.powerUsageFeatureProvider).isSmartBatterySupported();
 
         assertThat(mController.getAvailabilityStatus()).isEqualTo(
-                BasePreferenceController.DISABLED_UNSUPPORTED);
+                BasePreferenceController.UNSUPPORTED_ON_DEVICE);
     }
 
     private void putSmartBatteryValue(int value) {
-        Settings.Global.putInt(mContentResolver, Settings.Global.APP_STANDBY_ENABLED, value);
+        Settings.Global.putInt(mContentResolver,
+                Settings.Global.ADAPTIVE_BATTERY_MANAGEMENT_ENABLED, value);
     }
 
     private int getSmartBatteryValue() {
-        return Settings.Global.getInt(mContentResolver, Settings.Global.APP_STANDBY_ENABLED, ON);
+        return Settings.Global.getInt(mContentResolver,
+                Settings.Global.ADAPTIVE_BATTERY_MANAGEMENT_ENABLED, ON);
     }
 }

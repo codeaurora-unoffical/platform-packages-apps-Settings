@@ -24,6 +24,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
@@ -215,6 +216,15 @@ public class DashboardFeatureProviderImplTest {
     }
 
     @Test
+    public void bindPreference_nullPreference_shouldIgnore() {
+        final Tile tile = mock(Tile.class);
+        mImpl.bindPreferenceToTile(mActivity, MetricsProto.MetricsEvent.VIEW_UNKNOWN,
+                null, tile, "123", Preference.DEFAULT_ORDER);
+
+        verifyZeroInteractions(tile);
+    }
+
+    @Test
     public void bindPreference_withNullKeyNullPriority_shouldGenerateKeyAndPriority() {
         final Preference preference = new Preference(RuntimeEnvironment.application);
         final Tile tile = new Tile();
@@ -297,7 +307,7 @@ public class DashboardFeatureProviderImplTest {
                 "content://com.android.settings/tile_icon");
         mImpl.bindIcon(preference, tile);
 
-        assertThat(tile.icon).isNotNull();
+        assertThat(preference.getIcon()).isNotNull();
     }
 
     @Test

@@ -47,6 +47,8 @@ import com.android.settingslib.bluetooth.LocalBluetoothProfileManager;
 import com.android.settingslib.bluetooth.MapProfile;
 import com.android.settingslib.bluetooth.PanProfile;
 import com.android.settingslib.bluetooth.PbapServerProfile;
+import com.android.settingslib.bluetooth.DunServerProfile;
+
 
 public final class DeviceProfilesSettings extends InstrumentedDialogFragment implements
         CachedBluetoothDevice.Callback, DialogInterface.OnClickListener, OnClickListener {
@@ -250,7 +252,10 @@ public final class DeviceProfilesSettings extends InstrumentedDialogFragment imp
     public void onClick(View v) {
         if (v instanceof CheckBox) {
             LocalBluetoothProfile prof = getProfileOf(v);
-            onProfileClicked(prof, (CheckBox) v);
+            if (prof != null)
+                onProfileClicked(prof, (CheckBox) v);
+            else
+                Log.e(TAG, "Error: Can't get the profile for the preference");
         }
     }
 
@@ -396,6 +401,9 @@ public final class DeviceProfilesSettings extends InstrumentedDialogFragment imp
             profilePref.setChecked(profile.getConnectionStatus(device) ==
                     BluetoothProfile.STATE_CONNECTED);
 
+        } else if (profile instanceof DunServerProfile) {
+            profilePref.setChecked(profile.getConnectionStatus(device) ==
+                    BluetoothProfile.STATE_CONNECTED);
         } else {
             profilePref.setChecked(profile.isPreferred(device));
         }

@@ -24,8 +24,10 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
+import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.provider.Settings;
@@ -38,6 +40,7 @@ import com.android.settings.core.BasePreferenceController;
 import com.android.settings.testutils.FakeFeatureFactory;
 import com.android.settings.testutils.FakeSliderController;
 import com.android.settings.testutils.FakeToggleController;
+import com.android.settings.testutils.FakeUnavailablePreferenceController;
 import com.android.settings.testutils.SettingsRobolectricTestRunner;
 import com.android.settings.testutils.SliceTester;
 
@@ -58,6 +61,7 @@ public class SliceBuilderUtilsTest {
     private final String TITLE = "title";
     private final String SUMMARY = "summary";
     private final String SCREEN_TITLE = "screen title";
+    private final String KEYWORDS = "a, b, c";
     private final String FRAGMENT_NAME = "fragment name";
     private final int ICON = 1234; // I declare a thumb war
     private final Uri URI = Uri.parse("content://com.android.settings.slices/test");
@@ -200,18 +204,18 @@ public class SliceBuilderUtilsTest {
     }
 
     @Test
-    public void testDynamicSummary_returnsSliceSummary() {
+    public void getDynamicSummary_returnsScreenTitle() {
         final SliceData data = getDummyData();
         final FakePreferenceController controller = new FakePreferenceController(mContext, KEY);
 
         final CharSequence summary = SliceBuilderUtils.getSubtitleText(mContext, controller, data);
 
-        assertThat(summary).isEqualTo(data.getSummary());
+        assertThat(summary).isEqualTo(data.getScreenTitle());
     }
 
     @Test
-    public void testDynamicSummary_returnsFragmentSummary() {
-        final SliceData data = getDummyData(null);
+    public void getDynamicSummary_noScreenTitle_returnsPrefControllerSummary() {
+        final SliceData data = getDummyData("", "");
         final FakePreferenceController controller = spy(
                 new FakePreferenceController(mContext, KEY));
         final String controllerSummary = "new_Summary";
@@ -223,8 +227,21 @@ public class SliceBuilderUtilsTest {
     }
 
     @Test
-    public void testDynamicSummary_returnsSliceEmptyString() {
-        final SliceData data = getDummyData(null);
+    public void getDynamicSummary_screenTitleMatchesTitle_returnsPrefControllerSummary() {
+        final SliceData data = getDummyData("", TITLE);
+        final FakePreferenceController controller = spy(
+                new FakePreferenceController(mContext, KEY));
+        final String controllerSummary = "new_Summary";
+        doReturn(controllerSummary).when(controller).getSummary();
+
+        final CharSequence summary = SliceBuilderUtils.getSubtitleText(mContext, controller, data);
+
+        assertThat(summary).isEqualTo(controllerSummary);
+    }
+
+    @Test
+    public void getDynamicSummary_emptyScreenTitle_emptyControllerSummary_returnsEmptyString() {
+        final SliceData data = getDummyData(null, null);
         final FakePreferenceController controller = new FakePreferenceController(mContext, KEY);
         final CharSequence summary = SliceBuilderUtils.getSubtitleText(mContext, controller, data);
 
@@ -232,8 +249,9 @@ public class SliceBuilderUtilsTest {
     }
 
     @Test
-    public void testDynamicSummary_placeHolderString_returnsEmptyString() {
-        final SliceData data = getDummyData(mContext.getString(R.string.summary_placeholder));
+    public void
+    getDynamicSummary_emptyScreenTitle_placeHolderControllerSummary_returnsEmptyString() {
+        final SliceData data = getDummyData(mContext.getString(R.string.summary_placeholder), null);
         final FakePreferenceController controller = new FakePreferenceController(mContext, KEY);
         final CharSequence summary = SliceBuilderUtils.getSubtitleText(mContext, controller, data);
 
@@ -241,9 +259,9 @@ public class SliceBuilderUtilsTest {
     }
 
     @Test
-    public void testDynamicSummary_sliceDataAndFragmentPlaceholder_returnsSliceEmptyString() {
+    public void getDynamicSummary_screenTitleAndControllerPlaceholder_returnsSliceEmptyString() {
         final String summaryPlaceholder = mContext.getString(R.string.summary_placeholder);
-        final SliceData data = getDummyData(summaryPlaceholder);
+        final SliceData data = getDummyData(summaryPlaceholder, summaryPlaceholder);
         final FakePreferenceController controller = spy(
                 new FakePreferenceController(mContext, KEY));
         doReturn(summaryPlaceholder).when(controller).getSummary();
@@ -251,18 +269,6 @@ public class SliceBuilderUtilsTest {
         CharSequence summary = SliceBuilderUtils.getSubtitleText(mContext, controller, data);
 
         assertThat(summary).isEqualTo("");
-    }
-
-    @Test
-    public void summaryText_bothDynamicAndStaticSummary_dynamicSummaryReturned() {
-        SliceData data = getDummyData("bad_summary");
-        FakePreferenceController controller = spy(new FakePreferenceController(mContext, KEY));
-        String controllerSummary = "new_Summary";
-        doReturn(controllerSummary).when(controller).getSummary();
-
-        CharSequence summary = SliceBuilderUtils.getSubtitleText(mContext, controller, data);
-
-        assertThat(summary).isEqualTo(controllerSummary);
     }
 
     @Test
@@ -275,7 +281,7 @@ public class SliceBuilderUtilsTest {
 
         final Pair<Boolean, String> pathPair = SliceBuilderUtils.getPathData(uri);
 
-        assertThat(pathPair.first).isFalse();
+        assertThat(pathPair.first).isTrue();
         assertThat(pathPair.second).isEqualTo(KEY);
     }
 
@@ -289,18 +295,20 @@ public class SliceBuilderUtilsTest {
 
         final Pair<Boolean, String> pathPair = SliceBuilderUtils.getPathData(uri);
 
-        assertThat(pathPair.first).isTrue();
+        assertThat(pathPair.first).isFalse();
         assertThat(pathPair.second).isEqualTo(KEY);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void getPathData_noKey_returnsNull() {
         final Uri uri = new Uri.Builder()
                 .authority(SettingsSliceProvider.SLICE_AUTHORITY)
                 .appendPath(SettingsSlicesContract.PATH_SETTING_ACTION)
                 .build();
 
-        SliceBuilderUtils.getPathData(uri);
+        final Pair<Boolean, String> pathPair = SliceBuilderUtils.getPathData(uri);
+
+        assertThat(pathPair).isNull();
     }
 
     @Test
@@ -314,7 +322,7 @@ public class SliceBuilderUtilsTest {
 
         final Pair<Boolean, String> pathPair = SliceBuilderUtils.getPathData(uri);
 
-        assertThat(pathPair.first).isTrue();
+        assertThat(pathPair.first).isFalse();
         assertThat(pathPair.second).isEqualTo(KEY + "/" + KEY);
     }
 
@@ -322,9 +330,9 @@ public class SliceBuilderUtilsTest {
     public void testUnsupportedSlice_validTitleSummary() {
         final SliceData data = getDummyData(FakeUnavailablePreferenceController.class,
                 SliceData.SliceType.SWITCH);
-        Settings.System.putInt(mContext.getContentResolver(),
+        Settings.Global.putInt(mContext.getContentResolver(),
                 FakeUnavailablePreferenceController.AVAILABILITY_KEY,
-                BasePreferenceController.DISABLED_UNSUPPORTED);
+                BasePreferenceController.UNSUPPORTED_ON_DEVICE);
 
         final Slice slice = SliceBuilderUtils.buildSlice(mContext, data);
 
@@ -335,7 +343,7 @@ public class SliceBuilderUtilsTest {
     public void testDisabledForUserSlice_validTitleSummary() {
         final SliceData data = getDummyData(FakeUnavailablePreferenceController.class,
                 SliceData.SliceType.SWITCH);
-        Settings.System.putInt(mContext.getContentResolver(),
+        Settings.Global.putInt(mContext.getContentResolver(),
                 FakeUnavailablePreferenceController.AVAILABILITY_KEY,
                 BasePreferenceController.DISABLED_FOR_USER);
 
@@ -348,7 +356,7 @@ public class SliceBuilderUtilsTest {
     public void testDisabledDependentSettingSlice_validTitleSummary() {
         final SliceData data = getDummyData(FakeUnavailablePreferenceController.class,
                 SliceData.SliceType.INTENT);
-        Settings.System.putInt(mContext.getContentResolver(),
+        Settings.Global.putInt(mContext.getContentResolver(),
                 FakeUnavailablePreferenceController.AVAILABILITY_KEY,
                 BasePreferenceController.DISABLED_DEPENDENT_SETTING);
 
@@ -367,12 +375,12 @@ public class SliceBuilderUtilsTest {
     }
 
     @Test
-    public void testUnavailableUnknownSlice_validTitleSummary() {
+    public void testConditionallyUnavailableSlice_validTitleSummary() {
         final SliceData data = getDummyData(FakeUnavailablePreferenceController.class,
                 SliceData.SliceType.SWITCH);
-        Settings.System.putInt(mContext.getContentResolver(),
+        Settings.Global.putInt(mContext.getContentResolver(),
                 FakeUnavailablePreferenceController.AVAILABILITY_KEY,
-                BasePreferenceController.UNAVAILABLE_UNKNOWN);
+                BasePreferenceController.CONDITIONALLY_UNAVAILABLE);
 
         final Slice slice = SliceBuilderUtils.buildSlice(mContext, data);
 
@@ -389,24 +397,47 @@ public class SliceBuilderUtilsTest {
         SliceTester.testSettingsUnavailableSlice(mContext, slice, data);
     }
 
-    private SliceData getDummyData() {
-        return getDummyData(TOGGLE_CONTROLLER, SUMMARY, SliceData.SliceType.SWITCH);
+    @Test
+    public void testContentIntent_includesUniqueData() {
+        final SliceData sliceData = getDummyData();
+        final Uri expectedUri = new Uri.Builder().appendPath(sliceData.getKey()).build();
+
+        final Intent intent = SliceBuilderUtils.getContentIntent(mContext, sliceData);
+        final Uri intentData = intent.getData();
+
+        assertThat(intentData).isEqualTo(expectedUri);
     }
 
-    private SliceData getDummyData(String summary) {
-        return getDummyData(TOGGLE_CONTROLLER, summary, SliceData.SliceType.SWITCH);
+    @Test
+    public void getSettingsIntent_createsIntentToSettings() {
+        final Intent intent = new Intent(Settings.ACTION_SETTINGS);
+        final PendingIntent expectedIntent = PendingIntent.getActivity(mContext, 0, intent, 0);
+
+        final PendingIntent settingsIntent = SliceBuilderUtils.getSettingsIntent(mContext);
+
+        assertThat(expectedIntent).isEqualTo(settingsIntent);
+    }
+
+    private SliceData getDummyData() {
+        return getDummyData(TOGGLE_CONTROLLER, SUMMARY, SliceData.SliceType.SWITCH, SCREEN_TITLE);
+    }
+
+    private SliceData getDummyData(String summary, String screenTitle) {
+        return getDummyData(TOGGLE_CONTROLLER, summary, SliceData.SliceType.SWITCH, screenTitle);
     }
 
     private SliceData getDummyData(Class prefController, int sliceType) {
-        return getDummyData(prefController, SUMMARY, sliceType);
+        return getDummyData(prefController, SUMMARY, sliceType, SCREEN_TITLE);
     }
 
-    private SliceData getDummyData(Class prefController, String summary, int sliceType) {
+    private SliceData getDummyData(Class prefController, String summary, int sliceType,
+            String screenTitle) {
         return new SliceData.Builder()
                 .setKey(KEY)
                 .setTitle(TITLE)
                 .setSummary(summary)
-                .setScreenTitle(SCREEN_TITLE)
+                .setScreenTitle(screenTitle)
+                .setKeywords(KEYWORDS)
                 .setIcon(ICON)
                 .setFragmentName(FRAGMENT_NAME)
                 .setUri(URI)

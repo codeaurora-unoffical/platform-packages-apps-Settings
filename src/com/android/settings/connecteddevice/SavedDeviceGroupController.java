@@ -24,10 +24,12 @@ import android.support.v7.preference.PreferenceScreen;
 
 import com.android.settings.bluetooth.BluetoothDeviceUpdater;
 import com.android.settings.bluetooth.SavedBluetoothDeviceUpdater;
+import com.android.settings.connecteddevice.dock.DockUpdater;
 import com.android.settings.core.BasePreferenceController;
 import com.android.settings.core.PreferenceControllerMixin;
 import com.android.settings.dashboard.DashboardFragment;
-import com.android.settingslib.core.lifecycle.Lifecycle;
+import com.android.settings.overlay.DockUpdaterFeatureProvider;
+import com.android.settings.overlay.FeatureFactory;
 import com.android.settingslib.core.lifecycle.LifecycleObserver;
 import com.android.settingslib.core.lifecycle.events.OnStart;
 import com.android.settingslib.core.lifecycle.events.OnStop;
@@ -45,29 +47,27 @@ public class SavedDeviceGroupController extends BasePreferenceController
     @VisibleForTesting
     PreferenceGroup mPreferenceGroup;
     private BluetoothDeviceUpdater mBluetoothDeviceUpdater;
+    private DockUpdater mSavedDockUpdater;
 
-    public SavedDeviceGroupController(Context context, DashboardFragment fragment,
-            Lifecycle lifecycle) {
+    public SavedDeviceGroupController(Context context) {
         super(context, KEY);
-        init(lifecycle, new SavedBluetoothDeviceUpdater(context, fragment,
-                SavedDeviceGroupController.this));
-    }
 
-    @VisibleForTesting
-    SavedDeviceGroupController(DashboardFragment fragment, Lifecycle lifecycle,
-            BluetoothDeviceUpdater bluetoothDeviceUpdater) {
-        super(fragment.getContext(), KEY);
-        init(lifecycle, bluetoothDeviceUpdater);
+        DockUpdaterFeatureProvider dockUpdaterFeatureProvider =
+                FeatureFactory.getFactory(context).getDockUpdaterFeatureProvider();
+        mSavedDockUpdater =
+                dockUpdaterFeatureProvider.getSavedDockUpdater(context, this);
     }
 
     @Override
     public void onStart() {
         mBluetoothDeviceUpdater.registerCallback();
+        mSavedDockUpdater.registerCallback();
     }
 
     @Override
     public void onStop() {
         mBluetoothDeviceUpdater.unregisterCallback();
+        mSavedDockUpdater.unregisterCallback();
     }
 
     @Override
@@ -77,6 +77,7 @@ public class SavedDeviceGroupController extends BasePreferenceController
             mPreferenceGroup.setVisible(false);
             mBluetoothDeviceUpdater.setPrefContext(screen.getContext());
             mBluetoothDeviceUpdater.forceUpdate();
+            mSavedDockUpdater.forceUpdate();
         }
     }
 
@@ -84,7 +85,7 @@ public class SavedDeviceGroupController extends BasePreferenceController
     public int getAvailabilityStatus() {
         return mContext.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)
                 ? AVAILABLE
-                : DISABLED_UNSUPPORTED;
+                : UNSUPPORTED_ON_DEVICE;
     }
 
     @Override
@@ -108,10 +109,18 @@ public class SavedDeviceGroupController extends BasePreferenceController
         }
     }
 
-    private void init(Lifecycle lifecycle, BluetoothDeviceUpdater bluetoothDeviceUpdater) {
-        if (lifecycle != null && isAvailable()) {
-            lifecycle.addObserver(this);
-        }
+    public void init(DashboardFragment fragment) {
+        mBluetoothDeviceUpdater = new SavedBluetoothDeviceUpdater(fragment.getContext(),
+                fragment, SavedDeviceGroupController.this);
+    }
+
+    @VisibleForTesting
+    public void setBluetoothDeviceUpdater(BluetoothDeviceUpdater bluetoothDeviceUpdater) {
         mBluetoothDeviceUpdater = bluetoothDeviceUpdater;
+    }
+
+    @VisibleForTesting
+    public void setSavedDockUpdater(DockUpdater savedDockUpdater) {
+        mSavedDockUpdater = savedDockUpdater;
     }
 }

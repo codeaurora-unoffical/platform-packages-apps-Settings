@@ -18,7 +18,6 @@ package com.android.settings.widget;
 
 import static com.android.internal.logging.nano.MetricsProto.MetricsEvent
         .ACTION_OPEN_APP_NOTIFICATION_SETTING;
-import static com.android.internal.logging.nano.MetricsProto.MetricsEvent.ACTION_OPEN_APP_SETTING;
 
 import android.annotation.IdRes;
 import android.annotation.UserIdInt;
@@ -28,7 +27,6 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
-import android.content.pm.ResolveInfo;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -59,15 +57,13 @@ import java.lang.annotation.RetentionPolicy;
 public class EntityHeaderController {
 
     @IntDef({ActionType.ACTION_NONE,
-            ActionType.ACTION_APP_PREFERENCE,
             ActionType.ACTION_NOTIF_PREFERENCE,
             ActionType.ACTION_DND_RULE_PREFERENCE,})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ActionType {
         int ACTION_NONE = 0;
-        int ACTION_APP_PREFERENCE = 1;
-        int ACTION_NOTIF_PREFERENCE = 2;
-        int ACTION_DND_RULE_PREFERENCE = 3;
+        int ACTION_NOTIF_PREFERENCE = 1;
+        int ACTION_DND_RULE_PREFERENCE = 2;
     }
 
     public static final String PREF_KEY_APP_HEADER = "pref_app_header";
@@ -85,6 +81,8 @@ public class EntityHeaderController {
     private String mIconContentDescription;
     private CharSequence mLabel;
     private CharSequence mSummary;
+    // Required for hearing aid devices.
+    private CharSequence mSecondSummary;
     private String mPackageName;
     private Intent mAppNotifPrefIntent;
     @UserIdInt
@@ -181,6 +179,18 @@ public class EntityHeaderController {
         return this;
     }
 
+    public EntityHeaderController setSecondSummary(CharSequence summary) {
+        mSecondSummary = summary;
+        return this;
+    }
+
+    public EntityHeaderController setSecondSummary(PackageInfo packageInfo) {
+        if (packageInfo != null) {
+            mSummary = packageInfo.versionName;
+        }
+        return this;
+    }
+
     public EntityHeaderController setHasAppInfoLink(boolean hasAppInfoLink) {
         mHasAppInfoLink = hasAppInfoLink;
         return this;
@@ -242,6 +252,7 @@ public class EntityHeaderController {
         }
         setText(R.id.entity_header_title, mLabel);
         setText(R.id.entity_header_summary, mSummary);
+        setText(R.id.entity_header_second_summary, mSecondSummary);
         if (mIsInstantApp) {
             setText(R.id.install_type,
                     mHeader.getResources().getString(R.string.install_type_instant));
@@ -283,9 +294,9 @@ public class EntityHeaderController {
             @Override
             public void onClick(View v) {
                 AppInfoBase.startAppInfoFragment(
-                    AppInfoDashboardFragment.class, R.string.application_info_label,
-                    mPackageName, mUid, mFragment, 0 /* request */,
-                    mMetricsCategory);
+                        AppInfoDashboardFragment.class, R.string.application_info_label,
+                        mPackageName, mUid, mFragment, 0 /* request */,
+                        mMetricsCategory);
             }
         });
         return;
@@ -356,27 +367,6 @@ public class EntityHeaderController {
                 }
                 return;
             }
-            case ActionType.ACTION_APP_PREFERENCE: {
-                final Intent intent = resolveIntent(
-                        new Intent(Intent.ACTION_APPLICATION_PREFERENCES).setPackage(mPackageName));
-                if (intent == null) {
-                    button.setImageDrawable(null);
-                    button.setVisibility(View.GONE);
-                    return;
-                }
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        FeatureFactory.getFactory(mAppContext).getMetricsFeatureProvider()
-                                .actionWithSource(mAppContext, mMetricsCategory,
-                                        ACTION_OPEN_APP_SETTING);
-                        mFragment.startActivity(intent);
-                    }
-                });
-                button.setImageResource(R.drawable.ic_settings_24dp);
-                button.setVisibility(View.VISIBLE);
-                return;
-            }
             case ActionType.ACTION_NONE: {
                 button.setVisibility(View.GONE);
                 return;
@@ -384,14 +374,6 @@ public class EntityHeaderController {
         }
     }
 
-    private Intent resolveIntent(Intent i) {
-        ResolveInfo result = mAppContext.getPackageManager().resolveActivity(i, 0);
-        if (result != null) {
-            return new Intent(i.getAction())
-                    .setClassName(result.activityInfo.packageName, result.activityInfo.name);
-        }
-        return null;
-    }
 
     private void setText(@IdRes int id, CharSequence text) {
         TextView textView = mHeader.findViewById(id);
