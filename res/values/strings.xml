@@ -6158,6 +6158,11 @@
     <!-- Warning message title for global locale change [CHAR LIMIT=40] -->
     <string name="global_locale_change_title">Change language</string>
 
+    <!-- Warning message title for global font change [CHAR LIMIT=40] -->
+    <string name="global_font_change_title">Change font size</string>
+    <!-- Warning message title for global font change [CHAR LIMIT=40] -->
+    <string name="choose_font_huge">Warinig font size</string>
+
     <!-- NFC payment settings --><skip/>
     <string name="nfc_payment_settings_title">Tap &amp; pay</string>
     <!-- Caption for button linking to a page explaining how Tap and Pay works-->
@@ -9076,4 +9081,53 @@
     <!-- Note displayed when certain features are not available on low ram devices. [CHAR LIMIT=NONE] -->
     <string name="disabled_low_ram_device">This feature is not available on this device</string>
     <string name="select_sim_card">Select SIM card</string>
+
+    <string name="mbn_version">MBN version</string>
+    <!-- show security alert for open type end -->
+    <string name="voice_over_lte">Voice over LTE</string>
+
+    <string name="network_operator_display_title">Show Network Operator</string>
+    <string name="keywords_network_name_display">network name displayed</string>
+    <string name="network_name_displayed_summary">Show network name on status bar</string>
+    <string name="tethering_help_dialog_title">Help</string>
+    <string name="tethering_help_dialog_text"><b>USB tethering</b> \n You can tether your Android device to your computer with a USB cable, to share your device\'s Internet connection with your computer. \n\n1.USB tethering works with Windows Vista, Windows 7, Windows 8, Windows 8.1 and Linux. \n\n2.If your device has an SD card or USB storage, you can\'t mount it on your computer when USB tethered. \n\n <b>Portable Wi-Fi hotspot</b> \n You can turn your Android device into a portable Wi-Fi hotspot, to share your Android device\'s Internet connection with one or more computers or other devices. \n\n1.When your device is serving as a Wi-Fi hotspot, you can\'t use your device\'s applications to access the Internet via its Wi-Fi connection (but of course you remain connected to the Internet via your mobile data network). \n\n2.You configure the hotspot with the Wi-Fi hotspot settings.</string>
+
+    <string name="turn_on_wifi_dialog_title">Turn on wifi</string>
+    <string name="turn_on_wifi_dialog_text">Wi-Fi is turned off when Mobile HotSpot is active. To turn on Wi-Fi, please turn off Mobile HotSpot.</string>
+    <string name="dialog_not_show_again">Do not show again</string>
+    <string name="volte_preferred">Volte Preferred</string>
+    <string name="tethering_settings_summary">Share your device\'s mobile data connection via USB or a Mobile HotSpot</string>
+
+    <string name="collect_diagnostics_title">Collect Diagnostics</string>
+    <string name="collect_diagnostics_summary">Collect diagnostics data for troubleshooting</string>
+
+    <string name="tethering_no_sim_alert_title">No SIM Card</string>
+    <string name="tethering_no_sim_card_text">Please install SIM card in order to share your data connection with other devices using Mobile HotSpot or USB tethering for Internet access.</string>
+    <string name="tether_settings_launch_title">Mobile HotSpot</string>
+    <string name="wifi_tether_first_use_message">Set up Mobile HotSpot at the First Use</string>
+    <string name="lte_data_and_voice_calling_enabled">LTE data and Voice Calling (IMS/VoLTE) service enabled </string>
+    <string name="lte_data_service_enabled">LTE data service enabled </string>
+    <string name="turn_off_wifi_dialog_title">Turn off Wi-Fi</string>
+    <string name="turn_off_wifi_dialog_text">Wi-Fi is turned off when Mobile HotSpot is active. To turn on Wi-Fi, please turn off Mobile HotSpot.</string>
+
+    <string name="show_battery_percentage">Show battery percentage</string>
+    <string name="show_battery_percentage_summary">Show battery level percentage inside the status bar</string>
+
+    <string name="learn_usb_dialog_title">First Time Notification Use</string>
+    <string name="learn_usb_dialog_text">Would you like to learn more about USB Tethering on your phone?</string>
+    <string name="mobile_tether_help_dialog_title">Mobile HotSpot Help</string>
+    <string name="mobile_usb_help_dialog_text">You can tether your Android device to your computer with a USB cable, to share your device\'s Internet connection with your computer. \n\n1. USB tethering works with Windows Vista, Windows 7, and Linux, the USB drivers for tethering may be needed.\n\n2. If your device has an SD card or USB storage, you can\'t mount it on your computer when USB tethered</string>
+
+    <string name="wifiap_mobile_hotspot_help">Status</string>
+
+    <string name="dialog_font_warining_title">Information</string>
+    <string name="dialog_font_warining_content">Very large font size will only be applied in specific applications.Large font size will be applied in all other application </string>
+    <string name="dialog_font_warining_ck_information">Do not show this again</string>
+    <string name="dialog_font_warining_ok">OK</string>
+    <string name="choose_font_Minimum">Minimum</string>
+    <string name="choose_font_Small">Small</string>
+    <string name="choose_font_Medium">Medium</string>
+    <string name="choose_font_Large">Large</string>
+    <string name="choose_font_VeryLarge">VeryLarge</string>
+
 </resources>
