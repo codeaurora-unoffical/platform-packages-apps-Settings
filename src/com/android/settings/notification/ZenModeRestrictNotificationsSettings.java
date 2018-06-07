@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 The Android Open Source Project
+ * Copyright (C) 2018 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package com.android.settings.notification;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.provider.SearchIndexableResource;
 
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
@@ -25,57 +26,64 @@ import com.android.settings.search.BaseSearchIndexProvider;
 import com.android.settings.search.Indexable;
 import com.android.settingslib.core.AbstractPreferenceController;
 import com.android.settingslib.core.lifecycle.Lifecycle;
+import com.android.settingslib.widget.FooterPreference;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ZenModeBehaviorSettings extends ZenModeSettingsBase implements Indexable {
+public class ZenModeRestrictNotificationsSettings extends ZenModeSettingsBase implements Indexable {
+
+    @Override
+    public void onCreate(Bundle icicle) {
+        super.onCreate(icicle);
+    }
 
     @Override
     protected List<AbstractPreferenceController> createPreferenceControllers(Context context) {
         return buildPreferenceControllers(context, getLifecycle());
     }
 
+    @Override
+    public int getHelpResource() {
+        return R.string.help_uri_interruptions;
+    }
+
     private static List<AbstractPreferenceController> buildPreferenceControllers(Context context,
             Lifecycle lifecycle) {
         List<AbstractPreferenceController> controllers = new ArrayList<>();
-        controllers.add(new ZenModeAlarmsPreferenceController(context, lifecycle));
-        controllers.add(new ZenModeMediaPreferenceController(context, lifecycle));
-        controllers.add(new ZenModeSystemPreferenceController(context, lifecycle));
-        controllers.add(new ZenModeEventsPreferenceController(context, lifecycle));
-        controllers.add(new ZenModeRemindersPreferenceController(context, lifecycle));
-        controllers.add(new ZenModeMessagesPreferenceController(context, lifecycle));
-        controllers.add(new ZenModeCallsPreferenceController(context, lifecycle));
-        controllers.add(new ZenModeRepeatCallersPreferenceController(context, lifecycle,
-                context.getResources().getInteger(com.android.internal.R.integer
-                .config_zen_repeat_callers_threshold)));
-        controllers.add(new ZenModeBehaviorFooterPreferenceController(context, lifecycle));
+        controllers.add(new ZenModeVisEffectsNonePreferenceController(
+                context, lifecycle, "zen_mute_notifications"));
+        controllers.add(new ZenModeVisEffectsAllPreferenceController(
+                context, lifecycle, "zen_hide_notifications"));
+        controllers.add(new ZenModeVisEffectsCustomPreferenceController(
+                context, lifecycle, "zen_custom"));
+        controllers.add(new ZenFooterPreferenceController(context, lifecycle,
+                FooterPreference.KEY_FOOTER));
         return controllers;
     }
 
     @Override
     protected int getPreferenceScreenResId() {
-        return R.xml.zen_mode_behavior_settings;
+        return R.xml.zen_mode_restrict_notifications_settings;
     }
 
     @Override
     public int getMetricsCategory() {
-        return MetricsEvent.NOTIFICATION_ZEN_MODE_PRIORITY;
+        return MetricsEvent.SETTINGS_ZEN_NOTIFICATIONS;
     }
 
     /**
      * For Search.
      */
-    public static final Indexable.SearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+    public static final SearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new BaseSearchIndexProvider() {
-
                 @Override
                 public List<SearchIndexableResource> getXmlResourcesToIndex(Context context,
                         boolean enabled) {
                     final ArrayList<SearchIndexableResource> result = new ArrayList<>();
 
                     final SearchIndexableResource sir = new SearchIndexableResource(context);
-                    sir.xmlResId = R.xml.zen_mode_behavior_settings;
+                    sir.xmlResId = R.xml.zen_mode_restrict_notifications_settings;
                     result.add(sir);
                     return result;
                 }

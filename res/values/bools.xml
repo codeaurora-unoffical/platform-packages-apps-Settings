@@ -40,6 +40,9 @@
     <!-- Whether to show a preference item for mobile plan -->
     <bool name="config_show_mobile_plan">true</bool>
 
+    <!-- Whether to add AGPS parameter settings -->
+    <bool name="config_agps_enabled">false</bool>
+
     <!-- Whether none security option is hide or not  (country specific). -->
     <bool name="config_hide_none_security_option">false</bool>
 
@@ -77,6 +80,9 @@
 
     <!-- Whether alarm_volume should be shown or not. -->
     <bool name="config_show_alarm_volume">true</bool>
+
+    <!-- Whether call_volume should be shown or not. -->
+    <bool name="config_show_call_volume">true</bool>
 
     <!-- Whether notification_volume should be shown or not. -->
     <bool name="config_show_notification_volume">true</bool>

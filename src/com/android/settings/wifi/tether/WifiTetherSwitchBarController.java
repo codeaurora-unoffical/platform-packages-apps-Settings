@@ -91,10 +91,10 @@ public class WifiTetherSwitchBarController implements SwitchWidgetController.OnS
 
     @Override
     public boolean onSwitchToggled(boolean isChecked) {
-        if (isChecked) {
-            startTether();
-        } else {
+        if (!isChecked) {
             stopTether();
+        } else if (!mWifiManager.isWifiApEnabled()) {
+            startTether();
         }
         return true;
     }
@@ -106,7 +106,7 @@ public class WifiTetherSwitchBarController implements SwitchWidgetController.OnS
 
     void startTether() {
         mSwitchBar.setEnabled(false);
-        mConnectivityManager.startTethering(TETHERING_WIFI, false /* showProvisioningUi */,
+        mConnectivityManager.startTethering(TETHERING_WIFI, true /* showProvisioningUi */,
                 mOnStartTetheringCallback, new Handler(Looper.getMainLooper()));
     }
 
