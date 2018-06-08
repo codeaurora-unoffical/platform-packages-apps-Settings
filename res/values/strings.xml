@@ -3217,7 +3217,7 @@
     <string name="master_clear_progress_text">Please wait...</string>
 
     <!-- Main settings screen, Call settings title for item to go into the call settings -->
-    <string name="call_settings_title">Call settings</string>
+    <string name="call_settings_title">Call Settings</string>
     <!-- Main settings screen, Call settings summary for item to go into call settings -->
     <string name="call_settings_summary">Set up voicemail, call forwarding, call waiting, caller ID</string>
 
