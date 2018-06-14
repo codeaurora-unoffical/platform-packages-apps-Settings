@@ -30,9 +30,14 @@
         android:title="@string/connected_device_connected_title"
         settings:controller="com.android.settings.connecteddevice.ConnectedDeviceGroupController"/>
 
+    <PreferenceCategory
+        android:key="saved_tws_device_list"
+        android:title="@string/connected_tws_device_saved_title"
+        settings:controller="com.android.settings.connecteddevice.SavedTwsDeviceGroupController"/>
+
     <com.android.settingslib.RestrictedPreference
         android:key="add_bt_devices"
-        android:title="@string/connected_device_add_device_title"
+        android:title="@string/bluetooth_pairing_pref_title"
         android:icon="@drawable/ic_menu_add"
         android:summary="@string/connected_device_add_device_summary"
         android:fragment="com.android.settings.bluetooth.BluetoothPairingDetail"
@@ -46,26 +51,13 @@
         android:title="@string/connected_device_previously_connected_title"
         android:icon="@drawable/ic_devices_other_black"
         android:fragment="com.android.settings.connecteddevice.PreviouslyConnectedDeviceDashboardFragment"
-        settings:allowDividerAbove="true"/>
-
-    <Preference
-        android:fragment="com.android.settings.connecteddevice.BluetoothDashboardFragment"
-        android:key="bluetooth_settings"
-        android:title="@string/bluetooth_settings_title"
-        android:icon="@drawable/ic_settings_bluetooth"/>
-
-    <PreferenceCategory
-        android:key="dashboard_tile_placeholder" />
-
-    <SwitchPreference
-        android:key="toggle_nfc"
-        android:title="@string/nfc_quick_toggle_title"
-        android:icon="@drawable/ic_nfc"
-        android:summary="@string/nfc_quick_toggle_summary"/>
+        settings:allowDividerAbove="true"
+        settings:controller="com.android.settings.connecteddevice.PreviouslyConnectedDevicePreferenceController"/>
 
     <Preference
         android:key="connection_preferences"
         android:title="@string/connected_device_connections_title"
-        android:fragment="com.android.settings.connecteddevice.AdvancedConnectedDeviceDashboardFragment"/>
+        android:fragment="com.android.settings.connecteddevice.AdvancedConnectedDeviceDashboardFragment"
+        settings:controller="com.android.settings.connecteddevice.AdvancedConnectedDeviceController"/>
 
 </PreferenceScreen>

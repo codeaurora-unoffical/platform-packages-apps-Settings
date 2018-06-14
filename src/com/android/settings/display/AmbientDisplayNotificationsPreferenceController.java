@@ -23,6 +23,7 @@ import android.os.UserHandle;
 import android.provider.Settings;
 import android.support.annotation.VisibleForTesting;
 import android.support.v7.preference.Preference;
+import android.text.TextUtils;
 
 import com.android.internal.hardware.AmbientDisplayConfiguration;
 import com.android.settings.R;
@@ -86,7 +87,12 @@ public class AmbientDisplayNotificationsPreferenceController extends
         if (mConfig == null) {
             mConfig = new AmbientDisplayConfiguration(mContext);
         }
-        return mConfig.pulseOnNotificationAvailable() ? AVAILABLE : DISABLED_UNSUPPORTED;
+        return mConfig.pulseOnNotificationAvailable() ? AVAILABLE : UNSUPPORTED_ON_DEVICE;
+    }
+
+    @Override
+    public boolean isSliceable() {
+        return TextUtils.equals(getPreferenceKey(), "ambient_display_notification");
     }
 
     @Override

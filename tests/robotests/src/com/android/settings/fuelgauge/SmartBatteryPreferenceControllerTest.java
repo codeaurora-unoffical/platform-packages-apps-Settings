@@ -103,7 +103,7 @@ public class SmartBatteryPreferenceControllerTest {
         doReturn(false).when(mFeatureFactory.powerUsageFeatureProvider).isSmartBatterySupported();
 
         assertThat(mController.getAvailabilityStatus()).isEqualTo(
-                BasePreferenceController.DISABLED_UNSUPPORTED);
+                BasePreferenceController.UNSUPPORTED_ON_DEVICE);
     }
 
     private void putSmartBatteryValue(int value) {
@@ -114,5 +114,12 @@ public class SmartBatteryPreferenceControllerTest {
     private int getSmartBatteryValue() {
         return Settings.Global.getInt(mContentResolver,
                 Settings.Global.ADAPTIVE_BATTERY_MANAGEMENT_ENABLED, ON);
+    }
+
+    @Test
+    public void isSliceableCorrectKey_returnsTrue() {
+        final SmartBatteryPreferenceController controller =
+                new SmartBatteryPreferenceController(mContext);
+        assertThat(controller.isSliceable()).isTrue();
     }
 }

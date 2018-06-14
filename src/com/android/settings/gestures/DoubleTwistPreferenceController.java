@@ -68,7 +68,12 @@ public class DoubleTwistPreferenceController extends GesturePreferenceController
 
     @Override
     public int getAvailabilityStatus() {
-        return isGestureAvailable(mContext) ? AVAILABLE : DISABLED_UNSUPPORTED;
+        return isGestureAvailable(mContext) ? AVAILABLE : UNSUPPORTED_ON_DEVICE;
+    }
+
+    @Override
+    public boolean isSliceable() {
+        return TextUtils.equals(getPreferenceKey(), "gesture_double_twist");
     }
 
     @Override

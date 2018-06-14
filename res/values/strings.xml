@@ -388,6 +388,8 @@
 
     <!-- Description for bluetooth device name summary [CHAR LIMIT=none] -->
     <string name="bluetooth_device_name_summary">Visible as \u201C<xliff:g id="device_name">^1</xliff:g>\u201D to other devices</string>
+    <!-- Footer description for discoverable mode in bluetooth off state [CHAR LIMIT=none] -->
+    <string name="bluetooth_off_footer">Turn on Bluetooth to connect to other devices.</string>
 
     <!-- Title for paired device group [CHAR LIMIT=none] -->
     <string name="bluetooth_paired_device_title">Your devices</string>
@@ -400,10 +402,16 @@
     <!-- Summary for bluetooth item in connection detail page. (phone)-->
     <string name="bluetooth_pref_summary" product="default">Allow your phone to communicate with nearby Bluetooth devices</string>
 
-    <!-- Setting Checkbox title for disabling Bluetooth inband ringing in Development Settings -->
-    <string name="bluetooth_disable_inband_ringing">Disable in-band ringing</string>
-    <!-- Summary of checkbox for disabling Bluetooth inband ringing in Development Settings -->
-    <string name="bluetooth_disable_inband_ringing_summary">Don’t play custom phone ringtones on Bluetooth headsets</string>
+    <!-- UI debug setting: Disable Bluetooth A2DP hardware offload [CHAR LIMIT=40] -->
+    <string name="bluetooth_disable_a2dp_hw_offload">Disable Bluetooth A2DP hardware offload</string>
+    <!-- UI debug setting: Disable Bluetooth A2DP hardware offload [CHAR LIMIT=20] -->
+    <string name="bluetooth_disable_a2dp_hw_offload_dialog_title">Restart Device?</string>
+    <!-- UI debug setting: Disable Bluetooth A2DP hardware offload [CHAR LIMIT=60] -->
+    <string name="bluetooth_disable_a2dp_hw_offload_dialog_message">You need to restart your device to change this setting.</string>
+    <!-- UI debug setting: Disable Bluetooth A2DP hardware offload [CHAR LIMIT=10] -->
+    <string name="bluetooth_disable_a2dp_hw_offload_dialog_confirm">Restart</string>
+    <!-- UI debug setting: Disable Bluetooth A2DP hardware offload [CHAR LIMIT=10] -->
+    <string name="bluetooth_disable_a2dp_hw_offload_dialog_cancel">Cancel</string>
 
     <!-- Title for Bluetooth device group with media capability group [CHAR LIMIT=none]-->
     <string name="connected_device_available_media_title">Available media devices</string>
@@ -413,7 +421,9 @@
     <string name="connected_device_connected_title">Currently connected</string>
     <!-- Title for connected device group [CHAR LIMIT=none]-->
     <string name="connected_device_saved_title">Saved devices</string>
-    <!-- Title for preference to add a device [CHAR LIMIT=none]-->
+    <!-- Title for connected TWS device group [CHAR LIMIT=none]-->
+    <string name="connected_tws_device_saved_title">Saved Earbuds</string>
+    <!-- Title for preference to add a device [CHAR LIMIT=none] [BACKUP_MESSAGE_ID=7803521577708810621] -->
     <string name="connected_device_add_device_title">Add device</string>
     <!-- Summary for preference to add a device [CHAR LIMIT=none]-->
     <string name="connected_device_add_device_summary">Bluetooth will turn on to pair</string>
@@ -475,9 +485,15 @@
     <string name="proxy_url_title">"PAC URL: "</string>
 
     <!-- Radio Info screen. Label for a status item.  Used for diagnostic info screens, precise translation isn't needed -->
+    <string name="radio_info_dl_kbps">DL Bandwidth (kbps):</string>
+    <!-- Radio Info screen. Label for a status item.  Used for diagnostic info screens, precise translation isn't needed -->
+    <string name="radio_info_ul_kbps">UL Bandwidth (kbps):</string>
+    <!-- Radio Info screen. Label for a status item.  Used for diagnostic info screens, precise translation isn't needed -->
     <string name="radio_info_signal_location_label">Cell Location Info (deprecated):</string>
     <!-- Radio Info screen. Label for a status item.  Used for diagnostic info screens, precise translation isn't needed -->
     <string name="radio_info_neighboring_location_label">Neighbor Cell Info (deprecated):</string>
+    <!-- Radio Info screen. Label for a status item.  Used for diagnostic info screens, precise translation isn't needed -->
+    <string name="radio_info_phy_chan_config">LTE Physical Channel Configuration:</string>
     <!-- Radio Info screen. Label for a status item.  Used for diagnostic info screens, precise translation isn't needed -->
     <string name="radio_info_cell_info_refresh_rate">Cell Info Refresh Rate:</string>
     <!-- Radio Info screen. Label for a status item.  Used for diagnostic info screens, precise translation isn't needed -->
@@ -1689,15 +1705,10 @@
     <!-- Bluetooth settings.  Dock Setting Dialog - Remember setting and don't ask user again -->
     <string name="bluetooth_dock_settings_remember">Remember settings</string>
 
-    <!-- Bluetooth developer options. -->
     <!-- Bluetooth developer settings: Maximum number of connected audio devices -->
     <string name="bluetooth_max_connected_audio_devices_string">Maximum connected Bluetooth audio devices</string>
     <!-- Bluetooth developer settings: Maximum number of connected audio devices -->
     <string name="bluetooth_max_connected_audio_devices_dialog_title">Select maximum number of connected Bluetooth audio devices</string>
-    <!-- Bluetooth developer settings: Checkbox title for disabling Bluetooth receiving AVDTP delay reports -->
-    <string name="bluetooth_disable_avdtp_delay_reports">Disable Bluetooth AVDTP delay reports</string>
-    <!-- Bluetooth developer settings: Summary of checkbox for disabling Bluetooth receiving AVDTP delay reports -->
-    <string name="bluetooth_disable_avdtp_delay_reports_summary">Disallow receiving Bluetooth AVDTP delay reports</string>
 
     <!-- Wifi Display settings. The title of the screen. [CHAR LIMIT=40] -->
     <string name="wifi_display_settings_title">Cast</string>
@@ -2348,6 +2359,17 @@
     <!-- Message of private dns that provides a help link. [CHAR LIMIT=NONE] -->
     <string name="private_dns_help_message"><annotation id="url">Learn more</annotation> about Private DNS features</string>
 
+    <!-- Message to display when setting wifi calling are not editable [CHAR LIMIT=NONE] -->
+    <string name="wifi_calling_pref_managed_by_carrier">Setting managed by carrier</string>
+    <!-- Message to display when wifi calling needs activation [CHAR LIMIT=NONE] -->
+    <string name="wifi_calling_settings_activation_instructions">Activate Wi\u2011Fi Calling</string>
+    <!-- Message to display when wifi calling should be on [CHAR LIMIT=NONE] -->
+    <string name="wifi_calling_turn_on">Turn on Wi\u2011Fi calling</string>
+    <!-- Message to display when carrier does not support wifi calling or doesn't want the user
+         to modify the settings [CHAR LIMIT=NONE] -->
+    <string name="wifi_calling_not_supported">Wi\u2011Fi calling is not supported for %1$s</string>
+    <!-- Carrier string to use in other messages -->
+    <string name="carrier">Carrier</string>
     <!-- Sound and alerts settings -->
     <skip/>
     <string name="display_settings_title">Display</string>
@@ -3390,6 +3412,8 @@
     <!-- Master Clear -->
     <!-- Button title to factory data reset the entire device -->
     <string name="master_clear_title">Erase all data (factory reset)</string>
+    <!-- Button title to factory data reset the entire device. The "(factory reset)" part is optional for translation. [CHAR LIMIT=30 BACKUP_MESSAGE_ID=3531267871084279512]-->
+    <string name="master_clear_short_title">Erase all data (factory reset)</string>
     <!-- SD card & phone storage settings screen, message on screen after user selects Factory data reset [CHAR LIMIT=NONE] -->
     <string name="master_clear_desc" product="tablet">"This will erase all data from your tablet\u2019s <b>internal storage</b>, including:\n\n<li>Your Google account</li>\n<li>System and app data and settings</li>\n<li>Downloaded apps</li>"</string>
     <!-- SD card & phone storage settings screen, message on screen after user selects Factory data reset [CHAR LIMIT=NONE] -->
@@ -4637,6 +4661,9 @@
         <item quantity="other">Very long delay (<xliff:g id="click_delay_label" example="200">%1$d</xliff:g> ms)</item>
     </plurals>
 
+    <!-- Summary for vibration settings preference when notification vibration and haptic feedback intensity are set. [CHAR LIMIT=32] -->
+    <string name="accessibility_vibration_summary">Ring <xliff:g id="summary_ring" example="Medium">%1$s</xliff:g>, touch <xliff:g id="summary_touch" example="High">%2$s</xliff:g></string>
+
     <!-- Summary for vibration settings preference when ring & notification are set to off-->
     <string name="accessibility_vibration_summary_off">Ring &amp; notification set to off</string>
 
@@ -4919,6 +4946,8 @@
     <string name="background_activity_warning_dialog_title">Limit background activity?</string>
     <!-- TODO: Pending UX review. Text for the warning dialog to show to the user when limiting background activity for an app -->
     <string name="background_activity_warning_dialog_text">If you limit background activity for an app, it may misbehave</string>
+    <!-- Dialog message when app can't been restricted because it is not optimized [CHAR_LIMIT=120] -->
+    <string name="background_activity_disabled_dialog_text">Since this app is not set to optimize battery, you can\u2019t restrict it.\n\nTo restrict the app, first turn on battery optimization.</string>
 
     <!-- Title for the screen usage in power use UI [CHAR_LIMIT=60] -->
     <string name="device_screen_usage">Screen usage since full charge</string>
@@ -4928,9 +4957,7 @@
     <string name="device_cellular_network">Mobile network scanning</string>
 
     <!-- Label for list of apps using battery in power use UI. Note: ^1 should be used in all translations[CHAR_LIMIT=120] -->
-    <string name="power_usage_list_summary">App usage since full charge (<xliff:g id="relative_time">^1</xliff:g>)</string>
-    <!-- Label for device components using battery in power use UI. Note: ^1 should be used in all translations[CHAR_LIMIT=120] -->
-    <string name="power_usage_list_summary_device">Device usage since full charge (<xliff:g id="relative_time">^1</xliff:g>)</string>
+    <string name="power_usage_list_summary">Battery usage since full charge</string>
     <!-- Temp string used to debug new battery estimates [DO NOT TRANSLATE] -->
     <string name="power_usage_enhanced_debug" translatable="false"><xliff:g id="time">%1$s</xliff:g> left (New ML est)</string>
     <!-- Temp string used to debug old battery estimates [DO NOT TRANSLATE] -->
@@ -4999,9 +5026,13 @@
     <string name="battery_abnormal_apps_summary"><xliff:g id="number">%1$d</xliff:g> apps misbehaving</string>
 
     <!-- Title for the battery summary tip [CHAR LIMIT=NONE] -->
-    <string name="battery_tip_summary_title">Battery is in good shape</string>
+    <string name="battery_tip_summary_title">Apps are running normally</string>
     <!-- Summary for the battery summary tip [CHAR LIMIT=NONE] -->
-    <string name="battery_tip_summary_summary">Apps are running normally</string>
+    <string name="battery_tip_summary_summary" product="default">Phone has typical background battery usage</string>
+    <!-- Summary for the battery summary tip [CHAR LIMIT=NONE] -->
+    <string name="battery_tip_summary_summary" product="tablet">Tablet has typical background battery usage</string>
+    <!-- Summary for the battery summary tip [CHAR LIMIT=NONE] -->
+    <string name="battery_tip_summary_summary" product="device">Device has typical background battery usage</string>
     <!-- Title for the low battery tip [CHAR LIMIT=NONE] -->
     <string name="battery_tip_low_battery_title">Low battery capacity</string>
     <!-- Summary for the low battery tip [CHAR LIMIT=NONE] -->
@@ -5031,11 +5062,11 @@
     <!-- Summary for the battery high usage tip, which presents battery may run out soon [CHAR LIMIT=NONE] -->
     <string name="battery_tip_high_usage_summary">Battery may run out soon</string>
     <!-- Message for battery tip dialog to show the status about the battery [CHAR LIMIT=NONE] -->
-    <string name="battery_tip_dialog_message" product="default">Your phone has been used more than usual. Your battery may run out sooner than expected.\n\nTop <xliff:g id="number">%1$d</xliff:g> apps since last full charge(<xliff:g id="time_period_ago" example="1 hr ago">%2$s</xliff:g>):</string>
+    <string name="battery_tip_dialog_message" product="default">Your phone has been used more than usual. Your battery may run out sooner than expected.\n\nTop <xliff:g id="number">%1$d</xliff:g> apps you used since full charge:</string>
     <!-- Message for battery tip dialog to show the status about the battery [CHAR LIMIT=NONE] -->
-    <string name="battery_tip_dialog_message" product="tablet">Your tablet has been used more than usual. Your battery may run out sooner than expected.\n\nTop <xliff:g id="number">%1$d</xliff:g> apps since last full charge(<xliff:g id="time_period_ago" example="1 hr ago">%2$s</xliff:g>):</string>
+    <string name="battery_tip_dialog_message" product="tablet">Your tablet has been used more than usual. Your battery may run out sooner than expected.\n\nTop <xliff:g id="number">%1$d</xliff:g> apps you used since full charge:</string>
     <!-- Message for battery tip dialog to show the status about the battery [CHAR LIMIT=NONE] -->
-    <string name="battery_tip_dialog_message" product="device">Your device has been used more than usual. Your battery may run out sooner than expected.\n\nTop <xliff:g id="number">%1$d</xliff:g> apps since last full charge(<xliff:g id="time_period_ago" example="1 hr ago">%2$s</xliff:g>):</string>
+    <string name="battery_tip_dialog_message" product="device">Your device has been used more than usual. Your battery may run out sooner than expected.\n\nTop <xliff:g id="number">%1$d</xliff:g> apps you used since full charge:</string>
     <!-- Title for restricted app preference, showing how many app need to be restricted [CHAR LIMIT=NONE] -->
     <plurals name="battery_tip_restrict_title">
         <item quantity="one">Restrict %1$d app</item>
@@ -5080,9 +5111,11 @@
     <string name="battery_tip_unrestrict_app_dialog_cancel">Cancel</string>
 
     <!-- Message for battery tip dialog to show the battery summary -->
-    <string name="battery_tip_dialog_summary_message">Based on your usage, your battery usually lasts about <xliff:g id="time_duration">%1$s</xliff:g> when fully charged.\n\nIf you need to extend your battery life, turn on Battery Saver.</string>
+    <string name="battery_tip_dialog_summary_message" product="default">Your apps are using a normal amount of battery. If apps use too much battery, your phone will suggest actions you can take.\n\nYou can always turn on Battery Saver if you\u2019re running low on battery.</string>
     <!-- Message for battery tip dialog to show the battery summary -->
-    <string name="battery_tip_dialog_summary_message_no_estimation">If you need to extend your battery life, turn on Battery Saver</string>
+    <string name="battery_tip_dialog_summary_message" product="tablet">Your apps are using a normal amount of battery. If apps use too much battery, your tablet will suggest actions you can take.\n\nYou can always turn on Battery Saver if you\u2019re running low on battery.</string>
+    <!-- Message for battery tip dialog to show the battery summary -->
+    <string name="battery_tip_dialog_summary_message" product="device">Your apps are using a normal amount of battery. If apps use too much battery, your device will suggest actions you can take.\n\nYou can always turn on Battery Saver if you\u2019re running low on battery.</string>
 
     <!-- Title for the smart battery manager preference [CHAR LIMIT=NONE] -->
     <string name="smart_battery_manager_title">Battery Manager</string>
@@ -6908,9 +6941,13 @@
     <!-- Title for setting tile leading to Connected devices settings [CHAR LIMIT=40]-->
     <string name="connected_devices_dashboard_title">Connected devices</string>
     <!-- Summary for Connected devices settings, explaning a few important settings under it [CHAR LIMIT=NONE]-->
-    <string name="connected_devices_dashboard_summary">Bluetooth, Cast, NFC</string>
+    <string name="connected_devices_dashboard_summary">Bluetooth, driving mode, NFC</string>
     <!-- Summary for Connected devices settings, explaning a few important settings under it [CHAR LIMIT=NONE]-->
-    <string name="connected_devices_dashboard_no_nfc_summary">Bluetooth, Cast</string>
+    <string name="connected_devices_dashboard_no_nfc_summary">Bluetooth, driving mode</string>
+    <!-- Summary for Connected devices settings, explaning a few important settings under it [CHAR LIMIT=NONE]-->
+    <string name="connected_devices_dashboard_no_driving_mode_summary">Bluetooth, NFC</string>
+    <!-- Summary for Connected devices settings, explaning a few important settings under it [CHAR LIMIT=NONE]-->
+    <string name="connected_devices_dashboard_no_driving_mode_no_nfc_summary">Bluetooth</string>
     <!-- Title for setting tile leading to Apps & Notification settings [CHAR LIMIT=40]-->
     <string name="app_and_notification_dashboard_title">Apps &amp; notifications</string>
     <!-- Summary for Apps & Notification settings, explaining a few important settings under it [CHAR LIMIT=NONE]-->
@@ -7227,24 +7264,23 @@
     <!--  Do not disturb: Subtitle for the Visual signals option to toggle on/off visual signals/alerts when the screen is on/when screen is off. [CHAR LIMIT=30] -->
     <string name="zen_mode_visual_signals_settings_subtitle">Allow visual signals</string>
 
-    <!-- Do not disturb: restrict notifications title [CHAR LIMIT=60] -->
-    <string name="zen_mode_restrict_notifications_screen_title">Restrict notifications</string>
+    <!-- Do not disturb: zen settings screens category title [CHAR LIMIT=100] -->
+    <string name="zen_mode_settings_category">When Do Not Disturb is turned on</string>
+
     <!-- Do not disturb: restrict notifications title [CHAR LIMIT=60] -->
     <string name="zen_mode_restrict_notifications_title">Notifications</string>
-    <!-- Do not disturb: restrict notifications category title [CHAR LIMIT=100] -->
-    <string name="zen_mode_restrict_notifications_category">When Do Not Disturb is turned on</string>
     <!-- Do not disturb: Mute notifications option [CHAR LIMIT=60] -->
-    <string name="zen_mode_restrict_notifications_mute">Mute notifications</string>
+    <string name="zen_mode_restrict_notifications_mute">No sound from notifications</string>
     <!-- Do not disturb:Mute notifications summary [CHAR LIMIT=NONE] -->
-    <string name="zen_mode_restrict_notifications_mute_summary">Show notifications but mute sounds &amp; vibrations</string>
+    <string name="zen_mode_restrict_notifications_mute_summary">You will see notifications on your screen</string>
     <!-- Do not disturb:Mute notifications footer [CHAR LIMIT=NONE] -->
-    <string name="zen_mode_restrict_notifications_mute_footer">When new notifications arrive your phone won\u2019t make a sound or vibration</string>
+    <string name="zen_mode_restrict_notifications_mute_footer">When notifications arrive, your phone won\u2019t make a sound or vibrate.</string>
     <!-- Do not disturb: Hide notifications option [CHAR LIMIT=60] -->
-    <string name="zen_mode_restrict_notifications_hide">Hide &amp; mute notifications</string>
+    <string name="zen_mode_restrict_notifications_hide">No visuals or sound from notifications</string>
     <!-- Do not disturb: Hide notifications summary [CHAR LIMIT=NONE] -->
-    <string name="zen_mode_restrict_notifications_hide_summary">Notifications will not appear at all</string>
+    <string name="zen_mode_restrict_notifications_hide_summary">You won\u2019t see or hear notifications</string>
     <!-- Do not disturb: Hide notifications footer [CHAR LIMIT=NONE] -->
-    <string name="zen_mode_restrict_notifications_hide_footer">You won\u2019t see new or existing notifications when Do Not Disturb is on. However, notifications needed for basic phone activity and status will still appear.</string>
+    <string name="zen_mode_restrict_notifications_hide_footer">Your phone won\u2019t show new or existing notifications, and won\u2019t make a sound or vibrate. Notifications won\u2019t appear when you swipe down from the top of your screen.\n\nKeep in mind, critical notifications for phone activity and status will still appear.</string>
     <!-- Do not disturb: Custom settings option [CHAR LIMIT=60] -->
     <string name="zen_mode_restrict_notifications_custom">Custom</string>
     <!-- Do not disturb: restrict notifications page, menu option [CHAR LIMIT=60] -->
@@ -7252,11 +7288,11 @@
     <!-- Do not disturb: restrict notifications page, menu option [CHAR LIMIT=60] -->
     <string name="zen_mode_restrict_notifications_disable_custom">Remove custom setting</string>
     <!-- Do not disturb: restrict notifications page, menu option [CHAR LIMIT=60] -->
-    <string name="zen_mode_restrict_notifications_summary_muted">Will appear</string>
+    <string name="zen_mode_restrict_notifications_summary_muted">No sound from notifications</string>
     <!-- Do not disturb: restrict notifications page, menu option [CHAR LIMIT=60] -->
     <string name="zen_mode_restrict_notifications_summary_custom">Partially hidden</string>
-    <!-- Do not disturb: restrict notifications page, menu option [CHAR LIMIT=60] -->
-    <string name="zen_mode_restrict_notifications_summary_hidden">Hidden</string>
+    <!-- Do not disturb: restrict notifications page, menu option [CHAR LIMIT=100] -->
+    <string name="zen_mode_restrict_notifications_summary_hidden">No visuals or sound from notifications</string>
 
     <!-- Do not disturb: what to block title [CHAR LIMIT = 60] -->
     <string name="zen_mode_what_to_block_title">Custom restrictions</string>
@@ -7364,15 +7400,64 @@
         <item quantity="other"><xliff:g id="on_count" example="3">%d</xliff:g> rules can turn on automatically</item>
     </plurals>
 
-    <string name="zen_onboarding_ok">Ok</string>
+    <!-- Do not disturb settings, category header [CHAR LIMIT=100]-->
+    <string name="zen_category_behavior">Behavior</string>
+    <!-- Do not disturb settings, category header [CHAR LIMIT=100]-->
+    <string name="zen_category_exceptions">Exceptions</string>
+    <!-- Do not disturb settings, category header [CHAR LIMIT=100]-->
+    <string name="zen_category_schedule">Schedule</string>
+
+    <!-- Do not disturb settings, sound and vibrations title [CHAR LIMIT=100]-->
+    <string name="zen_sound_title">Sound &amp; vibration</string>
+    <!-- Do not disturb settings, sound and vibrations screen footer [CHAR LIMIT=NONE]-->
+    <string name="zen_sound_footer">When Do Not Disturb is on, sound and vibration will be muted, except for the items you allow above.</string>
+    <!-- Do not disturb settings, sound and vibrations screen category [CHAR LIMIT=100]-->
+    <string name="zen_sound_category_title">Mute all except</string>
+    <!-- Do not disturb settings, sound and vibrations summary [CHAR LIMIT=100]-->
+    <string name="zen_sound_all_muted">Muted</string>
+    <!-- Do not disturb settings, sound and vibrations summary [CHAR LIMIT=100]-->
+    <string name="zen_sound_none_muted">Not muted</string>
+    <!-- Do not disturb settings, sound and vibrations summary [CHAR LIMIT=100]-->
+    <string name="zen_sound_one_allowed">Muted, but allow <xliff:g id="sound_type" example="alarms">%1$s</xliff:g></string>
+    <!-- Do not disturb settings, sound and vibrations summary [CHAR LIMIT=100]-->
+    <string name="zen_sound_two_allowed">Muted, but allow <xliff:g id="sound_type" example="alarms">%1$s</xliff:g> and <xliff:g id="sound_type" example="media">%2$s</xliff:g></string>
+    <!-- Do not disturb settings, sound and vibrations summary [CHAR LIMIT=100]-->
+    <string name="zen_sound_three_allowed">Muted, but allow <xliff:g id="sound_type" example="alarms">%1$s</xliff:g>, <xliff:g id="sound_type" example="alarms">%2$s</xliff:g>, and <xliff:g id="sound_type" example="media">%3$s</xliff:g></string>
+
+    <!-- Do not disturb settings, messages, events and reminders title [CHAR LIMIT=100]-->
+    <string name="zen_msg_event_reminder_title">Messages, events &amp; reminders</string>
+    <!-- Do not disturb settings, messages, events and reminders footer [CHAR LIMIT=NONE]-->
+    <string name="zen_msg_event_reminder_footer">When Do Not Disturb is on, messages, reminders, and events will muted, except for the items you allow above. You can adjust messages settings to allow your friends, family, or other contacts to reach you.</string>
+
+    <!-- Do not disturb onboarding dialog, accept new settings [CHAR LIMIT=30]-->
+    <string name="zen_onboarding_ok">Done</string>
+    <!-- Do not disturb onboarding dialog, on click user goes to dnd settings page [CHAR LIMIT=30]-->
     <string name="zen_onboarding_settings">Settings</string>
-    <string name="zen_onboarding_more_options">You can further customize this in Settings.</string>
-    <string name="zen_onboarding_screen_on_title">Block when the screen is on</string>
-    <string name="zen_onboarding_screen_off_title">Block when the screen is off</string>
-    <string name="zen_onboarding_dnd_visual_disturbances_description">Do Not Disturb can do more than block unwanted sounds - it can block visuals too. This may be helpful if you\'re trying to sleep, focus, or limit time spent on your phone.</string>
-    <string name="zen_onboarding_dnd_visual_disturbances_header">Block sounds and visuals</string>
-    <string name="zen_onboarding_screen_off_summary">Don\'t turn on the screen or wake for notifications</string>
-    <string name="zen_onboarding_screen_on_summary">Don\'t show notifications at all, except for basic phone activity and status</string>
+
+    <!-- Do not disturb onboarding dialog, title for radio button [CHAR LIMIT=80]-->
+    <string name="zen_onboarding_new_setting_title">No visuals or sound from notifications</string>
+    <!-- Do not disturb onboarding dialog, title for radio button [CHAR LIMIT=80]-->
+    <string name="zen_onboarding_current_setting_title">No sound from notifications</string>
+    <!-- Do not disturb onboarding dialog, secondary text for radio button [CHAR LIMIT=NONE]-->
+    <string name="zen_onboarding_new_setting_summary">You won\u2019t see or hear notifications. Calls from starred contacts and repeat callers are allowed.</string>
+    <!-- Do not disturb onboarding dialog, secondary text for radio button [CHAR LIMIT=NONE]-->
+    <string name="zen_onboarding_current_setting_summary">(Current setting)</string>
+
+    <!-- Do not disturb onboarding dialog, header prompt for settings [CHAR LIMIT=80]-->
+    <string name="zen_onboarding_dnd_visual_disturbances_header">Change Do Not Disturb notification settings?</string>
+
+    <!-- DO NOT TRANSLATE obsolete [CHAR LIMIT=NONE]-->
+    <string name="zen_onboarding_dnd_visual_disturbances_description" translatable="false">Your phone can do more to help you focus.\n\nUpdate settings to:\n\n- Hide notifications completely\n\n- Allow calls from starred contacts and repeat callers</string>
+    <!-- DO NOT TRANSLATE obsolete -->
+    <string name="zen_onboarding_more_options" translatable="false">You can further customize this in Settings.</string>
+    <!-- DO NOT TRANSLATE obsolete -->
+    <string name="zen_onboarding_screen_on_title" translatable="false">Block when the screen is on</string>
+    <!-- DO NOT TRANSLATE obsolete -->
+    <string name="zen_onboarding_screen_off_title" translatable="false">Block when the screen is off</string>
+    <!-- DO NOT TRANSLATE obsolete -->
+    <string name="zen_onboarding_screen_off_summary" translatable="false">Don\'t turn on the screen or wake for notifications</string>
+    <!-- DO NOT TRANSLATE obsolete -->
+    <string name="zen_onboarding_screen_on_summary" translatable="false">Don\'t show notifications at all, except for basic phone activity and status</string>
 
     <!-- Work Sounds: Work sound settings section header.  [CHAR LIMIT=50] -->
     <string name="sound_work_settings">Work profile sounds</string>
@@ -7883,14 +7968,32 @@
     <!-- [CHAR LIMIT=20] Zen mode settings: Calls option -->
     <string name="zen_mode_calls">Calls</string>
 
+    <!-- [CHAR LIMIT=40] Zen mode settings: Allow calls toggle title -->
+    <string name="zen_mode_calls_title">Allow calls</string>
+
+    <!-- [CHAR LIMIT=20] Zen mode settings: Calls screen footer -->
+    <string name="zen_mode_calls_footer">When Do Not Disturb is on, incoming calls are blocked. You can adjust settings to allow your friends, family, or other contacts to reach you.</string>
+
+    <!-- [CHAR LIMIT=50] Zen mode settings: Starred contacts preference title -->
+    <string name="zen_mode_starred_contacts_title">Starred contacts</string>
+
+    <!-- Zen mode settings: Starred contacts summary [CHAR LIMIT=NONE] -->
+    <plurals name="zen_mode_starred_contacts_summary_additional_contacts">
+        <item quantity="one">and 1 other</item>
+        <item quantity="other">and <xliff:g id="num_people" example="3">%d</xliff:g> others</item>
+    </plurals>
+
     <!-- [CHAR LIMIT=20] Zen mode settings: Messages option -->
     <string name="zen_mode_messages">Messages</string>
 
+    <!-- [CHAR LIMIT=40] Zen mode settings: Allow messages toggle title -->
+    <string name="zen_mode_messages_title">Allow messages</string>
+
     <!-- [CHAR LIMIT=50] Zen mode settings: All messages summary -->
-    <string name="zen_mode_all_messages">All messages</string>
+    <string name="zen_mode_all_messages">Messages</string>
 
     <!-- [CHAR LIMIT=50] Zen mode settings: Selected messages summary -->
-    <string name="zen_mode_selected_messages">Selected messages</string>
+    <string name="zen_mode_selected_messages">Some messages</string>
 
     <!-- [CHAR LIMIT=40] Zen mode settings: Calls or messages option value: From anyone -->
     <string name="zen_mode_from_anyone">From anyone</string>
@@ -7900,6 +8003,15 @@
 
     <!-- [CHAR LIMIT=40] Zen mode settings: Calls or messages option value: From starred contacts only -->
     <string name="zen_mode_from_starred">From starred contacts only</string>
+
+    <!-- Do not disturb settings, calls summary [CHAR LIMIT=100]-->
+    <string name="zen_calls_summary_starred_repeat">From starred contacts and repeat callers</string>
+
+    <!-- Do not disturb settings, calls summary [CHAR LIMIT=100]-->
+    <string name="zen_calls_summary_contacts_repeat">From contacts and repeat callers</string>
+
+    <!-- Do not disturb settings, calls summary [CHAR LIMIT=100]-->
+    <string name="zen_calls_summary_repeat_only">From repeat callers only</string>
 
     <!-- [CHAR LIMIT=40] Zen mode settings: Calls or messages option value: None -->
     <string name="zen_mode_from_none">None</string>
@@ -7916,17 +8028,35 @@
     <!-- [CHAR LIMIT=50] Zen mode settings: Reminders option -->
     <string name="zen_mode_reminders">Reminders</string>
 
+    <!-- [CHAR LIMIT=70] Zen mode settings: Allow reminders toggle title -->
+    <string name="zen_mode_reminders_title">Allow reminders</string>
+
     <!-- [CHAR LIMIT=50] Zen mode settings: Events option -->
     <string name="zen_mode_events">Events</string>
 
+    <!-- [CHAR LIMIT=70] Zen mode settings: Allow events toggle title -->
+    <string name="zen_mode_events_title">Allow events</string>
+
     <!-- [CHAR LIMIT=50] Zen mode settings: All callers summary -->
-    <string name="zen_mode_all_callers">All callers</string>
+    <string name="zen_mode_all_callers">anyone</string>
 
     <!-- [CHAR LIMIT=50] Zen mode settings: Selected callers summary -->
-    <string name="zen_mode_selected_callers">Selected callers</string>
+    <string name="zen_mode_contacts_callers">contacts</string>
+
+    <!-- [CHAR LIMIT=50] Zen mode settings: Selected callers summary -->
+    <string name="zen_mode_starred_callers">starred contacts</string>
 
     <!-- [CHAR LIMIT=50] Zen mode settings: Repeat callers option -->
     <string name="zen_mode_repeat_callers">Repeat callers</string>
+
+    <!-- [CHAR LIMIT=70] Zen mode settings: Allow repeat callers toggle title -->
+    <string name="zen_mode_repeat_callers_title">Allow repeat callers</string>
+
+    <!-- [CHAR LIMIT=50] Zen mode settings: calls summary -->
+    <string name="zen_mode_calls_summary_one">From <xliff:g id="caller type" example="contacts">%1$s</xliff:g></string>
+
+    <!-- [CHAR LIMIT=50] Zen mode settings: calls summary -->
+    <string name="zen_mode_calls_summary_two">From <xliff:g id="caller type" example="starred contacts">%1$s</xliff:g> and <xliff:g id="callert tpye" example="repeat callers">%2$s</xliff:g></string>
 
     <!-- [CHAR LIMIT=200] Zen mode settings: Repeat callers option summary -->
     <string name="zen_mode_repeat_callers_summary">If the same person calls a second time within a <xliff:g id="minutes">%d</xliff:g> minute period</string>
@@ -8641,7 +8771,7 @@
     <string name="ignore_optimizations_off">Optimize</string>
 
     <!-- Ignore battery optimizations on description [CHAR LIMIT=NONE] -->
-    <string name="ignore_optimizations_on_desc">May drain your battery more quickly</string>
+    <string name="ignore_optimizations_on_desc">May drain your battery more quickly. App will no longer be restricted from using background battery.</string>
 
     <!-- Ignore battery optimizations off description [CHAR LIMIT=NONE] -->
     <string name="ignore_optimizations_off_desc">Recommended for better battery life</string>
@@ -8829,8 +8959,8 @@
     <!-- Summary of Android version info (when there is a pending upgrade available) [CHAR LIMIT=NONE] -->
     <string name="android_version_pending_update_summary">Update available</string>
 
-    <!-- Title for dialog displayed when user selects on a setting locked by an admin [CHAR LIMIT=30] -->
-    <string name="disabled_by_policy_title">Can’t change this setting</string>
+    <!-- Title for dialog displayed when user selects on a setting locked by an admin [CHAR LIMIT=30 BACKUP_MESSAGE_ID:4867639270211833535] -->
+    <string name="disabled_by_policy_title">Action not allowed</string>
     <!-- Title for dialog displayed to tell user that changing volume was disallowed by an admin [CHAR LIMIT=50] -->
     <string name="disabled_by_policy_title_adjust_volume">Can’t change volume</string>
     <!-- Title for dialog displayed to tell user that outgoing calls were disabled by an admin [CHAR LIMIT=50] -->
@@ -8988,17 +9118,11 @@
     <!-- Toast message letting the user know the color temperature setting is not immediate -->
     <string name="color_temperature_toast">To apply color change, turn off screen</string>
 
-    <!-- UI debug setting: title for ConnectivityMonitor switch [CHAR LIMIT=50] -->
-    <string name="connectivity_monitor_switch">Connectivity Monitor</string>
-
-    <!-- UI debug setting: summary for switch of ConnectivityMonitor [CHAR LIMIT=500] -->
-    <string name="connectivity_monitor_switch_summary">ConnectivityMonitor will collect logs when it detects a connectivity problem and prompt notification to user to file a bug</string>
-
-    <!-- Toast message letting the user know the how to apply connectivity monitor change -->
-    <string name="connectivity_monitor_toast">To apply connectivity monitor change, reboot device</string>
-
     <!-- Title for Camera laser sensor switch [CHAR LIMIT=NONE] -->
     <string name="camera_laser_sensor_switch">Camera Laser Sensor</string>
+
+    <!-- Title for logical camera default switch [CHAR LIMIT=NONE] -->
+    <string name="logical_camera_default_switch">Logical Camera As Default</string>
 
     <!-- Title of the setting to disable the automatic update -->
     <string name="ota_disable_automatic_update">Automatic system updates</string>
@@ -9136,13 +9260,13 @@
     <!-- Informational text about time left in billing cycle [CHAR LIMIT=60] -->
     <string name="billing_cycle_less_than_one_day_left">Less than 1 day left</string>
 
-    <!-- Informational text about carrier and update time [CHAR LIMIT=30] -->
+    <!-- Informational text about carrier and update time [CHAR LIMIT=32] -->
     <string name="carrier_and_update_text">Updated by <xliff:g name="carrier" example="T-mobile">^1</xliff:g> <xliff:g name="time" example="3m">^2</xliff:g> ago</string>
 
     <!-- Informational text about update time only, without carrier. First argument intentionally skipped. [CHAR LIMIT=30] -->
     <string name="no_carrier_update_text">Updated <xliff:g name="time" example="3m">^2</xliff:g> ago</string>
 
-    <!-- Informational text about a recent carrier and update time [CHAR LIMIT=30] -->
+    <!-- Informational text about a recent carrier and update time [CHAR LIMIT=34] -->
     <string name="carrier_and_update_now_text">Updated by <xliff:g name="carrier" example="T-mobile">^1</xliff:g> just now</string>
 
     <!-- Informational text about recent update time only, without carrier [CHAR LIMIT=30] -->
@@ -9338,7 +9462,7 @@
     <!-- Setting tab title for all setting options. [CHAR LIMIT=20] -->
     <string name="page_tab_title_summary">All</string>
     <!-- Setting tab title for support setting options. [CHAR LIMIT=25] -->
-    <string name="page_tab_title_support">Support &amp; tips</string>
+    <string name="page_tab_title_support">Tips &amp; support</string>
 
     <!-- Summary of developer options to set the smallest width of the screen [CHAR LIMIT=60]-->
     <string name="density_pixel_summary" translatable="false"><xliff:g name="count" example="320">%1$s</xliff:g> dp</string>
@@ -9756,11 +9880,20 @@
     </string>
 
     <!-- Name of setting for switching device theme [CHAR LIMIT=60] -->
-    <string name="device_theme">Device theme</string>
+    <string name="color_theme">Color theme</string>
     <!-- Name of default device theme [CHAR LIMIT=60] -->
     <string name="default_theme">Default</string>
     <!-- Temporary reboot string, will be removed -->
     <string name="change_theme_reboot" translatable="false">Changing the theme requires a restart.</string>
+
+    <!-- Name of setting for switching the SystemUI theme [CHAR LIMIT=60] -->
+    <string name="device_theme">Device theme</string>
+    <!-- When SystemUI theme is chosen based on the wallpaper color [CHAR LIMIT=60] -->
+    <string name="systemui_theme_wallpaper">Automatic (based on wallpaper)</string>
+    <!-- When SystemUI theme is light [CHAR LIMIT=60] -->
+    <string name="systemui_theme_light">Light</string>
+    <!-- When SystemUI theme is dark [CHAR LIMIT=60] -->
+    <string name="systemui_theme_dark">Dark</string>
 
     <!-- Switch label to show operator name in the status bar [CHAR LIMIT=60] -->
     <string name="show_operator_name_title">Network name</string>
@@ -9793,8 +9926,20 @@
     <!-- Help URI, USB Audio [DO NOT TRANSLATE] -->
     <string name="help_url_audio_accessory_not_supported" translatable="false"></string>
 
+    <!-- Help URI, restricted apps page [DO NOT TRANSLATE] -->
+    <string name="help_uri_restricted_apps" translatable="false"></string>
+
     <!-- Help URI, battery saver page [DO NOT TRANSLATE] -->
     <string name="help_url_battery_saver_settings" translatable="false"></string>
+
+    <!-- Help URI, smart battery page [DO NOT TRANSLATE] -->
+    <string name="help_uri_smart_battery_settings" translatable="false"></string>
+
+    <!-- Title label for dnd suggestion, which is displayed in Settings homepage [CHAR LIMIT=100] -->
+    <string name="zen_suggestion_title">Update Do Not Disturb</string>
+
+    <!-- Summary label for dnd suggestion, which is displayed in Settings homepage [CHAR LIMIT=100] -->
+    <string name="zen_suggestion_summary">Pause notifications to stay focused</string>
 
     <!-- Title label for new device suggestion, which is displayed in Settings homepage [CHAR LIMIT=100] -->
     <string name="new_device_suggestion_title">What\'s new and exciting?</string>
@@ -9956,4 +10101,5 @@
 
     <!-- Title for Connected device shortcut [CHAR LIMIT=30] -->
     <string name="devices_title">Devices</string>
+    <string name="select_sim_card">Select SIM card</string>
 </resources>

@@ -259,13 +259,13 @@ public class WifiConfigControllerTest {
     }
 
     @Test
-    public void hiddenView_isDisabledWhenAppropriate() {
-        View hiddenSpinner = mView.findViewById(R.id.hidden_settings);
-        assertThat(hiddenSpinner.isEnabled()).isFalse();
+    public void hiddenField_visibilityUpdatesCorrectly() {
+        View hiddenField = mView.findViewById(R.id.hidden_settings_field);
+        assertThat(hiddenField.getVisibility()).isEqualTo(View.GONE);
 
         mController = new TestWifiConfigController(mConfigUiBase, mView, null /* accessPoint */,
                 WifiConfigUiBase.MODE_CONNECT);
-        assertThat(hiddenSpinner.isEnabled()).isTrue();
+        assertThat(hiddenField.getVisibility()).isEqualTo(View.VISIBLE);
     }
 
     public class TestWifiConfigController extends WifiConfigController {

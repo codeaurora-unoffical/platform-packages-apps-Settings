@@ -312,6 +312,9 @@ public class ApnEditor extends SettingsPreferenceFragment
             mApnData = getApnDataFromUri(uri);
         } else {
             mApnData = new ApnData(sProjection.length);
+            if (action.equals(Intent.ACTION_INSERT)) {
+                setDefaultData();
+            }
         }
 
         mTelephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
@@ -761,7 +764,7 @@ public class ApnEditor extends SettingsPreferenceFragment
         // If it's a new APN, then cancel will delete the new entry in onPause
         if (!mNewApn && !mReadOnlyApn && mDeletableApn) {
             menu.add(0, MENU_DELETE, 0, R.string.menu_delete)
-                .setIcon(R.drawable.ic_menu_delete);
+                .setIcon(R.drawable.ic_delete);
         }
         menu.add(0, MENU_SAVE, 0, R.string.menu_save)
             .setIcon(android.R.drawable.ic_menu_save);
@@ -1175,26 +1178,40 @@ public class ApnEditor extends SettingsPreferenceFragment
         return sNotSet.equals(value) ? null : value;
     }
 
-    private ContentValues getDefaultValue(){
-        ContentValues contentValues = new ContentValues();
+    private void setDefaultData() {
         CarrierConfigManager configManager = (CarrierConfigManager)
                 getSystemService(Context.CARRIER_CONFIG_SERVICE);
         if (configManager != null) {
             PersistableBundle b = configManager.getConfigForSubId(mSubId);
             if (b != null) {
-                PersistableBundle defaultValues = b.getPersistableBundle(APN_DEFALUT_VALUES_STRING_ARRAY);
-                if(defaultValues != null && !defaultValues.isEmpty()){
+                PersistableBundle defaultValues = b.getPersistableBundle(
+                        APN_DEFALUT_VALUES_STRING_ARRAY);
+                if (defaultValues != null && !defaultValues.isEmpty()) {
                     Set<String> keys = defaultValues.keySet();
-                    for(String key : keys){
-                        if(fieldValidate(key)){
-                            contentValues.put(key, defaultValues.getString(key));
+                    for (String key : keys) {
+                        if (fieldValidate(key)) {
+                            setAppData(key, defaultValues.get(key));
                         }
                     }
                 }
             }
         }
-        contentValues.put(Telephony.Carriers.EDITED, Telephony.Carriers.USER_EDITED);
-        return contentValues;
+    }
+
+    private void setAppData(String key, Object object) {
+        int index = findIndexOfKey(key);
+        if (index >= 0) {
+            mApnData.setObject(index, object);
+        }
+    }
+
+    private int findIndexOfKey(String key) {
+        for(int i = 0; i < sProjection.length; i++) {
+            if (sProjection[i].equals(key)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private boolean fieldValidate(String field){
@@ -1341,6 +1358,10 @@ public class ApnEditor extends SettingsPreferenceFragment
 
         String getString(int index) {
             return (String) mData[index];
+        }
+
+        void setObject(int index, Object value) {
+            mData[index] = value;
         }
     }
 }

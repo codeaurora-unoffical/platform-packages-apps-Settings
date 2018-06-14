@@ -17,6 +17,7 @@
 package com.android.settings.fuelgauge;
 
 import android.app.AlertDialog;
+import android.app.AppOpsManager;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Context;
@@ -43,12 +44,18 @@ public class HighPowerDetail extends InstrumentedDialogFragment implements OnCli
 
     private static final String ARG_DEFAULT_ON = "default_on";
 
-    private final PowerWhitelistBackend mBackend = PowerWhitelistBackend.getInstance();
-
-    private String mPackageName;
+    @VisibleForTesting
+    PowerWhitelistBackend mBackend;
+    @VisibleForTesting
+    BatteryUtils mBatteryUtils;
+    @VisibleForTesting
+    String mPackageName;
+    @VisibleForTesting
+    int mPackageUid;
     private CharSequence mLabel;
     private boolean mDefaultOn;
-    private boolean mIsEnabled;
+    @VisibleForTesting
+    boolean mIsEnabled;
     private Checkable mOptionOn;
     private Checkable mOptionOff;
 
@@ -60,9 +67,13 @@ public class HighPowerDetail extends InstrumentedDialogFragment implements OnCli
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        final Context context = getContext();
+        mBatteryUtils = BatteryUtils.getInstance(context);
+        mBackend = PowerWhitelistBackend.getInstance(context);
 
         mPackageName = getArguments().getString(AppInfoBase.ARG_PACKAGE_NAME);
-        PackageManager pm = getContext().getPackageManager();
+        mPackageUid = getArguments().getInt(AppInfoBase.ARG_PACKAGE_UID);
+        final PackageManager pm = context.getPackageManager();
         try {
             mLabel = pm.getApplicationInfo(mPackageName, 0).loadLabel(pm);
         } catch (NameNotFoundException e) {
@@ -129,6 +140,8 @@ public class HighPowerDetail extends InstrumentedDialogFragment implements OnCli
             if (newValue != oldValue) {
                 logSpecialPermissionChange(newValue, mPackageName, getContext());
                 if (newValue) {
+                    mBatteryUtils.setForceAppStandby(mPackageUid, mPackageName,
+                            AppOpsManager.MODE_ALLOWED);
                     mBackend.addApp(mPackageName);
                 } else {
                     mBackend.removeApp(mPackageName);
@@ -159,16 +172,17 @@ public class HighPowerDetail extends InstrumentedDialogFragment implements OnCli
     }
 
     public static CharSequence getSummary(Context context, String pkg) {
-        PowerWhitelistBackend powerWhitelist = PowerWhitelistBackend.getInstance();
+        PowerWhitelistBackend powerWhitelist = PowerWhitelistBackend.getInstance(context);
         return context.getString(powerWhitelist.isSysWhitelisted(pkg) ? R.string.high_power_system
                 : powerWhitelist.isWhitelisted(pkg) ? R.string.high_power_on
-                : R.string.high_power_off);
+                        : R.string.high_power_off);
     }
 
-    public static void show(Fragment caller, String packageName, int requestCode) {
+    public static void show(Fragment caller, int uid, String packageName, int requestCode) {
         HighPowerDetail fragment = new HighPowerDetail();
         Bundle args = new Bundle();
         args.putString(AppInfoBase.ARG_PACKAGE_NAME, packageName);
+        args.putInt(AppInfoBase.ARG_PACKAGE_UID, uid);
         fragment.setArguments(args);
         fragment.setTargetFragment(caller, requestCode);
         fragment.show(caller.getFragmentManager(), HighPowerDetail.class.getSimpleName());

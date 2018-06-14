@@ -100,6 +100,10 @@
     <!-- no translation found for wifi_security_no_eap:0 (2084555984818107151) -->
     <!-- no translation found for wifi_security_no_eap:1 (397579322683471524) -->
     <!-- no translation found for wifi_security_no_eap:2 (1968820975358150484) -->
+    <!-- no translation found for wifi_tether_security:0 (1748357338693290598) -->
+    <!-- no translation found for wifi_tether_security:1 (4760482622566629462) -->
+    <!-- no translation found for wifi_tether_security_values:0 (2252927183588236198) -->
+    <!-- no translation found for wifi_tether_security_values:1 (5900372418924184351) -->
   <string-array name="wifi_eap_method">
     <item msgid="1160193392455075561">"PEAP"</item>
     <item msgid="7981731051382306293">"TLS"</item>
@@ -389,7 +393,7 @@
     <item msgid="1319652728542138112">"Lehenetsia"</item>
     <item msgid="1016452621833735880">"Sans-serif"</item>
     <item msgid="2496277987934654454">"Sans-serif kondentsatua"</item>
-    <item msgid="7247838127505318669">"Tarte bakarreko sans-serif"</item>
+    <item msgid="7247838127505318669">"Tarte bakarreko Sans-serif"</item>
     <item msgid="4478414822462359763">"Serif"</item>
     <item msgid="7502451783483660829">"Tarte bakarreko serif"</item>
     <item msgid="639503332147461010">"Arrunta"</item>

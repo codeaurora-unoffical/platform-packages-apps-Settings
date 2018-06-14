@@ -100,6 +100,12 @@
     <!-- no translation found for wifi_security_no_eap:0 (2084555984818107151) -->
     <!-- no translation found for wifi_security_no_eap:1 (397579322683471524) -->
     <!-- no translation found for wifi_security_no_eap:2 (1968820975358150484) -->
+    <!-- no translation found for wifi_tether_security:0 (1748357338693290598) -->
+    <!-- no translation found for wifi_tether_security:1 (4760482622566629462) -->
+  <string-array name="wifi_tether_security_values">
+    <item msgid="2252927183588236198">"4"</item>
+    <item msgid="5900372418924184351">"0"</item>
+  </string-array>
   <string-array name="wifi_eap_method">
     <item msgid="1160193392455075561">"PEAP"</item>
     <item msgid="7981731051382306293">"TLS"</item>
@@ -236,7 +242,7 @@
   </string-array>
   <string-array name="app_install_location_entries">
     <item msgid="8151497958991952759">"စက်တွင်းသိုလှောင်ကိရိယာ"</item>
-    <item msgid="3738430123799803530">"ဖယ်ရှား၍ရသောSDကဒ်"</item>
+    <item msgid="3738430123799803530">"ဖယ်ရှား၍ရသောSDကတ်"</item>
     <item msgid="4498124044785815005">"စနစ်အား ဆုံးဖြတ်ပါစေ"</item>
   </string-array>
   <string-array name="app_ops_categories">

@@ -77,18 +77,31 @@ public abstract class VibrationIntensityPreferenceController extends BasePrefere
     public CharSequence getSummary() {
         final int intensity = Settings.System.getInt(mContext.getContentResolver(),
                 mSettingKey, getDefaultIntensity());
+        return getIntensityString(mContext, intensity);
+   }
 
-        switch (intensity) {
-            case Vibrator.VIBRATION_INTENSITY_OFF:
-                return mContext.getText(R.string.accessibility_vibration_intensity_off);
-            case Vibrator.VIBRATION_INTENSITY_LOW:
-                return mContext.getText(R.string.accessibility_vibration_intensity_low);
-            case Vibrator.VIBRATION_INTENSITY_MEDIUM:
-                return mContext.getText(R.string.accessibility_vibration_intensity_medium);
-            case Vibrator.VIBRATION_INTENSITY_HIGH:
-                return mContext.getText(R.string.accessibility_vibration_intensity_high);
-            default:
-                return "";
+    public static CharSequence getIntensityString(Context context, int intensity) {
+        final boolean supportsMultipleIntensities = context.getResources().getBoolean(
+                R.bool.config_vibration_supports_multiple_intensities);
+        if (supportsMultipleIntensities) {
+            switch (intensity) {
+                case Vibrator.VIBRATION_INTENSITY_OFF:
+                    return context.getString(R.string.accessibility_vibration_intensity_off);
+                case Vibrator.VIBRATION_INTENSITY_LOW:
+                    return context.getString(R.string.accessibility_vibration_intensity_low);
+                case Vibrator.VIBRATION_INTENSITY_MEDIUM:
+                    return context.getString(R.string.accessibility_vibration_intensity_medium);
+                case Vibrator.VIBRATION_INTENSITY_HIGH:
+                    return context.getString(R.string.accessibility_vibration_intensity_high);
+                default:
+                    return "";
+            }
+        } else {
+            if (intensity == Vibrator.VIBRATION_INTENSITY_OFF) {
+                return context.getString(R.string.switch_off_text);
+            } else {
+                return context.getString(R.string.switch_on_text);
+            }
         }
     }
 

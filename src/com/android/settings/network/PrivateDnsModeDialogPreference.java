@@ -15,6 +15,7 @@
  */
 package com.android.settings.network;
 
+import static android.net.ConnectivityManager.PRIVATE_DNS_DEFAULT_MODE_FALLBACK;
 import static android.net.ConnectivityManager.PRIVATE_DNS_MODE_OFF;
 import static android.net.ConnectivityManager.PRIVATE_DNS_MODE_OPPORTUNISTIC;
 import static android.net.ConnectivityManager.PRIVATE_DNS_MODE_PROVIDER_HOSTNAME;
@@ -79,8 +80,11 @@ public class PrivateDnsModeDialogPreference extends CustomDialogPreference imple
     static final String HOSTNAME_KEY = Settings.Global.PRIVATE_DNS_SPECIFIER;
 
     public static String getModeFromSettings(ContentResolver cr) {
-        final String mode = Settings.Global.getString(cr, MODE_KEY);
-        return PRIVATE_DNS_MAP.containsKey(mode) ? mode : PRIVATE_DNS_MODE_OPPORTUNISTIC;
+        String mode = Settings.Global.getString(cr, MODE_KEY);
+        if (!PRIVATE_DNS_MAP.containsKey(mode)) {
+            mode = Settings.Global.getString(cr, Settings.Global.PRIVATE_DNS_DEFAULT_MODE);
+        }
+        return PRIVATE_DNS_MAP.containsKey(mode) ? mode : PRIVATE_DNS_DEFAULT_MODE_FALLBACK;
     }
 
     public static String getHostnameFromSettings(ContentResolver cr) {
@@ -156,16 +160,18 @@ public class PrivateDnsModeDialogPreference extends CustomDialogPreference imple
 
     @Override
     public void onClick(DialogInterface dialog, int which) {
-        final Context context = getContext();
-        if (mMode.equals(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME)) {
-            // Only clickable if hostname is valid, so we could save it safely
-            Settings.Global.putString(context.getContentResolver(), HOSTNAME_KEY,
-                    mEditText.getText().toString());
-        }
+        if (which == DialogInterface.BUTTON_POSITIVE) {
+            final Context context = getContext();
+            if (mMode.equals(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME)) {
+                // Only clickable if hostname is valid, so we could save it safely
+                Settings.Global.putString(context.getContentResolver(), HOSTNAME_KEY,
+                        mEditText.getText().toString());
+            }
 
-        FeatureFactory.getFactory(context).getMetricsFeatureProvider().action(context,
-                MetricsProto.MetricsEvent.ACTION_PRIVATE_DNS_MODE, mMode);
-        Settings.Global.putString(context.getContentResolver(), MODE_KEY, mMode);
+            FeatureFactory.getFactory(context).getMetricsFeatureProvider().action(context,
+                    MetricsProto.MetricsEvent.ACTION_PRIVATE_DNS_MODE, mMode);
+            Settings.Global.putString(context.getContentResolver(), MODE_KEY, mMode);
+        }
     }
 
     @Override

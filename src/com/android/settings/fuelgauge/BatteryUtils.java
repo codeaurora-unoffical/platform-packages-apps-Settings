@@ -45,6 +45,8 @@ import com.android.internal.os.BatteryStatsHelper;
 import com.android.internal.util.ArrayUtils;
 import com.android.settings.R;
 import com.android.settings.fuelgauge.anomaly.Anomaly;
+import com.android.settings.fuelgauge.batterytip.AnomalyInfo;
+import com.android.settings.fuelgauge.batterytip.StatsManagerConfig;
 import com.android.settings.overlay.FeatureFactory;
 
 import com.android.settingslib.fuelgauge.PowerWhitelistBackend;
@@ -511,31 +513,14 @@ public class BatteryUtils {
         return false;
     }
 
-    /**
-     * Check if the app represented by {@code uid} has battery usage more than {@code threshold}
-     *
-     * @param batteryStatsHelper used to check the battery usage
-     * @param userManager        used to init the {@code batteryStatsHelper}
-     * @param uid                represent the app
-     * @param threshold          battery percentage threshold(e.g. 10 means 10% battery usage )
-     * @return {@code true} if battery drain is more than the threshold
-     */
-    public boolean isAppHeavilyUsed(BatteryStatsHelper batteryStatsHelper, UserManager userManager,
-            int uid, int threshold) {
-        initBatteryStatsHelper(batteryStatsHelper, null /* bundle */, userManager);
-        final int dischargeAmount = batteryStatsHelper.getStats().getDischargeAmount(
-                BatteryStats.STATS_SINCE_CHARGED);
-        List<BatterySipper> batterySippers = batteryStatsHelper.getUsageList();
-        final double hiddenAmount = removeHiddenBatterySippers(batterySippers);
+    public boolean isPreOApp(final String[] packageNames) {
+        if (ArrayUtils.isEmpty(packageNames)) {
+            return false;
+        }
 
-        for (int i = 0, size = batterySippers.size(); i < size; i++) {
-            final BatterySipper batterySipper = batterySippers.get(i);
-            if (batterySipper.getUid() == uid) {
-                final int percent = (int) calculateBatteryPercent(
-                        batterySipper.totalPowerMah, batteryStatsHelper.getTotalPower(),
-                        hiddenAmount,
-                        dischargeAmount);
-                return percent >= threshold;
+        for (String packageName : packageNames) {
+            if (isPreOApp(packageName)) {
+                return true;
             }
         }
 
@@ -545,15 +530,22 @@ public class BatteryUtils {
     /**
      * Return {@code true} if we should hide anomaly app represented by {@code uid}
      */
-    public boolean shouldHideAnomaly(PowerWhitelistBackend powerWhitelistBackend, int uid) {
+    public boolean shouldHideAnomaly(PowerWhitelistBackend powerWhitelistBackend, int uid,
+            AnomalyInfo anomalyInfo) {
         final String[] packageNames = mPackageManager.getPackagesForUid(uid);
         if (ArrayUtils.isEmpty(packageNames)) {
             // Don't show it if app has been uninstalled
             return true;
         }
 
-        return isSystemUid(uid) || powerWhitelistBackend.isSysWhitelistedExceptIdle(packageNames)
-                || (isSystemApp(mPackageManager, packageNames) && !hasLauncherEntry(packageNames));
+        return isSystemUid(uid) || powerWhitelistBackend.isWhitelisted(packageNames)
+                || (isSystemApp(mPackageManager, packageNames) && !hasLauncherEntry(packageNames))
+                || (isExcessiveBackgroundAnomaly(anomalyInfo) && !isPreOApp(packageNames));
+    }
+
+    private boolean isExcessiveBackgroundAnomaly(AnomalyInfo anomalyInfo) {
+        return anomalyInfo.anomalyType
+                == StatsManagerConfig.AnomalyType.EXCESSIVE_BACKGROUND_SERVICE;
     }
 
     private boolean isSystemUid(int uid) {

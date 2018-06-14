@@ -21,6 +21,7 @@ import android.content.Context;
 import android.provider.Settings;
 import android.support.v14.preference.SwitchPreference;
 import android.support.v7.preference.Preference;
+import android.text.TextUtils;
 
 import com.android.settings.core.BasePreferenceController;
 import com.android.settings.overlay.FeatureFactory;
@@ -45,7 +46,12 @@ public class SmartBatteryPreferenceController extends BasePreferenceController i
     public int getAvailabilityStatus() {
         return mPowerUsageFeatureProvider.isSmartBatterySupported()
                 ? AVAILABLE
-                : DISABLED_UNSUPPORTED;
+                : UNSUPPORTED_ON_DEVICE;
+    }
+
+    @Override
+    public boolean isSliceable() {
+        return TextUtils.equals(getPreferenceKey(), "smart_battery");
     }
 
     @Override

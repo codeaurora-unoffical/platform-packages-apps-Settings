@@ -19,6 +19,7 @@ package com.android.settings.network;
 import static android.net.ConnectivityManager.PRIVATE_DNS_MODE_OFF;
 import static android.net.ConnectivityManager.PRIVATE_DNS_MODE_OPPORTUNISTIC;
 import static android.net.ConnectivityManager.PRIVATE_DNS_MODE_PROVIDER_HOSTNAME;
+import static android.provider.Settings.Global.PRIVATE_DNS_MODE;
 import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doReturn;
@@ -28,7 +29,10 @@ import static org.mockito.Mockito.when;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.net.ConnectivityManager;
 import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -149,5 +153,34 @@ public class PrivateDnsModeDialogPreferenceTest {
             mPreference.onCheckedChanged(null, R.id.private_dns_mode_provider);
             assertThat(mSaveButton.isEnabled()).named("provider: " + invalid).isFalse();
         }
+    }
+
+    @Test
+    public void testOnClick_positiveButtonClicked_saveData() {
+        // Set the default settings to OFF
+        final ContentResolver contentResolver = mContext.getContentResolver();
+        Settings.Global.putString(contentResolver, PRIVATE_DNS_MODE, PRIVATE_DNS_MODE_OFF);
+
+        mPreference.mMode = ConnectivityManager.PRIVATE_DNS_MODE_OPPORTUNISTIC;
+        mPreference.onClick(null, DialogInterface.BUTTON_POSITIVE);
+
+        // Change to OPPORTUNISTIC
+        assertThat(Settings.Global.getString(contentResolver, PRIVATE_DNS_MODE)).isEqualTo(
+                PRIVATE_DNS_MODE_OPPORTUNISTIC);
+    }
+
+    @Test
+    public void testOnClick_negativeButtonClicked_doNothing() {
+        // Set the default settings to OFF
+        final ContentResolver contentResolver = mContext.getContentResolver();
+        Settings.Global.putString(contentResolver, PRIVATE_DNS_MODE, PRIVATE_DNS_MODE_OFF);
+
+        mPreference.mMode = ConnectivityManager.PRIVATE_DNS_MODE_OPPORTUNISTIC;
+        mPreference.onClick(null, DialogInterface.BUTTON_NEGATIVE);
+
+        // Still equal to OFF
+        assertThat(Settings.Global.getString(contentResolver,
+                Settings.Global.PRIVATE_DNS_MODE)).isEqualTo(
+                ConnectivityManager.PRIVATE_DNS_MODE_OFF);
     }
 }

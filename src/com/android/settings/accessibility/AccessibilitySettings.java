@@ -33,6 +33,7 @@ import android.os.UserHandle;
 import android.os.Vibrator;
 import android.provider.SearchIndexableResource;
 import android.provider.Settings;
+import android.support.annotation.VisibleForTesting;
 import android.support.v14.preference.SwitchPreference;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.preference.ListPreference;
@@ -747,26 +748,58 @@ public class AccessibilitySettings extends SettingsPreferenceFragment implements
         pref.setSummary(entries[index]);
     }
 
-    private void updateVibrationSummary(Preference pref) {
-        Vibrator vibrator = getContext().getSystemService(Vibrator.class);
-        final int intensity = Settings.System.getInt(getContext().getContentResolver(),
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void updateVibrationSummary(Preference pref) {
+        final Context context = getContext();
+        final Vibrator vibrator = context.getSystemService(Vibrator.class);
+
+        final int ringIntensity = Settings.System.getInt(context.getContentResolver(),
                 Settings.System.NOTIFICATION_VIBRATION_INTENSITY,
                 vibrator.getDefaultNotificationVibrationIntensity());
-        mVibrationPreferenceScreen.setSummary(getVibrationSummary(getContext(), intensity));
+        CharSequence ringIntensityString =
+                VibrationIntensityPreferenceController.getIntensityString(context, ringIntensity);
+
+        final int touchIntensity = Settings.System.getInt(context.getContentResolver(),
+                Settings.System.HAPTIC_FEEDBACK_INTENSITY,
+                vibrator.getDefaultHapticFeedbackIntensity());
+        CharSequence touchIntensityString =
+                VibrationIntensityPreferenceController.getIntensityString(context, touchIntensity);
+
+        if (mVibrationPreferenceScreen == null) {
+            mVibrationPreferenceScreen = findPreference(VIBRATION_PREFERENCE_SCREEN);
+        }
+
+        if (ringIntensity == touchIntensity) {
+            mVibrationPreferenceScreen.setSummary(ringIntensityString);
+        } else {
+            mVibrationPreferenceScreen.setSummary(
+                    getString(R.string.accessibility_vibration_summary,
+                            ringIntensityString, touchIntensityString));
+        }
     }
 
     private String getVibrationSummary(Context context, @VibrationIntensity int intensity) {
-        switch (intensity) {
-            case Vibrator.VIBRATION_INTENSITY_OFF:
-                return context.getString(R.string.accessibility_vibration_summary_off);
-            case Vibrator.VIBRATION_INTENSITY_LOW:
-                return context.getString(R.string.accessibility_vibration_summary_low);
-            case Vibrator.VIBRATION_INTENSITY_MEDIUM:
-                return context.getString(R.string.accessibility_vibration_summary_medium);
-            case Vibrator.VIBRATION_INTENSITY_HIGH:
-                return context.getString(R.string.accessibility_vibration_summary_high);
-            default:
-                return "";
+        final boolean supportsMultipleIntensities = context.getResources().getBoolean(
+                R.bool.config_vibration_supports_multiple_intensities);
+        if (supportsMultipleIntensities) {
+            switch (intensity) {
+                case Vibrator.VIBRATION_INTENSITY_OFF:
+                    return context.getString(R.string.accessibility_vibration_summary_off);
+                case Vibrator.VIBRATION_INTENSITY_LOW:
+                    return context.getString(R.string.accessibility_vibration_summary_low);
+                case Vibrator.VIBRATION_INTENSITY_MEDIUM:
+                    return context.getString(R.string.accessibility_vibration_summary_medium);
+                case Vibrator.VIBRATION_INTENSITY_HIGH:
+                    return context.getString(R.string.accessibility_vibration_summary_high);
+                default:
+                    return "";
+            }
+        } else {
+            if (intensity == Vibrator.VIBRATION_INTENSITY_OFF) {
+                return context.getString(R.string.switch_on_text);
+            } else {
+                return context.getString(R.string.switch_off_text);
+            }
         }
     }
 

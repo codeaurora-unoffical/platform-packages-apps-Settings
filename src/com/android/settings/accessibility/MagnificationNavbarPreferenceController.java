@@ -17,16 +17,29 @@ import android.content.Context;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.preference.Preference;
+import android.text.TextUtils;
 
 import com.android.settings.R;
-import com.android.settings.core.BasePreferenceController;
+import com.android.settings.core.TogglePreferenceController;
 
-public class MagnificationNavbarPreferenceController extends BasePreferenceController {
+public class MagnificationNavbarPreferenceController extends TogglePreferenceController {
 
     private boolean mIsFromSUW = false;
 
     public MagnificationNavbarPreferenceController(Context context, String key) {
         super(context, key);
+    }
+
+    @Override
+    public boolean isChecked() {
+        return MagnificationPreferenceFragment.isChecked(mContext.getContentResolver(),
+                Settings.Secure.ACCESSIBILITY_DISPLAY_MAGNIFICATION_NAVBAR_ENABLED);
+    }
+
+    @Override
+    public boolean setChecked(boolean isChecked) {
+        return MagnificationPreferenceFragment.setChecked(mContext.getContentResolver(),
+                Settings.Secure.ACCESSIBILITY_DISPLAY_MAGNIFICATION_NAVBAR_ENABLED, isChecked);
     }
 
     public void setIsFromSUW(boolean fromSUW) {
@@ -43,10 +56,7 @@ public class MagnificationNavbarPreferenceController extends BasePreferenceContr
                     R.string.accessibility_screen_magnification_navbar_title);
             extras.putInt(AccessibilitySettings.EXTRA_SUMMARY_RES,
                     R.string.accessibility_screen_magnification_navbar_summary);
-            extras.putBoolean(AccessibilitySettings.EXTRA_CHECKED,
-                    Settings.Secure.getInt(mContext.getContentResolver(),
-                            Settings.Secure.ACCESSIBILITY_DISPLAY_MAGNIFICATION_NAVBAR_ENABLED, 0)
-                            == 1);
+            extras.putBoolean(AccessibilitySettings.EXTRA_CHECKED, isChecked());
             extras.putBoolean(AccessibilitySettings.EXTRA_LAUNCHED_FROM_SUW, mIsFromSUW);
         }
         return false;
@@ -56,7 +66,13 @@ public class MagnificationNavbarPreferenceController extends BasePreferenceContr
     public int getAvailabilityStatus() {
         return MagnificationPreferenceFragment.isApplicable(mContext.getResources())
                 ? AVAILABLE
-                : DISABLED_UNSUPPORTED;
+                : UNSUPPORTED_ON_DEVICE;
+    }
+
+    @Override
+    public boolean isSliceable() {
+        return TextUtils.equals(getPreferenceKey(),
+                "screen_magnification_navbar_preference_screen");
     }
 
     @Override
@@ -65,8 +81,7 @@ public class MagnificationNavbarPreferenceController extends BasePreferenceContr
         if (mIsFromSUW) {
             resId = R.string.accessibility_screen_magnification_navbar_short_summary;
         } else {
-            final boolean enabled = Settings.Secure.getInt(mContext.getContentResolver(),
-                    Settings.Secure.ACCESSIBILITY_DISPLAY_MAGNIFICATION_NAVBAR_ENABLED, 0) == 1;
+            final boolean enabled = isChecked();
             resId = (enabled ? R.string.accessibility_feature_state_on :
                     R.string.accessibility_feature_state_off);
         }

@@ -18,9 +18,9 @@ package com.android.settings.notification;
 
 import android.content.Context;
 import android.media.AudioManager;
-import com.android.settings.notification.VolumeSeekBarPreference.Callback;
+import android.text.TextUtils;
+
 import com.android.settings.R;
-import com.android.settingslib.core.lifecycle.Lifecycle;
 
 public class MediaVolumePreferenceController extends
     VolumeSeekBarPreferenceController {
@@ -35,7 +35,12 @@ public class MediaVolumePreferenceController extends
     public int getAvailabilityStatus() {
         return mContext.getResources().getBoolean(R.bool.config_show_media_volume)
                 ? AVAILABLE
-                : DISABLED_UNSUPPORTED;
+                : UNSUPPORTED_ON_DEVICE;
+    }
+
+    @Override
+    public boolean isSliceable() {
+        return TextUtils.equals(getPreferenceKey(), KEY_MEDIA_VOLUME);
     }
 
     @Override
@@ -50,6 +55,6 @@ public class MediaVolumePreferenceController extends
 
     @Override
     public int getMuteIcon() {
-        return com.android.internal.R.drawable.ic_audio_media_mute;
+        return R.drawable.ic_media_stream_off;
     }
 }

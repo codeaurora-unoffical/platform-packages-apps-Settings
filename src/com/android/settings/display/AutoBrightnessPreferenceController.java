@@ -16,6 +16,7 @@ package com.android.settings.display;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
+import android.text.TextUtils;
 
 import com.android.settings.DisplaySettings;
 import com.android.settings.core.TogglePreferenceController;
@@ -57,7 +58,12 @@ public class AutoBrightnessPreferenceController extends TogglePreferenceControll
         return mContext.getResources().getBoolean(
                 com.android.internal.R.bool.config_automatic_brightness_available)
                 ? AVAILABLE
-                : DISABLED_UNSUPPORTED;
+                : UNSUPPORTED_ON_DEVICE;
+    }
+
+    @Override
+    public boolean isSliceable() {
+        return TextUtils.equals(getPreferenceKey(), "auto_brightness");
     }
 
     @Override
