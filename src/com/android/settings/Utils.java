@@ -804,8 +804,8 @@ public final class Utils extends com.android.settingslib.Utils {
     public static boolean showSimCardTile(Context context) {
         final TelephonyManager tm =
                 (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-
-        return tm.getSimCount() > 1;
+        // Show SIM cards option only for primary user mode
+        return tm.getSimCount() > 1 && (ActivityManager.getCurrentUser() == UserHandle.USER_OWNER);
     }
 
     /**

@@ -40,6 +40,7 @@ import android.os.Bundle;
 import android.os.HandlerThread;
 import android.os.PowerManager;
 import android.os.Process;
+import android.os.SystemProperties;
 import android.provider.Settings;
 import android.support.annotation.VisibleForTesting;
 import android.support.v7.preference.Preference;
@@ -50,6 +51,7 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
@@ -100,6 +102,9 @@ public class WifiSettings extends RestrictedSettingsFragment
     /* package */ static final int WPS_PBC_DIALOG_ID = 2;
     private static final int WPS_PIN_DIALOG_ID = 3;
     private static final int WRITE_NFC_DIALOG_ID = 6;
+
+    public static final int SUBSIDY_DEVICE_LOCKED = 101;
+    public static final int SUBSIDY_AP_LOCKED = 102;
 
     // Instance state keys
     private static final String SAVE_DIALOG_MODE = "dialog_mode";
@@ -226,6 +231,9 @@ public class WifiSettings extends RestrictedSettingsFragment
                 (PreferenceCategory) findPreference(PREF_KEY_ADDITIONAL_SETTINGS);
         mConfigureWifiSettingsPreference = findPreference(PREF_KEY_CONFIGURE_WIFI_SETTINGS);
         mSavedNetworksPreference = findPreference(PREF_KEY_SAVED_NETWORKS);
+
+        if (isDeviceSubsidyLocked(getActivity()))
+            getPreferenceScreen().removePreference(mAdditionalSettingsPreferenceCategory);
 
         Context prefContext = getPrefContext();
         mAddPreference = new Preference(prefContext);
@@ -647,8 +655,15 @@ public class WifiSettings extends RestrictedSettingsFragment
                     mDialog = WifiDialog
                             .createModal(getActivity(), this, mDlgAccessPoint, mDialogMode);
                 }
-
                 mSelectedAccessPoint = mDlgAccessPoint;
+
+                if (isDeviceSubsidyLocked(getActivity())) {
+                    mDialog.getWindow().setSoftInputMode(WindowManager
+                        .LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+                    mDialog.getWindow().addFlags(WindowManager
+                        .LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+                }
+
                 return mDialog;
             case WPS_PBC_DIALOG_ID:
                 return new WpsDialog(getActivity(), WpsInfo.PBC);
@@ -1230,4 +1245,16 @@ public class WifiSettings extends RestrictedSettingsFragment
             return new SummaryProvider(activity, summaryLoader);
         }
     };
+
+    public static boolean isDeviceSubsidyLocked(Context context) {
+        int state = -1;
+        try {
+            state = Settings.Secure.getInt(context.getContentResolver(),
+                "subsidy_status", -1);
+        } catch (Exception e) {
+            Log.e(TAG, "Exception while read subsidy lock state " + e);
+        }
+        return (SystemProperties.getInt("ro.radio.subsidylock", 0) == 1)
+            && (state == SUBSIDY_DEVICE_LOCKED || state == SUBSIDY_AP_LOCKED);
+    }
 }
