@@ -1712,6 +1712,8 @@
 
     <!-- Wifi Display settings. The title of the screen. [CHAR LIMIT=40] -->
     <string name="wifi_display_settings_title">Cast</string>
+    <!-- Checkbox title for enabling particual wifi as shared -->
+    <string name="share_this_wifi">Extend Wi-Fi coverage</string>
     <!-- Wifi Display settings. The title of a menu item to enable wireless display [CHAR LIMIT=40] -->
     <string name="wifi_display_enable_menu_item">Enable wireless display</string>
     <!-- Wifi Display settings. Text that appears when scanning for devices is finished and no nearby device was found [CHAR LIMIT=40]-->
@@ -7427,7 +7429,7 @@
     <!-- Do not disturb settings, messages, events and reminders title [CHAR LIMIT=100]-->
     <string name="zen_msg_event_reminder_title">Messages, events &amp; reminders</string>
     <!-- Do not disturb settings, messages, events and reminders footer [CHAR LIMIT=NONE]-->
-    <string name="zen_msg_event_reminder_footer">When Do Not Disturb is on, messages, reminders, and events will muted, except for the items you allow above. You can adjust messages settings to allow your friends, family, or other contacts to reach you.</string>
+    <string name="zen_msg_event_reminder_footer">When Do Not Disturb is on, messages, reminders, and events will be muted, except for the items you allow above. You can adjust messages settings to allow your friends, family, or other contacts to reach you.</string>
 
     <!-- Do not disturb onboarding dialog, accept new settings [CHAR LIMIT=30]-->
     <string name="zen_onboarding_ok">Done</string>
@@ -7979,8 +7981,8 @@
 
     <!-- Zen mode settings: Starred contacts summary [CHAR LIMIT=NONE] -->
     <plurals name="zen_mode_starred_contacts_summary_additional_contacts">
-        <item quantity="one">and 1 other</item>
-        <item quantity="other">and <xliff:g id="num_people" example="3">%d</xliff:g> others</item>
+        <item quantity="one">1 other</item>
+        <item quantity="other"><xliff:g id="num_people" example="3">%d</xliff:g> others</item>
     </plurals>
 
     <!-- [CHAR LIMIT=20] Zen mode settings: Messages option -->
@@ -9120,9 +9122,6 @@
 
     <!-- Title for Camera laser sensor switch [CHAR LIMIT=NONE] -->
     <string name="camera_laser_sensor_switch">Camera Laser Sensor</string>
-
-    <!-- Title for logical camera default switch [CHAR LIMIT=NONE] -->
-    <string name="logical_camera_default_switch">Logical Camera As Default</string>
 
     <!-- Title of the setting to disable the automatic update -->
     <string name="ota_disable_automatic_update">Automatic system updates</string>
