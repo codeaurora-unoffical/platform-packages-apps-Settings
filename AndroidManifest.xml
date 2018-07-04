@@ -715,7 +715,7 @@
         <activity
             android:name="Settings$ZenModeSettingsActivity"
             android:label="@string/zen_mode_settings_title"
-            android:icon="@drawable/ic_settings_notifications"
+            android:icon="@drawable/ic_notifications"
             android:exported="true"
             android:taskAffinity="com.android.settings"
             android:parentActivityName="Settings">
@@ -762,7 +762,7 @@
         <activity
             android:name=".notification.ZenOnboardingActivity"
             android:label="@string/zen_onboarding_dnd_visual_disturbances_header"
-            android:icon="@drawable/ic_settings_notifications"
+            android:icon="@drawable/ic_notifications"
             android:theme="@*android:style/Theme.DeviceDefault.Settings.Dialog.NoActionBar"
             android:exported="true"
             android:taskAffinity="com.android.settings"
@@ -775,7 +775,7 @@
         <activity
             android:name="Settings$ZenModeAutomationSettingsActivity"
             android:label="@string/zen_mode_automation_settings_title"
-            android:icon="@drawable/ic_settings_notifications"
+            android:icon="@drawable/ic_notifications"
             android:exported="true"
             android:taskAffinity="com.android.settings"
             android:parentActivityName="Settings$ZenModeSettingsActivity">
@@ -913,6 +913,27 @@
             <meta-data android:name="com.android.settings.FRAGMENT_CLASS"
                 android:value="com.android.settings.DisplaySettings" />
         </activity-alias>
+            <activity android:name="Settings$SMQQtiFeedbackActivity"
+                android:label="@string/qtifeedback_settings_title"
+                android:icon="@drawable/ic_settings_qti_feedback"
+                android:enabled="false"
+                android:taskAffinity="">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter android:priority="250">
+                <action android:name="com.android.settings.action.SETTINGS" />
+            </intent-filter>
+            <meta-data android:name="com.android.settings.category"
+                android:value="com.android.settings.category.ia.system" />
+            <meta-data android:name="com.android.settings.FRAGMENT_CLASS"
+                android:value="@string/qtifeedback_intent_action" />
+            <meta-data android:name="com.android.settings.PRIMARY_PROFILE_CONTROLLED"
+                android:value="true" />
+            <meta-data android:name="com.android.settings.summary"
+                android:resource="@string/qtifeedback_settings_subtitle" />
+        </activity>
 
         <activity
             android:name="Settings$NightDisplaySettingsActivity"
@@ -3133,6 +3154,8 @@
                        android:value="com.android.settings.accounts.AccountDashboardFragment"/>
             <meta-data android:name="com.android.settings.category"
                        android:value="com.android.settings.category.ia.homepage"/>
+            <meta-data android:name="com.android.settings.PRIMARY_PROFILE_CONTROLLED"
+                       android:value="true" />
         </activity>
 
         <activity

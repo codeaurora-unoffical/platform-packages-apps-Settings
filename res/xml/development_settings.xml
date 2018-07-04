@@ -184,11 +184,6 @@
             android:entryValues="@array/select_logpersist_values" />
 
         <SwitchPreference
-            android:key="connectivity_monitor_switch"
-            android:title="@string/connectivity_monitor_switch"
-            android:summary="@string/connectivity_monitor_switch_summary" />
-
-        <SwitchPreference
             android:key="camera_laser_sensor_switch"
             android:title="@string/camera_laser_sensor_switch" />
 
@@ -217,6 +212,11 @@
             android:key="wifi_display_certification"
             android:title="@string/wifi_display_certification"
             android:summary="@string/wifi_display_certification_summary" />
+
+        <SwitchPreference
+            android:key="wifi_coverage_extend"
+            android:title="@string/wifi_coverage_extend"
+            android:summary="@string/wifi_coverage_extend_summary" />
 
         <SwitchPreference
             android:key="wifi_verbose_logging"
@@ -253,6 +253,10 @@
             android:key="bluetooth_disable_absolute_volume"
             android:title="@string/bluetooth_disable_absolute_volume"
             android:summary="@string/bluetooth_disable_absolute_volume_summary" />
+
+        <SwitchPreference
+            android:key="bluetooth_disable_a2dp_hw_offload"
+            android:title="@string/bluetooth_disable_a2dp_hw_offload" />
 
         <ListPreference
             android:key="bluetooth_select_avrcp_version"

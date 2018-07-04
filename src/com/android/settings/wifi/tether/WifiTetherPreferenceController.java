@@ -44,6 +44,7 @@ public class WifiTetherPreferenceController extends AbstractPreferenceController
     private static final String WIFI_TETHER_SETTINGS = "wifi_tether";
     private static final IntentFilter AIRPLANE_INTENT_FILTER = new IntentFilter(
             Intent.ACTION_AIRPLANE_MODE_CHANGED);
+    private static final int ID_NULL = -1;
 
     private final ConnectivityManager mConnectivityManager;
     private final String[] mWifiRegexs;
@@ -135,8 +136,15 @@ public class WifiTetherPreferenceController extends AbstractPreferenceController
                     public void onNumClientsChanged(int numClients) {
                         if (mPreference != null
                                 && mSoftApState == WifiManager.WIFI_AP_STATE_ENABLED) {
+                            String extendWifiSummary;
+                            if (mWifiManager.isExtendingWifi()) {
+                                extendWifiSummary = "Extending Wifi-Coverage: ";
+                            } else {
+                                extendWifiSummary = "";
+                            }
+
                             // Only show the number of clients when state is on
-                            mPreference.setSummary(mContext.getResources().getQuantityString(
+                            mPreference.setSummary(extendWifiSummary + mContext.getResources().getQuantityString(
                                     R.plurals.wifi_tether_connected_summary, numClients,
                                     numClients));
                         }
@@ -152,7 +160,7 @@ public class WifiTetherPreferenceController extends AbstractPreferenceController
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (Intent.ACTION_AIRPLANE_MODE_CHANGED.equals(action)) {
-                clearSummaryForAirplaneMode();
+                clearSummaryForAirplaneMode(R.string.wifi_hotspot_off_subtext);
             }
         }
     };
@@ -194,10 +202,16 @@ public class WifiTetherPreferenceController extends AbstractPreferenceController
     }
 
     private void clearSummaryForAirplaneMode() {
+        clearSummaryForAirplaneMode(ID_NULL);
+    }
+
+    private void clearSummaryForAirplaneMode(int defaultId) {
         boolean isAirplaneMode = Settings.Global.getInt(mContext.getContentResolver(),
                 Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
         if (isAirplaneMode) {
             mPreference.setSummary(R.string.wifi_tether_disabled_by_airplane);
+        } else if (defaultId != ID_NULL){
+            mPreference.setSummary(defaultId);
         }
     }
     //
