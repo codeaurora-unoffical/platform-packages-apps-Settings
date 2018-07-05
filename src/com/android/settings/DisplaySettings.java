@@ -46,6 +46,7 @@ import com.android.settingslib.core.lifecycle.Lifecycle;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class DisplaySettings extends DashboardFragment {
     private static final String TAG = "DisplaySettings";
 

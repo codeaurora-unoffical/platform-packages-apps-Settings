@@ -51,4 +51,21 @@
 
     <!--Whether help links are defined. -->
     <bool name="config_has_help">false</bool>
+
+    <!-- Whether to hide ims apn -->
+    <bool name="config_hide_ims_apns">false</bool>
+    <!-- Whether to hide dm apn for carrier -->
+    <bool name="config_hide_dm_enabled">true</bool>
+    <!-- Whether to hide SUPL apn for China Union -->
+    <bool name="config_hidesupl_enable">false</bool>
+    <!-- Whether to hide mms apn-->
+    <bool name="config_hide_mms_enable">false</bool>
+    <!-- show pop up notification for turn off wifi begin -->
+    <bool name="hotspot_show_turn_off_wifi_dialog">false</bool>
+
+    <!-- Whether to enable the default ipv4/v6 for creating new APN -->
+    <bool name="config_default_apn_for_new">false</bool>
+    <!-- whether to show font size dialog config -->
+    <bool name="show_font_size_config">true</bool>
+
 </resources>
