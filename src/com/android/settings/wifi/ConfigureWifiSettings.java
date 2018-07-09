@@ -24,7 +24,7 @@ import android.net.NetworkInfo;
 import android.net.NetworkScoreManager;
 import android.net.wifi.WifiManager;
 import android.provider.SearchIndexableResource;
-
+import android.util.Log;
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
 import com.android.settings.dashboard.DashboardFragment;
@@ -79,6 +79,8 @@ public class ConfigureWifiSettings extends DashboardFragment {
 
     @Override
     protected List<AbstractPreferenceController> getPreferenceControllers(Context context) {
+        Log.i(TAG,"getPreferenceControllers()");
+
         final NetworkScoreManagerWrapper networkScoreManagerWrapper =
                 new NetworkScoreManagerWrapper(context.getSystemService(NetworkScoreManager.class));
         mWifiWakeupPreferenceController = new WifiWakeupPreferenceController(
@@ -96,6 +98,8 @@ public class ConfigureWifiSettings extends DashboardFragment {
         controllers.add(new CellularFallbackPreferenceController(context));
         controllers.add(new WifiP2pPreferenceController(context, getLifecycle(), wifiManager));
         controllers.add(new WifiCallingPreferenceController(context));
+        controllers.add(new WifiPassPointPreferenceController(context, getLifecycle(),this,
+                wifiManager));
         controllers.add(new WpsPreferenceController(
                 context, getLifecycle(), wifiManager, getFragmentManager()));
         return controllers;
