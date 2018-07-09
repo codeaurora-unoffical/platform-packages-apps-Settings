@@ -55,6 +55,7 @@ public class ConditionManager implements LifecycleObserver, OnResume, OnPause {
     private final Context mContext;
     private final ArrayList<Condition> mConditions;
     private File mXmlFile;
+    private boolean mResorted = false;
 
     private final ArrayList<ConditionListener> mListeners = new ArrayList<>();
 
@@ -73,9 +74,12 @@ public class ConditionManager implements LifecycleObserver, OnResume, OnPause {
 
     public void refreshAll() {
         final int N = mConditions.size();
-        for (int i = 0; i < N; i++) {
-            mConditions.get(i).refreshState();
-        }
+        do {
+            mResorted = false;
+            for (int i = 0; i < N; i++) {
+                mConditions.get(i).refreshState();
+            }
+        } while(mResorted);
     }
 
     private void readFromXml(File xmlFile, ArrayList<Condition> conditions) {
@@ -224,6 +228,7 @@ public class ConditionManager implements LifecycleObserver, OnResume, OnPause {
     public void notifyChanged(Condition condition) {
         saveToXml();
         Collections.sort(mConditions, CONDITION_COMPARATOR);
+        mResorted = true;
         final int N = mListeners.size();
         for (int i = 0; i < N; i++) {
             mListeners.get(i).onConditionsChanged();
