@@ -131,14 +131,20 @@ public class TetherPreferenceController extends AbstractPreferenceController imp
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        if (mBluetoothAdapter != null) {
-            mBluetoothAdapter.getProfileProxy(mContext, mBtProfileServiceListener,
-                    BluetoothProfile.PAN);
-        }
     }
 
     @Override
     public void onResume() {
+        if (mBluetoothAdapter != null &&
+            mBluetoothAdapter.getState() == BluetoothAdapter.STATE_ON) {
+            final BluetoothProfile profile = mBluetoothPan.get();
+
+            if (profile == null) {
+                mBluetoothAdapter.getProfileProxy(mContext, mBtProfileServiceListener,
+                        BluetoothProfile.PAN);
+            }
+        }
+
         if (mAirplaneModeObserver == null) {
             mAirplaneModeObserver = new SettingObserver();
         }
@@ -153,6 +159,10 @@ public class TetherPreferenceController extends AbstractPreferenceController imp
 
     @Override
     public void onPause() {
+        final BluetoothProfile profile = mBluetoothPan.getAndSet(null);
+        if (profile != null && mBluetoothAdapter != null) {
+            mBluetoothAdapter.closeProfileProxy(BluetoothProfile.PAN, profile);
+        }
         if (mAirplaneModeObserver != null) {
             mContext.getContentResolver().unregisterContentObserver(mAirplaneModeObserver);
         }
@@ -163,10 +173,6 @@ public class TetherPreferenceController extends AbstractPreferenceController imp
 
     @Override
     public void onDestroy() {
-        final BluetoothProfile profile = mBluetoothPan.getAndSet(null);
-        if (profile != null && mBluetoothAdapter != null) {
-            mBluetoothAdapter.closeProfileProxy(BluetoothProfile.PAN, profile);
-        }
     }
 
     public static boolean isTetherConfigDisallowed(Context context) {
