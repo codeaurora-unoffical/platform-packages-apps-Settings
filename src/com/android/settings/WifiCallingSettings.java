@@ -21,6 +21,8 @@ import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface.OnClickListener;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -36,6 +38,7 @@ import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.WindowManager;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -255,6 +258,9 @@ public class WifiCallingSettings extends SettingsPreferenceFragment
         Intent intent = getActivity().getIntent();
         if (intent.getBooleanExtra(Phone.EXTRA_KEY_ALERT_SHOW, false)) {
             showAlert(intent);
+        } else if (!mValidListener) {
+            mSwitchBar.addOnSwitchChangeListener(this);
+            mValidListener = true;
         }
     }
 
@@ -369,6 +375,12 @@ public class WifiCallingSettings extends SettingsPreferenceFragment
         final Context context = getActivity();
         Log.d(TAG, "onSwitchChanged(" + isChecked + ")");
 
+        if (!mImsMgr.isWfcEnabledByPlatformForSlot()) {
+            showVoWiFiErrorDialog();
+            mSwitchBar.setChecked(false);
+            return;
+        }
+
         if (!isChecked) {
             updateWfcMode(context, false);
             return;
@@ -382,6 +394,26 @@ public class WifiCallingSettings extends SettingsPreferenceFragment
         } else {
             updateWfcMode(context, true);
         }
+    }
+
+    private void showVoWiFiErrorDialog() {
+        Context context = getActivity();
+        AlertDialog vowifiDilog = new AlertDialog.Builder(context)
+        .setTitle(context.getString(R.string.wifi_calling_enable_error_dialog_title))
+        .setMessage(context.getString(R.string.wifi_calling_enable_error_dialog_msg))
+        .setPositiveButton("ok",
+                new OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+        .create();
+        vowifiDilog.getWindow().setType(WindowManager.LayoutParams.TYPE_STATUS_BAR_PANEL);
+        WindowManager.LayoutParams attrs = vowifiDilog.getWindow().getAttributes();
+        attrs.setTitle(getClass().getSimpleName());
+        vowifiDilog.getWindow().setAttributes(attrs);
+        vowifiDilog.show();
     }
 
     /*

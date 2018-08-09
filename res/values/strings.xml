@@ -2248,6 +2248,8 @@
     <string name="emergency_address_title">Update Emergency Address</string>
     <!-- Summary of Update Emergency Address preference, explaining usage of emergency address [CHAR LIMIT=NONE] -->
     <string name="emergency_address_summary">Address used by emergency services as your location if you make an emergency call using Wi\u2011Fi</string>
+    <string name="wifi_calling_enable_error_dialog_title">Warning</string>
+    <string name="wifi_calling_enable_error_dialog_msg">To make calls and send messages over Wi-Fi, first ask your carrier to set up this service. Then turn on Wi-Fi calling again from Settings.</string>
 
 
     <!-- Sound and alerts settings -->
