@@ -78,7 +78,8 @@ public class WifiTetherPasswordPreferenceController extends WifiTetherBasePrefer
      */
     public String getPasswordValidated(int securityType) {
         // don't actually overwrite unless we get a new config in case it was accidentally toggled.
-        if (securityType == WifiConfiguration.KeyMgmt.NONE) {
+        if (securityType == WifiConfiguration.KeyMgmt.NONE
+              || securityType == WifiConfiguration.KeyMgmt.OWE) {
             return "";
         } else if (!isTextValid(mPassword)) {
             mPassword = generateRandomPassword();
@@ -88,7 +89,8 @@ public class WifiTetherPasswordPreferenceController extends WifiTetherBasePrefer
     }
 
     public void updateVisibility(int securityType) {
-        mPreference.setVisible(securityType != WifiConfiguration.KeyMgmt.NONE);
+        mPreference.setVisible(securityType != WifiConfiguration.KeyMgmt.NONE
+                             && securityType != WifiConfiguration.KeyMgmt.OWE);
     }
 
     @Override

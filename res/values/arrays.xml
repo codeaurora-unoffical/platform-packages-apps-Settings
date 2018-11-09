@@ -244,6 +244,10 @@
         <item>@string/wifi_security_wpa2</item>
         <!-- Do not translate. -->
         <item>@string/wifi_security_none</item>
+        <!-- Do not translate. -->
+        <item>@string/wifi_security_owe</item>
+        <!-- Do not translate. -->
+        <item>@string/wifi_security_sae</item>
     </string-array>
 
     <!-- Values for security type for wireless tether -->
@@ -252,6 +256,10 @@
         <item>4</item>
         <!-- Do not translate. -->
         <item>0</item>
+        <!-- Do not translate. -->
+        <item>12</item>
+        <!-- Do not translate. -->
+        <item>11</item>
     </string-array>
 
     <!-- Match this with the constants in WifiDialog. --> <skip />

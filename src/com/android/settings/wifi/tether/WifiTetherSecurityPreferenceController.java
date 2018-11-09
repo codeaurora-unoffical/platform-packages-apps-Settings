@@ -31,7 +31,10 @@ public class WifiTetherSecurityPreferenceController extends WifiTetherBasePrefer
         final WifiConfiguration config = mWifiManager.getWifiApConfiguration();
         if (config != null && config.getAuthType() == WifiConfiguration.KeyMgmt.NONE) {
             mSecurityValue = WifiConfiguration.KeyMgmt.NONE;
-
+        } else if (config.getAuthType() == WifiConfiguration.KeyMgmt.OWE) {
+            mSecurityValue = WifiConfiguration.KeyMgmt.OWE;
+        } else if (config.getAuthType() == WifiConfiguration.KeyMgmt.SAE) {
+            mSecurityValue = WifiConfiguration.KeyMgmt.SAE;
         } else {
             mSecurityValue = WifiConfiguration.KeyMgmt.WPA2_PSK;
         }
@@ -56,6 +59,10 @@ public class WifiTetherSecurityPreferenceController extends WifiTetherBasePrefer
     private String getSummaryForSecurityType(int securityType) {
         if (securityType == WifiConfiguration.KeyMgmt.NONE) {
             return mSecurityEntries[1];
+        } else if (securityType == WifiConfiguration.KeyMgmt.OWE) {
+            return mSecurityEntries[2];
+        } else if (securityType == WifiConfiguration.KeyMgmt.SAE) {
+            return mSecurityEntries[3];
         }
         // WPA2 PSK
         return mSecurityEntries[0];
