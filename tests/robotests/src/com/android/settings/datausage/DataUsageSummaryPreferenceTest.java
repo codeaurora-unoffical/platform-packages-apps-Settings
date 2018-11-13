@@ -17,11 +17,11 @@
 package com.android.settings.datausage;
 
 import static com.google.common.truth.Truth.assertThat;
+
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -35,6 +35,9 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.fragment.app.FragmentActivity;
+import androidx.preference.PreferenceViewHolder;
 
 import com.android.settings.R;
 import com.android.settings.SettingsActivity;
@@ -54,9 +57,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowActivity;
 
 import java.util.concurrent.TimeUnit;
-
-import androidx.fragment.app.FragmentActivity;
-import androidx.preference.PreferenceViewHolder;
 
 @RunWith(SettingsRobolectricTestRunner.class)
 @Config(shadows = SettingsShadowResourcesImpl.class)
@@ -493,7 +493,7 @@ public class DataUsageSummaryPreferenceTest {
         mSummaryPreference.setUsageNumbers(1000000L, -1L, true);
         final String cycleText = "The quick fox";
         mSummaryPreference.setWifiMode(true, cycleText);
-        doReturn(200L).when(mSummaryPreference).getHistoriclUsageLevel();
+        doReturn(200L).when(mSummaryPreference).getHistoricalUsageLevel();
 
         bindViewHolder();
         assertThat(mUsageTitle.getText().toString())
@@ -529,7 +529,7 @@ public class DataUsageSummaryPreferenceTest {
     public void testSetWifiMode_noUsageInfo_shouldDisableLaunchButton() {
         mSummaryPreference = spy(mSummaryPreference);
         mSummaryPreference.setWifiMode(true, "Test cycle text");
-        doReturn(0L).when(mSummaryPreference).getHistoriclUsageLevel();
+        doReturn(0L).when(mSummaryPreference).getHistoricalUsageLevel();
 
         bindViewHolder();
 

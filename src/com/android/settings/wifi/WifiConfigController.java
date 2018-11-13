@@ -62,6 +62,9 @@ import android.widget.TextView;
 
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
+
+import androidx.annotation.VisibleForTesting;
+
 import com.android.settings.ProxySelector;
 import com.android.settings.R;
 import com.android.settingslib.Utils;
@@ -76,8 +79,6 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-
-import androidx.annotation.VisibleForTesting;
 
 /**
  * The class for allowing UIs like {@link WifiDialog} and {@link WifiConfigUiBase} to
@@ -131,7 +132,8 @@ public class WifiConfigController implements TextWatcher,
     private final ArrayAdapter<String> mPhase2FullAdapter;
 
     // e.g. AccessPoint.SECURITY_NONE
-    private int mAccessPointSecurity;
+    @VisibleForTesting
+    int mAccessPointSecurity;
     private TextView mPasswordView;
 
     private String mUnspecifiedCertString;
@@ -493,7 +495,7 @@ public class WifiConfigController implements TextWatcher,
         } else {
             enabled = ipAndProxyFieldsAreValid();
         }
-        if (mEapCaCertSpinner != null
+        if (mAccessPointSecurity == AccessPoint.SECURITY_EAP && mEapCaCertSpinner != null
                 && mView.findViewById(R.id.l_ca_cert).getVisibility() != View.GONE) {
             String caCertSelection = (String) mEapCaCertSpinner.getSelectedItem();
             if (caCertSelection.equals(mUnspecifiedCertString)) {
@@ -510,10 +512,9 @@ public class WifiConfigController implements TextWatcher,
                 enabled = false;
             }
         }
-        if (mEapUserCertSpinner != null
+        if (mAccessPointSecurity == AccessPoint.SECURITY_EAP && mEapUserCertSpinner != null
                 && mView.findViewById(R.id.l_user_cert).getVisibility() != View.GONE
-                && ((String) mEapUserCertSpinner.getSelectedItem())
-                       .equals(mUnspecifiedCertString)) {
+                && mEapUserCertSpinner.getSelectedItem().equals(mUnspecifiedCertString)) {
             // Disallow submit if the user has not selected a user certificate for an EAP network
             // configuration.
             enabled = false;
@@ -611,13 +612,13 @@ public class WifiConfigController implements TextWatcher,
             case AccessPoint.SECURITY_EAP:
                 config.allowedKeyManagement.set(KeyMgmt.WPA_EAP);
                 config.allowedKeyManagement.set(KeyMgmt.IEEE8021X);
-                if (mAccessPoint.isFils256Supported()) {
+                if (mAccessPoint != null && mAccessPoint.isFils256Supported()) {
                     config.allowedKeyManagement.set(KeyMgmt.FILS_SHA256);
                 }
-                if (mAccessPoint.isFils384Supported()) {
+                if (mAccessPoint != null && mAccessPoint.isFils384Supported()) {
                     config.allowedKeyManagement.set(KeyMgmt.FILS_SHA384);
                 }
-                if (mAccessPoint.isSuiteBSupported()) {
+                if (mAccessPoint != null && mAccessPoint.isSuiteBSupported()) {
                     config.allowedKeyManagement.set(KeyMgmt.SUITE_B_192);
                     config.requirePMF = true;
 		    config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.GCMP);
@@ -738,7 +739,8 @@ public class WifiConfigController implements TextWatcher,
                     // clear password
                     config.enterpriseConfig.setPassword(mPasswordView.getText().toString());
                 }
-                if (mAccessPoint.isFils256Supported() || mAccessPoint.isFils384Supported()) {
+                if (mAccessPoint != null && (mAccessPoint.isFils256Supported()
+                            || mAccessPoint.isFils384Supported())) {
                     config.enterpriseConfig.setFieldValue(WifiEnterpriseConfig.EAP_ERP, "1");
                 }
                 break;

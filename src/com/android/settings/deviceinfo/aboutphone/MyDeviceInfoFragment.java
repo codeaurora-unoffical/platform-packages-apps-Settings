@@ -41,7 +41,6 @@ import com.android.settings.deviceinfo.FccEquipmentIdPreferenceController;
 import com.android.settings.deviceinfo.FeedbackPreferenceController;
 import com.android.settings.deviceinfo.IpAddressPreferenceController;
 import com.android.settings.deviceinfo.ManualPreferenceController;
-import com.android.settings.deviceinfo.PhoneNumberPreferenceController;
 import com.android.settings.deviceinfo.RegulatoryInfoPreferenceController;
 import com.android.settings.deviceinfo.SafetyInfoPreferenceController;
 import com.android.settings.deviceinfo.UptimePreferenceController;
@@ -110,7 +109,6 @@ public class MyDeviceInfoFragment extends DashboardFragment
             Lifecycle lifecycle) {
         final List<AbstractPreferenceController> controllers = new ArrayList<>();
         controllers.add(new EmergencyInfoPreferenceController(context));
-        controllers.add(new PhoneNumberPreferenceController(context));
         controllers.add(new BrandedAccountPreferenceController(context));
         DeviceNamePreferenceController deviceNamePreferenceController =
                 new DeviceNamePreferenceController(context);
@@ -178,9 +176,9 @@ public class MyDeviceInfoFragment extends DashboardFragment
         DeviceNameWarningDialog.show(this);
     }
 
-    public void onSetDeviceNameConfirm() {
+    public void onSetDeviceNameConfirm(boolean confirm) {
         final DeviceNamePreferenceController controller = use(DeviceNamePreferenceController.class);
-        controller.confirmDeviceName();
+        controller.updateDeviceName(confirm);
     }
 
     private static class SummaryProvider implements SummaryLoader.SummaryProvider {

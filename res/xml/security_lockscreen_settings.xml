@@ -27,7 +27,8 @@
         <com.android.settings.RestrictedListPreference
             android:key="security_setting_lock_screen_notif"
             android:title="@string/lock_screen_notifications_title"
-            android:summary="@string/summary_placeholder" />
+            android:summary="@string/summary_placeholder"
+            settings:keywords="@string/keywords_lock_screen_notif"/>
 
         <com.android.settingslib.RestrictedSwitchPreference
             android:key="security_lockscreen_add_users_when_locked"
@@ -69,6 +70,12 @@
             android:title="@string/ambient_display_pickup_title"
             android:fragment="com.android.settings.gestures.PickupGestureSettings"
             settings:controller="com.android.settings.gestures.PickupGesturePreferenceController" />
+
+        <Preference
+            android:key="ambient_display_wake_screen"
+            android:title="@string/ambient_display_wake_screen_title"
+            android:fragment="com.android.settings.gestures.WakeScreenGestureSettings"
+            settings:controller="com.android.settings.gestures.WakeScreenGesturePreferenceController" />
 
         <SwitchPreference
             android:key="ambient_display_notification"

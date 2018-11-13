@@ -24,12 +24,12 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.media.AudioManager;
 
+import androidx.preference.Preference;
+
 import com.android.settings.R;
 import com.android.settingslib.Utils;
 import com.android.settingslib.bluetooth.A2dpProfile;
 import com.android.settingslib.bluetooth.HearingAidProfile;
-
-import androidx.preference.Preference;
 
 /**
  * This class which allows switching between A2dp-connected & HAP-connected BT devices.
@@ -106,12 +106,9 @@ public class MediaOutputPreferenceController extends AudioSwitchPreferenceContro
         if (hapProfile != null && a2dpProfile != null && device == null) {
             hapProfile.setActiveDevice(null);
             a2dpProfile.setActiveDevice(null);
-            return;
-        }
-        if (hapProfile != null && hapProfile.getHiSyncId(device) != HI_SYNC_ID_INVALID) {
+        } else if (hapProfile != null && hapProfile.getHiSyncId(device) != HI_SYNC_ID_INVALID) {
             hapProfile.setActiveDevice(device);
-        }
-        if (a2dpProfile != null) {
+        } else if (a2dpProfile != null) {
             a2dpProfile.setActiveDevice(device);
         }
     }

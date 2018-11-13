@@ -72,6 +72,7 @@ import com.android.settings.widget.SwitchBar;
 import com.android.settings.widget.SwitchBarController;
 import com.android.settingslib.RestrictedLockUtils;
 import com.android.settingslib.RestrictedLockUtils.EnforcedAdmin;
+import com.android.settingslib.RestrictedLockUtilsInternal;
 import com.android.settingslib.RestrictedPreference;
 import com.android.settingslib.drawable.CircleFramedDrawable;
 import com.android.settingslib.search.SearchIndexable;
@@ -343,14 +344,18 @@ public class UserSettings extends SettingsPreferenceFragment
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         int pos = 0;
-        UserManager um = getContext().getSystemService(UserManager.class);
-        boolean allowRemoveUser = !um.hasUserRestriction(UserManager.DISALLOW_REMOVE_USER);
-        boolean canSwitchUsers = um.canSwitchUsers();
-        if (!mUserCaps.mIsAdmin && allowRemoveUser && canSwitchUsers) {
+        final boolean canSwitchUsers = mUserManager.canSwitchUsers();
+        if (!mUserCaps.mIsAdmin && canSwitchUsers) {
             String nickname = mUserManager.getUserName();
             MenuItem removeThisUser = menu.add(0, MENU_REMOVE_USER, pos++,
                     getResources().getString(R.string.user_remove_user_menu, nickname));
             removeThisUser.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+
+            final EnforcedAdmin disallowRemoveUserAdmin =
+                    RestrictedLockUtilsInternal.checkIfRestrictionEnforced(getContext(),
+                            UserManager.DISALLOW_REMOVE_USER, UserHandle.myUserId());
+            RestrictedLockUtilsInternal.setMenuItemAsDisabledByAdmin(getContext(), removeThisUser,
+                    disallowRemoveUserAdmin);
         }
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -912,7 +917,7 @@ public class UserSettings extends SettingsPreferenceFragment
             if (mUserCaps.mDisallowAddUser) {
                 pref.setDisabledByAdmin(mUserCaps.mEnforcedAdmin);
             } else if (mUserCaps.mDisallowSwitchUser) {
-                pref.setDisabledByAdmin(RestrictedLockUtils.getDeviceOwner(context));
+                pref.setDisabledByAdmin(RestrictedLockUtilsInternal.getDeviceOwner(context));
             } else {
                 pref.setDisabledByAdmin(null);
             }
@@ -963,7 +968,8 @@ public class UserSettings extends SettingsPreferenceFragment
                 mAddUserWhenLockedPreferenceController.getPreferenceKey());
         mAddUserWhenLockedPreferenceController.updateState(addUserOnLockScreen);
         mMultiUserFooterPreferenceController.updateState(null /* preference */);
-        mAddUser.setVisible(mUserCaps.mUserSwitcherEnabled);
+        mAddUser.setVisible(mUserCaps.mCanAddUser && Utils.isDeviceProvisioned(context)
+                && mUserCaps.mUserSwitcherEnabled);
         mUserListCategory.setVisible(mUserCaps.mUserSwitcherEnabled);
         if (!mUserCaps.mUserSwitcherEnabled) {
             return;
@@ -1090,7 +1096,7 @@ public class UserSettings extends SettingsPreferenceFragment
             switch (v.getId()) {
                 case UserPreference.DELETE_ID:
                     final EnforcedAdmin removeDisallowedAdmin =
-                            RestrictedLockUtils.checkIfRestrictionEnforced(getContext(),
+                            RestrictedLockUtilsInternal.checkIfRestrictionEnforced(getContext(),
                                     UserManager.DISALLOW_REMOVE_USER, UserHandle.myUserId());
                     if (removeDisallowedAdmin != null) {
                         RestrictedLockUtils.sendShowAdminSupportDetailsIntent(getContext(),

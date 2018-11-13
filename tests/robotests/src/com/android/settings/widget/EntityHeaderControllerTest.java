@@ -17,6 +17,7 @@
 package com.android.settings.widget;
 
 import static com.google.common.truth.Truth.assertThat;
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
@@ -40,6 +41,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.preference.Preference;
+
 import com.android.settings.R;
 import com.android.settings.applications.LayoutPreference;
 import com.android.settings.testutils.SettingsRobolectricTestRunner;
@@ -54,10 +59,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.preference.Preference;
 
 @RunWith(SettingsRobolectricTestRunner.class)
 public class EntityHeaderControllerTest {
@@ -124,7 +125,7 @@ public class EntityHeaderControllerTest {
         mController.setLabel(testString);
         mController.setSummary(testString);
         mController.setSecondSummary(testString);
-        mController.setIcon(mShadowContext.getDrawable(R.drawable.ic_add));
+        mController.setIcon(mShadowContext.getDrawable(R.drawable.ic_add_24dp));
         mController.done(mActivity);
 
         assertThat(label).isNotNull();
@@ -237,7 +238,7 @@ public class EntityHeaderControllerTest {
         when(mFragment.getActivity()).thenReturn(mock(FragmentActivity.class));
         mController = EntityHeaderController.newInstance(mActivity, mFragment, view);
         String description = "Fake Description";
-        mController.setIcon(mShadowContext.getDrawable(R.drawable.ic_add));
+        mController.setIcon(mShadowContext.getDrawable(R.drawable.ic_add_24dp));
         mController.setIconContentDescription(description);
         mController.done(mActivity);
         assertThat(view.findViewById(R.id.entity_header_icon).getContentDescription().toString())

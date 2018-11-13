@@ -16,17 +16,17 @@ package com.android.settings.slices;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 
+import androidx.annotation.Keep;
+
 import com.android.settings.bluetooth.BluetoothSliceBuilder;
 import com.android.settings.location.LocationSliceBuilder;
 import com.android.settings.notification.ZenModeSliceBuilder;
 import com.android.settings.overlay.FeatureFactory;
-import com.android.settings.wifi.WifiSlice;
 
 import java.net.URISyntaxException;
 
@@ -90,6 +90,14 @@ public class SliceDeepLinkSpringBoard extends Activity {
             startActivity(new Intent(Settings.ACTION_SETTINGS));
             finish();
         }
+    }
+
+    @Keep
+    public static Uri createDeepLink(String s) {
+        return new Uri.Builder().scheme(SETTINGS)
+                .authority(SettingsSliceProvider.SLICE_AUTHORITY)
+                .appendQueryParameter(INTENT, s)
+                .build();
     }
 
     public static Intent parse(Uri uri, String pkg) throws URISyntaxException {

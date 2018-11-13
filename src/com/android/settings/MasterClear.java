@@ -21,7 +21,7 @@ import static com.android.settingslib.RestrictedLockUtils.EnforcedAdmin;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AuthenticatorDescription;
-import android.annotation.Nullable;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.ContentResolver;
@@ -31,6 +31,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.pm.UserInfo;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
@@ -53,17 +54,19 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.core.InstrumentedFragment;
 import com.android.settings.core.SubSettingLauncher;
 import com.android.settings.enterprise.ActionDisabledByAdminDialogHelper;
 import com.android.settings.password.ChooseLockSettingsHelper;
 import com.android.settings.password.ConfirmLockPattern;
-import com.android.settingslib.RestrictedLockUtils;
+import com.android.settingslib.RestrictedLockUtilsInternal;
+import com.android.setupwizardlib.TemplateLayout;
+import com.android.setupwizardlib.template.ButtonFooterMixin;
 
 import java.util.List;
-
-import androidx.annotation.VisibleForTesting;
 
 /**
  * Confirm and execute a reset of the device to a clean "just out of the box"
@@ -78,8 +81,10 @@ import androidx.annotation.VisibleForTesting;
 public class MasterClear extends InstrumentedFragment implements OnGlobalLayoutListener {
     private static final String TAG = "MasterClear";
 
-    @VisibleForTesting static final int KEYGUARD_REQUEST = 55;
-    @VisibleForTesting static final int CREDENTIAL_CONFIRM_REQUEST = 56;
+    @VisibleForTesting
+    static final int KEYGUARD_REQUEST = 55;
+    @VisibleForTesting
+    static final int CREDENTIAL_CONFIRM_REQUEST = 56;
 
     private static final String KEY_SHOW_ESIM_RESET_CHECKBOX
             = "masterclear.allow_retain_esim_profiles_after_fdr";
@@ -88,27 +93,41 @@ public class MasterClear extends InstrumentedFragment implements OnGlobalLayoutL
     static final String ERASE_ESIMS_EXTRA = "erase_esim";
 
     private View mContentView;
-    @VisibleForTesting Button mInitiateButton;
+    @VisibleForTesting
+    Button mInitiateButton;
     private View mExternalStorageContainer;
-    @VisibleForTesting CheckBox mExternalStorage;
+    @VisibleForTesting
+    CheckBox mExternalStorage;
     private View mEsimStorageContainer;
-    @VisibleForTesting CheckBox mEsimStorage;
-    @VisibleForTesting ScrollView mScrollView;
+    @VisibleForTesting
+    CheckBox mEsimStorage;
+    @VisibleForTesting
+    ScrollView mScrollView;
 
     @Override
     public void onGlobalLayout() {
         mInitiateButton.setEnabled(hasReachedBottom(mScrollView));
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        getActivity().setTitle(R.string.master_clear_short_title);
+    private void setUpActionBarAndTitle() {
+        final Activity activity = getActivity();
+        if (activity == null) {
+            Log.e(TAG, "No activity attached, skipping setUpActionBarAndTitle");
+            return;
+        }
+        final ActionBar actionBar = activity.getActionBar();
+        if (actionBar == null) {
+            Log.e(TAG, "No actionbar, skipping setUpActionBarAndTitle");
+            return;
+        }
+        actionBar.hide();
+        activity.getWindow().setStatusBarColor(Color.TRANSPARENT);
     }
 
     /**
      * Keyguard validation is run using the standard {@link ConfirmLockPattern}
      * component as a subactivity
+     *
      * @param request the request code to be returned once confirmation finishes
      * @return true if confirmation launched
      */
@@ -188,8 +207,8 @@ public class MasterClear extends InstrumentedFragment implements OnGlobalLayoutL
         Account[] accounts = am.getAccountsByType(accountType);
         if (accounts != null && accounts.length > 0) {
             final Intent requestAccountConfirmation = new Intent()
-                .setPackage(packageName)
-                .setComponent(new ComponentName(packageName, className));
+                    .setPackage(packageName)
+                    .setComponent(new ComponentName(packageName, className));
             // Check to make sure that the intent is supported.
             final PackageManager pm = context.getPackageManager();
             final ResolveInfo resolution = pm.resolveActivity(requestAccountConfirmation, 0);
@@ -258,8 +277,9 @@ public class MasterClear extends InstrumentedFragment implements OnGlobalLayoutL
      */
     @VisibleForTesting
     void establishInitialState() {
-        mInitiateButton = mContentView.findViewById(R.id.initiate_master_clear);
-        mInitiateButton.setOnClickListener(mInitiateListener);
+        setUpActionBarAndTitle();
+        setUpInitiateButton();
+
         mExternalStorageContainer = mContentView.findViewById(R.id.erase_external_container);
         mExternalStorage = mContentView.findViewById(R.id.erase_external);
         mEsimStorageContainer = mContentView.findViewById(R.id.erase_esim_container);
@@ -333,7 +353,7 @@ public class MasterClear extends InstrumentedFragment implements OnGlobalLayoutL
         mScrollView.setOnScrollChangeListener(new OnScrollChangeListener() {
             @Override
             public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX,
-                int oldScrollY) {
+                    int oldScrollY) {
                 if (v instanceof ScrollView && hasReachedBottom((ScrollView) v)) {
                     mInitiateButton.setEnabled(true);
                     mScrollView.setOnScrollChangeListener(null);
@@ -359,8 +379,8 @@ public class MasterClear extends InstrumentedFragment implements OnGlobalLayoutL
         }
         ContentResolver cr = context.getContentResolver();
         return Settings.Global.getInt(cr, Settings.Global.EUICC_PROVISIONED, 0) != 0
-                ||  Settings.Global.getInt(
-                        cr, Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0) != 0;
+                || Settings.Global.getInt(
+                cr, Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0) != 0;
     }
 
     @VisibleForTesting
@@ -387,21 +407,36 @@ public class MasterClear extends InstrumentedFragment implements OnGlobalLayoutL
         return diff <= 0;
     }
 
+    private void setUpInitiateButton() {
+        if (mInitiateButton != null) {
+            return;
+        }
+
+        final TemplateLayout layout = mContentView.findViewById(R.id.setup_wizard_layout);
+        final ButtonFooterMixin buttonFooterMixin = layout.getMixin(ButtonFooterMixin.class);
+        buttonFooterMixin.removeAllViews();
+        buttonFooterMixin.addSpace();
+        buttonFooterMixin.addSpace();
+        mInitiateButton = buttonFooterMixin.addButton(R.string.master_clear_button_text,
+                R.style.SuwGlifButton_Primary);
+        mInitiateButton.setOnClickListener(mInitiateListener);
+    }
+
     private void getContentDescription(View v, StringBuffer description) {
-       if (v.getVisibility() != View.VISIBLE) {
-           return;
-       }
-       if (v instanceof ViewGroup) {
-           ViewGroup vGroup = (ViewGroup) v;
-           for (int i = 0; i < vGroup.getChildCount(); i++) {
-               View nextChild = vGroup.getChildAt(i);
-               getContentDescription(nextChild, description);
-           }
-       } else if (v instanceof TextView) {
-           TextView vText = (TextView) v;
-           description.append(vText.getText());
-           description.append(","); // Allow Talkback to pause between sections.
-       }
+        if (v.getVisibility() != View.VISIBLE) {
+            return;
+        }
+        if (v instanceof ViewGroup) {
+            ViewGroup vGroup = (ViewGroup) v;
+            for (int i = 0; i < vGroup.getChildCount(); i++) {
+                View nextChild = vGroup.getChildAt(i);
+                getContentDescription(nextChild, description);
+            }
+        } else if (v instanceof TextView) {
+            TextView vText = (TextView) v;
+            description.append(vText.getText());
+            description.append(","); // Allow Talkback to pause between sections.
+        }
     }
 
     private boolean isExtStorageEncrypted() {
@@ -411,7 +446,7 @@ public class MasterClear extends InstrumentedFragment implements OnGlobalLayoutL
 
     private void loadAccountList(final UserManager um) {
         View accountsLabel = mContentView.findViewById(R.id.accounts_label);
-        LinearLayout contents = (LinearLayout)mContentView.findViewById(R.id.accounts);
+        LinearLayout contents = (LinearLayout) mContentView.findViewById(R.id.accounts);
         contents.removeAllViews();
 
         Context context = getActivity();
@@ -420,7 +455,7 @@ public class MasterClear extends InstrumentedFragment implements OnGlobalLayoutL
 
         AccountManager mgr = AccountManager.get(context);
 
-        LayoutInflater inflater = (LayoutInflater)context.getSystemService(
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE);
 
         int accountsCount = 0;
@@ -499,11 +534,12 @@ public class MasterClear extends InstrumentedFragment implements OnGlobalLayoutL
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         final Context context = getContext();
-        final EnforcedAdmin admin = RestrictedLockUtils.checkIfRestrictionEnforced(context,
+        final EnforcedAdmin admin = RestrictedLockUtilsInternal.checkIfRestrictionEnforced(context,
                 UserManager.DISALLOW_FACTORY_RESET, UserHandle.myUserId());
         final UserManager um = UserManager.get(context);
-        final boolean disallow = !um.isAdminUser() || RestrictedLockUtils.hasBaseUserRestriction(
-                context, UserManager.DISALLOW_FACTORY_RESET, UserHandle.myUserId());
+        final boolean disallow = !um.isAdminUser() || RestrictedLockUtilsInternal
+                .hasBaseUserRestriction(context, UserManager.DISALLOW_FACTORY_RESET,
+                        UserHandle.myUserId());
         if (disallow && !Utils.isDemoUser(context)) {
             return inflater.inflate(R.layout.master_clear_disallowed_screen, null);
         } else if (admin != null) {

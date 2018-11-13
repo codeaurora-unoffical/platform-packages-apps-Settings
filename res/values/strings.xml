@@ -384,15 +384,15 @@
     <!-- Summary for bluetooth item in connection detail page. (phone)-->
     <string name="bluetooth_pref_summary" product="default">Allow your phone to communicate with nearby Bluetooth devices</string>
 
-    <!-- UI debug setting: Disable Bluetooth A2DP hardware offload [CHAR LIMIT=40] -->
+    <!-- UI debug setting: Disable Bluetooth A2DP hardware offload [CHAR LIMIT=none] -->
     <string name="bluetooth_disable_a2dp_hw_offload">Disable Bluetooth A2DP hardware offload</string>
-    <!-- UI debug setting: Disable Bluetooth A2DP hardware offload [CHAR LIMIT=20] -->
+    <!-- UI debug setting: Disable Bluetooth A2DP hardware offload [CHAR LIMIT=none] -->
     <string name="bluetooth_disable_a2dp_hw_offload_dialog_title">Restart Device?</string>
-    <!-- UI debug setting: Disable Bluetooth A2DP hardware offload [CHAR LIMIT=60] -->
+    <!-- UI debug setting: Disable Bluetooth A2DP hardware offload [CHAR LIMIT=none] -->
     <string name="bluetooth_disable_a2dp_hw_offload_dialog_message">You need to restart your device to change this setting.</string>
-    <!-- UI debug setting: Disable Bluetooth A2DP hardware offload [CHAR LIMIT=10] -->
+    <!-- UI debug setting: Disable Bluetooth A2DP hardware offload [CHAR LIMIT=none] -->
     <string name="bluetooth_disable_a2dp_hw_offload_dialog_confirm">Restart</string>
-    <!-- UI debug setting: Disable Bluetooth A2DP hardware offload [CHAR LIMIT=10] -->
+    <!-- UI debug setting: Disable Bluetooth A2DP hardware offload [CHAR LIMIT=none] -->
     <string name="bluetooth_disable_a2dp_hw_offload_dialog_cancel">Cancel</string>
 
     <!-- Title for Bluetooth device group with media capability group [CHAR LIMIT=none]-->
@@ -415,6 +415,9 @@
     <string name="connected_device_previously_connected_screen_title">Previously connected</string>
     <!-- Toast text for hint user bluetooth is turned on [CHAR LIMIT=none]-->
     <string name="connected_device_bluetooth_turned_on_toast">Bluetooth turned on</string>
+
+    <!-- Title to see all the previous connected devices [CHAR LIMIT=50] -->
+    <string name="previous_connected_see_all">See all</string>
 
     <!-- Date & time settings screen title -->
     <string name="date_and_time">Date &amp; time</string>
@@ -895,6 +898,12 @@
     <string name="security_settings_face_settings_use_face_category">Use your face to</string>
     <!-- Text shown on a toggle which allows or disallows the device to use face for unlocking the device. [CHAR LIMIT=20] -->
     <string name="security_settings_face_settings_use_face_unlock_phone">Unlock your device</string>
+    <!-- Text shown on a toggle which allows or disallows the device to use face authentication for apps. This will be presented to the user together with the context of security_settings_face_settings_use_face_category. [CHAR LIMIT=30] -->
+    <string name="security_settings_face_settings_use_face_for_apps">App sign-in \u0026 payments</string>
+    <!-- Text shown on a toggle which disables/enables face authentication, depending if the user's eyes are open. [CHAR LIMIT=30] -->
+    <string name="security_settings_face_settings_require_attention">Eyes open to unlock</string>
+    <!-- Text shown on the details of a toggle which disables/enables face authentication, depending if the user's eyes are open. [CHAR LIMIT=70] -->
+    <string name="security_settings_face_settings_require_attention_details">When using face authentication, your eyes must be open</string>
     <!-- Button text in face settings which removes the user's faces from the device [CHAR LIMIT=20] -->
     <string name="security_settings_face_settings_remove_face_data">Remove face data</string>
     <!-- Text shown in face settings allowing the user to update/improve the enrolled face. This brings the user back to the enrollment flow. [CHAR LIMIT=30] -->
@@ -6905,8 +6914,6 @@
     <!-- Search strings -->
     <!-- Text to describe the search results fragment title [CHAR LIMIT=16] -->
     <string name="search_results_title">Settings</string>
-    <!-- Text used as a search hint into the search box -->
-    <string name="search_menu">Search settings</string>
     <!-- Search breadcrumb connector symbol -->
     <string name="search_breadcrumb_connector" translatable="false">
         <xliff:g name="first_item">%1$s</xliff:g> > <xliff:g name="second_item">%2$s</xliff:g>
@@ -6957,7 +6964,7 @@
     <string name="keywords_payment_settings">pay, tap, payments</string>
     <string name="keywords_backup">backup, back up</string>
     <string name="keywords_assist_gesture_launch">gesture</string>
-    <string name="keywords_face_unlock">face, unlock</string>
+    <string name="keywords_face_unlock">face, unlock, auth, sign in</string>
     <string name="keywords_imei_info">imei, meid, min, prl version, imei sv</string>
     <string name="keywords_sim_status">network, mobile network state, service state, signal strength, mobile network type, roaming, iccid</string>
     <string name="keywords_model_and_hardware">serial number, hardware version</string>
@@ -6971,6 +6978,9 @@
 
     <!-- Search keyword for Ambient display settings screen. -->
     <string name="keywords_ambient_display_screen">Ambient display, Lock screen display</string>
+
+    <!-- Search keyword for lock screen notification setting [CHAR_LIMIT=NONE] -->
+    <string name="keywords_lock_screen_notif">lock screen notification</string>
 
     <!-- Search keyword for face settings. -->
     <string name="keywords_face_settings">face</string>
@@ -8201,7 +8211,7 @@
     <string name="encrypt_talkback_dialog_message_password">When you enter your password to start this device, accessibility services like <xliff:g id="service" example="TalkBack">%1$s</xliff:g> won\u2019t yet be available.</string>
 
     <!-- [CHAR LIMIT=NONE] Dialog body explaining that the app just selected by the user will not work after a reboot until until after the user enters their credentials, such as a PIN or password. -->
-    <string name="direct_boot_unaware_dialog_message">Note: After a reboot, this app can\'t start until you unlock your phone</string>
+    <string name="direct_boot_unaware_dialog_message">Note: If you restart your phone and have a screen lock set, this app can\'t start until you unlock your phone</string>
 
     <!-- Title and summary for SIM Status -->
     <string name="imei_information_title">IMEI information</string>
@@ -8309,7 +8319,7 @@
     <!-- Label for showing apps with blocked notifications in list [CHAR LIMIT=30] -->
     <string name="filter_notif_all_apps">Apps: All</string>
     <!-- Label for showing apps with blocked notifications in list [CHAR LIMIT=30] -->
-    <string name="filter_notif_blocked_apps">Apps: Turned off</string>
+    <string name="filter_notif_blocked_apps">Turned off</string>
     <!-- Label for showing categories with urgent notifications in list [CHAR LIMIT=30] -->
     <string name="filter_notif_urgent_channels">Categories: Urgent importance</string>
     <!-- Label for showing categories with low importance notifications in list [CHAR LIMIT=30] -->
@@ -8956,8 +8966,6 @@
     <string name="disabled_by_policy_title_camera">Camera not allowed</string>
     <!-- Title for dialog displayed to tell user that screenshots are disabled by an admin [CHAR LIMIT=50] -->
     <string name="disabled_by_policy_title_screen_capture">Screenshot not allowed</string>
-    <!-- Title for dialog displayed to tell user that turning off backups is disallowed by an admin [CHAR LIMIT=50] -->
-    <string name="disabled_by_policy_title_turn_off_backups">Can’t turn off backups</string>
     <!-- Title for dialog displayed to tell user that the app was suspended by an admin [CHAR LIMIT=50] -->
     <string name="disabled_by_policy_title_suspend_packages">Can’t open this app</string>
     <!-- Shown when the user tries to change a settings locked by an admin [CHAR LIMIT=200] -->
@@ -9467,20 +9475,17 @@
     <!-- [CHAR LIMIT=60] Name of dev option called "System UI demo mode" -->
     <string name="demo_mode">System UI demo mode</string>
 
-    <!-- [CHAR LIMIT=60] Name of dev option that changes the UI Mode -->
-    <string name="dark_ui_mode">Night mode</string>
+    <!-- [CHAR LIMIT=60] Name of setting that changes the UI to dark -->
+    <string name="dark_ui_mode">Dark mode</string>
 
     <!-- [CHAR LIMIT=60] Name of dev option that changes the color of the UI -->
-    <string name="dark_ui_mode_title">Set Night mode</string>
+    <string name="dark_ui_mode_title">Set Dark mode</string>
 
     <!-- [CHAR LIMIT=60] Name of dev option to enable extra quick settings tiles -->
     <string name="quick_settings_developer_tiles">Quick settings developer tiles</string>
 
     <!-- [CHAR LIMIT=25] Title of developer tile to toggle winscope trace -->
     <string name="winscope_trace_quick_settings_title">Winscope Trace</string>
-
-    <!-- Template for formatting country and language. eg Canada - French [CHAR LIMIT=NONE]-->
-    <string name="support_country_format"><xliff:g id="country" example="Canada">%1$s</xliff:g> - <xliff:g id="language" example="French">%2$s</xliff:g></string>
 
     <!-- [CHAR LIMIT=60] Title of work profile setting page -->
     <string name="managed_profile_settings_title">Work profile settings</string>
@@ -9585,6 +9590,11 @@
     <!-- Preference and settings suggestion title text for ambient display pick up (device) [CHAR LIMIT=60]-->
     <string name="ambient_display_pickup_title" product="device">Lift to check device</string>
 
+    <!-- Preference and settings suggestion title text for display wake-up gesture [CHAR LIMIT=60]-->
+    <string name="ambient_display_wake_screen_title">Wake up display</string>
+    <!-- Summary text for ambient display wake-up gesture [CHAR LIMIT=NONE]-->
+    <string name="ambient_display_wake_screen_summary"></string>
+
     <!-- Summary text for ambient display (phone) [CHAR LIMIT=NONE]-->
     <string name="ambient_display_pickup_summary" product="default">To check time, notifications, and other info, pick up your phone.</string>
     <!-- Summary text for ambient display (tablet) [CHAR LIMIT=NONE]-->
@@ -9592,19 +9602,10 @@
     <!-- Summary text for ambient display (device) [CHAR LIMIT=NONE]-->
     <string name="ambient_display_pickup_summary" product="device">To check time, notifications, and other info, pick up your device.</string>
 
-    <!-- Preference and settings suggestion title text for reach gesture (phone) [CHAR LIMIT=60]-->
-    <string name="ambient_display_reach_title" product="default">Reach to check phone</string>
-    <!-- Preference and settings suggestion title text for reach gesture (tablet) [CHAR LIMIT=60]-->
-    <string name="ambient_display_reach_title" product="tablet">Reach to check tablet</string>
-    <!-- Preference and settings suggestion title text for reach gesture (device) [CHAR LIMIT=60]-->
-    <string name="ambient_display_reach_title" product="device">Reach to check device</string>
-
-    <!-- Summary text for ambient display (phone) [CHAR LIMIT=NONE]-->
-    <string name="ambient_display_reach_summary" product="default">To check time, notifications, and other info, reach for your phone.</string>
-    <!-- Summary text for ambient display (tablet) [CHAR LIMIT=NONE]-->
-    <string name="ambient_display_reach_summary" product="tablet">To check time, notifications, and other info, reach for your tablet.</string>
-    <!-- Summary text for ambient display (device) [CHAR LIMIT=NONE]-->
-    <string name="ambient_display_reach_summary" product="device">To check time, notifications, and other info, reach for your device.</string>
+    <!-- Preference and settings suggestion title text for gesture that shows the lock screen [CHAR LIMIT=60]-->
+    <string name="ambient_display_wake_lock_screen_title">Wake lock screen gesture</string>
+    <!-- Summary text for ambient display [CHAR LIMIT=NONE]-->
+    <string name="ambient_display_wake_lock_screen_summary" product="default"></string>
 
     <!-- Title text for swiping downwards on fingerprint sensor for notifications [CHAR LIMIT=80]-->
     <string name="fingerprint_swipe_for_notifications_title">Swipe fingerprint for notifications</string>
@@ -9769,8 +9770,6 @@
         <item quantity="one"><xliff:g id="count">%d</xliff:g> attempt</item>
         <item quantity="other"><xliff:g id="count">%d</xliff:g> attempts</item>
     </plurals>
-    <!-- List item in a work device's settings. This text lets the user know that their IT administrator requires their device's data to be backed up. The user can't change this setting. [CHAR LIMIT=NONE] -->
-    <string name="enterprise_privacy_backups_enabled">This device\'s data is being backed up</string>
     <!-- Message indicating that the device is enterprise-managed by a Device Owner [CHAR LIMIT=NONE] -->
     <string name="do_disclosure_generic">This device is managed by your organization.</string>
     <!-- Message indicating that the device is enterprise-managed by a Device Owner [CHAR LIMIT=NONE] -->
@@ -9971,6 +9970,13 @@
     <!-- UI debug setting: preference summary - describes the behavior of showing a dialog every time an app crashes [CHAR LIMIT=NONE] -->
     <string name="show_first_crash_dialog_summary">Show dialog every time an app crashes</string>
 
+    <!-- UI debug setting: select current app to use ANGLE [CHAR LIMIT=100] -->
+    <string name="angle_enabled_app">Select ANGLE enabled app</string>
+    <!-- UI debug setting: no ANGLE enabled app has been set [CHAR LIMIT=100] -->
+    <string name="angle_enabled_app_not_set">No ANGLE enabled application set</string>
+    <!-- UI debug setting: ANGLE enabled app has been set [CHAR LIMIT=NONE] -->
+    <string name="angle_enabled_app_set">ANGLE enabled application: <xliff:g id="app_name" example="com.company.app">%1$s</xliff:g></string>
+
     <!-- Title for Directory Access settings -->
     <string name="directory_access">Directory access</string>
     <!-- Keywords for Directory Access settings -->
@@ -10091,6 +10097,187 @@
 
     <!-- Title for Connected device shortcut [CHAR LIMIT=30] -->
     <string name="devices_title">Devices</string>
+
+    <!-- UI debug setting: Enable High Refresh Rate virtual panel [CHAR LIMIT=25] -->
+    <string name="high_frequency_display_device_title">High Frequency Panel</string>
+
+    <!-- UI debug setting: Enable High Refresh Rate virtual panel [CHAR LIMIT=50] -->
+    <string name="high_frequency_display_device_summary">Enable Virtual High Frequency Panel</string>
+
+    <!-- Homepage bottom menu. Title for display all Settings [CHAR LIMIT=30] -->
+    <string name="homepage_all_settings">All Settings</string>
+
+    <!-- Homepage bottom menu. Title for display personalized Settings [CHAR LIMIT=30] -->
+    <string name="homepage_personal_settings">Suggestions</string>
+
+    <!-- Setting Checkbox title whether to enable CBRS data. [CHAR LIMIT=40] -->
+    <string name="cbrs_data_switch">CBRS Data</string>
+
+    <!-- Title of implications of enabling CBRS Data -->
+    <string name="cbrs_data_switch_summary">CBRS Data</string>
+
+    <!-- Available networks screen, name of button when user wants to select network manually [CHAR LIMIT=60] -->
+    <string name="choose_network_title">Choose network</string>
+    <!-- Available networks screen, text when no networks connected [CHAR LIMIT=60] -->
+    <string name="network_disconnected">Disconnected</string>
+    <!-- Available networks screen, text when network connected [CHAR LIMIT=60] -->
+    <string name="network_connected">Connected</string>
+    <!-- Available networks screen, text when a network is connecting [CHAR LIMIT=60] -->
+    <string name="network_connecting">Connecting\u2026</string>
+    <!-- Available networks screen, text when a network cannot be connected [CHAR LIMIT=60] -->
+    <string name="network_could_not_connect">Couldn\u2019t connect</string>
+    <!-- Available networks screen, text when no networks are found [CHAR LIMIT=NONE] -->
+    <string name="empty_networks_list">No networks found.</string>
+    <!-- Available networks screen, toast when an error is encountered when searching for networks [CHAR LIMIT=NONE] -->
+    <string name="network_query_error">Couldn\u2019t find networks. Try again.</string>
+    <!-- Text to show this network is forbidden [CHAR LIMIT=NONE] -->
+    <string name="forbidden_network">(forbidden)</string>
+
+    <!-- Message informs the user that has no SIM card in personalized Settings [CHAR LIMIT=30] -->
+    <string name="no_sim_card">No SIM card</string>
+
+    <!-- Carrier variant of Enhaced 4G LTE Mode title.  [CHAR LIMIT=50] -->
+    <string name="enhanced_4g_lte_mode_title_variant">Advanced Calling</string>
+    <!-- The following strings are summaries for preferred network modes in Mobile network settings,
+     and have a character limit of 100 -->
+    <!-- WCDMA preferred [CHAR LIMIT=NONE] -->
+    <string name="preferred_network_mode_wcdma_perf_summary">Preferred network mode: WCDMA preferred</string>
+    <!-- GSM only [CHAR LIMIT=NONE] -->
+    <string name="preferred_network_mode_gsm_only_summary">Preferred network mode: GSM only</string>
+    <!-- WCDMA only [CHAR LIMIT=NONE] -->
+    <string name="preferred_network_mode_wcdma_only_summary">Preferred network mode: WCDMA only</string>
+    <!-- GSM / WCDMA [CHAR LIMIT=NONE] -->
+    <string name="preferred_network_mode_gsm_wcdma_summary">Preferred network mode: GSM / WCDMA</string>
+    <!-- CDMA [CHAR LIMIT=NONE] -->
+    <string name="preferred_network_mode_cdma_summary">Preferred network mode: CDMA</string>
+    <!-- CDMA / EvDo [CHAR LIMIT=NONE] -->
+    <string name="preferred_network_mode_cdma_evdo_summary">Preferred network mode: CDMA / EvDo</string>
+    <!-- CDMA only [CHAR LIMIT=NONE] -->
+    <string name="preferred_network_mode_cdma_only_summary">Preferred network mode: CDMA only</string>
+    <!-- EvDo only [CHAR LIMIT=NONE] -->
+    <string name="preferred_network_mode_evdo_only_summary">Preferred network mode: EvDo only</string>
+    <!-- CDMA/EvDo/GSM/WCDMA [CHAR LIMIT=NONE] -->
+    <string name="preferred_network_mode_cdma_evdo_gsm_wcdma_summary">Preferred network mode: CDMA/EvDo/GSM/WCDMA</string>
+    <!-- LTE [CHAR LIMIT=NONE] -->
+    <string name="preferred_network_mode_lte_summary">Preferred network mode: LTE </string>
+    <!-- GSM/WCDMA/LTE [CHAR LIMIT=NONE] -->
+    <string name="preferred_network_mode_lte_gsm_wcdma_summary">Preferred network mode: GSM/WCDMA/LTE</string>
+    <!-- CDMA+LTE/EVDO [CHAR LIMIT=NONE] -->
+    <string name="preferred_network_mode_lte_cdma_evdo_summary">Preferred network mode: CDMA+LTE/EVDO</string>
+    <!-- Global [CHAR LIMIT=NONE] -->
+    <string name="preferred_network_mode_global_summary">Preferred network mode: Global</string>
+    <!-- LTE / WCDMA [CHAR LIMIT=NONE] -->
+    <string name="preferred_network_mode_lte_wcdma_summary">Preferred network mode: LTE / WCDMA</string>
+    <!-- LTE / GSM / UMTS [CHAR LIMIT=NONE] -->
+    <string name="preferred_network_mode_lte_gsm_umts_summary">Preferred network mode: LTE / GSM / UMTS</string>
+    <!-- LTE / CDMA [CHAR LIMIT=NONE] -->
+    <string name="preferred_network_mode_lte_cdma_summary">Preferred network mode: LTE / CDMA</string>
+    <!-- TDSCDMA [CHAR LIMIT=NONE] -->
+    <string name="preferred_network_mode_tdscdma_summary">Preferred network mode: TDSCDMA</string>
+    <!-- TDSCDMA / WCDMA [CHAR LIMIT=NONE] -->
+    <string name="preferred_network_mode_tdscdma_wcdma_summary">Preferred network mode: TDSCDMA / WCDMA</string>
+    <!-- LTE / TDSCDMA [CHAR LIMIT=NONE] -->
+    <string name="preferred_network_mode_lte_tdscdma_summary">Preferred network mode: LTE / TDSCDMA</string>
+    <!-- TDSCDMA / GSM [CHAR LIMIT=NONE] -->
+    <string name="preferred_network_mode_tdscdma_gsm_summary">Preferred network mode: TDSCDMA / GSM</string>
+    <!-- LTE/GSM/TDSCDMA [CHAR LIMIT=NONE] -->
+    <string name="preferred_network_mode_lte_tdscdma_gsm_summary">Preferred network mode: LTE/GSM/TDSCDMA</string>
+    <!-- TDSCDMA/GSM/WCDMA [CHAR LIMIT=NONE] -->
+    <string name="preferred_network_mode_tdscdma_gsm_wcdma_summary">Preferred network mode: TDSCDMA/GSM/WCDMA</string>
+    <!-- LTE/TDSCDMA/WCDMA [CHAR LIMIT=NONE] -->
+    <string name="preferred_network_mode_lte_tdscdma_wcdma_summary">Preferred network mode: LTE/TDSCDMA/WCDMA</string>
+    <!-- LTE/TDSCDMA/GSM/WCDMA [CHAR LIMIT=NONE] -->
+    <string name="preferred_network_mode_lte_tdscdma_gsm_wcdma_summary">Preferred network mode: LTE/TDSCDMA/GSM/WCDMA</string>
+    <!-- TDSCDMA/CDMA/EvDo/GSM/WCDMA [CHAR LIMIT=NONE] -->
+    <string name="preferred_network_mode_tdscdma_cdma_evdo_gsm_wcdma_summary">Preferred network mode: TDSCDMA/CDMA/EvDo/GSM/WCDMA</string>
+    <!-- LTE/TDSCDMA/CDMA/EvDo/GSM/WCDMA [CHAR LIMIT=NONE] -->
+    <string name="preferred_network_mode_lte_tdscdma_cdma_evdo_gsm_wcdma_summary">Preferred network mode: LTE/TDSCDMA/CDMA/EvDo/GSM/WCDMA</string>
+
+    <!-- Text for Network lte [CHAR LIMIT=NONE] -->
+    <string name="network_lte">LTE (recommended)</string>
+    <!-- Text for Network 4g [CHAR LIMIT=NONE] -->
+    <string name="network_4G">4G (recommended)</string>
+    <!-- Text for Network 3g [CHAR LIMIT=NONE] -->
+    <string name="network_3G" translatable="false">3G</string>
+    <!-- Text for Network 2g [CHAR LIMIT=NONE] -->
+    <string name="network_2G" translatable="false">2G</string>
+    <!-- Text for Network 1x [CHAR LIMIT=NONE] -->
+    <string name="network_1x" translatable="false">1x</string>
+    <!-- Text for Network global [CHAR LIMIT=NONE] -->
+    <string name="network_global">Global</string>
+
+    <!-- Configuration setting for world mode Format is <true;GID if any to be checked> [CHAR LIMIT=NONE] -->
+    <string translatable="false" name="config_world_mode"/>
+
+    <!-- Available networks screen title/heading [CHAR LIMIT=NONE] -->
+    <string name="label_available">Available networks</string>
+    <!-- Mobile network settings screen, toast when searching for available networks [CHAR LIMIT=NONE] -->
+    <string name="load_networks_progress">Searching\u2026</string>
+    <!-- Available networks screen, toast when registering on a specific network [CHAR LIMIT=NONE] -->
+    <string name="register_on_network">Registering on <xliff:g id="network" example="Verizon">%s</xliff:g>\u2026</string>
+    <!-- Available networks screen, toast when SIM card isn't allowed on a network [CHAR LIMIT=NONE] -->
+    <string name="not_allowed">Your SIM card doesn\u2019t allow a connection to this network.</string>
+    <!-- Available networks screen, toast when unable to connect to a network temporarily [CHAR LIMIT=NONE] -->
+    <string name="connect_later">Can\u2019t connect to this network right now. Try again later.</string>
+    <!-- Available networks screen, toast when registered on a specific network [CHAR LIMIT=NONE] -->
+    <string name="registration_done">Registered on network.</string>
+
+    <!-- Available networks screen, name of switch button for whether to select network automatically [CHAR LIMIT=NONE] -->
+    <string name="select_automatically">Automatically select network</string>
+
+    <!-- A menu item in "Mobile network settings" that allows the user to update the phone
+     with mobile operator specific settings. [CHAR LIMIT=25] -->
+    <string name="carrier_settings_title">Carrier settings</string>
+    <!-- Preference title for launching an account manager page for prepaid LTE [CHAR LIMIT=30] -->
+    <string name="cdma_lte_data_service">Set up data service</string>
+    <!-- Mobile network settings screen, title of Mobile Data switch preference [CHAR LIMIT=NONE] -->
+    <string name="mobile_data_settings_title">Mobile data</string>
+    <!-- Mobile network settings screen, title of Mobile data switch preference [CHAR LIMIT=NONE] -->
+    <string name="mobile_data_settings_summary">Access data using mobile network</string>
+
+    <!-- Title for preferred network type [CHAR LIMIT=NONE] -->
+    <string name="preferred_network_mode_title">Preferred network type</string>
+    <!-- Summary for preferred network type [CHAR LIMIT=NONE] -->
+    <string name="preferred_network_mode_summary">Change the network operating mode</string>
+    <!-- Dialog title for preferred network type [CHAR LIMIT=NONE] -->
+    <string name="preferred_network_mode_dialogtitle">Preferred network type</string>
+    <!-- Mobile network settings screen, name of the option to manage carrier profiles on devices which support embedded carrier profiles [CHAR LIMIT=NONE] -->
+    <string name="carrier_settings_euicc">Carrier</string>
+
+    <!-- Mobile network settings screen, name for call settings category [CHAR LIMIT=NONE] -->
+    <string name="call_category">Calling</string>
+    <!-- Mobile network settings screen, title of Video calling setting [CHAR LIMIT=NONE] -->
+    <string name="video_calling_settings_title">Carrier video calling</string>
+
+    <!-- Mobile network settings screen, setting option name [CHAR LIMIT=NONE] -->
+    <string name="cdma_system_select_title">System select</string>
+    <!-- Mobile network settings screen, setting summary text [CHAR LIMIT=NONE] -->
+    <string name="cdma_system_select_summary">Change the CDMA roaming mode</string>
+    <!-- System select settings screen title [CHAR LIMIT=NONE] -->
+    <string name="cdma_system_select_dialogtitle">System select</string>
+
+    <!-- Mobile network settings screen, name for network operator category [CHAR LIMIT=NONE] -->
+    <string name="network_operator_category">Network</string>
+    <!-- Available networks screen, name of button when user wants to select network manually [CHAR LIMIT=NONE] -->
+    <string name="network_select_title">Network</string>
+
+    <!-- Title for CDMA subscription [CHAR LIMIT=50] -->
+    <string name="cdma_subscription_title">CDMA subscription</string>
+    <!-- Summary for CDMA subscription [CHAR LIMIT=NONE] -->
+    <string name="cdma_subscription_summary">Change between RUIM/SIM and NV</string>
+    <!-- Dialog title for CDMA subscription [CHAR LIMIT=30] -->
+    <string name="cdma_subscription_dialogtitle">subscription</string>
+
+    <!-- Title to register automatically [CHAR LIMIT=NONE] -->
+    <string name="register_automatically">Automatic registration\u2026</string>
+    <!-- Mobile network settings screen, dialog message title when user selects the Data roaming check box [CHAR LIMIT=120] -->
+    <string name="roaming_alert_title">Allow data roaming?</string>
+    <!-- Mobile network settings screen, message asking the user to check their pricing with their Carrier, when enabling Data roaming. [CHAR LIMIT=NONE] -->
+    <string name="roaming_check_price_warning">Check with your network provider for pricing.</string>
+
+    <!-- Available networks screen, summary when button disallowed due to permanent automatic mode [CHAR LIMIT=NONE] -->
+    <string name="manual_mode_disallowed_summary">Unavailable when connected to <xliff:g id="carrier" example="verizon">%1$s</xliff:g></string>
+
     <string name="select_sim_card">Select SIM card</string>
     <string name="qtifeedback_settings_title">Hardware Feedback</string>
     <string name="qtifeedback_settings_subtitle">Qualcomm Technologies, Inc Reporting</string>

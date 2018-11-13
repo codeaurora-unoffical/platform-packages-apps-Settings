@@ -1,6 +1,7 @@
 package com.android.settings.testutils.shadow;
 
 import static android.util.TypedValue.TYPE_REFERENCE;
+
 import static org.robolectric.RuntimeEnvironment.application;
 import static org.robolectric.shadow.api.Shadow.directlyOn;
 
@@ -17,6 +18,10 @@ import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.util.TypedValue;
 
+import androidx.annotation.ArrayRes;
+import androidx.annotation.ColorRes;
+import androidx.annotation.Nullable;
+
 import com.android.settings.R;
 
 import org.robolectric.RuntimeEnvironment;
@@ -25,21 +30,11 @@ import org.robolectric.android.XmlResourceParserImpl;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 import org.robolectric.annotation.RealObject;
-import org.robolectric.res.StyleData;
-import org.robolectric.res.StyleResolver;
-import org.robolectric.res.ThemeStyleSet;
 import org.robolectric.shadows.ShadowAssetManager;
 import org.robolectric.shadows.ShadowResources;
 import org.robolectric.util.ReflectionHelpers;
 import org.robolectric.util.ReflectionHelpers.ClassParameter;
 import org.w3c.dom.Node;
-
-import java.util.List;
-import java.util.Map;
-
-import androidx.annotation.ArrayRes;
-import androidx.annotation.ColorRes;
-import androidx.annotation.Nullable;
 
 /**
  * Shadow Resources and Theme classes to handle resource references that Robolectric shadows cannot
@@ -206,40 +201,8 @@ public class SettingsShadowResources extends ShadowResources {
                         if (attributeValue.contains("attr/fingerprint_layout_theme")) {
                             // Workaround for https://github.com/robolectric/robolectric/issues/2641
                             node.setNodeValue("@style/FingerprintLayoutTheme");
-                        } else if (attributeValue.startsWith("@*android:string")) {
-                            node.setNodeValue("PLACEHOLDER");
                         }
                     }
-                }
-            }
-
-            // Track down all styles and remove all inheritance from private styles.
-            final Map<Long, Object /* NativeTheme */> appliedStylesList =
-                    ReflectionHelpers.getField(mAssetManager, "nativeThemes");
-            synchronized (appliedStylesList) {
-                for (Long idx : appliedStylesList.keySet()) {
-                    final ThemeStyleSet appliedStyles = ReflectionHelpers.getField(
-                            appliedStylesList.get(idx), "themeStyleSet");
-                    // The Object's below are actually ShadowAssetManager.OverlayedStyle.
-                    // We can't use
-
-                    // it here because it's private.
-                    final List<Object /* OverlayedStyle */> overlayedStyles =
-                            ReflectionHelpers.getField(appliedStyles, "styles");
-                    for (Object appliedStyle : overlayedStyles) {
-                        final StyleResolver styleResolver = ReflectionHelpers.getField(appliedStyle,
-                                "style");
-                        final List<StyleData> styleDatas =
-                                ReflectionHelpers.getField(styleResolver, "styles");
-                        for (StyleData styleData : styleDatas) {
-                            if (styleData.getParent() != null &&
-                                    styleData.getParent().startsWith("@*android:style")) {
-                                ReflectionHelpers.setField(StyleData.class, styleData, "parent",
-                                        null);
-                            }
-                        }
-                    }
-
                 }
             }
             return super.obtainStyledAttributes(set, attrs, defStyleAttr, defStyleRes);

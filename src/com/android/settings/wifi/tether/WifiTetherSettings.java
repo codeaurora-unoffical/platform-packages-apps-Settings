@@ -18,6 +18,7 @@ package com.android.settings.wifi.tether;
 
 import static android.net.ConnectivityManager.ACTION_TETHER_STATE_CHANGED;
 import static android.net.wifi.WifiManager.WIFI_AP_STATE_CHANGED_ACTION;
+import static android.net.wifi.WifiManager.WIFI_COUNTRY_CODE_CHANGED_ACTION;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -29,6 +30,8 @@ import android.os.Bundle;
 import android.os.UserManager;
 import android.provider.SearchIndexableResource;
 import android.util.Log;
+
+import androidx.annotation.VisibleForTesting;
 
 import com.android.internal.logging.nano.MetricsProto;
 import com.android.settings.R;
@@ -44,8 +47,6 @@ import com.android.settingslib.search.SearchIndexable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import androidx.annotation.VisibleForTesting;
 
 @SearchIndexable
 public class WifiTetherSettings extends RestrictedDashboardFragment
@@ -78,6 +79,7 @@ public class WifiTetherSettings extends RestrictedDashboardFragment
     static {
         TETHER_STATE_CHANGE_FILTER = new IntentFilter(ACTION_TETHER_STATE_CHANGED);
         TETHER_STATE_CHANGE_FILTER.addAction(WIFI_AP_STATE_CHANGED_ACTION);
+        TETHER_STATE_CHANGE_FILTER.addAction(WIFI_COUNTRY_CODE_CHANGED_ACTION);
     }
 
     public WifiTetherSettings() {

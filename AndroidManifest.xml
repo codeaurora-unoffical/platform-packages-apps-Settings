@@ -124,11 +124,18 @@
                 android:value="true" />
         </activity>
 
-        <activity android:name=".SettingsHomepageActivity"
+        <activity android:name=".homepage.SettingsHomepageActivity"
                   android:taskAffinity="com.android.settings.root"
                   android:label="@string/settings_label_launcher"
                   android:theme="@style/Theme.Settings.Home"
                   android:launchMode="singleTask">
+        </activity>
+
+        <activity android:name=".mobilenetwork.MobileSettingsActivity"
+                  android:label="@string/network_settings_title"
+                  android:theme="@style/Theme.Settings.Home"
+                  android:launchMode="singleTask">
+            <!-- TODO(b/114749736): add intent filter here and disable the one in telephony -->
         </activity>
 
         <!-- Alias for launcher activity only, as this belongs to each profile. -->
@@ -136,7 +143,7 @@
                 android:taskAffinity="com.android.settings.root"
                 android:label="@string/settings_label_launcher"
                 android:launchMode="singleTask"
-                android:targetActivity=".SettingsHomepageActivity">
+                android:targetActivity=".homepage.SettingsHomepageActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -1158,12 +1165,12 @@
             </intent-filter>
         </activity-alias>
 
-        <activity android:name=".applications.InstalledAppOpenByDefaultPage"
+        <activity android:name=".applications.InstalledAppOpenByDefaultActivity"
                   android:label="@string/application_info_label"
-                  android:permission="android.permission.OPEN_APPLICATION_DETAILS_OPEN_BY_DEFAULT_PAGE"
+                  android:permission="android.permission.OPEN_APP_OPEN_BY_DEFAULT_SETTINGS"
                   android:exported="true">
             <intent-filter android:priority="1">
-                <action android:name="android.settings.APPLICATION_DETAILS_SETTINGS_OPEN_BY_DEFAULT_PAGE" />
+                <action android:name="com.android.settings.APP_OPEN_BY_DEFAULT_SETTINGS" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:scheme="package" />
             </intent-filter>
@@ -1410,6 +1417,21 @@
             </intent-filter>
             <meta-data android:name="com.android.settings.FRAGMENT_CLASS"
                 android:value="com.android.settings.applications.manageapplications.ManageApplications" />
+        </activity>
+
+        <activity
+            android:name="Settings$AppUsageAccessSettingsActivity"
+            android:label="@string/usage_access_title"
+            android:taskAffinity="com.android.settings"
+            android:parentActivityName="Settings">
+            <intent-filter>
+                <action android:name="android.settings.USAGE_ACCESS_SETTINGS"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:scheme="package"/>
+            </intent-filter>
+            <meta-data
+                android:name="com.android.settings.FRAGMENT_CLASS"
+                android:value="com.android.settings.applications.UsageAccessDetails"/>
         </activity>
 
         <activity android:name="Settings$IccLockSettingsActivity"
@@ -2743,8 +2765,7 @@
         <activity
             android:name="Settings$WifiCallingSettingsActivity"
             android:label="@string/wifi_calling_settings_title"
-            android:taskAffinity="com.android.settings"
-            android:parentActivityName="Settings">
+            android:taskAffinity="com.android.settings">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.settings.WIFI_CALLING_SETTINGS" />
@@ -3049,9 +3070,6 @@
             android:exported="true"
             android:permission="android.permission.DUMP" />
 
-         <service android:name=".search.DeviceIndexUpdateJobService"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-
         <!-- Quick Settings tiles for Developer Options -->
         <service
             android:name=".development.qstile.DevelopmentTiles$ShowLayout"
@@ -3212,6 +3230,15 @@
             android:exported="true"
             android:permission="android.permission.WRITE_SETTINGS_HOMEPAGE_DATA" />
 
+        <provider
+            android:name=".homepage.contextualcards.SettingsContextualCardProvider"
+            android:authorities="com.android.settings.homepage.contextualcards"
+            android:permission="android.permission.WRITE_SETTINGS_HOMEPAGE_DATA"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.content.action.SETTINGS_HOMEPAGE_DATA"/>
+            </intent-filter>
+        </provider>
         <!-- This is the longest AndroidManifest.xml ever. -->
     </application>
 </manifest>

@@ -17,6 +17,7 @@
 package com.android.settings.fuelgauge;
 
 import static com.google.common.truth.Truth.assertThat;
+
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
@@ -30,6 +31,12 @@ import android.os.UserHandle;
 import android.util.IconDrawableFactory;
 import android.util.SparseLongArray;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.FragmentActivity;
+import androidx.preference.CheckBoxPreference;
+import androidx.preference.PreferenceCategory;
+import androidx.preference.PreferenceManager;
+
 import com.android.settings.SettingsActivity;
 import com.android.settings.core.InstrumentedPreferenceFragment;
 import com.android.settings.fuelgauge.batterytip.AnomalyDatabaseHelper;
@@ -42,7 +49,6 @@ import com.android.settings.fuelgauge.batterytip.tips.UnrestrictAppTip;
 import com.android.settings.testutils.SettingsRobolectricTestRunner;
 import com.android.settings.testutils.shadow.SettingsShadowResourcesImpl;
 import com.android.settings.testutils.shadow.ShadowAlertDialogCompat;
-import com.android.settingslib.testutils.FragmentTestUtils;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -52,15 +58,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.androidx.fragment.FragmentController;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.preference.CheckBoxPreference;
-import androidx.preference.PreferenceCategory;
-import androidx.preference.PreferenceManager;
 
 @RunWith(SettingsRobolectricTestRunner.class)
 @Config(shadows = {ShadowAlertDialogCompat.class, SettingsShadowResourcesImpl.class})
@@ -166,7 +168,8 @@ public class RestrictedAppDetailsTest {
         final BatteryTipDialogFragment dialogFragment = mRestrictedAppDetails.createDialogFragment(
                 mAppInfo, true);
 
-        FragmentTestUtils.startFragment(dialogFragment);
+        FragmentController.setupFragment(dialogFragment, FragmentActivity.class,
+                0 /* containerViewId */, null /* bundle */);
 
         final AlertDialog dialog = ShadowAlertDialogCompat.getLatestAlertDialog();
         ShadowAlertDialogCompat shadowDialog = ShadowAlertDialogCompat.shadowOf(dialog);
@@ -178,7 +181,8 @@ public class RestrictedAppDetailsTest {
         final BatteryTipDialogFragment dialogFragment = mRestrictedAppDetails.createDialogFragment(
                 mAppInfo, false);
 
-        FragmentTestUtils.startFragment(dialogFragment);
+        FragmentController.setupFragment(dialogFragment, FragmentActivity.class,
+                0 /* containerViewId */, null /* bundle */);
 
         final AlertDialog dialog = ShadowAlertDialogCompat.getLatestAlertDialog();
         ShadowAlertDialogCompat shadowDialog = ShadowAlertDialogCompat.shadowOf(dialog);

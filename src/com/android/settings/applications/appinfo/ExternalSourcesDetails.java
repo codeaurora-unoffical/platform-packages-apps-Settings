@@ -24,6 +24,10 @@ import android.os.Bundle;
 import android.os.UserHandle;
 import android.os.UserManager;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.preference.Preference;
+import androidx.preference.Preference.OnPreferenceChangeListener;
+
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
 import com.android.settings.Settings;
@@ -32,10 +36,6 @@ import com.android.settings.applications.AppStateInstallAppsBridge;
 import com.android.settings.applications.AppStateInstallAppsBridge.InstallAppsState;
 import com.android.settingslib.RestrictedSwitchPreference;
 import com.android.settingslib.applications.ApplicationsState.AppEntry;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.preference.Preference;
-import androidx.preference.Preference.OnPreferenceChangeListener;
 
 public class ExternalSourcesDetails extends AppInfoWithHeader
         implements OnPreferenceChangeListener {
@@ -80,21 +80,20 @@ public class ExternalSourcesDetails extends AppInfoWithHeader
     }
 
     public static CharSequence getPreferenceSummary(Context context, AppEntry entry) {
+        final UserHandle userHandle = UserHandle.getUserHandleForUid(entry.info.uid);
         final UserManager um = UserManager.get(context);
         final int userRestrictionSource = um.getUserRestrictionSource(
-                UserManager.DISALLOW_INSTALL_UNKNOWN_SOURCES,
-                UserHandle.getUserHandleForUid(entry.info.uid));
-        switch (userRestrictionSource) {
-            case UserManager.RESTRICTION_SOURCE_DEVICE_OWNER:
-            case UserManager.RESTRICTION_SOURCE_PROFILE_OWNER:
-                return context.getString(R.string.disabled_by_admin);
-            case UserManager.RESTRICTION_SOURCE_SYSTEM:
-                return context.getString(R.string.disabled);
+                UserManager.DISALLOW_INSTALL_UNKNOWN_SOURCES, userHandle)
+                | um.getUserRestrictionSource(
+                        UserManager.DISALLOW_INSTALL_UNKNOWN_SOURCES_GLOBALLY,
+                        userHandle);
+        if ((userRestrictionSource & UserManager.RESTRICTION_SOURCE_SYSTEM) != 0) {
+            return context.getString(R.string.disabled_by_admin);
+        } else if (userRestrictionSource != 0) {
+            return context.getString(R.string.disabled);
         }
-
         final InstallAppsState appsState = new AppStateInstallAppsBridge(context, null, null)
                 .createInstallAppsStateFor(entry.info.packageName, entry.info.uid);
-
         return context.getString(appsState.canInstallApps()
                 ? R.string.app_permission_summary_allowed
                 : R.string.app_permission_summary_not_allowed);
@@ -119,6 +118,10 @@ public class ExternalSourcesDetails extends AppInfoWithHeader
             return true;
         }
         mSwitchPref.checkRestrictionAndSetDisabled(UserManager.DISALLOW_INSTALL_UNKNOWN_SOURCES);
+        if (!mSwitchPref.isDisabledByAdmin()) {
+            mSwitchPref.checkRestrictionAndSetDisabled(
+                    UserManager.DISALLOW_INSTALL_UNKNOWN_SOURCES_GLOBALLY);
+        }
         if (mSwitchPref.isDisabledByAdmin()) {
             return true;
         }

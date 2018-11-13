@@ -24,14 +24,14 @@ import android.util.Log;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.android.settings.R;
 import com.android.settings.bluetooth.BluetoothPairingDialogFragment.BluetoothPairingDialogListener;
 import com.android.settingslib.bluetooth.LocalBluetoothManager;
 import com.android.settingslib.bluetooth.LocalBluetoothProfile;
 
 import java.util.Locale;
-
-import androidx.annotation.VisibleForTesting;
 
 /**
  * A controller used by {@link BluetoothPairingDialog} to manage connection state while we try to
@@ -54,8 +54,7 @@ public class BluetoothPairingController implements OnCheckedChangeListener,
 
     // Bluetooth dependencies for the connection we are trying to establish
     private LocalBluetoothManager mBluetoothManager;
-    @VisibleForTesting
-    BluetoothDevice mDevice;
+    private BluetoothDevice mDevice;
     @VisibleForTesting
     int mType;
     private String mUserInput;
@@ -63,7 +62,6 @@ public class BluetoothPairingController implements OnCheckedChangeListener,
     private int mPasskey;
     private String mDeviceName;
     private LocalBluetoothProfile mPbapClientProfile;
-    private boolean mPbapAllowed;
 
     /**
      * Creates an instance of a BluetoothPairingController.
@@ -93,20 +91,14 @@ public class BluetoothPairingController implements OnCheckedChangeListener,
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if (isChecked) {
-            mPbapAllowed = true;
+            mDevice.setPhonebookAccessPermission(BluetoothDevice.ACCESS_ALLOWED);
         } else {
-            mPbapAllowed = false;
+            mDevice.setPhonebookAccessPermission(BluetoothDevice.ACCESS_REJECTED);
         }
     }
 
     @Override
     public void onDialogPositiveClick(BluetoothPairingDialogFragment dialog) {
-        if (mPbapAllowed) {
-            mDevice.setPhonebookAccessPermission(BluetoothDevice.ACCESS_ALLOWED);
-        } else {
-            mDevice.setPhonebookAccessPermission(BluetoothDevice.ACCESS_REJECTED);
-        }
-
         if (getDialogType() == USER_ENTRY_DIALOG) {
             onPair(mUserInput);
         } else {
@@ -189,16 +181,16 @@ public class BluetoothPairingController implements OnCheckedChangeListener,
      *
      */
      public void  setContactSharingState() {
-        if ((mDevice.getPhonebookAccessPermission() != BluetoothDevice.ACCESS_ALLOWED)
-                && (mDevice.getPhonebookAccessPermission() != BluetoothDevice.ACCESS_REJECTED)) {
-                 if (mDevice.getBluetoothClass().getDeviceClass()
-                        == BluetoothClass.Device.AUDIO_VIDEO_HANDSFREE) {
-                    onCheckedChanged(null, true);
-            } else {
-                onCheckedChanged(null, false);
-            }
-        }
-    }
+         final int permission = mDevice.getPhonebookAccessPermission();
+         if (permission == BluetoothDevice.ACCESS_ALLOWED
+                 || (permission == BluetoothDevice.ACCESS_UNKNOWN && mDevice.getBluetoothClass().
+                        getDeviceClass() == BluetoothClass.Device.AUDIO_VIDEO_HANDSFREE)) {
+             onCheckedChanged(null, true);
+         } else {
+             onCheckedChanged(null, false);
+         }
+
+     }
 
     /**
      * A method for querying if the provided editable is a valid passkey/pin format for this device.

@@ -21,11 +21,11 @@ import android.content.res.Resources;
 import android.net.wifi.WifiConfiguration;
 import android.util.Log;
 
-import com.android.settings.R;
-
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
+
+import com.android.settings.R;
 
 public class WifiTetherApBandPreferenceController extends WifiTetherBasePreferenceController {
 
@@ -73,6 +73,7 @@ public class WifiTetherApBandPreferenceController extends WifiTetherBasePreferen
             preference.setEnabled(false);
             preference.setSummary(R.string.wifi_ap_choose_2G);
         } else {
+            preference.setEnabled(true);
             preference.setValue(Integer.toString(config.apBand));
             preference.setSummary(getConfigSummary());
         }

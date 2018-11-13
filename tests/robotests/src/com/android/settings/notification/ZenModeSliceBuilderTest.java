@@ -17,16 +17,22 @@
 package com.android.settings.notification;
 
 import static android.app.slice.Slice.EXTRA_TOGGLE_STATE;
+
 import static com.google.common.truth.Truth.assertThat;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.doReturn;
+
 import static org.mockito.Mockito.spy;
 
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.provider.Settings;
+
+import androidx.slice.Slice;
+import androidx.slice.SliceItem;
+import androidx.slice.SliceMetadata;
+import androidx.slice.SliceProvider;
+import androidx.slice.core.SliceAction;
+import androidx.slice.widget.SliceLiveData;
 
 import com.android.settings.R;
 import com.android.settings.testutils.SettingsRobolectricTestRunner;
@@ -41,13 +47,6 @@ import org.robolectric.annotation.Config;
 
 import java.util.List;
 
-import androidx.slice.Slice;
-import androidx.slice.SliceItem;
-import androidx.slice.SliceMetadata;
-import androidx.slice.SliceProvider;
-import androidx.slice.core.SliceAction;
-import androidx.slice.widget.SliceLiveData;
-
 @Config(shadows = ShadowNotificationManager.class)
 @RunWith(SettingsRobolectricTestRunner.class)
 public class ZenModeSliceBuilderTest {
@@ -57,11 +56,6 @@ public class ZenModeSliceBuilderTest {
     @Before
     public void setUp() {
         mContext = spy(RuntimeEnvironment.application);
-
-        // Prevent crash in SliceMetadata.
-        Resources resources = spy(mContext.getResources());
-        doReturn(60).when(resources).getDimensionPixelSize(anyInt());
-        doReturn(resources).when(mContext).getResources();
 
         // Set-up specs for SliceMetadata.
         SliceProvider.setSpecs(SliceLiveData.SUPPORTED_SPECS);

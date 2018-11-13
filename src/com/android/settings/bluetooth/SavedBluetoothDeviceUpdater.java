@@ -52,11 +52,11 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.preference.Preference;
+
 import com.android.settings.connecteddevice.DevicePreferenceCallback;
 import com.android.settings.dashboard.DashboardFragment;
 import com.android.settingslib.bluetooth.CachedBluetoothDevice;
-
-import androidx.preference.Preference;
 
 /**
  * Maintain and update saved bluetooth devices(bonded but not connected)
@@ -76,7 +76,8 @@ public class SavedBluetoothDeviceUpdater extends BluetoothDeviceUpdater
         final BluetoothDevice device = cachedDevice.getDevice();
         if (DBG) {
             Log.d(TAG, "isFilterMatched() device name : " + cachedDevice.getName() +
-                    ", is connected : " + device.isConnected() +
+                    ", is connected : " + device.isConnected() + ", is profile connected : "
+                    + cachedDevice.isConnected() +
                     ", is twsplusdevice : " + device.isTwsPlusDevice());
         }
         return device.getBondState() == BluetoothDevice.BOND_BONDED && !device.isConnected() && !device.isTwsPlusDevice();

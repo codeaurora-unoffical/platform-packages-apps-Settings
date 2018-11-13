@@ -17,8 +17,11 @@
 package com.android.settings.applications.manageapplications;
 
 import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE;
+
 import static com.android.settings.applications.manageapplications.AppFilterRegistry
         .FILTER_APPS_ALL;
+import static com.android.settings.applications.manageapplications.AppFilterRegistry
+        .FILTER_APPS_BLOCKED;
 import static com.android.settings.applications.manageapplications.AppFilterRegistry
         .FILTER_APPS_DISABLED;
 import static com.android.settings.applications.manageapplications.AppFilterRegistry
@@ -64,9 +67,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.Spinner;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
@@ -120,17 +127,13 @@ import com.android.settingslib.applications.ApplicationsState.VolumeFilter;
 import com.android.settingslib.applications.StorageStatsSource;
 import com.android.settingslib.fuelgauge.PowerWhitelistBackend;
 import com.android.settingslib.utils.ThreadUtils;
+import com.android.settingslib.widget.settingsspinner.SettingsSpinnerAdapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Set;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Activity to pick an application that will be used to display installation information and
@@ -408,6 +411,7 @@ public class ManageApplications extends InstrumentedFragment
         if (mListType == LIST_TYPE_NOTIFICATION) {
             mFilterAdapter.enableFilter(FILTER_APPS_RECENT);
             mFilterAdapter.enableFilter(FILTER_APPS_FREQUENT);
+            mFilterAdapter.enableFilter(FILTER_APPS_BLOCKED);
             mFilterAdapter.disableFilter(FILTER_APPS_ALL);
         }
         if (mListType == LIST_TYPE_HIGH_POWER) {
@@ -753,7 +757,7 @@ public class ManageApplications extends InstrumentedFragment
         }
     }
 
-    static class FilterSpinnerAdapter extends ArrayAdapter<CharSequence> {
+    static class FilterSpinnerAdapter extends SettingsSpinnerAdapter<CharSequence> {
 
         private final ManageApplications mManageApplications;
         private final Context mContext;
@@ -763,10 +767,9 @@ public class ManageApplications extends InstrumentedFragment
         private final ArrayList<AppFilterItem> mFilterOptions = new ArrayList<>();
 
         public FilterSpinnerAdapter(ManageApplications manageApplications) {
-            super(manageApplications.getContext(), R.layout.filter_spinner_item);
+            super(manageApplications.getContext());
             mContext = manageApplications.getContext();
             mManageApplications = manageApplications;
-            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         }
 
         public AppFilterItem getFilter(int position) {
@@ -954,6 +957,8 @@ public class ManageApplications extends InstrumentedFragment
                 rebuild(R.id.sort_order_frequent_notification);
             } else if (FILTER_APPS_RECENT == appFilter.getFilterType()) {
                 rebuild(R.id.sort_order_recent_notification);
+            } else if (FILTER_APPS_BLOCKED == appFilter.getFilterType()) {
+                rebuild(R.id.sort_order_alpha);
             } else {
                 rebuild();
             }
@@ -1110,16 +1115,7 @@ public class ManageApplications extends InstrumentedFragment
 
         @VisibleForTesting
         static boolean shouldUseStableItemHeight(int listType) {
-            switch (listType) {
-                case LIST_TYPE_NOTIFICATION:
-                    // Most entries in notification type has no summary. Don't use stable height
-                    // so height is short for most entries.
-                    return false;
-                default:
-                    // Other types have non-empty summary, so keep the height as we expect summary
-                    // to fill in.
-                    return true;
-            }
+            return true;
         }
 
         private static boolean packageNameEquals(PackageItemInfo info1, PackageItemInfo info2) {
@@ -1334,10 +1330,10 @@ public class ManageApplications extends InstrumentedFragment
         private void updateSummary(ApplicationViewHolder holder, AppEntry entry) {
             switch (mManageApplications.mListType) {
                 case LIST_TYPE_NOTIFICATION:
-                    if (entry.extraInfo != null) {
+                    if (entry.extraInfo != null
+                            && entry.extraInfo instanceof NotificationsSentState) {
                         holder.setSummary(AppStateNotificationBridge.getSummary(mContext,
-                                (NotificationsSentState) entry.extraInfo,
-                                (mLastSortMode == R.id.sort_order_recent_notification)));
+                                (NotificationsSentState) entry.extraInfo, mLastSortMode));
                     } else {
                         holder.setSummary(null);
                     }
@@ -1383,10 +1379,10 @@ public class ManageApplications extends InstrumentedFragment
                                     .getSwitchOnClickListener(entry),
                             AppStateNotificationBridge.enableSwitch(entry),
                             AppStateNotificationBridge.checkSwitch(entry));
-                    if (entry.extraInfo != null) {
+                    if (entry.extraInfo != null
+                            && entry.extraInfo instanceof NotificationsSentState) {
                         holder.setSummary(AppStateNotificationBridge.getSummary(mContext,
-                                (NotificationsSentState) entry.extraInfo,
-                                (mLastSortMode == R.id.sort_order_recent_notification)));
+                                (NotificationsSentState) entry.extraInfo, mLastSortMode));
                     } else {
                         holder.setSummary(null);
                     }

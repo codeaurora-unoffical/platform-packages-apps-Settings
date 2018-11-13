@@ -170,7 +170,8 @@ public class ZenRuleSelectionDialog extends InstrumentedDialogFragment {
 
     private ZenRuleInfo defaultNewEvent() {
         final ZenModeConfig.EventInfo event = new ZenModeConfig.EventInfo();
-        event.calendar = null; // any calendar
+        event.calName = null; // any calendar
+        event.calendarId = null;
         event.reply = ZenModeConfig.EventInfo.REPLY_ANY_EXCEPT_NO;
         final ZenRuleInfo rt = new ZenRuleInfo();
         rt.settingsAction = ZenModeEventRuleSettings.ACTION;

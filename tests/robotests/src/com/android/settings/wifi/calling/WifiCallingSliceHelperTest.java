@@ -19,10 +19,10 @@ package com.android.settings.wifi.calling;
 import static android.app.slice.Slice.EXTRA_TOGGLE_STATE;
 import static android.app.slice.Slice.HINT_TITLE;
 import static android.app.slice.SliceItem.FORMAT_TEXT;
+
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
@@ -32,17 +32,27 @@ import static org.mockito.Mockito.when;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.telephony.CarrierConfigManager;
+
+import androidx.slice.Slice;
+import androidx.slice.SliceItem;
+import androidx.slice.SliceMetadata;
+import androidx.slice.SliceProvider;
+import androidx.slice.core.SliceAction;
+import androidx.slice.core.SliceQuery;
+import androidx.slice.widget.ListContent;
+import androidx.slice.widget.RowContent;
+import androidx.slice.widget.SliceContent;
+import androidx.slice.widget.SliceLiveData;
 
 import com.android.ims.ImsConfig;
 import com.android.ims.ImsManager;
 import com.android.settings.R;
+import com.android.settings.slices.CustomSliceManager;
 import com.android.settings.slices.SettingsSliceProvider;
 import com.android.settings.slices.SliceBroadcastReceiver;
 import com.android.settings.slices.SliceData;
 import com.android.settings.slices.SlicesFeatureProvider;
-import com.android.settings.slices.CustomSliceManager;
 import com.android.settings.testutils.FakeFeatureFactory;
 import com.android.settings.testutils.SettingsRobolectricTestRunner;
 
@@ -56,17 +66,6 @@ import org.robolectric.RuntimeEnvironment;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import androidx.slice.Slice;
-import androidx.slice.SliceItem;
-import androidx.slice.SliceMetadata;
-import androidx.slice.SliceProvider;
-import androidx.slice.core.SliceAction;
-import androidx.slice.core.SliceQuery;
-import androidx.slice.widget.ListContent;
-import androidx.slice.widget.SliceContent;
-import androidx.slice.widget.RowContent;
-import androidx.slice.widget.SliceLiveData;
 
 @RunWith(SettingsRobolectricTestRunner.class)
 public class WifiCallingSliceHelperTest {
@@ -102,11 +101,6 @@ public class WifiCallingSliceHelperTest {
         CustomSliceManager manager = new CustomSliceManager(mContext);
         when(mSlicesFeatureProvider.getCustomSliceManager(any(Context.class)))
                 .thenReturn(manager);
-
-        // Prevent crash in SliceMetadata.
-        Resources resources = spy(mContext.getResources());
-        doReturn(60).when(resources).getDimensionPixelSize(anyInt());
-        doReturn(resources).when(mContext).getResources();
 
         mWfcSliceHelper = new FakeWifiCallingSliceHelper(mContext);
 

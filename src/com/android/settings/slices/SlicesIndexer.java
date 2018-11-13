@@ -21,6 +21,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.android.settings.core.BasePreferenceController;
 import com.android.settings.dashboard.DashboardFragment;
 import com.android.settings.overlay.FeatureFactory;
@@ -28,8 +30,6 @@ import com.android.settings.slices.SlicesDatabaseHelper.IndexColumns;
 import com.android.settings.slices.SlicesDatabaseHelper.Tables;
 
 import java.util.List;
-
-import androidx.annotation.VisibleForTesting;
 
 /**
  * Manages the conversion of {@link DashboardFragment} and {@link BasePreferenceController} to
@@ -111,6 +111,8 @@ class SlicesIndexer implements Runnable {
             values.put(IndexColumns.CONTROLLER, dataRow.getPreferenceController());
             values.put(IndexColumns.PLATFORM_SLICE, dataRow.isPlatformDefined());
             values.put(IndexColumns.SLICE_TYPE, dataRow.getSliceType());
+            values.put(IndexColumns.ALLOW_DYNAMIC_SUMMARY_IN_SLICE,
+                    dataRow.isDynamicSummaryAllowed());
 
             database.replaceOrThrow(Tables.TABLE_SLICES_INDEX, null /* nullColumnHack */,
                     values);

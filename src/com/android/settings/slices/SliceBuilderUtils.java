@@ -33,6 +33,14 @@ import android.util.ArraySet;
 import android.util.Log;
 import android.util.Pair;
 
+import androidx.annotation.VisibleForTesting;
+import androidx.core.graphics.drawable.IconCompat;
+import androidx.slice.Slice;
+import androidx.slice.builders.ListBuilder;
+import androidx.slice.builders.ListBuilder.InputRangeBuilder;
+import androidx.slice.builders.ListBuilder.RowBuilder;
+import androidx.slice.builders.SliceAction;
+
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
 import com.android.settings.SettingsActivity;
@@ -45,19 +53,10 @@ import com.android.settings.core.TogglePreferenceController;
 import com.android.settings.overlay.FeatureFactory;
 import com.android.settingslib.core.AbstractPreferenceController;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import androidx.annotation.VisibleForTesting;
-import androidx.core.graphics.drawable.IconCompat;
-import androidx.slice.Slice;
-import androidx.slice.builders.ListBuilder;
-import androidx.slice.builders.ListBuilder.InputRangeBuilder;
-import androidx.slice.builders.ListBuilder.RowBuilder;
-import androidx.slice.builders.SliceAction;
 
 
 /**
@@ -185,12 +184,23 @@ public class SliceBuilderUtils {
      */
     public static CharSequence getSubtitleText(Context context,
             AbstractPreferenceController controller, SliceData sliceData) {
-        CharSequence summaryText = sliceData.getScreenTitle();
+        final boolean isDynamicSummaryAllowed = sliceData.isDynamicSummaryAllowed();
+        CharSequence summaryText = controller.getSummary();
+
+        // Priority 1 : User prefers showing the dynamic summary in slice view rather than static
+        // summary.
+        if (isDynamicSummaryAllowed && isValidSummary(context, summaryText)) {
+            return summaryText;
+        }
+
+        // Priority 2 : Show screen title.
+        summaryText = sliceData.getScreenTitle();
         if (isValidSummary(context, summaryText) && !TextUtils.equals(summaryText,
                 sliceData.getTitle())) {
             return summaryText;
         }
 
+        // Priority 3 : Show dynamic summary from preference controller.
         if (controller != null) {
             summaryText = controller.getSummary();
 
@@ -199,11 +209,13 @@ public class SliceBuilderUtils {
             }
         }
 
+        // Priority 4 : Show summary from slice data.
         summaryText = sliceData.getSummary();
         if (isValidSummary(context, summaryText)) {
             return summaryText;
         }
 
+        // Priority 5 : Show empty text.
         return "";
     }
 
@@ -218,7 +230,7 @@ public class SliceBuilderUtils {
                 .build();
     }
 
-    public static Intent  buildSearchResultPageIntent(Context context, String className, String key,
+    public static Intent buildSearchResultPageIntent(Context context, String className, String key,
             String screenTitle, int sourceMetricsCategory) {
         final Bundle args = new Bundle();
         args.putString(SettingsActivity.EXTRA_FRAGMENT_ARG_KEY, key);

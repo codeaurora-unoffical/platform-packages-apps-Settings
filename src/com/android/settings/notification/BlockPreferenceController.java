@@ -24,12 +24,12 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.widget.Switch;
 
+import androidx.preference.Preference;
+
 import com.android.settings.R;
 import com.android.settings.applications.LayoutPreference;
 import com.android.settings.core.PreferenceControllerMixin;
 import com.android.settings.widget.SwitchBar;
-
-import androidx.preference.Preference;
 
 public class BlockPreferenceController extends NotificationPreferenceController
         implements PreferenceControllerMixin, SwitchBar.OnSwitchChangeListener {
@@ -65,6 +65,7 @@ public class BlockPreferenceController extends NotificationPreferenceController
 
     public void updateState(Preference preference) {
         LayoutPreference pref = (LayoutPreference) preference;
+        pref.setSelectable(false);
         SwitchBar bar = pref.findViewById(R.id.switch_bar);
         if (bar != null) {
             bar.setSwitchBarText(R.string.notification_switch_label,

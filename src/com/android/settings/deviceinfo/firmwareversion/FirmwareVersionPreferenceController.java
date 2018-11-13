@@ -20,10 +20,10 @@ import android.content.Context;
 import android.os.Build;
 import android.text.TextUtils;
 
-import com.android.settings.core.BasePreferenceController;
-
 import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
+
+import com.android.settings.core.BasePreferenceController;
 
 public class FirmwareVersionPreferenceController extends BasePreferenceController {
 
@@ -54,6 +54,11 @@ public class FirmwareVersionPreferenceController extends BasePreferenceControlle
         }
 
         FirmwareVersionDialogFragment.show(mFragment);
+        return true;
+    }
+
+    @Override
+    public boolean isSliceable() {
         return true;
     }
 }

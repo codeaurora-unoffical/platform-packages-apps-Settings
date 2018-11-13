@@ -14,18 +14,15 @@
 
 package com.android.settings.datausage;
 
-import static android.net.ConnectivityManager.TYPE_MOBILE;
 import static android.net.NetworkPolicyManager.POLICY_REJECT_METERED_BACKGROUND;
 import static android.net.TrafficStats.UID_REMOVED;
 import static android.net.TrafficStats.UID_TETHERING;
-import static android.telephony.TelephonyManager.SIM_STATE_READY;
 
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.UserInfo;
 import android.graphics.Color;
-import android.net.ConnectivityManager;
 import android.net.INetworkStatsSession;
 import android.net.NetworkPolicy;
 import android.net.NetworkStats;
@@ -35,13 +32,11 @@ import android.net.TrafficStats;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
-import android.os.SystemProperties;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.provider.Settings;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
-import android.telephony.TelephonyManager;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.util.SparseArray;
@@ -50,6 +45,12 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ImageView;
 import android.widget.Spinner;
+
+import androidx.annotation.VisibleForTesting;
+import androidx.loader.app.LoaderManager.LoaderCallbacks;
+import androidx.loader.content.Loader;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceGroup;
 
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
@@ -66,22 +67,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import androidx.annotation.VisibleForTesting;
-import androidx.loader.app.LoaderManager.LoaderCallbacks;
-import androidx.loader.content.Loader;
-import androidx.preference.Preference;
-import androidx.preference.PreferenceGroup;
-
 /**
  * Panel showing data usage history across various networks, including options
  * to inspect based on usage cycle and control through {@link NetworkPolicy}.
+
+ * Deprecated in favor of {@link DataUsageListV2}
+ *
+ * @deprecated
  */
-public class DataUsageList extends DataUsageBase {
+@Deprecated
+public class DataUsageList extends DataUsageBaseFragment {
 
     public static final String EXTRA_SUB_ID = "sub_id";
     public static final String EXTRA_NETWORK_TEMPLATE = "network_template";
 
-    private static final String TAG = "DataUsage";
+    private static final String TAG = "DataUsageList";
     private static final boolean LOGD = false;
 
     private static final String KEY_USAGE_AMOUNT = "usage_amount";
@@ -140,7 +140,6 @@ public class DataUsageList extends DataUsageBase {
 
         mUidDetailProvider = new UidDetailProvider(context);
 
-        addPreferencesFromResource(R.xml.data_usage_list);
         mUsageAmount = findPreference(KEY_USAGE_AMOUNT);
         mChart = (ChartDataUsagePreference) findPreference(KEY_CHART_DATA);
         mApps = (PreferenceGroup) findPreference(KEY_APPS_GROUP);
@@ -233,6 +232,16 @@ public class DataUsageList extends DataUsageBase {
         TrafficStats.closeQuietly(mStatsSession);
 
         super.onDestroy();
+    }
+
+    @Override
+    protected int getPreferenceScreenResId() {
+        return R.xml.data_usage_list;
+    }
+
+    @Override
+    protected String getLogTag() {
+        return TAG;
     }
 
     void processArgument() {
@@ -338,7 +347,7 @@ public class DataUsageList extends DataUsageBase {
     /**
      * Bind the given {@link NetworkStats}, or {@code null} to clear list.
      */
-    public void bindStats(NetworkStats stats, int[] restrictedUids) {
+    private void bindStats(NetworkStats stats, int[] restrictedUids) {
         ArrayList<AppItem> items = new ArrayList<>();
         long largest = 0;
 
@@ -450,7 +459,7 @@ public class DataUsageList extends DataUsageBase {
      * @param entry        the network stats entry to extract data usage from.
      * @param itemCategory the item is categorized on the list view by this category. Must be
      */
-    private static long accumulate(int collapseKey, final SparseArray<AppItem> knownItems,
+    private long accumulate(int collapseKey, final SparseArray<AppItem> knownItems,
             NetworkStats.Entry entry, int itemCategory, ArrayList<AppItem> items, long largest) {
         final int uid = entry.uid;
         AppItem item = knownItems.get(collapseKey);
@@ -463,63 +472,6 @@ public class DataUsageList extends DataUsageBase {
         item.addUid(uid);
         item.total += entry.rxBytes + entry.txBytes;
         return Math.max(largest, item.total);
-    }
-
-    /**
-     * Test if device has a mobile data radio with SIM in ready state.
-     */
-    public static boolean hasReadyMobileRadio(Context context) {
-        if (DataUsageUtils.TEST_RADIOS) {
-            return SystemProperties.get(DataUsageUtils.TEST_RADIOS_PROP).contains("mobile");
-        }
-
-        final ConnectivityManager conn = ConnectivityManager.from(context);
-        final TelephonyManager tele = TelephonyManager.from(context);
-
-        final List<SubscriptionInfo> subInfoList =
-                SubscriptionManager.from(context).getActiveSubscriptionInfoList();
-        // No activated Subscriptions
-        if (subInfoList == null) {
-            if (LOGD) Log.d(TAG, "hasReadyMobileRadio: subInfoList=null");
-            return false;
-        }
-        // require both supported network and ready SIM
-        boolean isReady = true;
-        for (SubscriptionInfo subInfo : subInfoList) {
-            isReady = isReady & tele.getSimState(subInfo.getSimSlotIndex()) == SIM_STATE_READY;
-            if (LOGD) Log.d(TAG, "hasReadyMobileRadio: subInfo=" + subInfo);
-        }
-        boolean retVal = conn.isNetworkSupported(TYPE_MOBILE) && isReady;
-        if (LOGD) {
-            Log.d(TAG, "hasReadyMobileRadio:"
-                    + " conn.isNetworkSupported(TYPE_MOBILE)="
-                    + conn.isNetworkSupported(TYPE_MOBILE)
-                    + " isReady=" + isReady);
-        }
-        return retVal;
-    }
-
-    /*
-     * TODO: consider adding to TelephonyManager or SubscriptionManager.
-     */
-    public static boolean hasReadyMobileRadio(Context context, int subId) {
-        if (DataUsageUtils.TEST_RADIOS) {
-            return SystemProperties.get(DataUsageUtils.TEST_RADIOS_PROP).contains("mobile");
-        }
-
-        final ConnectivityManager conn = ConnectivityManager.from(context);
-        final TelephonyManager tele = TelephonyManager.from(context);
-        final int slotId = SubscriptionManager.getSlotIndex(subId);
-        final boolean isReady = tele.getSimState(slotId) == SIM_STATE_READY;
-
-        boolean retVal = conn.isNetworkSupported(TYPE_MOBILE) && isReady;
-        if (LOGD) {
-            Log.d(TAG, "hasReadyMobileRadio: subId=" + subId
-                    + " conn.isNetworkSupported(TYPE_MOBILE)="
-                    + conn.isNetworkSupported(TYPE_MOBILE)
-                    + " isReady=" + isReady);
-        }
-        return retVal;
     }
 
     private OnItemSelectedListener mCycleListener = new OnItemSelectedListener() {

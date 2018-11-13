@@ -37,6 +37,10 @@ import android.os.UserManager;
 import android.text.TextUtils;
 import android.util.Log;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+
 import com.android.internal.logging.nano.MetricsProto;
 import com.android.settings.SettingsActivity;
 import com.android.settings.SettingsPreferenceFragment;
@@ -44,15 +48,11 @@ import com.android.settings.applications.manageapplications.ManageApplications;
 import com.android.settings.core.SubSettingLauncher;
 import com.android.settings.core.instrumentation.InstrumentedDialogFragment;
 import com.android.settings.overlay.FeatureFactory;
-import com.android.settingslib.RestrictedLockUtils;
+import com.android.settingslib.RestrictedLockUtilsInternal;
 import com.android.settingslib.applications.ApplicationsState;
 import com.android.settingslib.applications.ApplicationsState.AppEntry;
 
 import java.util.ArrayList;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 
 public abstract class AppInfoBase extends SettingsPreferenceFragment
         implements ApplicationsState.Callbacks {
@@ -60,8 +60,7 @@ public abstract class AppInfoBase extends SettingsPreferenceFragment
     public static final String ARG_PACKAGE_NAME = "package";
     public static final String ARG_PACKAGE_UID = "uid";
 
-    protected static final String TAG = AppInfoBase.class.getSimpleName();
-    protected static final boolean localLOGV = false;
+    private static final String TAG = "AppInfoBase";
 
     protected EnforcedAdmin mAppsControlDisallowedAdmin;
     protected boolean mAppsControlDisallowedBySystem;
@@ -107,13 +106,13 @@ public abstract class AppInfoBase extends SettingsPreferenceFragment
     @Override
     public void onResume() {
         super.onResume();
-        mAppsControlDisallowedAdmin = RestrictedLockUtils.checkIfRestrictionEnforced(getActivity(),
-                UserManager.DISALLOW_APPS_CONTROL, mUserId);
-        mAppsControlDisallowedBySystem = RestrictedLockUtils.hasBaseUserRestriction(getActivity(),
-                UserManager.DISALLOW_APPS_CONTROL, mUserId);
+        mAppsControlDisallowedAdmin = RestrictedLockUtilsInternal.checkIfRestrictionEnforced(
+                getActivity(), UserManager.DISALLOW_APPS_CONTROL, mUserId);
+        mAppsControlDisallowedBySystem = RestrictedLockUtilsInternal.hasBaseUserRestriction(
+                getActivity(), UserManager.DISALLOW_APPS_CONTROL, mUserId);
 
         if (!refreshUi()) {
-            setIntentAndFinish(true, true);
+            setIntentAndFinish(true /* appChanged */);
         }
     }
 
@@ -159,8 +158,8 @@ public abstract class AppInfoBase extends SettingsPreferenceFragment
         return mPackageName;
     }
 
-    protected void setIntentAndFinish(boolean finish, boolean appChanged) {
-        if (localLOGV) Log.i(TAG, "appChanged=" + appChanged);
+    protected void setIntentAndFinish(boolean appChanged) {
+        Log.i(TAG, "appChanged=" + appChanged);
         Intent intent = new Intent();
         intent.putExtra(ManageApplications.APP_CHG, appChanged);
         SettingsActivity sa = (SettingsActivity) getActivity();
@@ -216,7 +215,7 @@ public abstract class AppInfoBase extends SettingsPreferenceFragment
     @Override
     public void onPackageListChanged() {
         if (!refreshUi()) {
-            setIntentAndFinish(true, true);
+            setIntentAndFinish(true /* appChanged */);
         }
     }
 

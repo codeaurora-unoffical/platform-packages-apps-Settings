@@ -36,6 +36,10 @@ import android.os.Handler;
 import android.os.UserManager;
 import android.provider.SearchIndexableResource;
 
+import androidx.annotation.VisibleForTesting;
+import androidx.preference.Preference;
+import androidx.preference.SwitchPreference;
+
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.datausage.DataSaverBackend;
 import com.android.settings.search.BaseSearchIndexProvider;
@@ -49,10 +53,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
-
-import androidx.annotation.VisibleForTesting;
-import androidx.preference.Preference;
-import androidx.preference.SwitchPreference;
 
 /*
  * Displays preferences for Tethering.
@@ -136,7 +136,7 @@ public class TetherSettings extends RestrictedSettingsFragment
 
         final Activity activity = getActivity();
         BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-        if (adapter != null) {
+        if (adapter != null && adapter.getState() == BluetoothAdapter.STATE_ON) {
             adapter.getProfileProxy(activity.getApplicationContext(), mProfileServiceListener,
                     BluetoothProfile.PAN);
         }
@@ -234,6 +234,13 @@ public class TetherSettings extends RestrictedSettingsFragment
                         case BluetoothAdapter.STATE_ON:
                             startTethering(TETHERING_BLUETOOTH);
                             mBluetoothEnableForTether = false;
+                            if (mBluetoothPan.get() == null) {
+                                BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+                                if (adapter != null) {
+                                    adapter.getProfileProxy(getActivity().getApplicationContext(),
+                                            mProfileServiceListener, BluetoothProfile.PAN);
+                                }
+                            }
                             break;
 
                         case BluetoothAdapter.STATE_OFF:
@@ -423,9 +430,6 @@ public class TetherSettings extends RestrictedSettingsFragment
                 startTethering(TETHERING_BLUETOOTH);
             } else {
                 mCm.stopTethering(TETHERING_BLUETOOTH);
-                // No ACTION_TETHER_STATE_CHANGED is fired or bluetooth unless a device is
-                // connected. Need to update state manually.
-                updateState();
             }
         }
 
@@ -443,7 +447,11 @@ public class TetherSettings extends RestrictedSettingsFragment
             mBluetoothPan.set((BluetoothPan) proxy);
         }
         public void onServiceDisconnected(int profile) {
-            mBluetoothPan.set(null);
+            BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+            BluetoothProfile currentProfile = mBluetoothPan.getAndSet(null);
+            if (currentProfile != null && adapter != null) {
+                adapter.closeProfileProxy(BluetoothProfile.PAN, currentProfile);
+            }
         }
     };
 

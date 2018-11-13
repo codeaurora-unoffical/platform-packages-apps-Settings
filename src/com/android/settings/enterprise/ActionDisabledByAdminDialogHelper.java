@@ -16,6 +16,7 @@
 
 package com.android.settings.enterprise;
 
+import android.annotation.UserIdInt;
 import android.app.Activity;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
@@ -32,17 +33,18 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.app.AlertDialog;
+
 import com.android.settings.R;
 import com.android.settings.Settings;
 import com.android.settings.Utils;
 import com.android.settings.applications.specialaccess.deviceadmin.DeviceAdminAdd;
 import com.android.settingslib.RestrictedLockUtils;
 import com.android.settingslib.RestrictedLockUtils.EnforcedAdmin;
+import com.android.settingslib.RestrictedLockUtilsInternal;
 
 import java.util.Objects;
-
-import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.app.AlertDialog;
 
 /**
  * Helper class for {@link ActionDisabledByAdminDialog} which sets up the dialog.
@@ -59,6 +61,14 @@ public class ActionDisabledByAdminDialogHelper {
         mActivity = activity;
     }
 
+    private @UserIdInt int getEnforcementAdminUserId() {
+        if (mEnforcedAdmin.user == null) {
+            return UserHandle.USER_NULL;
+        } else {
+            return mEnforcedAdmin.user.getIdentifier();
+        }
+    }
+
     public AlertDialog.Builder prepareDialogBuilder(String restriction,
             EnforcedAdmin enforcedAdmin) {
         mEnforcedAdmin = enforcedAdmin;
@@ -67,7 +77,7 @@ public class ActionDisabledByAdminDialogHelper {
         final AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
         mDialogView = (ViewGroup) LayoutInflater.from(builder.getContext()).inflate(
                 R.layout.admin_support_details_dialog, null);
-        initializeDialogViews(mDialogView, mEnforcedAdmin.component, mEnforcedAdmin.userId,
+        initializeDialogViews(mDialogView, mEnforcedAdmin.component, getEnforcementAdminUserId(),
                 mRestriction);
         return builder
             .setPositiveButton(R.string.okay, null)
@@ -85,7 +95,7 @@ public class ActionDisabledByAdminDialogHelper {
         }
         mEnforcedAdmin = admin;
         mRestriction = restriction;
-        initializeDialogViews(mDialogView, mEnforcedAdmin.component, mEnforcedAdmin.userId,
+        initializeDialogViews(mDialogView, mEnforcedAdmin.component, getEnforcementAdminUserId(),
                 mRestriction);
     }
 
@@ -94,7 +104,7 @@ public class ActionDisabledByAdminDialogHelper {
         if (admin == null) {
             return;
         }
-        if (!RestrictedLockUtils.isAdminInCurrentUserOrProfile(mActivity, admin)
+        if (!RestrictedLockUtilsInternal.isAdminInCurrentUserOrProfile(mActivity, admin)
                 || !RestrictedLockUtils.isCurrentUserOrProfile(mActivity, userId)) {
             admin = null;
         } else {
@@ -107,7 +117,15 @@ public class ActionDisabledByAdminDialogHelper {
         }
 
         setAdminSupportTitle(root, restriction);
-        setAdminSupportDetails(mActivity, root, new EnforcedAdmin(admin, userId));
+
+        final UserHandle user;
+        if (userId == UserHandle.USER_NULL) {
+            user = null;
+        } else {
+            user = UserHandle.of(userId);
+        }
+
+        setAdminSupportDetails(mActivity, root, new EnforcedAdmin(admin, user));
     }
 
     @VisibleForTesting
@@ -136,9 +154,6 @@ public class ActionDisabledByAdminDialogHelper {
             case DevicePolicyManager.POLICY_DISABLE_SCREEN_CAPTURE:
                 titleView.setText(R.string.disabled_by_policy_title_screen_capture);
                 break;
-            case DevicePolicyManager.POLICY_MANDATORY_BACKUPS:
-                titleView.setText(R.string.disabled_by_policy_title_turn_off_backups);
-                break;
             case DevicePolicyManager.POLICY_SUSPEND_PACKAGES:
                 titleView.setText(R.string.disabled_by_policy_title_suspend_packages);
                 break;
@@ -154,20 +169,27 @@ public class ActionDisabledByAdminDialogHelper {
         if (enforcedAdmin == null || enforcedAdmin.component == null) {
             return;
         }
+
+        final int userId;
+        if (enforcedAdmin.user == null) {
+            userId = UserHandle.USER_NULL;
+        } else {
+            userId = enforcedAdmin.user.getIdentifier();
+        }
+
         final DevicePolicyManager dpm = (DevicePolicyManager) activity.getSystemService(
                 Context.DEVICE_POLICY_SERVICE);
-        if (!RestrictedLockUtils.isAdminInCurrentUserOrProfile(activity,
+        if (!RestrictedLockUtilsInternal.isAdminInCurrentUserOrProfile(activity,
                 enforcedAdmin.component) || !RestrictedLockUtils.isCurrentUserOrProfile(
-                activity, enforcedAdmin.userId)) {
+                activity, userId)) {
             enforcedAdmin.component = null;
         } else {
-            if (enforcedAdmin.userId == UserHandle.USER_NULL) {
-                enforcedAdmin.userId = UserHandle.myUserId();
+            if (enforcedAdmin.user == null) {
+                enforcedAdmin.user = UserHandle.of(UserHandle.myUserId());
             }
             CharSequence supportMessage = null;
             if (UserHandle.isSameApp(Process.myUid(), Process.SYSTEM_UID)) {
-                supportMessage = dpm.getShortSupportMessageForUser(
-                        enforcedAdmin.component, enforcedAdmin.userId);
+                supportMessage = dpm.getShortSupportMessageForUser(enforcedAdmin.component, userId);
             }
             if (supportMessage != null) {
                 final TextView textView = root.findViewById(R.id.admin_support_msg);
@@ -185,8 +207,7 @@ public class ActionDisabledByAdminDialogHelper {
                     enforcedAdmin.component);
             intent.putExtra(DeviceAdminAdd.EXTRA_CALLED_FROM_SUPPORT_DIALOG, true);
             // DeviceAdminAdd class may need to run as managed profile.
-            activity.startActivityAsUser(intent,
-                    new UserHandle(enforcedAdmin.userId));
+            activity.startActivityAsUser(intent, enforcedAdmin.user);
         } else {
             intent.setClass(activity, Settings.DeviceAdminSettingsActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

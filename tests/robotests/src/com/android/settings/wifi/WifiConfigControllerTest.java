@@ -17,6 +17,7 @@
 package com.android.settings.wifi;
 
 import static com.google.common.truth.Truth.assertThat;
+
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyInt;
@@ -56,11 +57,10 @@ public class WifiConfigControllerTest {
     @Mock
     private Context mContext;
     @Mock
-    private View mView;
-    @Mock
     private AccessPoint mAccessPoint;
     @Mock
     private KeyStore mKeyStore;
+    private View mView;
     private Spinner mHiddenSettingsSpinner;
 
     public WifiConfigController mController;
@@ -73,6 +73,7 @@ public class WifiConfigControllerTest {
     private static final String SHORT_PSK = "abcdefg";
     // Valid PSK pass phrase
     private static final String GOOD_PSK = "abcdefghijklmnopqrstuvwxyz";
+    private static final String GOOD_SSID = "abc";
     private static final int DHCP = 0;
 
     @Before
@@ -180,6 +181,35 @@ public class WifiConfigControllerTest {
         mController =
             new TestWifiConfigController(mConfigUiBase, mView, null, WifiConfigUiBase.MODE_CONNECT);
         mController.isSubmittable();
+    }
+
+    @Test
+    public void isSubmittable_EapToPskWithValidPassword_shouldReturnTrue() {
+        mController = new TestWifiConfigController(mConfigUiBase, mView, null,
+                WifiConfigUiBase.MODE_CONNECT);
+        final TextView ssid = mView.findViewById(R.id.ssid);
+        final TextView password = mView.findViewById(R.id.password);
+        final Spinner securitySpinner = mView.findViewById(R.id.security);
+        assertThat(password).isNotNull();
+        assertThat(securitySpinner).isNotNull();
+        when(mAccessPoint.isSaved()).thenReturn(true);
+
+        // Change it from EAP to PSK
+        mController.onItemSelected(securitySpinner, null, AccessPoint.SECURITY_EAP, 0);
+        mController.onItemSelected(securitySpinner, null, AccessPoint.SECURITY_PSK, 0);
+        password.setText(GOOD_PSK);
+        ssid.setText(GOOD_SSID);
+
+        assertThat(mController.isSubmittable()).isTrue();
+    }
+
+    @Test
+    public void isSubmittable_EapWithAkaMethod_shouldReturnTrue() {
+        when(mAccessPoint.isSaved()).thenReturn(true);
+        mController.mAccessPointSecurity = AccessPoint.SECURITY_EAP;
+        mView.findViewById(R.id.l_ca_cert).setVisibility(View.GONE);
+
+        assertThat(mController.isSubmittable()).isTrue();
     }
 
     @Test

@@ -21,8 +21,9 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.widget.Toolbar;
+import android.view.View;
 
+import com.android.internal.logging.nano.MetricsProto;
 import com.android.settings.overlay.FeatureFactory;
 import com.android.settingslib.search.SearchIndexableResources;
 
@@ -32,6 +33,7 @@ import com.android.settingslib.search.SearchIndexableResources;
 public interface SearchFeatureProvider {
 
     Intent SEARCH_UI_INTENT = new Intent("com.android.settings.action.SETTINGS_SEARCH");
+    int REQUEST_CODE = 0;
 
     /**
      * Ensures the caller has necessary privilege to launch search result page.
@@ -51,21 +53,24 @@ public interface SearchFeatureProvider {
         return "com.android.settings.intelligence";
     }
 
+
     /**
      * Initializes the search toolbar.
      */
-    default void initSearchToolbar(Activity activity, Toolbar toolbar) {
-        if (activity == null || toolbar == null) {
+    default void initSearchToolbar(Activity activity, View view) {
+        if (activity == null || view == null) {
             return;
         }
-        toolbar.setOnClickListener(tb -> {
+        view.setOnClickListener(tb -> {
             final Intent intent = SEARCH_UI_INTENT;
             intent.setPackage(getSettingsIntelligencePkgName());
+            final Context context = activity.getApplicationContext();
 
-            FeatureFactory.getFactory(
-                    activity.getApplicationContext()).getSlicesFeatureProvider()
+            FeatureFactory.getFactory(context).getSlicesFeatureProvider()
                     .indexSliceDataAsync(activity.getApplicationContext());
-            activity.startActivityForResult(intent, 0 /* requestCode */);
+            FeatureFactory.getFactory(context).getMetricsFeatureProvider()
+                    .action(context, MetricsProto.MetricsEvent.ACTION_SEARCH_RESULTS);
+            activity.startActivityForResult(intent, REQUEST_CODE);
         });
     }
 }

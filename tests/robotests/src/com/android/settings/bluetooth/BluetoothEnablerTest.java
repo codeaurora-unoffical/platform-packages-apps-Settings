@@ -16,6 +16,7 @@
 package com.android.settings.bluetooth;
 
 import static com.google.common.truth.Truth.assertThat;
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Mockito.mock;
@@ -30,8 +31,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.UserHandle;
 import android.os.UserManager;
 import android.view.View;
+
+import androidx.preference.PreferenceViewHolder;
 
 import com.android.settings.testutils.SettingsRobolectricTestRunner;
 import com.android.settings.testutils.shadow.SettingsShadowResources;
@@ -54,8 +58,6 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadow.api.Shadow;
 
-import androidx.preference.PreferenceViewHolder;
-
 @RunWith(SettingsRobolectricTestRunner.class)
 @Config(shadows = {SettingsShadowResources.SettingsShadowTheme.class, ShadowBluetoothAdapter.class})
 public class BluetoothEnablerTest {
@@ -66,7 +68,8 @@ public class BluetoothEnablerTest {
 
     @BeforeClass
     public static void beforeClass() {
-        sFakeEnforcedAdmin = new EnforcedAdmin(new ComponentName("test.package", "test.Class"), 10);
+        sFakeEnforcedAdmin = new EnforcedAdmin(new ComponentName("test.package", "test.Class"),
+                UserHandle.of(10));
     }
 
     @Mock

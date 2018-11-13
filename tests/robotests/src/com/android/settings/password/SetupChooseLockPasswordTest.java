@@ -17,6 +17,7 @@
 package com.android.settings.password;
 
 import static com.google.common.truth.Truth.assertThat;
+
 import static org.robolectric.RuntimeEnvironment.application;
 
 import android.content.Intent;
@@ -24,11 +25,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import androidx.appcompat.app.AlertDialog;
+
 import com.android.settings.R;
 import com.android.settings.password.ChooseLockGeneric.ChooseLockGenericFragment;
 import com.android.settings.password.ChooseLockPassword.IntentBuilder;
 import com.android.settings.password.SetupChooseLockPassword.SetupChooseLockPasswordFragment;
-import com.android.settings.testutils.Robolectric;
 import com.android.settings.testutils.SettingsRobolectricTestRunner;
 import com.android.settings.testutils.shadow.SettingsShadowResources;
 import com.android.settings.testutils.shadow.SettingsShadowResourcesImpl;
@@ -39,6 +41,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Shadows;
+import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
@@ -47,8 +50,6 @@ import org.robolectric.shadows.ShadowDialog;
 
 import java.util.Collections;
 import java.util.List;
-
-import androidx.appcompat.app.AlertDialog;
 
 @RunWith(SettingsRobolectricTestRunner.class)
 @Config(shadows = {
@@ -73,11 +74,12 @@ public class SetupChooseLockPasswordTest {
     @Test
     public void createActivity_shouldNotCrash() {
         // Basic sanity test for activity created without crashing
-        Robolectric.buildActivity(SetupChooseLockPassword.class,
+        final Intent intent =
                 SetupChooseLockPassword.modifyIntentForSetup(
                         application,
-                        new IntentBuilder(application).build()))
-                .setup().get();
+                        new IntentBuilder(application).build());
+
+        ActivityController.of(new SetupChooseLockPassword(), intent).setup().get();
     }
 
     @Test
@@ -118,7 +120,7 @@ public class SetupChooseLockPasswordTest {
         intent.putExtra(ChooseLockGenericFragment.EXTRA_SHOW_OPTIONS_BUTTON, true);
 
         SetupChooseLockPassword activity =
-                Robolectric.buildActivity(SetupChooseLockPassword.class, intent).setup().get();
+                ActivityController.of(new SetupChooseLockPassword(), intent).setup().get();
 
         SetupChooseLockPasswordFragment fragment =
                 (SetupChooseLockPasswordFragment) activity.getSupportFragmentManager()
@@ -135,11 +137,12 @@ public class SetupChooseLockPasswordTest {
     }
 
     private SetupChooseLockPassword createSetupChooseLockPassword() {
-        Intent intent = SetupChooseLockPassword.modifyIntentForSetup(
-                application,
-                new IntentBuilder(application).build());
+        final Intent intent =
+                SetupChooseLockPassword.modifyIntentForSetup(
+                        application,
+                        new IntentBuilder(application).build());
         intent.putExtra(ChooseLockGenericFragment.EXTRA_SHOW_OPTIONS_BUTTON, true);
-        return Robolectric.buildActivity(SetupChooseLockPassword.class, intent).setup().get();
+        return ActivityController.of(new SetupChooseLockPassword(), intent).setup().get();
     }
 
     @Implements(ChooseLockGenericController.class)

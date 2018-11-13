@@ -33,6 +33,10 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.VisibleForTesting;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceViewHolder;
+
 import com.android.internal.logging.nano.MetricsProto;
 import com.android.settings.R;
 import com.android.settings.core.SubSettingLauncher;
@@ -42,10 +46,6 @@ import com.android.settingslib.utils.StringUtil;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-
-import androidx.annotation.VisibleForTesting;
-import androidx.preference.Preference;
-import androidx.preference.PreferenceViewHolder;
 
 /**
  * Provides a summary of data usage.
@@ -178,7 +178,7 @@ public class DataUsageSummaryPreference extends Preference {
             carrierInfo.setVisibility(View.GONE);
             limitInfo.setVisibility(View.GONE);
 
-            final long usageLevel = getHistoriclUsageLevel();
+            final long usageLevel = getHistoricalUsageLevel();
             if (usageLevel > 0L) {
                 launchButton.setOnClickListener((view) -> {
                     launchWifiDataUsage(getContext());
@@ -339,9 +339,9 @@ public class DataUsageSummaryPreference extends Preference {
     }
 
     @VisibleForTesting
-    long getHistoriclUsageLevel() {
+    long getHistoricalUsageLevel() {
         final DataUsageController controller = new DataUsageController(getContext());
-        return controller.getHistoriclUsageLevel(NetworkTemplate.buildTemplateWifiWildcard());
+        return controller.getHistoricalUsageLevel(NetworkTemplate.buildTemplateWifiWildcard());
     }
 
 }

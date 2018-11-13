@@ -16,6 +16,7 @@
 package com.android.settings.deviceinfo;
 
 import static com.google.common.truth.Truth.assertThat;
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -24,6 +25,13 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.os.Build;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceManager;
+import androidx.preference.PreferenceScreen;
 
 import com.android.settings.R;
 import com.android.settings.core.BasePreferenceController;
@@ -37,17 +45,10 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.preference.Preference;
-import androidx.preference.PreferenceManager;
-import androidx.preference.PreferenceScreen;
-
 @RunWith(SettingsRobolectricTestRunner.class)
 public class DeviceModelPreferenceControllerTest {
 
-    private final String KEY = "device_model_key";
+    private final String KEY = "device_model";
 
     @Mock
     private Fragment mFragment;
@@ -98,6 +99,11 @@ public class DeviceModelPreferenceControllerTest {
         assertThat(mController.handlePreferenceTreeClick(mPreference)).isTrue();
         verify(fragmentManager.beginTransaction())
                 .add(any(HardwareInfoDialogFragment.class), eq(HardwareInfoDialogFragment.TAG));
+    }
+
+    @Test
+    public void isSliceable_shouldBeTrue() {
+        assertThat(mController.isSliceable()).isTrue();
     }
 
     private boolean containBuildModel(CharSequence result) {

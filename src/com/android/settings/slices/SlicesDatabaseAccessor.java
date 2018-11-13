@@ -25,13 +25,13 @@ import android.net.Uri;
 import android.os.Binder;
 import android.util.Pair;
 
+import androidx.slice.Slice;
+
 import com.android.settings.overlay.FeatureFactory;
 import com.android.settings.slices.SlicesDatabaseHelper.IndexColumns;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import androidx.slice.Slice;
 
 /**
  * Class used to map a {@link Uri} from {@link SettingsSliceProvider} to a Slice.
@@ -49,6 +49,7 @@ public class SlicesDatabaseAccessor {
             IndexColumns.CONTROLLER,
             IndexColumns.PLATFORM_SLICE,
             IndexColumns.SLICE_TYPE,
+            IndexColumns.ALLOW_DYNAMIC_SUMMARY_IN_SLICE,
     };
 
     // Cursor value for boolean true
@@ -159,6 +160,8 @@ public class SlicesDatabaseAccessor {
                 cursor.getColumnIndex(IndexColumns.CONTROLLER));
         final boolean isPlatformDefined = cursor.getInt(
                 cursor.getColumnIndex(IndexColumns.PLATFORM_SLICE)) == TRUE;
+        final boolean isDynamicSummaryAllowed = cursor.getInt(
+                cursor.getColumnIndex(IndexColumns.ALLOW_DYNAMIC_SUMMARY_IN_SLICE)) == TRUE;
         int sliceType = cursor.getInt(
                 cursor.getColumnIndex(IndexColumns.SLICE_TYPE));
 
@@ -178,6 +181,7 @@ public class SlicesDatabaseAccessor {
                 .setUri(uri)
                 .setPlatformDefined(isPlatformDefined)
                 .setSliceType(sliceType)
+                .setDynamicSummaryAllowed(isDynamicSummaryAllowed)
                 .build();
     }
 

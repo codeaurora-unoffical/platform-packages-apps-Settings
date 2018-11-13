@@ -43,9 +43,9 @@ public class SupportDashboardActivity extends Activity implements Indexable {
         SupportFeatureProvider supportFeatureProvider = FeatureFactory.getFactory(this)
                 .getSupportFeatureProvider(this);
 
-        // try to launch support v2 if we have the feature provider
+        // try to launch support if we have the feature provider
         if (supportFeatureProvider != null) {
-          supportFeatureProvider.startSupportV2(this);
+          supportFeatureProvider.startSupport(this);
           finish();
         }
     }
@@ -68,7 +68,6 @@ public class SupportDashboardActivity extends Activity implements Indexable {
                     data.title = context.getString(R.string.page_tab_title_support);
                     data.screenTitle = context.getString(R.string.settings_label);
                     data.summaryOn = context.getString(R.string.support_summary);
-                    data.iconResId = R.drawable.ic_homepage_support;
                     data.intentTargetPackage = context.getPackageName();
                     data.intentTargetClass = SupportDashboardActivity.class.getName();
                     data.intentAction = Intent.ACTION_MAIN;

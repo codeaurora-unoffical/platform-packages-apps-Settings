@@ -64,16 +64,16 @@ import com.android.settings.core.SubSettingLauncher;
 import com.android.settings.core.gateway.SettingsGateway;
 import com.android.settings.dashboard.DashboardFeatureProvider;
 import com.android.settings.dashboard.DashboardSummary;
+import com.android.settings.homepage.SettingsHomepageActivity;
+import com.android.settings.homepage.TopLevelSettings;
 import com.android.settings.overlay.FeatureFactory;
 import com.android.settings.sim.SimSettings;
-import com.android.settings.search.DeviceIndexFeatureProvider;
 import com.android.settings.wfd.WifiDisplaySettings;
 import com.android.settings.widget.SwitchBar;
 import com.android.settingslib.core.instrumentation.Instrumentable;
 import com.android.settingslib.core.instrumentation.SharedPreferencesLogger;
 import com.android.settingslib.development.DevelopmentSettingsEnabler;
 import com.android.settingslib.drawer.DashboardCategory;
-import com.android.settingslib.utils.ThreadUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -411,8 +411,13 @@ public class SettingsActivity extends SettingsBaseActivity
             // Show search icon as up affordance if we are displaying the main Dashboard
             mInitialTitleResId = R.string.dashboard_title;
 
-            switchToFragment(DashboardSummary.class.getName(), null /* args */, false, false,
-                    mInitialTitleResId, mInitialTitle, false);
+            if (SettingsHomepageActivity.isDynamicHomepageEnabled(this)) {
+                switchToFragment(TopLevelSettings.class.getName(), null /* args */, false, false,
+                        mInitialTitleResId, mInitialTitle, false);
+            } else {
+                switchToFragment(DashboardSummary.class.getName(), null /* args */, false, false,
+                        mInitialTitleResId, mInitialTitle, false);
+            }
         }
     }
 
@@ -515,7 +520,6 @@ public class SettingsActivity extends SettingsBaseActivity
         registerReceiver(mBatteryInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 
         updateTilesList();
-        updateDeviceIndex();
     }
 
     @Override
@@ -666,19 +670,10 @@ public class SettingsActivity extends SettingsBaseActivity
         });
     }
 
-    private void updateDeviceIndex() {
-        DeviceIndexFeatureProvider indexProvider = FeatureFactory.getFactory(
-                this).getDeviceIndexFeatureProvider();
-
-        ThreadUtils.postOnBackgroundThread(
-                () -> indexProvider.updateIndex(SettingsActivity.this, false /* force */));
-    }
-
     private void doUpdateTilesList() {
         PackageManager pm = getPackageManager();
         final UserManager um = UserManager.get(this);
         final boolean isAdmin = um.isAdminUser();
-        final FeatureFactory featureFactory = FeatureFactory.getFactory(this);
         boolean somethingChanged = false;
         final String packageName = getPackageName();
         final StringBuilder changedList = new StringBuilder();
@@ -726,16 +721,6 @@ public class SettingsActivity extends SettingsBaseActivity
                         Settings.UserSettingsActivity.class.getName()),
                 UserHandle.MU_ENABLED && UserManager.supportsMultipleUsers()
                         && !Utils.isMonkeyRunning(), isAdmin)
-                || somethingChanged;
-
-        somethingChanged = setTileEnabled(changedList, new ComponentName(packageName,
-                        Settings.NetworkDashboardActivity.class.getName()),
-                !UserManager.isDeviceInDemoMode(this), isAdmin)
-                || somethingChanged;
-
-        somethingChanged = setTileEnabled(changedList, new ComponentName(packageName,
-                        Settings.DateTimeSettingsActivity.class.getName()),
-                !UserManager.isDeviceInDemoMode(this), isAdmin)
                 || somethingChanged;
 
         final boolean showDev = DevelopmentSettingsEnabler.isDevelopmentSettingsEnabled(this)

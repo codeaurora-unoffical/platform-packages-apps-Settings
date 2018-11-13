@@ -61,23 +61,41 @@ public class CardContentProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
+        final ContentValues[] cvs = {values};
+        bulkInsert(uri, cvs);
+        return uri;
+    }
+
+    @Override
+    public int bulkInsert(Uri uri, ContentValues[] values) {
         final StrictMode.ThreadPolicy oldPolicy = StrictMode.getThreadPolicy();
+        int numInserted = 0;
+        final SQLiteDatabase database = mDBHelper.getWritableDatabase();
+
         try {
             maybeEnableStrictMode();
 
-            final SQLiteDatabase database = mDBHelper.getWritableDatabase();
             final String table = getTableFromMatch(uri);
-            final long ret = database.insert(table, null, values);
-            if (ret != -1) {
-                getContext().getContentResolver().notifyChange(uri, null);
-            } else {
-                Log.e(TAG, "The CardContentProvider insertion failed! Plase check SQLiteDatabase's "
-                        + "message.");
+            database.beginTransaction();
+
+            // Here deletion first is avoiding redundant insertion. According to cl/215350754
+            database.delete(table, null /* whereClause */, null /* whereArgs */);
+            for (ContentValues value : values) {
+                long ret = database.insert(table, null /* nullColumnHack */, value);
+                if (ret != -1L) {
+                    numInserted++;
+                } else {
+                    Log.e(TAG, "The row " + value.getAsString(CardDatabaseHelper.CardColumns.NAME)
+                            + " insertion failed! Please check your data.");
+                }
             }
+            database.setTransactionSuccessful();
+            getContext().getContentResolver().notifyChange(uri, null /* observer */);
         } finally {
+            database.endTransaction();
             StrictMode.setThreadPolicy(oldPolicy);
         }
-        return uri;
+        return numInserted;
     }
 
     @Override
@@ -88,7 +106,7 @@ public class CardContentProvider extends ContentProvider {
             final SQLiteDatabase database = mDBHelper.getWritableDatabase();
             final String table = getTableFromMatch(uri);
             final int rowsDeleted = database.delete(table, selection, selectionArgs);
-            getContext().getContentResolver().notifyChange(uri, null);
+            getContext().getContentResolver().notifyChange(uri, null /* observer */);
             return rowsDeleted;
         } finally {
             StrictMode.setThreadPolicy(oldPolicy);
@@ -112,7 +130,8 @@ public class CardContentProvider extends ContentProvider {
             queryBuilder.setTables(table);
             final SQLiteDatabase database = mDBHelper.getReadableDatabase();
             final Cursor cursor = queryBuilder.query(database,
-                    projection, selection, selectionArgs, null, null, sortOrder);
+                    projection, selection, selectionArgs, null /* groupBy */, null /* having */,
+                    sortOrder);
 
             cursor.setNotificationUri(getContext().getContentResolver(), uri);
             return cursor;
@@ -130,7 +149,7 @@ public class CardContentProvider extends ContentProvider {
             final SQLiteDatabase database = mDBHelper.getWritableDatabase();
             final String table = getTableFromMatch(uri);
             final int rowsUpdated = database.update(table, values, selection, selectionArgs);
-            getContext().getContentResolver().notifyChange(uri, null);
+            getContext().getContentResolver().notifyChange(uri, null /* observer */);
             return rowsUpdated;
         } finally {
             StrictMode.setThreadPolicy(oldPolicy);

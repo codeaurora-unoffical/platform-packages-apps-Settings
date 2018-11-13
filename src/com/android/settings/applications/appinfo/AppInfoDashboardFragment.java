@@ -34,10 +34,13 @@ import android.os.Bundle;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.text.TextUtils;
+import android.util.FeatureFlagUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+
+import androidx.annotation.VisibleForTesting;
 
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
@@ -46,9 +49,10 @@ import com.android.settings.SettingsPreferenceFragment;
 import com.android.settings.applications.manageapplications.ManageApplications;
 import com.android.settings.applications.specialaccess.pictureinpicture
         .PictureInPictureDetailPreferenceController;
+import com.android.settings.core.FeatureFlags;
 import com.android.settings.core.SubSettingLauncher;
 import com.android.settings.dashboard.DashboardFragment;
-import com.android.settingslib.RestrictedLockUtils;
+import com.android.settingslib.RestrictedLockUtilsInternal;
 import com.android.settingslib.applications.AppUtils;
 import com.android.settingslib.applications.ApplicationsState;
 import com.android.settingslib.applications.ApplicationsState.AppEntry;
@@ -58,8 +62,6 @@ import com.android.settingslib.core.lifecycle.Lifecycle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import androidx.annotation.VisibleForTesting;
 
 /**
  * Dashboard fragment to display application information from Settings. This activity presents
@@ -139,7 +141,11 @@ public class AppInfoDashboardFragment extends DashboardFragment
         final String packageName = getPackageName();
         use(TimeSpentInAppPreferenceController.class).setPackageName(packageName);
 
-        use(AppDataUsagePreferenceController.class).setParentFragment(this);
+        if (FeatureFlagUtils.isEnabled(context, FeatureFlags.DATA_USAGE_V2)) {
+            use(AppDataUsagePreferenceControllerV2.class).setParentFragment(this);
+        } else {
+            use(AppDataUsagePreferenceController.class).setParentFragment(this);
+        }
         final AppInstallerInfoPreferenceController installer =
                 use(AppInstallerInfoPreferenceController.class);
         installer.setPackageName(packageName);
@@ -185,14 +191,20 @@ public class AppInfoDashboardFragment extends DashboardFragment
         mDpm = (DevicePolicyManager) activity.getSystemService(Context.DEVICE_POLICY_SERVICE);
         mUserManager = (UserManager) activity.getSystemService(Context.USER_SERVICE);
         mPm = activity.getPackageManager();
-
         if (!ensurePackageInfoAvailable(activity)) {
             return;
         }
-
         startListeningToPackageRemove();
 
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+        if (!ensurePackageInfoAvailable(getActivity())) {
+            return;
+        }
+        super.onCreatePreferences(savedInstanceState, rootKey);
     }
 
     @Override
@@ -210,10 +222,10 @@ public class AppInfoDashboardFragment extends DashboardFragment
     public void onResume() {
         super.onResume();
         final Activity activity = getActivity();
-        mAppsControlDisallowedAdmin = RestrictedLockUtils.checkIfRestrictionEnforced(activity,
-                UserManager.DISALLOW_APPS_CONTROL, mUserId);
-        mAppsControlDisallowedBySystem = RestrictedLockUtils.hasBaseUserRestriction(activity,
-                UserManager.DISALLOW_APPS_CONTROL, mUserId);
+        mAppsControlDisallowedAdmin = RestrictedLockUtilsInternal.checkIfRestrictionEnforced(
+                activity, UserManager.DISALLOW_APPS_CONTROL, mUserId);
+        mAppsControlDisallowedBySystem = RestrictedLockUtilsInternal.hasBaseUserRestriction(
+                activity, UserManager.DISALLOW_APPS_CONTROL, mUserId);
 
         if (!refreshUi()) {
             setIntentAndFinish(true, true);
@@ -338,7 +350,7 @@ public class AppInfoDashboardFragment extends DashboardFragment
                 && !mAppsControlDisallowedBySystem
                 && !uninstallUpdateDisabled);
         if (uninstallUpdatesItem.isVisible()) {
-            RestrictedLockUtils.setMenuItemAsDisabledByAdmin(getActivity(),
+            RestrictedLockUtilsInternal.setMenuItemAsDisabledByAdmin(getActivity(),
                     uninstallUpdatesItem, mAppsControlDisallowedAdmin);
         }
     }

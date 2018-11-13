@@ -33,6 +33,12 @@ import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 
+import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.preference.Preference;
+import androidx.preference.SwitchPreference;
+
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
 import com.android.settings.core.instrumentation.InstrumentedDialogFragment;
@@ -45,14 +51,8 @@ import com.android.settingslib.search.SearchIndexable;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
-import androidx.preference.Preference;
-import androidx.preference.SwitchPreference;
-
 @SearchIndexable
-public class BillingCycleSettings extends DataUsageBase implements
+public class BillingCycleSettings extends DataUsageBaseFragment implements
         Preference.OnPreferenceChangeListener, DataUsageEditController {
 
     private static final String TAG = "BillingCycleSettings";
@@ -73,7 +73,8 @@ public class BillingCycleSettings extends DataUsageBase implements
     static final String KEY_SET_DATA_LIMIT = "set_data_limit";
     private static final String KEY_DATA_LIMIT = "data_limit";
 
-    private NetworkTemplate mNetworkTemplate;
+    @VisibleForTesting
+    NetworkTemplate mNetworkTemplate;
     private Preference mBillingCycle;
     private Preference mDataWarning;
     private SwitchPreference mEnableDataWarning;
@@ -100,12 +101,16 @@ public class BillingCycleSettings extends DataUsageBase implements
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
 
-        mDataUsageController = new DataUsageController(getContext());
+        final Context context = getContext();
+        mDataUsageController = new DataUsageController(context);
 
         Bundle args = getArguments();
         mNetworkTemplate = args.getParcelable(DataUsageList.EXTRA_NETWORK_TEMPLATE);
+        if (mNetworkTemplate == null) {
+            mNetworkTemplate = DataUsageUtils.getDefaultTemplate(context,
+                DataUsageUtils.getDefaultSubscriptionId(context));
+        }
 
-        addPreferencesFromResource(R.xml.billing_cycle);
         mBillingCycle = findPreference(KEY_BILLING_CYCLE);
         mEnableDataWarning = (SwitchPreference) findPreference(KEY_SET_DATA_WARNING);
         mEnableDataWarning.setOnPreferenceChangeListener(this);
@@ -189,6 +194,16 @@ public class BillingCycleSettings extends DataUsageBase implements
     @Override
     public int getMetricsCategory() {
         return MetricsEvent.BILLING_CYCLE;
+    }
+
+    @Override
+    protected int getPreferenceScreenResId() {
+        return R.xml.billing_cycle;
+    }
+
+    @Override
+    protected String getLogTag() {
+        return TAG;
     }
 
     @VisibleForTesting

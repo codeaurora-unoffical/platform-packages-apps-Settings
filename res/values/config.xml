@@ -106,6 +106,9 @@
         -->
     </string-array>
 
+    <!-- List of packages that should be whitelisted for slice uri access. Do not translate -->
+    <string-array name="slice_whitelist_package_names" translatable="false"/>
+
     <!-- Whether or not App & Notification screen should display recently used apps -->
     <bool name="config_display_recent_apps">true</bool>
 
@@ -133,4 +136,13 @@
 
     <!-- Whether or not TopLevelSettings should force rounded icon for injected tiles -->
     <bool name="config_force_rounded_icon_TopLevelSettings">true</bool>
+
+    <!-- TODO(b/115429501): move those 3 configs to framework-->
+    <!-- Show enabled lte option for lte device -->
+    <bool name="config_enabled_lte" translatable="false">false</bool>
+    <!-- Show enabled tdscdma option for device -->
+    <bool name="config_support_tdscdma" translatable="false">false</bool>
+    <!-- Show enabled tdscdma option for device when connect roaming network -->
+    <string-array name="config_support_tdscdma_roaming_on_networks"
+                  translatable="false"></string-array>
 </resources>

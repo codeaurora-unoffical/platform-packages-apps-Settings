@@ -76,6 +76,14 @@ public class SettingsRobolectricTestRunner extends RobolectricTestRunner {
             paths.add(new ResourcePath(null,
                 Fs.fromURL(new URL("file:frameworks/base/packages/SettingsLib/res")), null));
             paths.add(new ResourcePath(null,
+                    Fs.fromURL(new URL("file:frameworks/base/packages/SettingsLib/AppPreference/res/")), null));
+            paths.add(new ResourcePath(null,
+                    Fs.fromURL(new URL("file:frameworks/base/packages/SettingsLib/HelpUtils/res/")), null));
+            paths.add(new ResourcePath(null,
+                    Fs.fromURL(new URL("file:frameworks/base/packages/SettingsLib/RestrictedLockUtils/res/")), null));
+            paths.add(new ResourcePath(null,
+                    Fs.fromURL(new URL("file:frameworks/base/packages/SettingsLib/SearchWidget/res/")), null));
+            paths.add(new ResourcePath(null,
                 Fs.fromURL(new URL("file:frameworks/base/core/res/res")), null));
             paths.add(new ResourcePath(null,
                 Fs.fromURL(new URL("file:frameworks/opt/setupwizard/library/main/res")), null));
@@ -86,7 +94,13 @@ public class SettingsRobolectricTestRunner extends RobolectricTestRunner {
             paths.add(new ResourcePath(null,
                 Fs.fromURL(new URL("file:out/soong/.intermediates/prebuilts/sdk/current/androidx/androidx.appcompat_appcompat-nodeps/android_common/aar/res/")), null));
             paths.add(new ResourcePath(null,
+                Fs.fromURL(new URL("file:out/soong/.intermediates/prebuilts/sdk/current/extras/material-design-x/com.google.android.material_material-nodeps/android_common/aar/res/")), null));
+            paths.add(new ResourcePath(null,
                 Fs.fromURL(new URL("file:out/soong/.intermediates/prebuilts/sdk/current/androidx/androidx.cardview_cardview-nodeps/android_common/aar/res")), null));
+            paths.add(new ResourcePath(null,
+                    Fs.fromURL(new URL("file:out/soong/.intermediates/prebuilts/sdk/current/androidx/androidx.slice_slice-view-nodeps/android_common/aar/res")), null));
+            paths.add(new ResourcePath(null,
+                    Fs.fromURL(new URL("file:out/soong/.intermediates/prebuilts/sdk/current/androidx/androidx.preference_preference-nodeps/android_common/aar/res")), null));
         } catch (MalformedURLException e) {
             throw new RuntimeException("SettingsRobolectricTestRunner failure", e);
         }
