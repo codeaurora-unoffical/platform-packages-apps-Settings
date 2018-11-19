@@ -513,7 +513,7 @@ public class DevelopmentSettings extends RestrictedSettingsFragment
         mBluetoothDisableAbsVolume = findAndInitSwitchPref(BLUETOOTH_DISABLE_ABSOLUTE_VOLUME_KEY);
         mBluetoothEnableInbandRinging = findAndInitSwitchPref(BLUETOOTH_ENABLE_INBAND_RINGING_KEY);
         if (!BluetoothHeadset.isInbandRingingSupported(getContext())) {
-            removePreference(mBluetoothEnableInbandRinging);
+            removePreference(BLUETOOTH_ENABLE_INBAND_RINGING_KEY);
             mBluetoothEnableInbandRinging = null;
         }
 
