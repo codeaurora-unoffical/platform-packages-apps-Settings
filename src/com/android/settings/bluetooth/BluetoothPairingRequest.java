@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.PowerManager;
+import android.os.SystemProperties;
 import android.os.UserHandle;
 
 /**
@@ -35,7 +36,8 @@ public final class BluetoothPairingRequest extends BroadcastReceiver {
   @Override
   public void onReceive(Context context, Intent intent) {
     String action = intent.getAction();
-    if (!action.equals(BluetoothDevice.ACTION_PAIRING_REQUEST)) {
+    if (!action.equals(BluetoothDevice.ACTION_PAIRING_REQUEST) ||
+            !shouldHandlePairingRequest()) {
       return;
     }
     // convert broadcast intent into activity intent (same action string)
@@ -58,5 +60,15 @@ public final class BluetoothPairingRequest extends BroadcastReceiver {
       intent.setClass(context, BluetoothPairingService.class);
       context.startServiceAsUser(intent, UserHandle.CURRENT);
     }
+  }
+
+  private boolean shouldHandlePairingRequest() {
+    String hardwareType = SystemProperties.get("ro.hardware.type");
+    if ((hardwareType != null) && hardwareType.equals("automotive")) {
+      // In Automotive, there is CarSettings which can also
+      // handle Bluetooth pairing request to show dialog.
+      return false;
+    }
+    return true;
   }
 }
