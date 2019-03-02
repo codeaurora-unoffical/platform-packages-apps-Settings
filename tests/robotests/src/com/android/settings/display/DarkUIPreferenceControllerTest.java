@@ -26,16 +26,15 @@ import android.content.Context;
 import androidx.preference.ListPreference;
 import androidx.preference.PreferenceScreen;
 
-import com.android.settings.testutils.SettingsRobolectricTestRunner;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
-@RunWith(SettingsRobolectricTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class DarkUIPreferenceControllerTest {
 
     private Context mContext;
@@ -60,8 +59,9 @@ public class DarkUIPreferenceControllerTest {
 
     @Test
     public void onPreferenceChanged_setAuto() {
+        // Auto was deprecated, it should default to NO.
         mController.onPreferenceChange(mPreference, "auto");
-        verify(mUiModeManager).setNightMode(eq(UiModeManager.MODE_NIGHT_AUTO));
+        verify(mUiModeManager).setNightMode(eq(UiModeManager.MODE_NIGHT_NO));
     }
 
     @Test

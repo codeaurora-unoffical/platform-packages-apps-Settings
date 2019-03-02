@@ -38,8 +38,8 @@ import androidx.preference.PreferenceScreen;
 
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.core.PreferenceControllerMixin;
+import com.android.settings.slices.BlockingSlicePrefController;
 import com.android.settings.testutils.FakeFeatureFactory;
-import com.android.settings.testutils.SettingsRobolectricTestRunner;
 import com.android.settingslib.core.AbstractPreferenceController;
 import com.android.settingslib.core.instrumentation.MetricsFeatureProvider;
 import com.android.settingslib.core.instrumentation.VisibilityLoggerMixin;
@@ -51,13 +51,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.util.ReflectionHelpers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-@RunWith(SettingsRobolectricTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class DashboardFragmentTest {
 
     @Mock
@@ -66,6 +70,7 @@ public class DashboardFragmentTest {
     private DashboardCategory mDashboardCategory;
     private Context mContext;
     private TestFragment mTestFragment;
+    private List<AbstractPreferenceController> mControllers;
 
     @Before
     public void setUp() {
@@ -83,6 +88,7 @@ public class DashboardFragmentTest {
                 .thenReturn(mDashboardCategory);
         mTestFragment.onAttach(RuntimeEnvironment.application);
         when(mContext.getPackageName()).thenReturn("TestPackage");
+        mControllers = new ArrayList<>();
     }
 
     @Test
@@ -191,6 +197,39 @@ public class DashboardFragmentTest {
         verify(metricsFeatureProvider).action(SettingsEnums.PAGE_UNKNOWN,
                 MetricsEvent.ACTION_SETTINGS_ADVANCED_BUTTON_EXPAND,
                 DASHBOARD_CONTAINER, null, 0);
+    }
+
+    @Test
+    public void updatePreferenceVisibility_prefKeyNull_shouldNotCrash() {
+        final Map<Class, List<AbstractPreferenceController>> prefControllers = new HashMap<>();
+        final List<AbstractPreferenceController> controllerList = new ArrayList<>();
+        controllerList.add(new TestPreferenceController(mContext));
+        prefControllers.put(TestPreferenceController.class, controllerList);
+        mTestFragment.mBlockerController = new UiBlockerController(Arrays.asList("pref_key"));
+
+        // Should not crash
+        mTestFragment.updatePreferenceVisibility(prefControllers);
+    }
+
+    @Test
+    public void checkUiBlocker_noUiBlocker_controllerIsNull() {
+        mTestFragment.mBlockerController = null;
+        mControllers.add(new TestPreferenceController(mContext));
+
+        mTestFragment.checkUiBlocker(mControllers);
+
+        assertThat(mTestFragment.mBlockerController).isNull();
+    }
+
+    @Test
+    public void checkUiBlocker_hasUiBlocker_controllerNotNull() {
+        mTestFragment.mBlockerController = null;
+        mControllers.add(new TestPreferenceController(mContext));
+        mControllers.add(new BlockingSlicePrefController(mContext, "pref_key"));
+
+        mTestFragment.checkUiBlocker(mControllers);
+
+        assertThat(mTestFragment.mBlockerController).isNotNull();
     }
 
     public static class TestPreferenceController extends AbstractPreferenceController

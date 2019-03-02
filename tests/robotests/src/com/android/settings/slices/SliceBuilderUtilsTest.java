@@ -46,15 +46,15 @@ import com.android.settings.testutils.FakeFeatureFactory;
 import com.android.settings.testutils.FakeSliderController;
 import com.android.settings.testutils.FakeToggleController;
 import com.android.settings.testutils.FakeUnavailablePreferenceController;
-import com.android.settings.testutils.SettingsRobolectricTestRunner;
 import com.android.settings.testutils.SliceTester;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
-@RunWith(SettingsRobolectricTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class SliceBuilderUtilsTest {
 
     private final String KEY = "KEY";
@@ -215,6 +215,19 @@ public class SliceBuilderUtilsTest {
         final CharSequence summary = SliceBuilderUtils.getSubtitleText(mContext, controller, data);
 
         assertThat(summary).isEqualTo(controllerSummary);
+    }
+
+    @Test
+    public void getDynamicSummary_allowDynamicSummary_nullSummary_returnsNull() {
+        final SliceData data = getDummyData(true /*isDynamicSummaryAllowed*/);
+        final FakePreferenceController controller = spy(
+                new FakePreferenceController(mContext, KEY));
+        final String controllerSummary = null;
+        doReturn(controllerSummary).when(controller).getSummary();
+
+        final CharSequence summary = SliceBuilderUtils.getSubtitleText(mContext, controller, data);
+
+        assertThat(summary).isNull();
     }
 
     @Test
@@ -436,7 +449,7 @@ public class SliceBuilderUtilsTest {
                 R.drawable.ic_settings).toIcon().getResId();
         final SliceData data = getDummyData(FakeUnavailablePreferenceController.class,
                 SUMMARY, SliceData.SliceType.SWITCH, SCREEN_TITLE, 0 /* icon */,
-                IS_DYNAMIC_SUMMARY_ALLOWED);
+                IS_DYNAMIC_SUMMARY_ALLOWED, null /* unavailableSliceSubtitle */);
         Settings.Global.putInt(mContext.getContentResolver(),
                 FakeUnavailablePreferenceController.AVAILABILITY_KEY,
                 BasePreferenceController.DISABLED_DEPENDENT_SETTING);
@@ -492,33 +505,78 @@ public class SliceBuilderUtilsTest {
         assertThat(actualIconResource).isEqualTo(settingsIcon);
     }
 
+    @Test
+    public void getSafeIcon_invalidResource_shouldFallbackToSettingsIcon() {
+        final int settingsIcon = R.drawable.ic_settings;
+        final int badIcon = 0x12345678;
+        final SliceData data = getDummyData(TOGGLE_CONTROLLER, SliceData.SliceType.SWITCH,
+                badIcon);
+
+        final IconCompat actualIcon = SliceBuilderUtils.getSafeIcon(mContext, data);
+
+        final int actualIconResource = actualIcon.toIcon().getResId();
+        assertThat(actualIconResource).isEqualTo(settingsIcon);
+    }
+
+    @Test
+    public void buildUnavailableSlice_customizeSubtitle_returnsSliceWithCustomizedSubtitle() {
+        final String subtitleOfUnavailableSlice = "subtitleOfUnavailableSlice";
+        final SliceData data = getDummyData(FakeUnavailablePreferenceController.class,
+                SUMMARY, SliceData.SliceType.SWITCH, SCREEN_TITLE, 0 /* icon */,
+                IS_DYNAMIC_SUMMARY_ALLOWED, subtitleOfUnavailableSlice);
+        Settings.Global.putInt(mContext.getContentResolver(),
+                FakeUnavailablePreferenceController.AVAILABILITY_KEY,
+                BasePreferenceController.DISABLED_DEPENDENT_SETTING);
+
+        final Slice slice = SliceBuilderUtils.buildSlice(mContext, data);
+
+        final SliceMetadata metadata = SliceMetadata.from(mContext, slice);
+        assertThat(metadata.getSubtitle()).isEqualTo(subtitleOfUnavailableSlice);
+    }
+
+    @Test
+    public void buildUnavailableSlice_notCustomizeSubtitle_returnsSliceWithDefaultSubtitle() {
+        final SliceData data = getDummyData(FakeUnavailablePreferenceController.class,
+                SliceData.SliceType.SWITCH);
+        Settings.Global.putInt(mContext.getContentResolver(),
+                FakeUnavailablePreferenceController.AVAILABILITY_KEY,
+                BasePreferenceController.DISABLED_DEPENDENT_SETTING);
+
+        final Slice slice = SliceBuilderUtils.buildSlice(mContext, data);
+
+        final SliceMetadata metadata = SliceMetadata.from(mContext, slice);
+        assertThat(metadata.getSubtitle()).isEqualTo(
+                mContext.getString(R.string.disabled_dependent_setting_summary));
+    }
+
     private SliceData getDummyData() {
         return getDummyData(TOGGLE_CONTROLLER, SUMMARY, SliceData.SliceType.SWITCH, SCREEN_TITLE,
-                ICON, IS_DYNAMIC_SUMMARY_ALLOWED);
+                ICON, IS_DYNAMIC_SUMMARY_ALLOWED, null /* unavailableSliceSubtitle */);
     }
 
     private SliceData getDummyData(boolean isDynamicSummaryAllowed) {
         return getDummyData(TOGGLE_CONTROLLER, SUMMARY, SliceData.SliceType.SWITCH, SCREEN_TITLE,
-                ICON, isDynamicSummaryAllowed);
+                ICON, isDynamicSummaryAllowed, null /* unavailableSliceSubtitle */);
     }
 
     private SliceData getDummyData(Class prefController, int sliceType, int icon) {
-        return getDummyData(TOGGLE_CONTROLLER, SUMMARY, SliceData.SliceType.SWITCH, SCREEN_TITLE,
-                icon, IS_DYNAMIC_SUMMARY_ALLOWED);
+        return getDummyData(prefController, SUMMARY, sliceType, SCREEN_TITLE,
+                icon, IS_DYNAMIC_SUMMARY_ALLOWED, null /* unavailableSliceSubtitle */);
     }
 
     private SliceData getDummyData(String summary, String screenTitle) {
         return getDummyData(TOGGLE_CONTROLLER, summary, SliceData.SliceType.SWITCH, screenTitle,
-                ICON, IS_DYNAMIC_SUMMARY_ALLOWED);
+                ICON, IS_DYNAMIC_SUMMARY_ALLOWED, null /* unavailableSliceSubtitle */);
     }
 
     private SliceData getDummyData(Class prefController, int sliceType) {
         return getDummyData(prefController, SUMMARY, sliceType, SCREEN_TITLE, ICON,
-                IS_DYNAMIC_SUMMARY_ALLOWED);
+                IS_DYNAMIC_SUMMARY_ALLOWED, null /* unavailableSliceSubtitle */);
     }
 
     private SliceData getDummyData(Class prefController, String summary, int sliceType,
-            String screenTitle, int icon, boolean isDynamicSummaryAllowed) {
+            String screenTitle, int icon, boolean isDynamicSummaryAllowed,
+            String unavailableSliceSubtitle) {
         return new SliceData.Builder()
                 .setKey(KEY)
                 .setTitle(TITLE)
@@ -531,6 +589,7 @@ public class SliceBuilderUtilsTest {
                 .setPreferenceControllerClassName(prefController.getName())
                 .setSliceType(sliceType)
                 .setDynamicSummaryAllowed(isDynamicSummaryAllowed)
+                .setUnavailableSliceSubtitle(unavailableSliceSubtitle)
                 .build();
     }
 }

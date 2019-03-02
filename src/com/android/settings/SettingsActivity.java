@@ -18,6 +18,7 @@ package com.android.settings;
 
 import android.app.ActionBar;
 import android.app.ActivityManager;
+import android.app.settings.SettingsEnums;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -34,10 +35,8 @@ import android.os.ServiceManager;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.text.TextUtils;
-import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toolbar;
@@ -55,7 +54,6 @@ import androidx.preference.PreferenceManager;
 import com.android.internal.util.ArrayUtils;
 import com.android.settings.Settings.WifiSettingsActivity;
 import com.android.settings.applications.manageapplications.ManageApplications;
-import com.android.settings.backup.BackupSettingsActivity;
 import com.android.settings.core.OnActivityResultListener;
 import com.android.settings.core.SettingsBaseActivity;
 import com.android.settings.core.SubSettingLauncher;
@@ -109,8 +107,6 @@ public class SettingsActivity extends SettingsBaseActivity
      */
     public static final String EXTRA_FRAGMENT_ARG_KEY = ":settings:fragment_args_key";
 
-    public static final String BACK_STACK_PREFS = ":settings:prefs";
-
     // extras that allow any preference activity to be launched as part of a wizard
 
     // show Back and Next buttons? takes boolean parameter
@@ -138,14 +134,9 @@ public class SettingsActivity extends SettingsBaseActivity
             ":settings:show_fragment_title_res_package_name";
     public static final String EXTRA_SHOW_FRAGMENT_TITLE_RESID =
             ":settings:show_fragment_title_resid";
-    public static final String EXTRA_SHOW_FRAGMENT_AS_SHORTCUT =
-            ":settings:show_fragment_as_shortcut";
 
     public static final String EXTRA_SHOW_FRAGMENT_AS_SUBSETTING =
             ":settings:show_fragment_as_subsetting";
-
-    @Deprecated
-    public static final String EXTRA_HIDE_DRAWER = ":settings:hide_drawer";
 
     public static final String META_DATA_KEY_FRAGMENT_CLASS =
             "com.android.settings.FRAGMENT_CLASS";
@@ -180,6 +171,10 @@ public class SettingsActivity extends SettingsBaseActivity
 
     private Button mNextButton;
 
+    /**
+     * TODO(b/118444000): Remove this and all related code.
+     */
+    @Deprecated
     private boolean mIsShowingDashboard;
 
     private ViewGroup mContent;
@@ -254,9 +249,6 @@ public class SettingsActivity extends SettingsBaseActivity
         // Getting Intent properties can only be done after the super.onCreate(...)
         final String initialFragmentName = intent.getStringExtra(EXTRA_SHOW_FRAGMENT);
 
-        mIsShowingDashboard = TextUtils.equals(
-                SettingsActivity.class.getName(), intent.getComponent().getClassName());
-
         // This is a "Sub Settings" when:
         // - this is a real SubSettings
         // - or :settings:show_fragment_as_subsetting is passed to the Intent
@@ -268,6 +260,9 @@ public class SettingsActivity extends SettingsBaseActivity
         if (isSubSettings) {
             setTheme(R.style.Theme_SubSettings);
         }
+
+        mIsShowingDashboard = TextUtils.equals(
+                SettingsActivity.class.getName(), intent.getComponent().getClassName());
 
         setContentView(mIsShowingDashboard ?
                 R.layout.settings_main_dashboard : R.layout.settings_main_prefs);
@@ -289,7 +284,7 @@ public class SettingsActivity extends SettingsBaseActivity
                 setTitleFromBackStack();
             }
         } else {
-            launchSettingFragment(initialFragmentName, isSubSettings, intent);
+            launchSettingFragment(initialFragmentName, intent);
         }
 
         final boolean deviceProvisioned = Utils.isDeviceProvisioned(this);
@@ -300,7 +295,7 @@ public class SettingsActivity extends SettingsBaseActivity
             final Toolbar toolbar = findViewById(R.id.search_action_bar);
             setActionBar(toolbar);
             FeatureFactory.getFactory(this).getSearchFeatureProvider()
-                    .initSearchToolbar(this, toolbar);
+                    .initSearchToolbar(this, toolbar, SettingsEnums.SETTINGS_HOMEPAGE);
         }
 
         ActionBar actionBar = getActionBar();
@@ -321,26 +316,20 @@ public class SettingsActivity extends SettingsBaseActivity
             if (buttonBar != null) {
                 buttonBar.setVisibility(View.VISIBLE);
 
-                Button backButton = (Button) findViewById(R.id.back_button);
-                backButton.setOnClickListener(new OnClickListener() {
-                    public void onClick(View v) {
-                        setResult(RESULT_CANCELED, null);
-                        finish();
-                    }
+                Button backButton = findViewById(R.id.back_button);
+                backButton.setOnClickListener(v -> {
+                    setResult(RESULT_CANCELED, null);
+                    finish();
                 });
-                Button skipButton = (Button) findViewById(R.id.skip_button);
-                skipButton.setOnClickListener(new OnClickListener() {
-                    public void onClick(View v) {
-                        setResult(RESULT_OK, null);
-                        finish();
-                    }
+                Button skipButton = findViewById(R.id.skip_button);
+                skipButton.setOnClickListener(v -> {
+                    setResult(RESULT_OK, null);
+                    finish();
                 });
-                mNextButton = (Button) findViewById(R.id.next_button);
-                mNextButton.setOnClickListener(new OnClickListener() {
-                    public void onClick(View v) {
-                        setResult(RESULT_OK, null);
-                        finish();
-                    }
+                mNextButton = findViewById(R.id.next_button);
+                mNextButton.setOnClickListener(v -> {
+                    setResult(RESULT_OK, null);
+                    finish();
                 });
 
                 // set our various button parameters
@@ -385,19 +374,18 @@ public class SettingsActivity extends SettingsBaseActivity
     }
 
     @VisibleForTesting
-    void launchSettingFragment(String initialFragmentName, boolean isSubSettings, Intent intent) {
-        if (!mIsShowingDashboard && initialFragmentName != null) {
+    void launchSettingFragment(String initialFragmentName, Intent intent) {
+        if (initialFragmentName != null) {
             setTitleFromIntent(intent);
 
             Bundle initialArguments = intent.getBundleExtra(EXTRA_SHOW_FRAGMENT_ARGUMENTS);
-            switchToFragment(initialFragmentName, initialArguments, true, false,
-                    mInitialTitleResId, mInitialTitle, false);
+            switchToFragment(initialFragmentName, initialArguments, true,
+                    mInitialTitleResId, mInitialTitle);
         } else {
             // Show search icon as up affordance if we are displaying the main Dashboard
             mInitialTitleResId = R.string.dashboard_title;
-            switchToFragment(TopLevelSettings.class.getName(), null /* args */, false, false,
-                    mInitialTitleResId, mInitialTitle, false);
-
+            switchToFragment(TopLevelSettings.class.getName(), null /* args */, false,
+                    mInitialTitleResId, mInitialTitle);
         }
     }
 
@@ -583,8 +571,7 @@ public class SettingsActivity extends SettingsBaseActivity
      * Switch to a specific Fragment with taking care of validation, Title and BackStack
      */
     private Fragment switchToFragment(String fragmentName, Bundle args, boolean validate,
-            boolean addToBackStack, int titleResId, CharSequence title, boolean withTransition) {
-
+            int titleResId, CharSequence title) {
         if (fragmentName.equals(getString(R.string.qtifeedback_intent_action))){
              final Intent newIntent = new Intent(getString(R.string.qtifeedback_intent_action));
              newIntent.addCategory("android.intent.category.DEFAULT");
@@ -621,12 +608,6 @@ public class SettingsActivity extends SettingsBaseActivity
         Fragment f = Fragment.instantiate(this, fragmentName, args);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.main_content, f);
-        if (withTransition) {
-            TransitionManager.beginDelayedTransition(mContent);
-        }
-        if (addToBackStack) {
-            transaction.addToBackStack(SettingsActivity.BACK_STACK_PREFS);
-        }
         if (titleResId > 0) {
             transaction.setBreadCrumbTitle(titleResId);
         } else if (title != null) {
@@ -708,11 +689,6 @@ public class SettingsActivity extends SettingsBaseActivity
         somethingChanged = setTileEnabled(changedList, new ComponentName(packageName,
                         Settings.DevelopmentSettingsDashboardActivity.class.getName()),
                 showDev, isAdmin)
-                || somethingChanged;
-
-        // Enable/disable backup settings depending on whether the user is admin.
-        somethingChanged = setTileEnabled(changedList, new ComponentName(packageName,
-                BackupSettingsActivity.class.getName()), true, isAdmin)
                 || somethingChanged;
 
         somethingChanged = setTileEnabled(changedList, new ComponentName(packageName,

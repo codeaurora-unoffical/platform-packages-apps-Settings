@@ -116,20 +116,9 @@ public final class Utils extends com.android.settingslib.Utils {
      */
     public static final int UPDATE_PREFERENCE_FLAG_SET_TITLE_TO_MATCHING_ACTIVITY = 1;
 
-    /**
-     * Color spectrum to use to indicate badness.  0 is completely transparent (no data),
-     * 1 is most bad (red), the last value is least bad (green).
-     */
-    public static final int[] BADNESS_COLORS = new int[] {
-            0x00000000, 0xffc43828, 0xffe54918, 0xfff47b00,
-            0xfffabf2c, 0xff679e37, 0xff0a7f42
-    };
-
-    private static final String SETTINGS_PACKAGE_NAME = "com.android.settings";
+    public static final String SETTINGS_PACKAGE_NAME = "com.android.settings";
 
     public static final String OS_PKG = "os";
-    public static final String READ_ONLY = "read_only";
-    public static final String PERSISTENT = "persistent";
 
     /**
      * Finds a matching activity for a preference's intent. If a matching
@@ -1021,8 +1010,7 @@ public final class Utils extends com.android.settingslib.Utils {
     public static boolean carrierTableFieldValidate(String field){
         if(field == null)
             return false;
-        if(READ_ONLY.equalsIgnoreCase(field) || PERSISTENT.equalsIgnoreCase(field)
-                || Telephony.Carriers.AUTH_TYPE.equalsIgnoreCase(field)
+        if(Telephony.Carriers.AUTH_TYPE.equalsIgnoreCase(field)
                 || Telephony.Carriers.SUBSCRIPTION_ID.equalsIgnoreCase(field))
             return true;
         field = field.toUpperCase();

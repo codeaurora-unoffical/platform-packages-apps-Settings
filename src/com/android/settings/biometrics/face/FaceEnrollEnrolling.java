@@ -16,6 +16,7 @@
 
 package com.android.settings.biometrics.face;
 
+import android.app.settings.SettingsEnums;
 import android.content.Intent;
 import android.hardware.face.FaceManager;
 import android.os.Bundle;
@@ -24,17 +25,18 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
-import android.widget.Button;
 import android.widget.TextView;
 
-import com.android.internal.logging.nano.MetricsProto;
 import com.android.settings.R;
-import com.android.settings.Utils;
+import com.android.settings.biometrics.BiometricEnrollBase;
 import com.android.settings.biometrics.BiometricEnrollSidecar;
 import com.android.settings.biometrics.BiometricErrorDialog;
 import com.android.settings.biometrics.BiometricsEnrollEnrolling;
-import com.android.settings.password.ChooseLockSettingsHelper;
 
+import com.google.android.setupcompat.template.FooterBarMixin;
+import com.google.android.setupcompat.template.FooterButton;
+
+import java.util.ArrayList;
 
 public class FaceEnrollEnrolling extends BiometricsEnrollEnrolling {
 
@@ -44,9 +46,9 @@ public class FaceEnrollEnrolling extends BiometricsEnrollEnrolling {
 
     private TextView mErrorText;
     private Interpolator mLinearOutSlowInInterpolator;
-    private boolean mShouldFinishOnStop = true;
     private FaceEnrollPreviewFragment mPreviewFragment;
 
+    private ArrayList<Integer> mDisabledFeatures = new ArrayList<>();
     private ParticleCollection.Listener mListener = new ParticleCollection.Listener() {
         @Override
         public void onEnrolled() {
@@ -66,7 +68,7 @@ public class FaceEnrollEnrolling extends BiometricsEnrollEnrolling {
 
         @Override
         public int getMetricsCategory() {
-            return MetricsProto.MetricsEvent.DIALOG_FACE_ERROR;
+            return SettingsEnums.DIALOG_FACE_ERROR;
         }
 
         @Override
@@ -89,16 +91,24 @@ public class FaceEnrollEnrolling extends BiometricsEnrollEnrolling {
         mLinearOutSlowInInterpolator = AnimationUtils.loadInterpolator(
                 this, android.R.interpolator.linear_out_slow_in);
 
-        Button skipButton = findViewById(R.id.skip_button);
-        skipButton.setOnClickListener(this);
+        mFooterBarMixin = getLayout().getMixin(FooterBarMixin.class);
+        mFooterBarMixin.setSecondaryButton(
+                new FooterButton.Builder(this)
+                        .setText(R.string.security_settings_face_enroll_enrolling_skip)
+                        .setListener(this::onSkipButtonClick)
+                        .setButtonType(FooterButton.ButtonType.SKIP)
+                        .setTheme(R.style.SudGlifButton_Secondary)
+                        .build()
+        );
 
-        if (shouldLaunchConfirmLock()) {
-            launchConfirmLock(R.string.security_settings_face_preference_title,
-                    Utils.getFaceManagerOrNull(this).generateChallenge());
-            mShouldFinishOnStop = false;
-        } else {
-            startEnrollment();
+        if (!getIntent().getBooleanExtra(BiometricEnrollBase.EXTRA_KEY_REQUIRE_DIVERSITY, true)) {
+            mDisabledFeatures.add(FaceManager.FEATURE_REQUIRE_REQUIRE_DIVERSITY);
         }
+        if (!getIntent().getBooleanExtra(BiometricEnrollBase.EXTRA_KEY_REQUIRE_VISION, true)) {
+            mDisabledFeatures.add(FaceManager.FEATURE_REQUIRE_ATTENTION);
+        }
+
+        startEnrollment();
     }
 
     @Override
@@ -121,7 +131,12 @@ public class FaceEnrollEnrolling extends BiometricsEnrollEnrolling {
 
     @Override
     protected BiometricEnrollSidecar getSidecar() {
-        return new FaceEnrollSidecar();
+        final int[] disabledFeatures = new int[mDisabledFeatures.size()];
+        for (int i = 0; i < mDisabledFeatures.size(); i++) {
+            disabledFeatures[i] = mDisabledFeatures.get(i);
+        }
+
+        return new FaceEnrollSidecar(disabledFeatures);
     }
 
     @Override
@@ -130,13 +145,8 @@ public class FaceEnrollEnrolling extends BiometricsEnrollEnrolling {
     }
 
     @Override
-    protected boolean shouldFinishOnStop() {
-        return mShouldFinishOnStop;
-    }
-
-    @Override
     public int getMetricsCategory() {
-        return MetricsProto.MetricsEvent.FACE_ENROLL_ENROLLING;
+        return SettingsEnums.FACE_ENROLL_ENROLLING;
     }
 
     @Override
@@ -175,23 +185,6 @@ public class FaceEnrollEnrolling extends BiometricsEnrollEnrolling {
         // TODO: Have this match any animations that UX comes up with
         if (remaining == 0) {
             launchFinish(mToken);
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CONFIRM_REQUEST) {
-            if (resultCode == RESULT_OK && data != null) {
-                mShouldFinishOnStop = true;
-                mToken = data.getByteArrayExtra(ChooseLockSettingsHelper.EXTRA_KEY_CHALLENGE_TOKEN);
-                overridePendingTransition(R.anim.suw_slide_next_in, R.anim.suw_slide_next_out);
-                getIntent().putExtra(ChooseLockSettingsHelper.EXTRA_KEY_CHALLENGE_TOKEN, mToken);
-                startEnrollment();
-            } else {
-                finish();
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 

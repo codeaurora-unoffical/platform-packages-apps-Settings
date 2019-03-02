@@ -20,18 +20,22 @@ import static com.android.settings.core.BasePreferenceController.AVAILABLE_UNSEA
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.ModuleInfo;
+import android.content.pm.PackageManager;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 
 import com.android.settings.R;
 import com.android.settings.datausage.AppStateDataUsageBridge;
-import com.android.settings.testutils.SettingsRobolectricTestRunner;
 import com.android.settings.testutils.shadow.ShadowApplicationsState;
 import com.android.settings.testutils.shadow.ShadowUserManager;
 import com.android.settingslib.applications.ApplicationsState;
@@ -41,12 +45,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
 
-@RunWith(SettingsRobolectricTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 @Config(shadows = {ShadowUserManager.class, ShadowApplicationsState.class})
 public class SpecialAppAccessPreferenceControllerTest {
 
@@ -55,6 +60,8 @@ public class SpecialAppAccessPreferenceControllerTest {
     private ApplicationsState.Session mSession;
     @Mock
     private PreferenceScreen mScreen;
+    @Mock
+    private PackageManager mPackageManager;
 
     private SpecialAppAccessPreferenceController mController;
     private Preference mPreference;
@@ -62,8 +69,11 @@ public class SpecialAppAccessPreferenceControllerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mContext = RuntimeEnvironment.application;
+        mContext = spy(RuntimeEnvironment.application);
+        when(mContext.getApplicationContext()).thenReturn(mContext);
         ShadowUserManager.getShadow().setProfileIdsWithDisabled(new int[]{0});
+        doReturn(mPackageManager).when(mContext).getPackageManager();
+        doReturn(new ArrayList<ModuleInfo>()).when(mPackageManager).getInstalledModules(anyInt());
         mController = new SpecialAppAccessPreferenceController(mContext, "test_key");
         mPreference = new Preference(mContext);
         when(mScreen.findPreference(mController.getPreferenceKey())).thenReturn(mPreference);

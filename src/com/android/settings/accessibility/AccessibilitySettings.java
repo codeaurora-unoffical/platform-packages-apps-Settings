@@ -20,12 +20,15 @@ import static android.os.Vibrator.VibrationIntensity;
 
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.admin.DevicePolicyManager;
+import android.app.settings.SettingsEnums;
 import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.ResolveInfo;
 import android.content.pm.ServiceInfo;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.hardware.display.ColorDisplayManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -49,7 +52,6 @@ import androidx.preference.SwitchPreference;
 
 import com.android.internal.accessibility.AccessibilityShortcutController;
 import com.android.internal.content.PackageMonitor;
-import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.internal.view.RotationPolicy;
 import com.android.internal.view.RotationPolicy.RotationPolicyListener;
 import com.android.settings.R;
@@ -62,6 +64,8 @@ import com.android.settingslib.RestrictedLockUtilsInternal;
 import com.android.settingslib.RestrictedPreference;
 import com.android.settingslib.accessibility.AccessibilityUtils;
 import com.android.settingslib.search.SearchIndexable;
+
+import com.google.common.primitives.Ints;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -125,6 +129,11 @@ public class AccessibilitySettings extends SettingsPreferenceFragment implements
             "vibration_preference_screen";
     private static final String DISPLAY_DALTONIZER_PREFERENCE_SCREEN =
             "daltonizer_preference";
+    private static final String ACCESSIBILITY_CONTENT_TIMEOUT_PREFERENCE =
+            "accessibility_content_timeout_preference_fragment";
+    private static final String ACCESSIBILITY_CONTROL_TIMEOUT_PREFERENCE =
+            "accessibility_control_timeout_preference_fragment";
+
 
     // Extras passed to sub-fragments.
     static final String EXTRA_PREFERENCE_KEY = "preference_key";
@@ -261,7 +270,7 @@ public class AccessibilitySettings extends SettingsPreferenceFragment implements
 
     @Override
     public int getMetricsCategory() {
-        return MetricsEvent.ACCESSIBILITY;
+        return SettingsEnums.ACCESSIBILITY;
     }
 
     @Override
@@ -644,7 +653,7 @@ public class AccessibilitySettings extends SettingsPreferenceFragment implements
     protected void updateSystemPreferences() {
         // Move color inversion and color correction preferences to Display category if device
         // supports HWC hardware-accelerated color transform.
-        if (isColorTransformAccelerated(getContext())) {
+        if (ColorDisplayManager.isColorTransformAccelerated(getContext())) {
             PreferenceCategory experimentalCategory =
                     mCategoryToPrefCategoryMap.get(CATEGORY_EXPERIMENTAL);
             PreferenceCategory displayCategory =
@@ -659,6 +668,8 @@ public class AccessibilitySettings extends SettingsPreferenceFragment implements
                     mToggleInversionPreference.getOrder() + 1);
             mToggleDisableAnimationsPreference.setOrder(
                     mToggleLargePointerIconPreference.getOrder() + 1);
+            findPreference(ACCESSIBILITY_CONTENT_TIMEOUT_PREFERENCE).setOrder(
+                    mToggleDisableAnimationsPreference.getOrder() + 1);
             mToggleInversionPreference.setSummary(R.string.summary_empty);
             displayCategory.addPreference(mToggleInversionPreference);
             displayCategory.addPreference(mDisplayDaltonizerPreferenceScreen);
@@ -718,6 +729,31 @@ public class AccessibilitySettings extends SettingsPreferenceFragment implements
         updateAutoclickSummary(mAutoclickPreferenceScreen);
 
         updateAccessibilityShortcut(mAccessibilityShortcutPreferenceScreen);
+
+        updateAccessibilityTimeoutSummary(getContentResolver(),
+                findPreference(ACCESSIBILITY_CONTENT_TIMEOUT_PREFERENCE));
+        updateAccessibilityTimeoutSummary(getContentResolver(),
+                findPreference(ACCESSIBILITY_CONTROL_TIMEOUT_PREFERENCE));
+    }
+
+    void updateAccessibilityTimeoutSummary(ContentResolver resolver, Preference pref) {
+
+        String[] timeoutSummarys = getResources().getStringArray(
+                R.array.accessibility_timeout_summaries);
+        int[] timeoutValues = getResources().getIntArray(
+                R.array.accessibility_timeout_selector_values);
+
+        int timeoutValue = 0;
+        if (pref.getKey().equals(ACCESSIBILITY_CONTENT_TIMEOUT_PREFERENCE)) {
+            timeoutValue = AccessibilityTimeoutController.getSecureAccessibilityTimeoutValue(
+                    resolver, AccessibilityTimeoutController.CONTENT_TIMEOUT_SETTINGS_SECURE);
+        } else if (pref.getKey().equals(ACCESSIBILITY_CONTROL_TIMEOUT_PREFERENCE)) {
+            timeoutValue = AccessibilityTimeoutController.getSecureAccessibilityTimeoutValue(
+                    resolver, AccessibilityTimeoutController.CONTROL_TIMEOUT_SETTINGS_SECURE);
+        }
+
+        int idx = Ints.indexOf(timeoutValues, timeoutValue);
+        pref.setSummary(timeoutSummarys[idx == -1 ? 0 : idx]);
     }
 
     private void updateMagnificationSummary(Preference pref) {
@@ -775,15 +811,30 @@ public class AccessibilitySettings extends SettingsPreferenceFragment implements
         final Context context = getContext();
         final Vibrator vibrator = context.getSystemService(Vibrator.class);
 
-        final int ringIntensity = Settings.System.getInt(context.getContentResolver(),
-                Settings.System.NOTIFICATION_VIBRATION_INTENSITY,
-                vibrator.getDefaultNotificationVibrationIntensity());
+        int ringIntensity = Settings.System.getInt(context.getContentResolver(),
+                Settings.System.RING_VIBRATION_INTENSITY,
+                vibrator.getDefaultRingVibrationIntensity());
+        if (Settings.System.getInt(context.getContentResolver(),
+                Settings.System.VIBRATE_WHEN_RINGING, 0) == 0) {
+            ringIntensity = Vibrator.VIBRATION_INTENSITY_OFF;
+        }
         CharSequence ringIntensityString =
                 VibrationIntensityPreferenceController.getIntensityString(context, ringIntensity);
 
-        final int touchIntensity = Settings.System.getInt(context.getContentResolver(),
+        int notificationIntensity = Settings.System.getInt(context.getContentResolver(),
+                Settings.System.NOTIFICATION_VIBRATION_INTENSITY,
+                vibrator.getDefaultNotificationVibrationIntensity());
+        CharSequence notificationIntensityString =
+                VibrationIntensityPreferenceController.getIntensityString(context,
+                        notificationIntensity);
+
+        int touchIntensity = Settings.System.getInt(context.getContentResolver(),
                 Settings.System.HAPTIC_FEEDBACK_INTENSITY,
                 vibrator.getDefaultHapticFeedbackIntensity());
+        if (Settings.System.getInt(context.getContentResolver(),
+                Settings.System.HAPTIC_FEEDBACK_ENABLED, 0) == 0) {
+            touchIntensity = Vibrator.VIBRATION_INTENSITY_OFF;
+        }
         CharSequence touchIntensityString =
                 VibrationIntensityPreferenceController.getIntensityString(context, touchIntensity);
 
@@ -791,12 +842,14 @@ public class AccessibilitySettings extends SettingsPreferenceFragment implements
             mVibrationPreferenceScreen = findPreference(VIBRATION_PREFERENCE_SCREEN);
         }
 
-        if (ringIntensity == touchIntensity) {
+        if (ringIntensity == touchIntensity && ringIntensity == notificationIntensity) {
             mVibrationPreferenceScreen.setSummary(ringIntensityString);
         } else {
             mVibrationPreferenceScreen.setSummary(
                     getString(R.string.accessibility_vibration_summary,
-                            ringIntensityString, touchIntensityString));
+                            ringIntensityString,
+                            notificationIntensityString,
+                            touchIntensityString));
         }
     }
 

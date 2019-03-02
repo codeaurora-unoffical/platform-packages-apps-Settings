@@ -16,11 +16,15 @@
 
 package com.android.settings.biometrics.face;
 
+import android.app.settings.SettingsEnums;
 import android.os.Bundle;
+import android.view.View;
 
-import com.android.internal.logging.nano.MetricsProto;
 import com.android.settings.R;
 import com.android.settings.biometrics.BiometricEnrollBase;
+
+import com.google.android.setupcompat.template.FooterBarMixin;
+import com.google.android.setupcompat.template.FooterButton;
 
 /**
  * Activity which concludes face enrollment.
@@ -32,15 +36,25 @@ public class FaceEnrollFinish extends BiometricEnrollBase {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.face_enroll_finish);
         setHeaderText(R.string.security_settings_face_enroll_finish_title);
+
+        mFooterBarMixin = getLayout().getMixin(FooterBarMixin.class);
+        mFooterBarMixin.setPrimaryButton(
+                new FooterButton.Builder(this)
+                        .setText(R.string.security_settings_face_enroll_done)
+                        .setListener(this::onNextButtonClick)
+                        .setButtonType(FooterButton.ButtonType.NEXT)
+                        .setTheme(R.style.SudGlifButton_Primary)
+                        .build()
+        );
     }
 
     @Override
     public int getMetricsCategory() {
-        return MetricsProto.MetricsEvent.FACE_ENROLL_FINISHED;
+        return SettingsEnums.FACE_ENROLL_FINISHED;
     }
 
     @Override
-    public void onNextButtonClick() {
+    public void onNextButtonClick(View view) {
         setResult(RESULT_FINISHED);
         finish();
     }

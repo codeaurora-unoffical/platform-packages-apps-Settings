@@ -48,13 +48,6 @@ public abstract class BiometricsEnrollEnrolling extends BiometricEnrollBase
      */
     protected abstract boolean shouldStartAutomatically();
 
-    /**
-     * @return true if enrollment should finish when onStop is called.
-     */
-    protected boolean shouldFinishOnStop() {
-        return true;
-    }
-
     @Override
     protected void onStart() {
         super.onStart();
@@ -70,7 +63,7 @@ public abstract class BiometricsEnrollEnrolling extends BiometricEnrollBase
             mSidecar.setListener(null);
         }
 
-        if (shouldFinishOnStop() && !isChangingConfigurations()) {
+        if (!isChangingConfigurations()) {
             if (mSidecar != null) {
                 mSidecar.cancelEnrollment();
                 getSupportFragmentManager()
@@ -92,16 +85,9 @@ public abstract class BiometricsEnrollEnrolling extends BiometricEnrollBase
         super.onBackPressed();
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.skip_button:
-                setResult(RESULT_SKIP);
-                finish();
-                break;
-            default:
-                super.onClick(v);
-        }
+    protected void onSkipButtonClick(View view) {
+        setResult(RESULT_SKIP);
+        finish();
     }
 
     public void startEnrollment() {
@@ -125,7 +111,7 @@ public abstract class BiometricsEnrollEnrolling extends BiometricEnrollBase
             intent.putExtra(Intent.EXTRA_USER_ID, mUserId);
         }
         startActivity(intent);
-        overridePendingTransition(R.anim.suw_slide_next_in, R.anim.suw_slide_next_out);
+        overridePendingTransition(R.anim.sud_slide_next_in, R.anim.sud_slide_next_out);
         finish();
     }
 

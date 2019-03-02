@@ -21,22 +21,21 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.os.SystemProperties;
+import android.sysprop.DisplayProperties;
 import android.view.View;
 
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SwitchPreference;
-
-import com.android.settings.testutils.SettingsRobolectricTestRunner;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
-@RunWith(SettingsRobolectricTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class ShowLayoutBoundsPreferenceControllerTest {
 
     @Mock
@@ -59,8 +58,7 @@ public class ShowLayoutBoundsPreferenceControllerTest {
     public void onPreferenceChanged_settingEnabled_turnOnShowLayoutBounds() {
         mController.onPreferenceChange(mPreference, true /* new value */);
 
-        final boolean mode =
-            SystemProperties.getBoolean(View.DEBUG_LAYOUT_PROPERTY, false /* default */);
+        final boolean mode = DisplayProperties.debug_layout().orElse(false);
 
         assertThat(mode).isTrue();
     }
@@ -69,15 +67,14 @@ public class ShowLayoutBoundsPreferenceControllerTest {
     public void onPreferenceChanged_settingDisabled_turnOffShowLayoutBounds() {
         mController.onPreferenceChange(mPreference, false /* new value */);
 
-        final boolean mode =
-            SystemProperties.getBoolean(View.DEBUG_LAYOUT_PROPERTY, false /* default */);
+        final boolean mode = DisplayProperties.debug_layout().orElse(false);
 
         assertThat(mode).isFalse();
     }
 
     @Test
     public void updateState_settingEnabled_preferenceShouldBeChecked() {
-        SystemProperties.set(View.DEBUG_LAYOUT_PROPERTY, Boolean.toString(true));
+        DisplayProperties.debug_layout(true);
         mController.updateState(mPreference);
 
         verify(mPreference).setChecked(true);
@@ -85,7 +82,7 @@ public class ShowLayoutBoundsPreferenceControllerTest {
 
     @Test
     public void updateState_settingDisabled_preferenceShouldNotBeChecked() {
-        SystemProperties.set(View.DEBUG_LAYOUT_PROPERTY, Boolean.toString(false));
+        DisplayProperties.debug_layout(false);
         mController.updateState(mPreference);
 
         verify(mPreference).setChecked(false);
@@ -95,8 +92,7 @@ public class ShowLayoutBoundsPreferenceControllerTest {
     public void onDeveloperOptionsDisabled_shouldDisablePreference() {
         mController.onDeveloperOptionsDisabled();
 
-        final boolean mode =
-            SystemProperties.getBoolean(View.DEBUG_LAYOUT_PROPERTY, false /* default */);
+        final boolean mode = DisplayProperties.debug_layout().orElse(false);
 
         assertThat(mode).isFalse();
         verify(mPreference).setEnabled(false);

@@ -18,12 +18,11 @@ package com.android.settings;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.settings.SettingsEnums;
 import android.content.Context;
 import android.content.Intent;
-import android.os.UserManager;
 import android.provider.SearchIndexableResource;
 
-import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.dashboard.DashboardFragment;
 import com.android.settings.dashboard.SummaryLoader;
 import com.android.settings.datetime.AutoTimeFormatPreferenceController;
@@ -55,7 +54,7 @@ public class DateTimeSettings extends DashboardFragment implements
 
     @Override
     public int getMetricsCategory() {
-        return MetricsEvent.DATE_TIME;
+        return SettingsEnums.DATE_TIME;
     }
 
     @Override
@@ -128,9 +127,9 @@ public class DateTimeSettings extends DashboardFragment implements
     public int getDialogMetricsCategory(int dialogId) {
         switch (dialogId) {
             case DatePreferenceController.DIALOG_DATEPICKER:
-                return MetricsEvent.DIALOG_DATE_PICKER;
+                return SettingsEnums.DIALOG_DATE_PICKER;
             case TimePreferenceController.DIALOG_TIMEPICKER:
-                return MetricsEvent.DIALOG_TIME_PICKER;
+                return SettingsEnums.DIALOG_TIME_PICKER;
             default:
                 return 0;
         }

@@ -18,17 +18,17 @@ package com.android.settings.biometrics.fingerprint;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.settings.SettingsEnums;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.UserHandle;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentManager;
 
-import com.android.internal.logging.nano.MetricsProto;
-import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
 import com.android.settings.SetupWizardUtils;
 import com.android.settings.core.instrumentation.InstrumentedDialogFragment;
@@ -53,13 +53,13 @@ public class SetupFingerprintEnrollFindSensor extends FingerprintEnrollFindSenso
     }
 
     @Override
-    protected void onSkipButtonClick() {
+    protected void onSkipButtonClick(View view) {
         new SkipFingerprintDialog().show(getSupportFragmentManager());
     }
 
     @Override
     public int getMetricsCategory() {
-        return MetricsEvent.FINGERPRINT_FIND_SENSOR_SETUP;
+        return SettingsEnums.FINGERPRINT_FIND_SENSOR_SETUP;
     }
 
     public static class SkipFingerprintDialog extends InstrumentedDialogFragment
@@ -68,7 +68,7 @@ public class SetupFingerprintEnrollFindSensor extends FingerprintEnrollFindSenso
 
         @Override
         public int getMetricsCategory() {
-            return MetricsProto.MetricsEvent.DIALOG_FINGERPRINT_SKIP_SETUP;
+            return SettingsEnums.DIALOG_FINGERPRINT_SKIP_SETUP;
         }
 
         @Override

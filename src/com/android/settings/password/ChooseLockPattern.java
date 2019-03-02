@@ -17,6 +17,7 @@
 package com.android.settings.password;
 
 import android.app.Activity;
+import android.app.settings.SettingsEnums;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -34,7 +35,6 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
-import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.internal.widget.LinearLayoutWithDefaultTouchRecepient;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.internal.widget.LockPatternUtils.RequestThrottledException;
@@ -48,9 +48,11 @@ import com.android.settings.SetupWizardUtils;
 import com.android.settings.Utils;
 import com.android.settings.core.InstrumentedFragment;
 import com.android.settings.notification.RedactionInterstitial;
-import com.android.setupwizardlib.GlifLayout;
 
 import com.google.android.collect.Lists;
+import com.google.android.setupcompat.template.FooterBarMixin;
+import com.google.android.setupcompat.template.FooterButton;
+import com.google.android.setupdesign.GlifLayout;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -171,7 +173,7 @@ public class ChooseLockPattern extends SettingsActivity {
     }
 
     public static class ChooseLockPatternFragment extends InstrumentedFragment
-            implements View.OnClickListener, SaveAndFinishWorker.Listener {
+            implements SaveAndFinishWorker.Listener {
 
         public static final int CONFIRM_EXISTING_REQUEST = 55;
 
@@ -193,10 +195,9 @@ public class ChooseLockPattern extends SettingsActivity {
         protected TextView mMessageText;
         protected LockPatternView mLockPatternView;
         protected TextView mFooterText;
-        private TextView mFooterLeftButton;
-        private TextView mFooterRightButton;
+        protected FooterButton mSkipOrClearButton;
+        private FooterButton mNextButton;
         protected List<LockPatternView.Cell> mChosenPattern = null;
-        private boolean mHideDrawer = false;
         private ColorStateList mDefaultHeaderColorList;
 
         // ScrollView that contains title and header, only exist in land mode
@@ -233,11 +234,11 @@ public class ChooseLockPattern extends SettingsActivity {
         }
 
         protected void setRightButtonEnabled(boolean enabled) {
-            mFooterRightButton.setEnabled(enabled);
+            mNextButton.setEnabled(enabled);
         }
 
         protected void setRightButtonText(int text) {
-            mFooterRightButton.setText(text);
+            mNextButton.setText(getActivity(), text);
         }
 
         /**
@@ -288,8 +289,7 @@ public class ChooseLockPattern extends SettingsActivity {
                         mHeaderText.setTextColor(mDefaultHeaderColorList);
                     }
                     mFooterText.setText("");
-                    mFooterLeftButton.setEnabled(false);
-                    mFooterRightButton.setEnabled(false);
+                    mNextButton.setEnabled(false);
 
                     if (mTitleHeaderScrollView != null) {
                         mTitleHeaderScrollView.post(new Runnable() {
@@ -304,7 +304,7 @@ public class ChooseLockPattern extends SettingsActivity {
 
         @Override
         public int getMetricsCategory() {
-            return MetricsEvent.CHOOSE_LOCK_PATTERN;
+            return SettingsEnums.CHOOSE_LOCK_PATTERN;
         }
 
 
@@ -464,7 +464,6 @@ public class ChooseLockPattern extends SettingsActivity {
                 w.start(mChooseLockSettingsHelper.utils(), required,
                         false, 0, LockPatternUtils.stringToPattern(current), current, mUserId);
             }
-            mHideDrawer = getActivity().getIntent().getBooleanExtra(EXTRA_HIDE_DRAWER, false);
             mForFingerprint = intent.getBooleanExtra(
                     ChooseLockSettingsHelper.EXTRA_KEY_FOR_FINGERPRINT, false);
             mForFace = intent.getBooleanExtra(
@@ -478,7 +477,7 @@ public class ChooseLockPattern extends SettingsActivity {
                     R.layout.choose_lock_pattern, container, false);
             layout.setHeaderText(getActivity().getTitle());
             if (getResources().getBoolean(R.bool.config_lock_pattern_minimal_ui)) {
-                View iconView = layout.findViewById(R.id.suw_layout_icon);
+                View iconView = layout.findViewById(R.id.suc_layout_icon);
                 if (iconView != null) {
                     iconView.setVisibility(View.GONE);
                 }
@@ -489,14 +488,34 @@ public class ChooseLockPattern extends SettingsActivity {
                     layout.setIcon(getActivity().getDrawable(R.drawable.ic_face_header));
                 }
             }
+
+            final FooterBarMixin mixin = layout.getMixin(FooterBarMixin.class);
+            mixin.setSecondaryButton(
+                    new FooterButton.Builder(getActivity())
+                            .setText(R.string.lockpattern_tutorial_cancel_label)
+                            .setListener(this::onSkipOrClearButtonClick)
+                            .setButtonType(FooterButton.ButtonType.OTHER)
+                            .setTheme(R.style.SudGlifButton_Secondary)
+                            .build()
+            );
+            mixin.setPrimaryButton(
+                    new FooterButton.Builder(getActivity())
+                            .setText(R.string.lockpattern_tutorial_continue_label)
+                            .setListener(this::onNextButtonClick)
+                            .setButtonType(FooterButton.ButtonType.NEXT)
+                            .setTheme(R.style.SudGlifButton_Primary)
+                            .build()
+            );
+            mSkipOrClearButton = mixin.getSecondaryButton();
+            mNextButton = mixin.getPrimaryButton();
+
             return layout;
         }
-
 
         @Override
         public void onViewCreated(View view, Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
-            mTitleText = view.findViewById(R.id.suw_layout_title);
+            mTitleText = view.findViewById(R.id.suc_layout_title);
             mHeaderText = (TextView) view.findViewById(R.id.headerText);
             mDefaultHeaderColorList = mHeaderText.getTextColors();
             mMessageText = view.findViewById(R.id.message);
@@ -508,14 +527,8 @@ public class ChooseLockPattern extends SettingsActivity {
 
             mFooterText = (TextView) view.findViewById(R.id.footerText);
 
-            mFooterLeftButton = (TextView) view.findViewById(R.id.footerLeftButton);
-            mFooterRightButton = (TextView) view.findViewById(R.id.footerRightButton);
-
             mTitleHeaderScrollView = (ScrollView) view.findViewById(R.id
                     .scroll_layout_title_header);
-
-            mFooterLeftButton.setOnClickListener(this);
-            mFooterRightButton.setOnClickListener(this);
 
             // make it so unhandled touch events within the unlock screen go to the
             // lock pattern view.
@@ -625,12 +638,12 @@ public class ChooseLockPattern extends SettingsActivity {
             }
         }
 
-        public void onClick(View v) {
-            if (v == mFooterLeftButton) {
-                handleLeftButton();
-            } else if (v == mFooterRightButton) {
-                handleRightButton();
-            }
+        protected void onSkipOrClearButtonClick(View view) {
+            handleLeftButton();
+        }
+
+        protected void onNextButtonClick(View view) {
+            handleRightButton();
         }
 
         public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -713,7 +726,7 @@ public class ChooseLockPattern extends SettingsActivity {
                 }
             }
 
-            updateFooterLeftButton(stage, mFooterLeftButton);
+            updateFooterLeftButton(stage);
 
             setRightButtonText(stage.rightMode.text);
             setRightButtonEnabled(stage.rightMode.enabled);
@@ -763,13 +776,13 @@ public class ChooseLockPattern extends SettingsActivity {
             }
         }
 
-        protected void updateFooterLeftButton(Stage stage, TextView footerLeftButton) {
+        protected void updateFooterLeftButton(Stage stage) {
             if (stage.leftMode == LeftButtonMode.Gone) {
-                footerLeftButton.setVisibility(View.GONE);
+                mSkipOrClearButton.setVisibility(View.GONE);
             } else {
-                footerLeftButton.setVisibility(View.VISIBLE);
-                footerLeftButton.setText(stage.leftMode.text);
-                footerLeftButton.setEnabled(stage.leftMode.enabled);
+                mSkipOrClearButton.setVisibility(View.VISIBLE);
+                mSkipOrClearButton.setText(getActivity(), stage.leftMode.text);
+                mSkipOrClearButton.setEnabled(stage.leftMode.enabled);
             }
         }
 
@@ -808,7 +821,6 @@ public class ChooseLockPattern extends SettingsActivity {
             if (!wasSecureBefore) {
                 Intent intent = getRedactionInterstitialIntent(getActivity());
                 if (intent != null) {
-                    intent.putExtra(EXTRA_HIDE_DRAWER, mHideDrawer);
                     startActivity(intent);
                 }
             }

@@ -16,20 +16,17 @@
 
 package com.android.settings.fuelgauge.batterysaver;
 
+import android.app.settings.SettingsEnums;
 import android.content.Context;
 import android.os.Bundle;
 import android.provider.SearchIndexableResource;
 
-import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
 import com.android.settings.dashboard.DashboardFragment;
 import com.android.settings.search.BaseSearchIndexProvider;
 import com.android.settings.search.Indexable;
-import com.android.settingslib.core.AbstractPreferenceController;
-import com.android.settingslib.core.lifecycle.Lifecycle;
 import com.android.settingslib.search.SearchIndexable;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -47,7 +44,7 @@ public class BatterySaverSettings extends DashboardFragment {
 
     @Override
     public int getMetricsCategory() {
-        return MetricsEvent.FUELGAUGE_BATTERY_SAVER;
+        return SettingsEnums.FUELGAUGE_BATTERY_SAVER;
     }
 
     @Override
@@ -61,21 +58,8 @@ public class BatterySaverSettings extends DashboardFragment {
     }
 
     @Override
-    protected List<AbstractPreferenceController> createPreferenceControllers(Context context) {
-        return buildPreferenceControllers(context, getSettingsLifecycle());
-    }
-
-    @Override
     public int getHelpResource() {
         return R.string.help_url_battery_saver_settings;
-    }
-
-    private static List<AbstractPreferenceController> buildPreferenceControllers(
-            Context context, Lifecycle lifecycle) {
-        final List<AbstractPreferenceController> controllers = new ArrayList<>();
-        controllers.add(new AutoBatterySaverPreferenceController(context));
-        controllers.add(new AutoBatterySeekBarPreferenceController(context, lifecycle));
-        return controllers;
     }
 
     /**
@@ -89,12 +73,6 @@ public class BatterySaverSettings extends DashboardFragment {
                     final SearchIndexableResource sir = new SearchIndexableResource(context);
                     sir.xmlResId = R.xml.battery_saver_settings;
                     return Arrays.asList(sir);
-                }
-
-                @Override
-                public List<AbstractPreferenceController> createPreferenceControllers(
-                        Context context) {
-                    return buildPreferenceControllers(context, null);
                 }
             };
 }

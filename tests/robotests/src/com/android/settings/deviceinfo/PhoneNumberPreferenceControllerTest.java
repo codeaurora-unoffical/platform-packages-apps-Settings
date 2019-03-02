@@ -16,14 +16,18 @@
 
 package com.android.settings.deviceinfo;
 
+import static android.content.Context.CLIPBOARD_SERVICE;
+
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
@@ -34,16 +38,19 @@ import androidx.preference.PreferenceScreen;
 
 import com.android.settings.R;
 import com.android.settings.core.BasePreferenceController;
-import com.android.settings.testutils.SettingsRobolectricTestRunner;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
-@RunWith(SettingsRobolectricTestRunner.class)
+import java.util.ArrayList;
+import java.util.List;
+
+@RunWith(RobolectricTestRunner.class)
 public class PhoneNumberPreferenceControllerTest {
 
     @Mock
@@ -134,7 +141,7 @@ public class PhoneNumberPreferenceControllerTest {
 
     @Test
     public void getSummary_cannotGetActiveSubscriptionInfo_shouldShowUnknown() {
-        when(mSubscriptionManager.getActiveSubscriptionInfoList()).thenReturn(null);
+        when(mSubscriptionManager.getActiveSubscriptionInfoList(eq(true))).thenReturn(null);
 
         CharSequence primaryNumber = mController.getSummary();
 
@@ -145,5 +152,21 @@ public class PhoneNumberPreferenceControllerTest {
     @Test
     public void isSliceable_shouldBeTrue() {
         assertThat(mController.isSliceable()).isTrue();
+    }
+
+    @Test
+    public void copy_shouldCopyPhoneNumberToClipboard() {
+        final List<SubscriptionInfo> list = new ArrayList<>();
+        list.add(mSubscriptionInfo);
+        when(mSubscriptionManager.getActiveSubscriptionInfoList(eq(true))).thenReturn(list);
+        final String phoneNumber = "1111111111";
+        doReturn(phoneNumber).when(mController).getFormattedPhoneNumber(mSubscriptionInfo);
+
+        mController.copy();
+
+        final ClipboardManager clipboard = (ClipboardManager) mContext.getSystemService(
+                CLIPBOARD_SERVICE);
+        final CharSequence data = clipboard.getPrimaryClip().getItemAt(0).getText();
+        assertThat(phoneNumber.contentEquals(data)).isTrue();
     }
 }

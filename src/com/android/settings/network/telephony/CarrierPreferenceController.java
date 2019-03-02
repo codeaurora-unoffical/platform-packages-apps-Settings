@@ -16,7 +16,11 @@
 
 package com.android.settings.network.telephony;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.PersistableBundle;
 import android.telephony.CarrierConfigManager;
 import android.telephony.SubscriptionManager;
@@ -37,7 +41,6 @@ public class CarrierPreferenceController extends BasePreferenceController {
 
     public CarrierPreferenceController(Context context, String key) {
         super(context, key);
-        mSubId = SubscriptionManager.INVALID_SUBSCRIPTION_ID;
         mCarrierConfigManager = new CarrierConfigManager(context);
         mSubId = SubscriptionManager.INVALID_SUBSCRIPTION_ID;
     }
@@ -62,10 +65,32 @@ public class CarrierPreferenceController extends BasePreferenceController {
     @Override
     public boolean handlePreferenceTreeClick(Preference preference) {
         if (getPreferenceKey().equals(preference.getKey())) {
-            //TODO(b/117651939): start carrier settings activity
+            final Intent carrierSettingsIntent = getCarrierSettingsActivityIntent(mSubId);
+            if (carrierSettingsIntent != null) {
+                mContext.startActivity(carrierSettingsIntent);
+            }
             return true;
         }
 
         return false;
+    }
+
+    private Intent getCarrierSettingsActivityIntent(int subId) {
+        final PersistableBundle config = mCarrierConfigManager.getConfigForSubId(subId);
+        final ComponentName cn = ComponentName.unflattenFromString(
+                config == null ? "" : config.getString(
+                        CarrierConfigManager.KEY_CARRIER_SETTINGS_ACTIVITY_COMPONENT_NAME_STRING,
+                        "" /* default value */));
+
+        if (cn == null) return null;
+
+        final Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.setComponent(cn);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(SubscriptionManager.EXTRA_SUBSCRIPTION_INDEX, subId);
+
+        final PackageManager pm = mContext.getPackageManager();
+        final ResolveInfo resolveInfo = pm.resolveActivity(intent, 0 /* flags */);
+        return resolveInfo != null ? intent : null;
     }
 }

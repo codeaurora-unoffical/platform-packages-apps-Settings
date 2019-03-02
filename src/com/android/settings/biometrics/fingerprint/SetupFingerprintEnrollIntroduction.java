@@ -19,20 +19,22 @@ package com.android.settings.biometrics.fingerprint;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.app.admin.DevicePolicyManager;
+import android.app.settings.SettingsEnums;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.UserHandle;
 import android.os.storage.StorageManager;
-import android.widget.Button;
+import android.view.View;
 import android.widget.TextView;
 
-import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.settings.R;
 import com.android.settings.SetupWizardUtils;
 import com.android.settings.password.ChooseLockGeneric.ChooseLockGenericFragment;
 import com.android.settings.password.SetupChooseLockGeneric;
 import com.android.settings.password.SetupSkipDialog;
+
+import com.google.android.setupcompat.template.FooterButton;
 
 public class SetupFingerprintEnrollIntroduction extends FingerprintEnrollIntroduction {
     private static final String KEY_LOCK_SCREEN_PRESENT = "wasLockScreenPresent";
@@ -84,13 +86,13 @@ public class SetupFingerprintEnrollIntroduction extends FingerprintEnrollIntrodu
         description.setText(
                 R.string.security_settings_fingerprint_enroll_introduction_message_setup);
 
-        Button nextButton = getNextButton();
+        FooterButton nextButton = getNextButton();
         nextButton.setText(
-                R.string.security_settings_fingerprint_enroll_introduction_continue_setup);
+                this, R.string.security_settings_fingerprint_enroll_introduction_continue_setup);
 
-        final Button cancelButton = (Button) findViewById(R.id.fingerprint_cancel_button);
+        final FooterButton cancelButton = getCancelButton();
         cancelButton.setText(
-                R.string.security_settings_fingerprint_enroll_introduction_cancel_setup);
+                this, R.string.security_settings_fingerprint_enroll_introduction_cancel_setup);
     }
 
     @Override
@@ -116,7 +118,7 @@ public class SetupFingerprintEnrollIntroduction extends FingerprintEnrollIntrodu
     }
 
     @Override
-    protected void onCancelButtonClick() {
+    protected void onCancelButtonClick(View view) {
         if (isKeyguardSecure()) {
             // If the keyguard is already set up securely (maybe the user added a backup screen
             // lock and skipped fingerprint), return RESULT_SKIP directly.
@@ -146,6 +148,6 @@ public class SetupFingerprintEnrollIntroduction extends FingerprintEnrollIntrodu
 
     @Override
     public int getMetricsCategory() {
-        return MetricsEvent.FINGERPRINT_ENROLL_INTRO_SETUP;
+        return SettingsEnums.FINGERPRINT_ENROLL_INTRO_SETUP;
     }
 }

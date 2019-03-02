@@ -20,6 +20,7 @@ import static android.provider.Settings.Secure.TTS_DEFAULT_PITCH;
 import static android.provider.Settings.Secure.TTS_DEFAULT_RATE;
 import static android.provider.Settings.Secure.TTS_DEFAULT_SYNTH;
 
+import android.app.settings.SettingsEnums;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -38,21 +39,19 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 
-import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
 import com.android.settings.SettingsActivity;
 import com.android.settings.SettingsPreferenceFragment;
 import com.android.settings.search.BaseSearchIndexProvider;
 import com.android.settings.search.Indexable;
-import com.android.settings.widget.ActionButtonPreference;
 import com.android.settings.widget.GearPreference;
 import com.android.settings.widget.SeekBarPreference;
 import com.android.settingslib.search.SearchIndexable;
+import com.android.settingslib.widget.ActionButtonsPreference;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -113,7 +112,7 @@ public class TextToSpeechSettings extends SettingsPreferenceFragment
 
     private SeekBarPreference mDefaultPitchPref;
     private SeekBarPreference mDefaultRatePref;
-    private ActionButtonPreference mActionButtons;
+    private ActionButtonsPreference mActionButtons;
 
     private int mDefaultPitch = TextToSpeech.Engine.DEFAULT_PITCH;
     private int mDefaultRate = TextToSpeech.Engine.DEFAULT_RATE;
@@ -151,7 +150,7 @@ public class TextToSpeechSettings extends SettingsPreferenceFragment
 
     @Override
     public int getMetricsCategory() {
-        return MetricsEvent.TTS_TEXT_TO_SPEECH;
+        return SettingsEnums.TTS_TEXT_TO_SPEECH;
     }
 
     @Override
@@ -169,7 +168,7 @@ public class TextToSpeechSettings extends SettingsPreferenceFragment
         mDefaultPitchPref = (SeekBarPreference) findPreference(KEY_DEFAULT_PITCH);
         mDefaultRatePref = (SeekBarPreference) findPreference(KEY_DEFAULT_RATE);
 
-        mActionButtons = ((ActionButtonPreference) findPreference(KEY_ACTION_BUTTONS))
+        mActionButtons = ((ActionButtonsPreference) findPreference(KEY_ACTION_BUTTONS))
                 .setButton1Text(R.string.tts_play)
                 .setButton1OnClickListener(v -> speakSampleText())
                 .setButton1Enabled(false)

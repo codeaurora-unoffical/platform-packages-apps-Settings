@@ -17,12 +17,14 @@ package com.android.settings.wifi.details;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.nullable;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
@@ -57,22 +59,19 @@ import android.widget.ImageView;
 
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.LifecycleOwner;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 
 import com.android.internal.logging.nano.MetricsProto;
 import com.android.settings.R;
-import com.android.settings.applications.LayoutPreference;
-import com.android.settings.testutils.SettingsRobolectricTestRunner;
-import com.android.settings.testutils.shadow.ShadowBidiFormatter;
 import com.android.settings.testutils.shadow.ShadowDevicePolicyManager;
 import com.android.settings.testutils.shadow.ShadowEntityHeaderController;
-import com.android.settings.widget.ActionButtonPreference;
-import com.android.settings.widget.ActionButtonPreferenceTest;
 import com.android.settings.widget.EntityHeaderController;
-import com.android.settings.wifi.WifiDetailPreference;
 import com.android.settingslib.core.instrumentation.MetricsFeatureProvider;
 import com.android.settingslib.core.lifecycle.Lifecycle;
+import com.android.settingslib.widget.ActionButtonsPreference;
+import com.android.settingslib.widget.LayoutPreference;
 import com.android.settingslib.wifi.AccessPoint;
 
 import org.junit.Before;
@@ -85,6 +84,7 @@ import org.mockito.InOrder;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
@@ -94,17 +94,14 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-@RunWith(SettingsRobolectricTestRunner.class)
-@Config(shadows = {
-        ShadowDevicePolicyManager.class,
-        ShadowEntityHeaderController.class,
-        ShadowBidiFormatter.class
-})
+@RunWith(RobolectricTestRunner.class)
+@Config(shadows = {ShadowDevicePolicyManager.class, ShadowEntityHeaderController.class})
 public class WifiDetailPreferenceControllerTest {
 
     private static final int LEVEL = 1;
     private static final int RSSI = -55;
-    private static final int LINK_SPEED = 123;
+    private static final int TX_LINK_SPEED = 123;
+    private static final int RX_LINK_SPEED = 54;
     private static final String MAC_ADDRESS = WifiInfo.DEFAULT_MAC_ADDRESS;
     private static final String SECURITY = "None";
 
@@ -142,29 +139,31 @@ public class WifiDetailPreferenceControllerTest {
     private ImageView mockHeaderIcon;
 
     @Mock
-    private ActionButtonPreference mockButtonsPref;
+    private ActionButtonsPreference mockButtonsPref;
     @Mock
-    private WifiDetailPreference mockSignalStrengthPref;
+    private Preference mockSignalStrengthPref;
     @Mock
-    private WifiDetailPreference mockLinkSpeedPref;
+    private Preference mockTxLinkSpeedPref;
     @Mock
-    private WifiDetailPreference mockFrequencyPref;
+    private Preference mockRxLinkSpeedPref;
     @Mock
-    private WifiDetailPreference mockSecurityPref;
+    private Preference mockFrequencyPref;
     @Mock
-    private WifiDetailPreference mockMacAddressPref;
+    private Preference mockSecurityPref;
     @Mock
-    private WifiDetailPreference mockIpAddressPref;
+    private Preference mockMacAddressPref;
     @Mock
-    private WifiDetailPreference mockGatewayPref;
+    private Preference mockIpAddressPref;
     @Mock
-    private WifiDetailPreference mockSubnetPref;
+    private Preference mockGatewayPref;
     @Mock
-    private WifiDetailPreference mockDnsPref;
+    private Preference mockSubnetPref;
+    @Mock
+    private Preference mockDnsPref;
     @Mock
     private PreferenceCategory mockIpv6Category;
     @Mock
-    private WifiDetailPreference mockIpv6AddressesPref;
+    private Preference mockIpv6AddressesPref;
     @Mock
     private PackageManager mockPackageManager;
 
@@ -247,11 +246,12 @@ public class WifiDetailPreferenceControllerTest {
                 .thenReturn(mockNetworkInfo);
         doNothing().when(mockConnectivityManager).registerNetworkCallback(
                 nullable(NetworkRequest.class), mCallbackCaptor.capture(), nullable(Handler.class));
-        mockButtonsPref = ActionButtonPreferenceTest.createMock();
+        mockButtonsPref = createMock();
         when(mockButtonsPref.setButton1OnClickListener(mForgetClickListener.capture()))
                 .thenReturn(mockButtonsPref);
 
-        when(mockWifiInfo.getLinkSpeed()).thenReturn(LINK_SPEED);
+        when(mockWifiInfo.getTxLinkSpeedMbps()).thenReturn(TX_LINK_SPEED);
+        when(mockWifiInfo.getRxLinkSpeedMbps()).thenReturn(RX_LINK_SPEED);
         when(mockWifiInfo.getRssi()).thenReturn(RSSI);
         when(mockWifiInfo.getMacAddress()).thenReturn(MAC_ADDRESS);
         when(mockWifiManager.getConnectionInfo()).thenReturn(mockWifiInfo);
@@ -298,8 +298,10 @@ public class WifiDetailPreferenceControllerTest {
                 .thenReturn(mockButtonsPref);
         when(mockScreen.findPreference(WifiDetailPreferenceController.KEY_SIGNAL_STRENGTH_PREF))
                 .thenReturn(mockSignalStrengthPref);
-        when(mockScreen.findPreference(WifiDetailPreferenceController.KEY_LINK_SPEED))
-                .thenReturn(mockLinkSpeedPref);
+        when(mockScreen.findPreference(WifiDetailPreferenceController.KEY_TX_LINK_SPEED))
+                .thenReturn(mockTxLinkSpeedPref);
+        when(mockScreen.findPreference(WifiDetailPreferenceController.KEY_RX_LINK_SPEED))
+                .thenReturn(mockRxLinkSpeedPref);
         when(mockScreen.findPreference(WifiDetailPreferenceController.KEY_FREQUENCY_PREF))
                 .thenReturn(mockFrequencyPref);
         when(mockScreen.findPreference(WifiDetailPreferenceController.KEY_SECURITY_PREF))
@@ -336,7 +338,7 @@ public class WifiDetailPreferenceControllerTest {
     public void securityPreference_stringShouldBeSet() {
         displayAndResume();
 
-        verify(mockSecurityPref).setDetailText(SECURITY);
+        verify(mockSecurityPref).setSummary(SECURITY);
     }
 
     @Test
@@ -413,32 +415,50 @@ public class WifiDetailPreferenceControllerTest {
 
         displayAndResume();
 
-        verify(mockSignalStrengthPref).setDetailText(expectedStrength);
+        verify(mockSignalStrengthPref).setSummary(expectedStrength);
     }
 
     @Test
     public void linkSpeedPref_shouldHaveDetailTextSet() {
-        String expectedLinkSpeed = mContext.getString(R.string.link_speed, LINK_SPEED);
+        String expectedLinkSpeed = mContext.getString(R.string.tx_link_speed, TX_LINK_SPEED);
 
         displayAndResume();
 
-        verify(mockLinkSpeedPref).setDetailText(expectedLinkSpeed);
+        verify(mockTxLinkSpeedPref).setSummary(expectedLinkSpeed);
     }
 
     @Test
     public void linkSpeedPref_shouldNotShowIfNotSet() {
-        when(mockWifiInfo.getLinkSpeed()).thenReturn(-1);
+        when(mockWifiInfo.getTxLinkSpeedMbps()).thenReturn(-1);
 
         displayAndResume();
 
-        verify(mockLinkSpeedPref).setVisible(false);
+        verify(mockTxLinkSpeedPref).setVisible(false);
+    }
+
+    @Test
+    public void rxLinkSpeedPref_shouldHaveDetailTextSet() {
+        String expectedLinkSpeed = mContext.getString(R.string.rx_link_speed, RX_LINK_SPEED);
+
+        displayAndResume();
+
+        verify(mockRxLinkSpeedPref).setSummary(expectedLinkSpeed);
+    }
+
+    @Test
+    public void rxLinkSpeedPref_shouldNotShowIfNotSet() {
+        when(mockWifiInfo.getRxLinkSpeedMbps()).thenReturn(-1);
+
+        displayAndResume();
+
+        verify(mockRxLinkSpeedPref).setVisible(false);
     }
 
     @Test
     public void macAddressPref_shouldHaveDetailTextSet() {
         displayAndResume();
 
-        verify(mockMacAddressPref).setDetailText(MAC_ADDRESS);
+        verify(mockMacAddressPref).setSummary(MAC_ADDRESS);
     }
 
     @Test
@@ -447,7 +467,7 @@ public class WifiDetailPreferenceControllerTest {
 
         displayAndResume();
 
-        verify(mockIpAddressPref).setDetailText(Constants.IPV4_ADDR.getAddress().getHostAddress());
+        verify(mockIpAddressPref).setSummary(Constants.IPV4_ADDR.getAddress().getHostAddress());
     }
 
     @Test
@@ -458,8 +478,8 @@ public class WifiDetailPreferenceControllerTest {
 
         displayAndResume();
 
-        verify(mockSubnetPref).setDetailText("255.255.255.128");
-        verify(mockGatewayPref).setDetailText("192.0.2.127");
+        verify(mockSubnetPref).setSummary("255.255.255.128");
+        verify(mockGatewayPref).setSummary("192.0.2.127");
     }
 
     @Test
@@ -470,7 +490,7 @@ public class WifiDetailPreferenceControllerTest {
 
         displayAndResume();
 
-        verify(mockDnsPref).setDetailText(
+        verify(mockDnsPref).setSummary(
                 "8.8.4.4\n" +
                         "8.8.8.8\n" +
                         Constants.IPV6_DNS.getHostAddress());
@@ -551,15 +571,15 @@ public class WifiDetailPreferenceControllerTest {
 
         lp.addRoute(Constants.IPV4_DEFAULT);
         updateLinkProperties(lp);
-        inOrder.verify(mockGatewayPref).setDetailText(Constants.IPV4_GATEWAY.getHostAddress());
+        inOrder.verify(mockGatewayPref).setSummary(Constants.IPV4_GATEWAY.getHostAddress());
         inOrder.verify(mockGatewayPref).setVisible(true);
 
         lp.addLinkAddress(Constants.IPV4_ADDR);
         lp.addRoute(Constants.IPV4_SUBNET);
         updateLinkProperties(lp);
-        inOrder.verify(mockIpAddressPref).setDetailText(asString(Constants.IPV4_ADDR));
+        inOrder.verify(mockIpAddressPref).setSummary(asString(Constants.IPV4_ADDR));
         inOrder.verify(mockIpAddressPref).setVisible(true);
-        inOrder.verify(mockSubnetPref).setDetailText("255.255.255.128");
+        inOrder.verify(mockSubnetPref).setSummary("255.255.255.128");
         inOrder.verify(mockSubnetPref).setVisible(true);
 
         lp.addLinkAddress(Constants.IPV6_GLOBAL1);
@@ -578,13 +598,13 @@ public class WifiDetailPreferenceControllerTest {
 
         lp.addDnsServer(Constants.IPV6_DNS);
         updateLinkProperties(lp);
-        inOrder.verify(mockDnsPref).setDetailText(Constants.IPV6_DNS.getHostAddress());
+        inOrder.verify(mockDnsPref).setSummary(Constants.IPV6_DNS.getHostAddress());
         inOrder.verify(mockDnsPref).setVisible(true);
 
         lp.addDnsServer(Constants.IPV4_DNS1);
         lp.addDnsServer(Constants.IPV4_DNS2);
         updateLinkProperties(lp);
-        inOrder.verify(mockDnsPref).setDetailText(
+        inOrder.verify(mockDnsPref).setSummary(
                 Constants.IPV6_DNS.getHostAddress() + "\n" +
                         Constants.IPV4_DNS1.getHostAddress() + "\n" +
                         Constants.IPV4_DNS2.getHostAddress());
@@ -663,6 +683,15 @@ public class WifiDetailPreferenceControllerTest {
         displayAndResume();
 
         verify(mockButtonsPref).setButton1Visible(false);
+    }
+
+    @Test
+    public void canShareNetwork_noNetwork() {
+        when(mockAccessPoint.getConfig()).thenReturn(null);
+
+        displayAndResume();
+
+        verify(mockButtonsPref).setButton3Visible(false);
     }
 
     @Test
@@ -848,5 +877,28 @@ public class WifiDetailPreferenceControllerTest {
 
         verify(mockAccessPoint, times(2)).getLevel();
         verify(mockIconInjector, times(2)).getIcon(anyInt());
+    }
+
+    private ActionButtonsPreference createMock() {
+        final ActionButtonsPreference pref = mock(ActionButtonsPreference.class);
+        when(pref.setButton1Text(anyInt())).thenReturn(pref);
+        when(pref.setButton1Icon(anyInt())).thenReturn(pref);
+        when(pref.setButton1Enabled(anyBoolean())).thenReturn(pref);
+        when(pref.setButton1Visible(anyBoolean())).thenReturn(pref);
+        when(pref.setButton1OnClickListener(any(View.OnClickListener.class))).thenReturn(pref);
+
+        when(pref.setButton2Text(anyInt())).thenReturn(pref);
+        when(pref.setButton2Icon(anyInt())).thenReturn(pref);
+        when(pref.setButton2Enabled(anyBoolean())).thenReturn(pref);
+        when(pref.setButton2Visible(anyBoolean())).thenReturn(pref);
+        when(pref.setButton2OnClickListener(any(View.OnClickListener.class))).thenReturn(pref);
+
+        when(pref.setButton3Text(anyInt())).thenReturn(pref);
+        when(pref.setButton3Icon(anyInt())).thenReturn(pref);
+        when(pref.setButton3Enabled(anyBoolean())).thenReturn(pref);
+        when(pref.setButton3Visible(anyBoolean())).thenReturn(pref);
+        when(pref.setButton3OnClickListener(any(View.OnClickListener.class))).thenReturn(pref);
+
+        return pref;
     }
 }

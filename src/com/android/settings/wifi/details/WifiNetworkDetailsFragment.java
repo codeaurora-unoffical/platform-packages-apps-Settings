@@ -17,8 +17,11 @@ package com.android.settings.wifi.details;
 
 import static com.android.settings.wifi.WifiSettings.WIFI_DIALOG_ID;
 
+import android.app.Activity;
 import android.app.Dialog;
+import android.app.settings.SettingsEnums;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -28,8 +31,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import com.android.internal.logging.nano.MetricsProto;
-import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
 import com.android.settings.dashboard.DashboardFragment;
 import com.android.settings.wifi.WifiConfigUiBase;
@@ -52,6 +53,8 @@ public class WifiNetworkDetailsFragment extends DashboardFragment {
 
     private static final String TAG = "WifiNetworkDetailsFrg";
 
+    public static final int REQUEST_CODE_CONFIRM_DEVICE_CREDENTIALS = 1;
+
     private AccessPoint mAccessPoint;
     private WifiDetailPreferenceController mWifiDetailPreferenceController;
 
@@ -63,7 +66,7 @@ public class WifiNetworkDetailsFragment extends DashboardFragment {
 
     @Override
     public int getMetricsCategory() {
-        return MetricsProto.MetricsEvent.WIFI_NETWORK_DETAILS;
+        return SettingsEnums.WIFI_NETWORK_DETAILS;
     }
 
     @Override
@@ -79,7 +82,7 @@ public class WifiNetworkDetailsFragment extends DashboardFragment {
     @Override
     public int getDialogMetricsCategory(int dialogId) {
         if (dialogId == WIFI_DIALOG_ID) {
-            return MetricsEvent.DIALOG_WIFI_AP_EDIT;
+            return SettingsEnums.DIALOG_WIFI_AP_EDIT;
         }
         return 0;
     }
@@ -98,7 +101,7 @@ public class WifiNetworkDetailsFragment extends DashboardFragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         MenuItem item = menu.add(0, Menu.FIRST, 0, R.string.wifi_modify);
-        item.setIcon(R.drawable.ic_mode_edit);
+        item.setIcon(com.android.internal.R.drawable.ic_mode_edit);
         item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -141,5 +144,15 @@ public class WifiNetworkDetailsFragment extends DashboardFragment {
         controllers.add(preferenceController);
 
         return controllers;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_CONFIRM_DEVICE_CREDENTIALS
+                && resultCode == Activity.RESULT_OK) {
+            mWifiDetailPreferenceController.launchWifiDppConfiguratorActivity();
+        }
     }
 }

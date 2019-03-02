@@ -17,6 +17,7 @@
 package com.android.settings.slices;
 
 import android.annotation.MainThread;
+import android.annotation.Nullable;
 import android.content.Context;
 import android.net.Uri;
 import android.util.ArrayMap;
@@ -59,15 +60,24 @@ public abstract class SliceBackgroundWorker<E> implements Closeable {
     }
 
     /**
+     * Returns the singleton instance of the {@link SliceBackgroundWorker} for specified {@link Uri}
+     * if exists
+     */
+    @Nullable
+    public static SliceBackgroundWorker getInstance(Uri uri) {
+        return LIVE_WORKERS.get(uri);
+    }
+
+    /**
      * Returns the singleton instance of the {@link SliceBackgroundWorker} for specified {@link
      * CustomSliceable}
      */
-    public static SliceBackgroundWorker getInstance(Context context, CustomSliceable sliceable) {
+    static SliceBackgroundWorker getInstance(Context context, CustomSliceable sliceable) {
         final Uri uri = sliceable.getUri();
-        final Class<? extends SliceBackgroundWorker> workerClass =
-                sliceable.getBackgroundWorkerClass();
-        SliceBackgroundWorker worker = LIVE_WORKERS.get(uri);
+        SliceBackgroundWorker worker = getInstance(uri);
         if (worker == null) {
+            final Class<? extends SliceBackgroundWorker> workerClass =
+                    sliceable.getBackgroundWorkerClass();
             worker = createInstance(context, uri, workerClass);
             LIVE_WORKERS.put(uri, worker);
         }
@@ -134,7 +144,14 @@ public abstract class SliceBackgroundWorker<E> implements Closeable {
 
         if (needNotify) {
             mCachedResults = results;
-            mContext.getContentResolver().notifyChange(mUri, null);
+            notifySliceChange();
         }
+    }
+
+    /**
+     * Notify that data was updated and attempt to sync changes to the Slice.
+     */
+    protected void notifySliceChange() {
+        mContext.getContentResolver().notifyChange(mUri, null);
     }
 }

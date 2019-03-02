@@ -18,14 +18,21 @@ package com.android.settings.password;
 
 import static android.app.admin.DevicePolicyManager.ACTION_SET_NEW_PARENT_PROFILE_PASSWORD;
 import static android.app.admin.DevicePolicyManager.ACTION_SET_NEW_PASSWORD;
+import static android.app.admin.DevicePolicyManager.PASSWORD_COMPLEXITY_HIGH;
+import static android.app.admin.DevicePolicyManager.PASSWORD_COMPLEXITY_LOW;
+import static android.app.admin.DevicePolicyManager.PASSWORD_COMPLEXITY_MEDIUM;
+import static android.app.admin.DevicePolicyManager.PASSWORD_COMPLEXITY_NONE;
 
-import static com.android.settings.password.ChooseLockPassword.ChooseLockPasswordFragment
-        .RESULT_FINISHED;
+import static com.android.settings.password.ChooseLockPassword.ChooseLockPasswordFragment.RESULT_FINISHED;
+import static com.android.settings.password.ChooseLockSettingsHelper.EXTRA_KEY_CALLER_APP_NAME;
+import static com.android.settings.password.ChooseLockSettingsHelper.EXTRA_KEY_REQUESTED_MIN_COMPLEXITY;
 
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.admin.DevicePolicyManager;
+import android.app.admin.DevicePolicyManager.PasswordComplexity;
+import android.app.settings.SettingsEnums;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.UserInfo;
@@ -52,7 +59,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 
-import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.settings.EncryptionInterstitial;
 import com.android.settings.EventLogTags;
@@ -67,6 +73,8 @@ import com.android.settings.search.SearchFeatureProvider;
 import com.android.settingslib.RestrictedLockUtils.EnforcedAdmin;
 import com.android.settingslib.RestrictedLockUtilsInternal;
 import com.android.settingslib.RestrictedPreference;
+import com.android.settingslib.widget.FooterPreference;
+import com.android.settingslib.widget.FooterPreferenceMixinCompat;
 
 import java.util.List;
 
@@ -77,12 +85,6 @@ public class ChooseLockGeneric extends SettingsActivity {
     public Intent getIntent() {
         Intent modIntent = new Intent(super.getIntent());
         modIntent.putExtra(EXTRA_SHOW_FRAGMENT, getFragmentClass().getName());
-
-        String action = modIntent.getAction();
-        if (ACTION_SET_NEW_PASSWORD.equals(action)
-                || ACTION_SET_NEW_PARENT_PROFILE_PASSWORD.equals(action)) {
-            modIntent.putExtra(EXTRA_HIDE_DRAWER, true);
-        }
         return modIntent;
     }
 
@@ -154,18 +156,25 @@ public class ChooseLockGeneric extends SettingsActivity {
         private FingerprintManager mFingerprintManager;
         private FaceManager mFaceManager;
         private int mUserId;
-        private boolean mHideDrawer = false;
         private ManagedLockPasswordProvider mManagedPasswordProvider;
         private boolean mIsSetNewPassword = false;
         private UserManager mUserManager;
         private ChooseLockGenericController mController;
+
+        /**
+         * From intent extra {@link ChooseLockSettingsHelper#EXTRA_KEY_REQUESTED_MIN_COMPLEXITY}.
+         */
+        @PasswordComplexity private int mRequestedMinComplexity;
+
+        /** From intent extra {@link ChooseLockSettingsHelper#EXTRA_KEY_CALLER_APP_NAME}. */
+        private String mCallerAppName = null;
 
         protected boolean mForFingerprint = false;
         protected boolean mForFace = false;
 
         @Override
         public int getMetricsCategory() {
-            return MetricsEvent.CHOOSE_LOCK_GENERIC;
+            return SettingsEnums.CHOOSE_LOCK_GENERIC;
         }
 
         @Override
@@ -195,7 +204,6 @@ public class ChooseLockGeneric extends SettingsActivity {
                 mUserPassword = getActivity().getIntent().getStringExtra(
                         ChooseLockSettingsHelper.EXTRA_KEY_PASSWORD);
             }
-            mHideDrawer = getActivity().getIntent().getBooleanExtra(EXTRA_HIDE_DRAWER, false);
 
             mHasChallenge = getActivity().getIntent().getBooleanExtra(
                     ChooseLockSettingsHelper.EXTRA_KEY_HAS_CHALLENGE, false);
@@ -205,6 +213,10 @@ public class ChooseLockGeneric extends SettingsActivity {
                     ChooseLockSettingsHelper.EXTRA_KEY_FOR_FINGERPRINT, false);
             mForFace = getActivity().getIntent().getBooleanExtra(
                     ChooseLockSettingsHelper.EXTRA_KEY_FOR_FACE, false);
+            mRequestedMinComplexity = getActivity().getIntent()
+                    .getIntExtra(EXTRA_KEY_REQUESTED_MIN_COMPLEXITY, PASSWORD_COMPLEXITY_NONE);
+            mCallerAppName =
+                    getActivity().getIntent().getStringExtra(EXTRA_KEY_CALLER_APP_NAME);
             mForChangeCredRequiredForBoot = getArguments() != null && getArguments().getBoolean(
                     ChooseLockSettingsHelper.EXTRA_KEY_FOR_CHANGE_CRED_REQUIRED_FOR_BOOT);
             mUserManager = UserManager.get(getActivity());
@@ -227,7 +239,8 @@ public class ChooseLockGeneric extends SettingsActivity {
                     UserManager.get(getActivity()),
                     getArguments(),
                     getActivity().getIntent().getExtras()).getIdentifier();
-            mController = new ChooseLockGenericController(getContext(), mUserId);
+            mController =
+                    new ChooseLockGenericController(getContext(), mUserId, mRequestedMinComplexity);
             if (ACTION_SET_NEW_PASSWORD.equals(chooseLockAction)
                     && UserManager.get(getActivity()).isManagedProfile(mUserId)
                     && mLockPatternUtils.isSeparateProfileChallengeEnabled(mUserId)) {
@@ -301,6 +314,9 @@ public class ChooseLockGeneric extends SettingsActivity {
                 // Forward the target user id to  ChooseLockGeneric.
                 chooseLockGenericIntent.putExtra(Intent.EXTRA_USER_ID, mUserId);
                 chooseLockGenericIntent.putExtra(CONFIRM_CREDENTIALS, !mPasswordConfirmed);
+                chooseLockGenericIntent.putExtra(EXTRA_KEY_REQUESTED_MIN_COMPLEXITY,
+                        mRequestedMinComplexity);
+                chooseLockGenericIntent.putExtra(EXTRA_KEY_CALLER_APP_NAME, mCallerAppName);
                 if (mUserPassword != null) {
                     chooseLockGenericIntent.putExtra(ChooseLockSettingsHelper.EXTRA_KEY_PASSWORD,
                             mUserPassword);
@@ -346,7 +362,6 @@ public class ChooseLockGeneric extends SettingsActivity {
                         mForFingerprint);
                 intent.putExtra(ChooseLockSettingsHelper.EXTRA_KEY_FOR_FACE,
                         mForFace);
-                intent.putExtra(EXTRA_HIDE_DRAWER, mHideDrawer);
                 startActivityForResult(
                         intent,
                         mIsSetNewPassword && mHasChallenge
@@ -472,12 +487,40 @@ public class ChooseLockGeneric extends SettingsActivity {
         protected void addPreferences() {
             addPreferencesFromResource(R.xml.security_settings_picker);
 
+            if (!TextUtils.isEmpty(mCallerAppName)) {
+                FooterPreferenceMixinCompat footerMixin =
+                        new FooterPreferenceMixinCompat(this, getSettingsLifecycle());
+                FooterPreference footer = footerMixin.createFooterPreference();
+                footer.setTitle(getFooterString());
+            }
+
             // Used for testing purposes
             findPreference(ScreenLockType.NONE.preferenceKey).setViewId(R.id.lock_none);
             findPreference(KEY_SKIP_FINGERPRINT).setViewId(R.id.lock_none);
             findPreference(KEY_SKIP_FACE).setViewId(R.id.lock_none);
             findPreference(ScreenLockType.PIN.preferenceKey).setViewId(R.id.lock_pin);
             findPreference(ScreenLockType.PASSWORD.preferenceKey).setViewId(R.id.lock_password);
+        }
+
+        private String getFooterString() {
+            @StringRes int stringId;
+            switch (mRequestedMinComplexity) {
+                case PASSWORD_COMPLEXITY_HIGH:
+                    stringId = R.string.unlock_footer_high_complexity_requested;
+                    break;
+                case PASSWORD_COMPLEXITY_MEDIUM:
+                    stringId = R.string.unlock_footer_medium_complexity_requested;
+                    break;
+                case PASSWORD_COMPLEXITY_LOW:
+                    stringId = R.string.unlock_footer_low_complexity_requested;
+                    break;
+                case PASSWORD_COMPLEXITY_NONE:
+                default:
+                    stringId = R.string.unlock_footer_none_complexity_requested;
+                    break;
+            }
+
+            return getResources().getString(stringId, mCallerAppName);
         }
 
         private void updatePreferenceText() {
@@ -635,6 +678,7 @@ public class ChooseLockGeneric extends SettingsActivity {
             ChooseLockPassword.IntentBuilder builder =
                     new ChooseLockPassword.IntentBuilder(getContext())
                             .setPasswordQuality(quality)
+                            .setRequestedMinComplexity(mRequestedMinComplexity)
                             .setForFingerprint(mForFingerprint)
                             .setForFace(mForFace)
                             .setUserId(mUserId);
@@ -748,9 +792,6 @@ public class ChooseLockGeneric extends SettingsActivity {
                 intent = getLockPasswordIntent(quality);
             } else if (quality == DevicePolicyManager.PASSWORD_QUALITY_SOMETHING) {
                 intent = getLockPatternIntent();
-            }
-            if (intent != null) {
-                intent.putExtra(EXTRA_HIDE_DRAWER, mHideDrawer);
             }
             return intent;
         }
@@ -1037,7 +1078,7 @@ public class ChooseLockGeneric extends SettingsActivity {
 
             @Override
             public int getMetricsCategory() {
-                return MetricsEvent.DIALOG_FRP;
+                return SettingsEnums.DIALOG_FRP;
             }
         }
     }

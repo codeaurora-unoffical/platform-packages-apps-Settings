@@ -24,19 +24,19 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 
 import com.android.settings.R;
-import com.android.settings.testutils.SettingsRobolectricTestRunner;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.util.ReflectionHelpers;
 
 import java.util.Collections;
 
-@RunWith(SettingsRobolectricTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class MockLocationAppPreferenceControllerTest {
 
     @Mock
@@ -74,7 +74,7 @@ public class MockLocationAppPreferenceControllerTest {
         final AppOpsManager.PackageOps packageOps =
                 new AppOpsManager.PackageOps(appName, 0,
                         Collections.singletonList(createOpEntry(AppOpsManager.MODE_ALLOWED)));
-        when(mAppOpsManager.getPackagesForOps(any())).thenReturn(
+        when(mAppOpsManager.getPackagesForOps(any(int[].class))).thenReturn(
                 Collections.singletonList(packageOps));
 
         mController.updateState(mPreference);
@@ -84,7 +84,8 @@ public class MockLocationAppPreferenceControllerTest {
 
     @Test
     public void updateState_noAppSelected_shouldSetSummaryToDefault() {
-        when(mAppOpsManager.getPackagesForOps(any())).thenReturn(Collections.emptyList());
+        when(mAppOpsManager.getPackagesForOps(any(int[].class)))
+                .thenReturn(Collections.emptyList());
 
         mController.updateState(mPreference);
 
@@ -101,7 +102,7 @@ public class MockLocationAppPreferenceControllerTest {
         final AppOpsManager.PackageOps packageOps = new AppOpsManager.PackageOps(prevAppName, 0,
                 Collections.singletonList(createOpEntry(AppOpsManager.MODE_ALLOWED)));
 
-        when(mAppOpsManager.getPackagesForOps(any()))
+        when(mAppOpsManager.getPackagesForOps(any(int[].class)))
                 .thenReturn(Collections.singletonList(packageOps));
         when(mPackageManager.getApplicationInfo(anyString(),
                 eq(PackageManager.MATCH_DISABLED_COMPONENTS))).thenReturn(mApplicationInfo);

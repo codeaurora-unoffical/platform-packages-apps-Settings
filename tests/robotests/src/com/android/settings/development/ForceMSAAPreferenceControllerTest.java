@@ -22,21 +22,20 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
-import android.os.SystemProperties;
+import android.sysprop.DisplayProperties;
 
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SwitchPreference;
-
-import com.android.settings.testutils.SettingsRobolectricTestRunner;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
-@RunWith(SettingsRobolectricTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class ForceMSAAPreferenceControllerTest {
 
     @Mock
@@ -61,8 +60,7 @@ public class ForceMSAAPreferenceControllerTest {
     public void onPreferenceChanged_settingEnabled_turnOnForceMsaa() {
         mController.onPreferenceChange(mPreference, true /* new value */);
 
-        final boolean mode = SystemProperties
-            .getBoolean(ForceMSAAPreferenceController.MSAA_PROPERTY, false /* default */);
+        final boolean mode = DisplayProperties.debug_force_msaa().orElse(false);
 
         assertThat(mode).isTrue();
     }
@@ -71,15 +69,14 @@ public class ForceMSAAPreferenceControllerTest {
     public void onPreferenceChanged_settingDisabled_turnOffForceMsaa() {
         mController.onPreferenceChange(mPreference, false /* new value */);
 
-        final boolean mode = SystemProperties
-            .getBoolean(ForceMSAAPreferenceController.MSAA_PROPERTY, false /* default */);
+        final boolean mode = DisplayProperties.debug_force_msaa().orElse(false);
 
         assertThat(mode).isFalse();
     }
 
     @Test
     public void updateState_settingEnabled_preferenceShouldBeChecked() {
-        SystemProperties.set(ForceMSAAPreferenceController.MSAA_PROPERTY, Boolean.toString(true));
+        DisplayProperties.debug_force_msaa(true);
         mController.updateState(mPreference);
 
         verify(mPreference).setChecked(true);
@@ -87,7 +84,7 @@ public class ForceMSAAPreferenceControllerTest {
 
     @Test
     public void updateState_settingDisabled_preferenceShouldNotBeChecked() {
-        SystemProperties.set(ForceMSAAPreferenceController.MSAA_PROPERTY, Boolean.toString(false));
+        DisplayProperties.debug_force_msaa(false);
         mController.updateState(mPreference);
 
         verify(mPreference).setChecked(false);

@@ -50,6 +50,7 @@ public class SlicesDatabaseAccessor {
             IndexColumns.PLATFORM_SLICE,
             IndexColumns.SLICE_TYPE,
             IndexColumns.ALLOW_DYNAMIC_SUMMARY_IN_SLICE,
+            IndexColumns.UNAVAILABLE_SLICE_SUBTITLE,
     };
 
     // Cursor value for boolean true
@@ -71,6 +72,9 @@ public class SlicesDatabaseAccessor {
      */
     public SliceData getSliceDataFromUri(Uri uri) {
         Pair<Boolean, String> pathData = SliceBuilderUtils.getPathData(uri);
+        if (pathData == null) {
+            throw new IllegalStateException("Invalid Slices uri: " + uri);
+        }
         Cursor cursor = getIndexedSliceData(pathData.second /* key */);
         return buildSliceData(cursor, uri, pathData.first /* isIntentOnly */);
     }
@@ -164,6 +168,8 @@ public class SlicesDatabaseAccessor {
                 cursor.getColumnIndex(IndexColumns.ALLOW_DYNAMIC_SUMMARY_IN_SLICE)) == TRUE;
         int sliceType = cursor.getInt(
                 cursor.getColumnIndex(IndexColumns.SLICE_TYPE));
+        final String unavailableSliceSubtitle = cursor.getString(
+                cursor.getColumnIndex(IndexColumns.UNAVAILABLE_SLICE_SUBTITLE));
 
         if (isIntentOnly) {
             sliceType = SliceData.SliceType.INTENT;
@@ -182,6 +188,7 @@ public class SlicesDatabaseAccessor {
                 .setPlatformDefined(isPlatformDefined)
                 .setSliceType(sliceType)
                 .setDynamicSummaryAllowed(isDynamicSummaryAllowed)
+                .setUnavailableSliceSubtitle(unavailableSliceSubtitle)
                 .build();
     }
 

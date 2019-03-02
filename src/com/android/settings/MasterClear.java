@@ -23,6 +23,7 @@ import android.accounts.AccountManager;
 import android.accounts.AuthenticatorDescription;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.settings.SettingsEnums;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -39,6 +40,7 @@ import android.os.SystemProperties;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.provider.Settings;
+import android.sysprop.VoldProperties;
 import android.telephony.euicc.EuiccManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -56,15 +58,17 @@ import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
 
-import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.core.InstrumentedFragment;
 import com.android.settings.core.SubSettingLauncher;
 import com.android.settings.enterprise.ActionDisabledByAdminDialogHelper;
 import com.android.settings.password.ChooseLockSettingsHelper;
 import com.android.settings.password.ConfirmLockPattern;
 import com.android.settingslib.RestrictedLockUtilsInternal;
-import com.android.setupwizardlib.TemplateLayout;
-import com.android.setupwizardlib.template.ButtonFooterMixin;
+
+import com.google.android.setupcompat.TemplateLayout;
+import com.google.android.setupcompat.template.FooterBarMixin;
+import com.google.android.setupcompat.template.FooterButton;
+import com.google.android.setupcompat.template.FooterButton.ButtonType;
 
 import java.util.List;
 
@@ -94,7 +98,7 @@ public class MasterClear extends InstrumentedFragment implements OnGlobalLayoutL
 
     private View mContentView;
     @VisibleForTesting
-    Button mInitiateButton;
+    FooterButton mInitiateButton;
     private View mExternalStorageContainer;
     @VisibleForTesting
     CheckBox mExternalStorage;
@@ -413,13 +417,16 @@ public class MasterClear extends InstrumentedFragment implements OnGlobalLayoutL
         }
 
         final TemplateLayout layout = mContentView.findViewById(R.id.setup_wizard_layout);
-        final ButtonFooterMixin buttonFooterMixin = layout.getMixin(ButtonFooterMixin.class);
-        buttonFooterMixin.removeAllViews();
-        buttonFooterMixin.addSpace();
-        buttonFooterMixin.addSpace();
-        mInitiateButton = buttonFooterMixin.addButton(R.string.master_clear_button_text,
-                R.style.SuwGlifButton_Primary);
-        mInitiateButton.setOnClickListener(mInitiateListener);
+        final FooterBarMixin mixin = layout.getMixin(FooterBarMixin.class);
+        mixin.setPrimaryButton(
+                new FooterButton.Builder(getActivity())
+                        .setText(R.string.master_clear_button_text)
+                        .setListener(mInitiateListener)
+                        .setButtonType(ButtonType.OTHER)
+                        .setTheme(R.style.SudGlifButton_Primary)
+                        .build()
+        );
+        mInitiateButton = mixin.getPrimaryButton();
     }
 
     private void getContentDescription(View v, StringBuffer description) {
@@ -440,7 +447,7 @@ public class MasterClear extends InstrumentedFragment implements OnGlobalLayoutL
     }
 
     private boolean isExtStorageEncrypted() {
-        String state = SystemProperties.get("vold.decrypt");
+        String state = VoldProperties.decrypt().orElse("");
         return !"".equals(state);
     }
 
@@ -558,6 +565,6 @@ public class MasterClear extends InstrumentedFragment implements OnGlobalLayoutL
 
     @Override
     public int getMetricsCategory() {
-        return MetricsEvent.MASTER_CLEAR;
+        return SettingsEnums.MASTER_CLEAR;
     }
 }

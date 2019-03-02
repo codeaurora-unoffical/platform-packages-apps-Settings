@@ -16,10 +16,10 @@
 
 package com.android.settings;
 
+import android.app.settings.SettingsEnums;
 import android.content.Context;
 import android.provider.SearchIndexableResource;
 
-import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.dashboard.DashboardFragment;
 import com.android.settings.display.BrightnessLevelPreferenceController;
 import com.android.settings.display.CameraGesturePreferenceController;
@@ -32,7 +32,6 @@ import com.android.settings.display.TapToWakePreferenceController;
 import com.android.settings.display.ThemePreferenceController;
 import com.android.settings.display.TimeoutPreferenceController;
 import com.android.settings.display.VrDisplayPreferenceController;
-import com.android.settings.display.WallpaperPreferenceController;
 import com.android.settings.search.BaseSearchIndexProvider;
 import com.android.settings.search.Indexable;
 import com.android.settingslib.core.AbstractPreferenceController;
@@ -50,7 +49,7 @@ public class DisplaySettings extends DashboardFragment {
 
     @Override
     public int getMetricsCategory() {
-        return MetricsEvent.DISPLAY;
+        return SettingsEnums.DISPLAY;
     }
 
     @Override

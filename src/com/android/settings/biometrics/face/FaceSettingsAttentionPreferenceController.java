@@ -19,11 +19,11 @@ package com.android.settings.biometrics.face;
 import android.content.Context;
 import android.hardware.face.FaceManager;
 
-import com.android.settings.Utils;
-import com.android.settings.core.TogglePreferenceController;
-
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SwitchPreference;
+
+import com.android.settings.Utils;
+import com.android.settings.core.TogglePreferenceController;
 
 /**
  * Preference controller that manages the ability to use face authentication with/without
@@ -48,7 +48,6 @@ public class FaceSettingsAttentionPreferenceController extends TogglePreferenceC
 
     public void setToken(byte[] token) {
         mToken = token;
-        mPreference.setChecked(mFaceManager.getRequireAttention(mToken));
     }
 
     /**
@@ -64,18 +63,13 @@ public class FaceSettingsAttentionPreferenceController extends TogglePreferenceC
     public boolean isChecked() {
         if (!FaceSettings.isAvailable(mContext)) {
             return true;
-        } else if (mToken == null) {
-            // The token will be null when the controller is first created, since CC has not been
-            // completed by the user. Once it's completed, FaceSettings will use setToken which
-            // will retrieve the correct value from FaceService
-            return true;
         }
-        return mFaceManager.getRequireAttention(mToken);
+        return mFaceManager.getFeature(FaceManager.FEATURE_REQUIRE_ATTENTION);
     }
 
     @Override
     public boolean setChecked(boolean isChecked) {
-        mFaceManager.setRequireAttention(isChecked, mToken);
+        mFaceManager.setFeature(FaceManager.FEATURE_REQUIRE_ATTENTION, isChecked, mToken);
         return true;
     }
 

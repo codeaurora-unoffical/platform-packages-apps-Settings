@@ -34,7 +34,6 @@ import android.provider.Settings;
 
 import androidx.preference.PreferenceScreen;
 
-import com.android.settings.testutils.SettingsRobolectricTestRunner;
 import com.android.settings.testutils.shadow.ShadowBluetoothAdapter;
 import com.android.settings.widget.ValidatedEditTextPreference;
 
@@ -44,11 +43,12 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowApplication;
 
-@RunWith(SettingsRobolectricTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 @Config(shadows = {ShadowBluetoothAdapter.class})
 public class DeviceNamePreferenceControllerTest {
     private static final String TESTING_STRING = "Testing";
@@ -75,7 +75,7 @@ public class DeviceNamePreferenceControllerTest {
         configuration.SSID = "test-ap";
         when(mWifiManager.getWifiApConfiguration()).thenReturn(configuration);
 
-        mController = new DeviceNamePreferenceController(mContext);
+        mController = new DeviceNamePreferenceController(mContext, "test_key");
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     }
 
@@ -99,17 +99,17 @@ public class DeviceNamePreferenceControllerTest {
     public void constructor_deviceNameLoadedIfSet() {
         Settings.Global.putString(
                 mContext.getContentResolver(), Settings.Global.DEVICE_NAME, "Test");
-        mController = new DeviceNamePreferenceController(mContext);
+        mController = new DeviceNamePreferenceController(mContext, "test_key");
         assertThat(mController.getSummary()).isEqualTo("Test");
     }
 
     @Test
-    public void isTextValid_nameUnder33CharactersIsValid() {
+    public void isTextValid_nameUnder33Characters_isValid() {
         assertThat(mController.isTextValid("12345678901234567890123456789012")).isTrue();
     }
 
     @Test
-    public void isTextValid_nameTooLongIsInvalid() {
+    public void isTextValid_nameTooLong_isInvalid() {
         assertThat(mController.isTextValid("123456789012345678901234567890123")).isFalse();
     }
 
@@ -178,12 +178,6 @@ public class DeviceNamePreferenceControllerTest {
     }
 
     private void acceptDeviceName(boolean accept) {
-        mController.setHost(
-                new DeviceNamePreferenceController.DeviceNamePreferenceHost() {
-                    @Override
-                    public void showDeviceNameWarningDialog(String deviceName) {
-                        mController.updateDeviceName(accept);
-                    }
-                });
+        mController.setHost(deviceName -> mController.updateDeviceName(accept));
     }
 }

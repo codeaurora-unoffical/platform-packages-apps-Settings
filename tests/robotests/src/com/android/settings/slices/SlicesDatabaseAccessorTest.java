@@ -34,7 +34,6 @@ import com.android.settings.search.SearchFeatureProviderImpl;
 import com.android.settings.testutils.DatabaseTestUtils;
 import com.android.settings.testutils.FakeFeatureFactory;
 import com.android.settings.testutils.FakeIndexProvider;
-import com.android.settings.testutils.SettingsRobolectricTestRunner;
 import com.android.settings.testutils.shadow.ShadowBluetoothAdapter;
 import com.android.settings.testutils.shadow.ShadowLockPatternUtils;
 import com.android.settings.testutils.shadow.ShadowUserManager;
@@ -44,6 +43,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
@@ -55,8 +55,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-
-@RunWith(SettingsRobolectricTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 @Config(shadows = {ShadowUserManager.class, ShadowUtils.class,
         SlicesDatabaseAccessorTest.ShadowApplicationPackageManager.class,
         ShadowBluetoothAdapter.class, ShadowLockPatternUtils.class})
@@ -90,7 +89,6 @@ public class SlicesDatabaseAccessorTest {
 
     @After
     public void cleanUp() {
-        ShadowUserManager.getShadow().reset();
         DatabaseTestUtils.clearDb(mContext);
     }
 
@@ -111,12 +109,14 @@ public class SlicesDatabaseAccessorTest {
         assertThat(data.getUri()).isNull();
         assertThat(data.getPreferenceController()).isEqualTo(FAKE_CONTROLLER_NAME);
         assertThat(data.isDynamicSummaryAllowed()).isFalse(); /* default value */
+        assertThat(data.getUnavailableSliceSubtitle()).isNull();
     }
 
     @Test
     public void testGetSliceDataFromKey_allowDynamicSummary_validSliceReturned() {
         String key = "key";
-        insertSpecialCase(key, true /* isPlatformSlice */, true /* isDynamicSummaryAllowed */);
+        insertSpecialCase(key, true /* isPlatformSlice */, true /* isDynamicSummaryAllowed */,
+                null /* customizedUnavailableSliceSubtitle */);
 
         SliceData data = mAccessor.getSliceDataFromKey(key);
 
@@ -135,7 +135,8 @@ public class SlicesDatabaseAccessorTest {
     @Test
     public void testGetSliceDataFromKey_doNotAllowDynamicSummary_validSliceReturned() {
         String key = "key";
-        insertSpecialCase(key, true /* isPlatformSlice */, false /* isDynamicSummaryAllowed */);
+        insertSpecialCase(key, true /* isPlatformSlice */, false /* isDynamicSummaryAllowed */,
+                null /* customizedUnavailableSliceSubtitle */);
 
         SliceData data = mAccessor.getSliceDataFromKey(key);
 
@@ -245,16 +246,58 @@ public class SlicesDatabaseAccessorTest {
         assertThat(keys).isNotEmpty();
     }
 
+    @Test
+    public void testGetSliceDataFromKey_defaultUnavailableSlice_validSliceReturned() {
+        String key = "key";
+        insertSpecialCase(key, true /* isPlatformSlice */, true /* isDynamicSummaryAllowed */,
+                null /* customizedUnavailableSliceSubtitle */);
+
+        SliceData data = mAccessor.getSliceDataFromKey(key);
+
+        assertThat(data.getKey()).isEqualTo(key);
+        assertThat(data.getTitle()).isEqualTo(FAKE_TITLE);
+        assertThat(data.getSummary()).isEqualTo(FAKE_SUMMARY);
+        assertThat(data.getScreenTitle()).isEqualTo(FAKE_SCREEN_TITLE);
+        assertThat(data.getKeywords()).isEqualTo(FAKE_KEYWORDS);
+        assertThat(data.getIconResource()).isEqualTo(FAKE_ICON);
+        assertThat(data.getFragmentClassName()).isEqualTo(FAKE_FRAGMENT_NAME);
+        assertThat(data.getUri()).isNull();
+        assertThat(data.getPreferenceController()).isEqualTo(FAKE_CONTROLLER_NAME);
+        assertThat(data.getUnavailableSliceSubtitle()).isNull();
+    }
+
+    @Test
+    public void testGetSliceDataFromKey_customizeSubtitleOfUnavailableSlice_validSliceReturned() {
+        String key = "key";
+        String subtitle = "subtitle";
+        insertSpecialCase(key, true /* isPlatformSlice */, true /* isDynamicSummaryAllowed */,
+                subtitle);
+
+        SliceData data = mAccessor.getSliceDataFromKey(key);
+
+        assertThat(data.getKey()).isEqualTo(key);
+        assertThat(data.getTitle()).isEqualTo(FAKE_TITLE);
+        assertThat(data.getSummary()).isEqualTo(FAKE_SUMMARY);
+        assertThat(data.getScreenTitle()).isEqualTo(FAKE_SCREEN_TITLE);
+        assertThat(data.getKeywords()).isEqualTo(FAKE_KEYWORDS);
+        assertThat(data.getIconResource()).isEqualTo(FAKE_ICON);
+        assertThat(data.getFragmentClassName()).isEqualTo(FAKE_FRAGMENT_NAME);
+        assertThat(data.getUri()).isNull();
+        assertThat(data.getPreferenceController()).isEqualTo(FAKE_CONTROLLER_NAME);
+        assertThat(data.getUnavailableSliceSubtitle()).isEqualTo(subtitle);
+    }
+
     private void insertSpecialCase(String key) {
         insertSpecialCase(key, true);
     }
 
     private void insertSpecialCase(String key, boolean isPlatformSlice) {
-        insertSpecialCase(key, isPlatformSlice, false /* isDynamicSummaryAllowed */);
+        insertSpecialCase(key, isPlatformSlice, false /* isDynamicSummaryAllowed */,
+                null /*customizedUnavailableSliceSubtitle*/);
     }
 
     private void insertSpecialCase(String key, boolean isPlatformSlice,
-            boolean isDynamicSummaryAllowed) {
+            boolean isDynamicSummaryAllowed, String customizedUnavailableSliceSubtitle) {
         ContentValues values = new ContentValues();
         values.put(SlicesDatabaseHelper.IndexColumns.KEY, key);
         values.put(SlicesDatabaseHelper.IndexColumns.TITLE, FAKE_TITLE);
@@ -268,6 +311,8 @@ public class SlicesDatabaseAccessorTest {
         values.put(SlicesDatabaseHelper.IndexColumns.ALLOW_DYNAMIC_SUMMARY_IN_SLICE,
                 isDynamicSummaryAllowed);
         values.put(SlicesDatabaseHelper.IndexColumns.SLICE_TYPE, SliceData.SliceType.INTENT);
+        values.put(SlicesDatabaseHelper.IndexColumns.UNAVAILABLE_SLICE_SUBTITLE,
+                customizedUnavailableSliceSubtitle);
 
         mDb.replaceOrThrow(SlicesDatabaseHelper.Tables.TABLE_SLICES_INDEX, null, values);
     }

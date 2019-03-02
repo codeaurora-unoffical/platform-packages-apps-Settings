@@ -16,9 +16,6 @@
 
 package com.android.settings.development;
 
-import static com.android.settings.development.FileEncryptionPreferenceController
-        .FILE_ENCRYPTION_PROPERTY_KEY;
-
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -29,24 +26,23 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.os.RemoteException;
-import android.os.SystemProperties;
 import android.os.storage.IStorageManager;
-
+import android.sysprop.CryptoProperties;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 
 import com.android.settings.R;
-import com.android.settings.testutils.SettingsRobolectricTestRunner;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.util.ReflectionHelpers;
 
-@RunWith(SettingsRobolectricTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class FileEncryptionPreferenceControllerTest {
 
     @Mock
@@ -96,7 +92,7 @@ public class FileEncryptionPreferenceControllerTest {
         ReflectionHelpers.setField(mController, "mStorageManager", mStorageManager);
         when(mStorageManager.isConvertibleToFBE()).thenReturn(true);
         mController.displayPreference(mPreferenceScreen);
-        SystemProperties.set(FILE_ENCRYPTION_PROPERTY_KEY, "foobar");
+        CryptoProperties.type("foobar");
 
         mController.updateState(mPreference);
 
@@ -110,7 +106,7 @@ public class FileEncryptionPreferenceControllerTest {
         ReflectionHelpers.setField(mController, "mStorageManager", mStorageManager);
         when(mStorageManager.isConvertibleToFBE()).thenReturn(true);
         mController.displayPreference(mPreferenceScreen);
-        SystemProperties.set(FILE_ENCRYPTION_PROPERTY_KEY, "file");
+        CryptoProperties.type("file");
 
         mController.updateState(mPreference);
 

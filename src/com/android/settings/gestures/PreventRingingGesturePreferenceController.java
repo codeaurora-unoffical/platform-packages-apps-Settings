@@ -24,6 +24,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 
+import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
+import androidx.preference.PreferenceScreen;
+
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.settings.R;
 import com.android.settings.core.PreferenceControllerMixin;
@@ -37,16 +41,12 @@ import com.android.settingslib.core.lifecycle.events.OnPause;
 import com.android.settingslib.core.lifecycle.events.OnResume;
 import com.android.settingslib.core.lifecycle.events.OnSaveInstanceState;
 
-import androidx.preference.Preference;
-import androidx.preference.PreferenceCategory;
-import androidx.preference.PreferenceScreen;
-
 public class PreventRingingGesturePreferenceController extends AbstractPreferenceController
         implements RadioButtonPreference.OnClickListener, LifecycleObserver, OnSaveInstanceState,
         OnResume, OnPause, OnCreate, PreferenceControllerMixin {
 
     @VisibleForTesting static final String KEY_VIBRATE = "prevent_ringing_option_vibrate";
-    @VisibleForTesting static final String KEY_NONE = "prevent_ringing_option_none";
+
     @VisibleForTesting static final String KEY_MUTE = "prevent_ringing_option_mute";
 
     private final String KEY_VIDEO_PAUSED = "key_video_paused";
@@ -57,9 +57,8 @@ public class PreventRingingGesturePreferenceController extends AbstractPreferenc
     private VideoPreference mVideoPreference;
     private boolean mVideoPaused;
 
-    private PreferenceCategory mPreferenceCategory;
+    @VisibleForTesting PreferenceCategory mPreferenceCategory;
     @VisibleForTesting RadioButtonPreference mVibratePref;
-    @VisibleForTesting RadioButtonPreference mNonePref;
     @VisibleForTesting RadioButtonPreference mMutePref;
 
     private SettingObserver mSettingObserver;
@@ -80,7 +79,6 @@ public class PreventRingingGesturePreferenceController extends AbstractPreferenc
             mPreferenceCategory = (PreferenceCategory) screen.findPreference(getPreferenceKey());
             mVibratePref = makeRadioPreference(KEY_VIBRATE, R.string.prevent_ringing_option_vibrate);
             mMutePref = makeRadioPreference(KEY_MUTE, R.string.prevent_ringing_option_mute);
-            mNonePref = makeRadioPreference(KEY_NONE, R.string.prevent_ringing_option_none);
 
             if (mPreferenceCategory != null) {
                 mSettingObserver = new SettingObserver(mPreferenceCategory);
@@ -124,19 +122,21 @@ public class PreventRingingGesturePreferenceController extends AbstractPreferenc
     public void updateState(Preference preference) {
         int preventRingingSetting = Settings.Secure.getInt(mContext.getContentResolver(),
                 Settings.Secure.VOLUME_HUSH_GESTURE, Settings.Secure.VOLUME_HUSH_VIBRATE);
-
         final boolean isVibrate = preventRingingSetting == Settings.Secure.VOLUME_HUSH_VIBRATE;
         final boolean isMute = preventRingingSetting == Settings.Secure.VOLUME_HUSH_MUTE;
-        final boolean isOff = preventRingingSetting == Settings.Secure.VOLUME_HUSH_OFF
-                || (!isVibrate && !isMute);
         if (mVibratePref != null && mVibratePref.isChecked() != isVibrate) {
             mVibratePref.setChecked(isVibrate);
         }
         if (mMutePref != null && mMutePref.isChecked() != isMute) {
             mMutePref.setChecked(isMute);
         }
-        if (mNonePref != null && mNonePref.isChecked() != isOff) {
-            mNonePref.setChecked(isOff);
+
+        if (preventRingingSetting == Settings.Secure.VOLUME_HUSH_OFF) {
+            mVibratePref.setEnabled(false);
+            mMutePref.setEnabled(false);
+        } else {
+            mVibratePref.setEnabled(true);
+            mMutePref.setEnabled(true);
         }
     }
 
@@ -173,13 +173,12 @@ public class PreventRingingGesturePreferenceController extends AbstractPreferenc
 
     private int keyToSetting(String key) {
         switch (key) {
-            case KEY_NONE:
-                return Settings.Secure.VOLUME_HUSH_OFF;
             case KEY_MUTE:
                 return Settings.Secure.VOLUME_HUSH_MUTE;
             case KEY_VIBRATE:
-            default:
                 return Settings.Secure.VOLUME_HUSH_VIBRATE;
+            default:
+                return Settings.Secure.VOLUME_HUSH_OFF;
         }
     }
 

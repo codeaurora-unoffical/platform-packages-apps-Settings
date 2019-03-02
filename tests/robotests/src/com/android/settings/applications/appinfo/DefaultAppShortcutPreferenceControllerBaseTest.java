@@ -18,123 +18,230 @@ package com.android.settings.applications.appinfo;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.spy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
+import android.app.role.RoleManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.UserManager;
+import android.permission.PermissionControllerManager;
 
 import androidx.preference.Preference;
 
 import com.android.settings.R;
 import com.android.settings.SettingsActivity;
 import com.android.settings.applications.DefaultAppSettings;
-import com.android.settings.testutils.SettingsRobolectricTestRunner;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowActivity;
+import org.robolectric.shadows.ShadowApplication;
+import org.robolectric.shadows.ShadowUserManager;
 
-@RunWith(SettingsRobolectricTestRunner.class)
+import java.util.Collections;
+import java.util.concurrent.Executor;
+import java.util.function.Consumer;
+
+@RunWith(RobolectricTestRunner.class)
+@Config(shadows = ShadowUserManager.class)
 public class DefaultAppShortcutPreferenceControllerBaseTest {
 
+    private static final String TEST_PREFERENCE_KEY = "TestKey";
+    private static final String TEST_ROLE_NAME = "TestRole";
+    private static final String TEST_PACKAGE_NAME = "TestPackage";
+
     @Mock
-    private UserManager mUserManager;
+    private RoleManager mRoleManager;
     @Mock
-    private AppInfoDashboardFragment mFragment;
+    private PermissionControllerManager mPermissionControllerManager;
     @Mock
     private Preference mPreference;
 
     private Activity mActivity;
-    private TestPreferenceController mController;
+    private ShadowUserManager mShadowUserManager;
+
+    private TestRolePreferenceController mController;
+    private TestLegacyPreferenceController mLegacyController;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mActivity = spy(Robolectric.setupActivity(Activity.class));
-        when(mActivity.getSystemService(Context.USER_SERVICE)).thenReturn(mUserManager);
-        mController = new TestPreferenceController(mActivity, mFragment);
-        final String key = mController.getPreferenceKey();
-        when(mPreference.getKey()).thenReturn(key);
+        ShadowApplication shadowApplication = ShadowApplication.getInstance();
+        shadowApplication.setSystemService(Context.ROLE_SERVICE, mRoleManager);
+        shadowApplication.setSystemService(Context.PERMISSION_CONTROLLER_SERVICE,
+                mPermissionControllerManager);
+        mActivity = Robolectric.setupActivity(Activity.class);
+        mShadowUserManager = shadowOf(mActivity.getSystemService(UserManager.class));
+        mController = new TestRolePreferenceController(mActivity);
+        when(mPreference.getKey()).thenReturn(mController.getPreferenceKey());
+        mLegacyController = new TestLegacyPreferenceController(mActivity);
     }
 
     @Test
-    public void getAvailabilityStatus_managedProfile_shouldReturnDisabled() {
-        when(mUserManager.isManagedProfile()).thenReturn(true);
-
-        assertThat(mController.getAvailabilityStatus()).isEqualTo(mController.DISABLED_FOR_USER);
+    public void constructor_callsIsApplicationQualifiedForRole() {
+        verify(mPermissionControllerManager).isApplicationQualifiedForRole(eq(TEST_ROLE_NAME), eq(
+                TEST_PACKAGE_NAME), any(Executor.class), any(Consumer.class));
     }
+
+    @Test
+    public void getAvailabilityStatus_isManagedProfile_shouldReturnDisabled() {
+        mShadowUserManager.setManagedProfile(true);
+
+        assertThat(mController.getAvailabilityStatus()).isEqualTo(
+                DefaultAppShortcutPreferenceControllerBase.DISABLED_FOR_USER);
+    }
+
+    @Test
+    public void
+    getAvailabilityStatus_noCallbackForIsApplicationNotQualifiedForRole_shouldReturnUnsupported() {
+        assertThat(mController.getAvailabilityStatus()).isEqualTo(
+                DefaultAppShortcutPreferenceControllerBase.UNSUPPORTED_ON_DEVICE);
+    }
+
+    @Test
+    public void getAvailabilityStatus_applicationIsNotQualifiedForRole_shouldReturnUnsupported() {
+        final ArgumentCaptor<Consumer<Boolean>> callbackCaptor = ArgumentCaptor.forClass(
+                Consumer.class);
+        verify(mPermissionControllerManager).isApplicationQualifiedForRole(eq(TEST_ROLE_NAME), eq(
+                TEST_PACKAGE_NAME), any(Executor.class), callbackCaptor.capture());
+        final Consumer<Boolean> callback = callbackCaptor.getValue();
+        callback.accept(false);
+
+        assertThat(mController.getAvailabilityStatus()).isEqualTo(
+                DefaultAppShortcutPreferenceControllerBase.UNSUPPORTED_ON_DEVICE);
+    }
+
+    @Test
+    public void getAvailabilityStatus_applicationIsQualifiedForRole_shouldReturnAvailable() {
+        final ArgumentCaptor<Consumer<Boolean>> callbackCaptor = ArgumentCaptor.forClass(
+                Consumer.class);
+        verify(mPermissionControllerManager).isApplicationQualifiedForRole(eq(TEST_ROLE_NAME), eq(
+                TEST_PACKAGE_NAME), any(Executor.class), callbackCaptor.capture());
+        final Consumer<Boolean> callback = callbackCaptor.getValue();
+        callback.accept(true);
+
+        assertThat(mController.getAvailabilityStatus()).isEqualTo(
+                DefaultAppShortcutPreferenceControllerBase.AVAILABLE);
+    }
+
+    @Test
+    public void updateState_isRoleHolder_shouldSetSummaryToYes() {
+        when(mRoleManager.getRoleHolders(eq(TEST_ROLE_NAME))).thenReturn(Collections.singletonList(
+                TEST_PACKAGE_NAME));
+        final CharSequence yesText = mActivity.getText(R.string.yes);
+
+        mController.updateState(mPreference);
+        verify(mPreference).setSummary(yesText);
+    }
+
+    @Test
+    public void updateState_notRoleHoler_shouldSetSummaryToNo() {
+        when(mRoleManager.getRoleHolders(eq(TEST_ROLE_NAME))).thenReturn(Collections.emptyList());
+        final CharSequence noText = mActivity.getText(R.string.no);
+
+        mController.updateState(mPreference);
+        verify(mPreference).setSummary(noText);
+    }
+
+    @Test
+    public void handlePreferenceTreeClick_shouldStartManageDefaultAppIntent() {
+        final ShadowActivity shadowActivity = shadowOf(mActivity);
+
+        mController.handlePreferenceTreeClick(mPreference);
+        final Intent intent = shadowActivity.getNextStartedActivity();
+        assertThat(intent).isNotNull();
+        assertThat(intent.getAction()).isEqualTo(Intent.ACTION_MANAGE_DEFAULT_APP);
+        assertThat(intent.getStringExtra(Intent.EXTRA_ROLE_NAME)).isEqualTo(TEST_ROLE_NAME);
+    }
+
+    private class TestRolePreferenceController extends DefaultAppShortcutPreferenceControllerBase {
+
+        private TestRolePreferenceController(Context context) {
+            super(context, TEST_PREFERENCE_KEY, TEST_ROLE_NAME, TEST_PACKAGE_NAME);
+        }
+    }
+
+    // TODO: STOPSHIP(b/110557011): Remove following tests once we have all default apps migrated.
 
     @Test
     public void getAvailabilityStatus_hasAppCapability_shouldReturnAvailable() {
-        mController.capable = true;
-        when(mUserManager.isManagedProfile()).thenReturn(false);
+        mShadowUserManager.setManagedProfile(false);
+        mLegacyController.mHasAppCapability = true;
 
-        assertThat(mController.getAvailabilityStatus()).isEqualTo(mController.AVAILABLE);
+        assertThat(mLegacyController.getAvailabilityStatus()).isEqualTo(
+                DefaultAppShortcutPreferenceControllerBase.AVAILABLE);
     }
 
     @Test
     public void getAvailabilityStatus_noAppCapability_shouldReturnDisabled() {
-        mController.capable = false;
-        when(mUserManager.isManagedProfile()).thenReturn(false);
+        mShadowUserManager.setManagedProfile(false);
+        mLegacyController.mHasAppCapability = false;
 
-        assertThat(mController.getAvailabilityStatus()).isEqualTo(
-                mController.UNSUPPORTED_ON_DEVICE);
+        assertThat(mLegacyController.getAvailabilityStatus()).isEqualTo(
+                DefaultAppShortcutPreferenceControllerBase.UNSUPPORTED_ON_DEVICE);
     }
 
     @Test
     public void updateState_isDefaultApp_shouldSetSummaryToYes() {
-        mController.isDefault = true;
+        mLegacyController.mIsDefaultApp = true;
+        final CharSequence yesText = mActivity.getText(R.string.yes);
 
-        mController.updateState(mPreference);
-        String yesString = mActivity.getString(R.string.yes);
-        verify(mPreference).setSummary(yesString);
+        mLegacyController.updateState(mPreference);
+        verify(mPreference).setSummary(yesText);
     }
 
     @Test
     public void updateState_notDefaultApp_shouldSetSummaryToNo() {
-        mController.isDefault = false;
+        mLegacyController.mIsDefaultApp = false;
+        final CharSequence noText = mActivity.getText(R.string.no);
 
-        mController.updateState(mPreference);
-
-        String noString = mActivity.getString(R.string.no);
-        verify(mPreference).setSummary(noString);
+        mLegacyController.updateState(mPreference);
+        verify(mPreference).setSummary(noText);
     }
 
     @Test
     public void handlePreferenceTreeClick_shouldStartDefaultAppSettings() {
-        mController.handlePreferenceTreeClick(mPreference);
+        final ShadowActivity shadowActivity = shadowOf(mActivity);
 
-        verify(mActivity).startActivity(argThat(intent -> intent != null
-                && intent.getStringExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT).equals(
-                DefaultAppSettings.class.getName())
-                && intent.getBundleExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS)
-                .getString(SettingsActivity.EXTRA_FRAGMENT_ARG_KEY).equals("TestKey")));
+        mLegacyController.handlePreferenceTreeClick(mPreference);
+        final Intent intent = shadowActivity.getNextStartedActivity();
+        assertThat(intent).isNotNull();
+        assertThat(intent.getStringExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT)).isEqualTo(
+                DefaultAppSettings.class.getName());
+        assertThat(intent.getBundleExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS).getString(
+                SettingsActivity.EXTRA_FRAGMENT_ARG_KEY)).isEqualTo(TEST_PREFERENCE_KEY);
     }
 
-    private class TestPreferenceController extends DefaultAppShortcutPreferenceControllerBase {
+    private class TestLegacyPreferenceController
+            extends DefaultAppShortcutPreferenceControllerBase {
 
-        private boolean isDefault;
-        private boolean capable;
+        private boolean mIsDefaultApp;
+        private boolean mHasAppCapability;
 
-        private TestPreferenceController(Context context, AppInfoDashboardFragment parent) {
-            super(context, "TestKey", "TestPackage");
+        private TestLegacyPreferenceController(Context context) {
+            super(context, TEST_PREFERENCE_KEY, TEST_PACKAGE_NAME);
         }
 
         @Override
         protected boolean hasAppCapability() {
-            return capable;
+            return mHasAppCapability;
         }
 
         @Override
         protected boolean isDefaultApp() {
-            return isDefault;
+            return mIsDefaultApp;
         }
     }
 }

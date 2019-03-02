@@ -29,18 +29,18 @@ import android.net.Uri;
 
 import com.android.settings.slices.SlicesDatabaseHelper.IndexColumns;
 import com.android.settings.testutils.DatabaseTestUtils;
-import com.android.settings.testutils.SettingsRobolectricTestRunner;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@RunWith(SettingsRobolectricTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class SlicesIndexerTest {
 
     private final String[] KEYS = new String[]{"key1", "key2", "key3"};
@@ -55,6 +55,7 @@ public class SlicesIndexerTest {
     private final boolean PLATFORM_DEFINED = true;
     private final boolean IS_DYNAMIC_SUMMARY_ALLOWED = true;
     private final int SLICE_TYPE = SliceData.SliceType.SLIDER;
+    private final String UNAVAILABLE_SLICE_SUBTITLE = "subtitleOfUnavailableSlice";
 
     private Context mContext;
 
@@ -145,6 +146,9 @@ public class SlicesIndexerTest {
                         cursor.getColumnIndex(
                                 IndexColumns.ALLOW_DYNAMIC_SUMMARY_IN_SLICE)))
                         .isEqualTo(1 /* true */);
+                assertThat(cursor.getString(
+                        cursor.getColumnIndex(IndexColumns.UNAVAILABLE_SLICE_SUBTITLE)))
+                        .isEqualTo(UNAVAILABLE_SLICE_SUBTITLE);
                 cursor.moveToNext();
             }
         } finally {
@@ -179,7 +183,8 @@ public class SlicesIndexerTest {
                 .setPreferenceControllerClassName(PREF_CONTROLLER)
                 .setPlatformDefined(PLATFORM_DEFINED)
                 .setSliceType(SLICE_TYPE)
-                .setDynamicSummaryAllowed(IS_DYNAMIC_SUMMARY_ALLOWED);
+                .setDynamicSummaryAllowed(IS_DYNAMIC_SUMMARY_ALLOWED)
+                .setUnavailableSliceSubtitle(UNAVAILABLE_SLICE_SUBTITLE);
 
         for (int i = 0; i < KEYS.length; i++) {
             builder.setKey(KEYS[i]).setTitle(TITLES[i]);

@@ -22,6 +22,7 @@ import static android.os.UserManager.DISALLOW_CONFIG_WIFI;
 import android.annotation.NonNull;
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.settings.SettingsEnums;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -52,7 +53,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
-import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.LinkifyUtils;
 import com.android.settings.R;
 import com.android.settings.RestrictedSettingsFragment;
@@ -66,6 +66,7 @@ import com.android.settings.search.SearchIndexableRaw;
 import com.android.settings.widget.SummaryUpdater.OnSummaryChangeListener;
 import com.android.settings.widget.SwitchBarController;
 import com.android.settings.wifi.details.WifiNetworkDetailsFragment;
+import com.android.settings.wifi.dpp.WifiDppUtils;
 import com.android.settingslib.RestrictedLockUtils;
 import com.android.settingslib.RestrictedLockUtilsInternal;
 import com.android.settingslib.search.SearchIndexable;
@@ -175,7 +176,7 @@ public class WifiSettings extends RestrictedSettingsFragment
 
     private PreferenceCategory mConnectedAccessPointPreferenceCategory;
     private PreferenceCategory mAccessPointsPreferenceCategory;
-    private Preference mAddPreference;
+    private ButtonPreference mAddPreference;
     @VisibleForTesting
     Preference mConfigureWifiSettingsPreference;
     @VisibleForTesting
@@ -235,9 +236,17 @@ public class WifiSettings extends RestrictedSettingsFragment
         mSavedNetworksPreference = findPreference(PREF_KEY_SAVED_NETWORKS);
 
         Context prefContext = getPrefContext();
-        mAddPreference = new Preference(prefContext);
+        mAddPreference = new ButtonPreference(prefContext);
         mAddPreference.setIcon(R.drawable.ic_menu_add);
         mAddPreference.setTitle(R.string.wifi_add_network);
+        if (WifiDppUtils.isSharingNetworkEnabled(getContext())) {
+            mAddPreference.setButtonIcon(R.drawable.ic_scan_24dp);
+            mAddPreference.setButtonOnClickListener((View v) -> {
+                // Launch QR code scanner to join a network.
+                getContext().startActivity(
+                        WifiDppUtils.getEnrolleeQrCodeScannerIntent(/* ssid */ null));
+            });
+        }
         mStatusMessagePreference = (LinkablePreference) findPreference(PREF_KEY_STATUS_MESSAGE);
 
         mUserBadgeCache = new AccessPointPreference.UserBadgeCache(getPackageManager());
@@ -437,7 +446,7 @@ public class WifiSettings extends RestrictedSettingsFragment
 
     @Override
     public int getMetricsCategory() {
-        return MetricsEvent.WIFI;
+        return SettingsEnums.WIFI;
     }
 
     @Override
@@ -553,21 +562,24 @@ public class WifiSettings extends RestrictedSettingsFragment
              * Bypass dialog and connect to unsecured networks, or previously connected saved
              * networks, or Passpoint provided networks.
              */
-            WifiConfiguration config = mSelectedAccessPoint.getConfig();
-            if ((mSelectedAccessPoint.getSecurity() == AccessPoint.SECURITY_NONE) ||
-                    (mSelectedAccessPoint.getSecurity() == AccessPoint.SECURITY_OWE)) {
-                mSelectedAccessPoint.generateOpenNetworkConfig();
-                connect(mSelectedAccessPoint.getConfig(), mSelectedAccessPoint.isSaved());
-            } else if (mSelectedAccessPoint.isSaved() && config != null
-                    && config.getNetworkSelectionStatus() != null
-                    && config.getNetworkSelectionStatus().getHasEverConnected()) {
-                connect(config, true /* isSavedNetwork */);
-            } else if (mSelectedAccessPoint.isPasspoint()) {
-                // Access point provided by an installed Passpoint provider, connect using
-                // the associated config.
-                connect(config, true /* isSavedNetwork */);
-            } else {
-                showDialog(mSelectedAccessPoint, WifiConfigUiBase.MODE_CONNECT);
+            switch (WifiUtils.getConnectingType(mSelectedAccessPoint)) {
+                case WifiUtils.CONNECT_TYPE_OSU_PROVISION:
+                    mSelectedAccessPoint.startOsuProvisioning();
+                    mClickedConnect = true;
+                    break;
+
+                case WifiUtils.CONNECT_TYPE_OPEN_NETWORK:
+                    mSelectedAccessPoint.generateOpenNetworkConfig();
+                    connect(mSelectedAccessPoint.getConfig(), mSelectedAccessPoint.isSaved());
+                    break;
+
+                case WifiUtils.CONNECT_TYPE_SAVED_NETWORK:
+                    connect(mSelectedAccessPoint.getConfig(), true /* isSavedNetwork */);
+                    break;
+
+                default:
+                    showDialog(mSelectedAccessPoint, WifiConfigUiBase.MODE_CONNECT);
+                    break;
             }
         } else if (preference == mAddPreference) {
             onAddNetworkPressed();
@@ -645,9 +657,9 @@ public class WifiSettings extends RestrictedSettingsFragment
     public int getDialogMetricsCategory(int dialogId) {
         switch (dialogId) {
             case WIFI_DIALOG_ID:
-                return MetricsEvent.DIALOG_WIFI_AP_EDIT;
+                return SettingsEnums.DIALOG_WIFI_AP_EDIT;
             case WRITE_NFC_DIALOG_ID:
-                return MetricsEvent.DIALOG_WIFI_WRITE_NFC;
+                return SettingsEnums.DIALOG_WIFI_WRITE_NFC;
             default:
                 return 0;
         }
@@ -1077,7 +1089,7 @@ public class WifiSettings extends RestrictedSettingsFragment
     }
 
     /* package */ void forget() {
-        mMetricsFeatureProvider.action(getActivity(), MetricsEvent.ACTION_WIFI_FORGET);
+        mMetricsFeatureProvider.action(getActivity(), SettingsEnums.ACTION_WIFI_FORGET);
         if (!mSelectedAccessPoint.isSaved()) {
             if (mSelectedAccessPoint.getNetworkInfo() != null &&
                     mSelectedAccessPoint.getNetworkInfo().getState() != State.DISCONNECTED) {
@@ -1103,7 +1115,7 @@ public class WifiSettings extends RestrictedSettingsFragment
 
     protected void connect(final WifiConfiguration config, boolean isSavedNetwork) {
         // Log subtype if configuration is a saved network.
-        mMetricsFeatureProvider.action(getContext(), MetricsEvent.ACTION_WIFI_CONNECT,
+        mMetricsFeatureProvider.action(getContext(), SettingsEnums.ACTION_WIFI_CONNECT,
                 isSavedNetwork);
         mWifiManager.connect(config, mConnectListener);
         mClickedConnect = true;
@@ -1111,7 +1123,7 @@ public class WifiSettings extends RestrictedSettingsFragment
 
     protected void connect(final int networkId, boolean isSavedNetwork) {
         // Log subtype if configuration is a saved network.
-        mMetricsFeatureProvider.action(getActivity(), MetricsEvent.ACTION_WIFI_CONNECT,
+        mMetricsFeatureProvider.action(getActivity(), SettingsEnums.ACTION_WIFI_CONNECT,
                 isSavedNetwork);
         mWifiManager.connect(networkId, mConnectListener);
     }

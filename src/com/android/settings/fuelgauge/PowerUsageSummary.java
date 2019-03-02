@@ -18,6 +18,7 @@ package com.android.settings.fuelgauge;
 
 import static com.android.settings.fuelgauge.BatteryBroadcastReceiver.BatteryUpdateType;
 
+import android.app.settings.SettingsEnums;
 import android.content.Context;
 import android.os.BatteryStats;
 import android.os.Bundle;
@@ -35,11 +36,9 @@ import androidx.loader.app.LoaderManager;
 import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 
-import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
 import com.android.settings.SettingsActivity;
 import com.android.settings.Utils;
-import com.android.settings.applications.LayoutPreference;
 import com.android.settings.core.SubSettingLauncher;
 import com.android.settings.fuelgauge.batterytip.BatteryTipLoader;
 import com.android.settings.fuelgauge.batterytip.BatteryTipPreferenceController;
@@ -49,6 +48,7 @@ import com.android.settings.search.BaseSearchIndexProvider;
 import com.android.settingslib.search.SearchIndexable;
 import com.android.settingslib.utils.PowerUtil;
 import com.android.settingslib.utils.StringUtil;
+import com.android.settingslib.widget.LayoutPreference;
 
 import java.util.Collections;
 import java.util.List;
@@ -225,7 +225,7 @@ public class PowerUsageSummary extends PowerUsageBase implements OnLongClickList
 
     @Override
     public int getMetricsCategory() {
-        return MetricsEvent.FUELGAUGE_POWER_USAGE_SUMMARY_V2;
+        return SettingsEnums.FUELGAUGE_POWER_USAGE_SUMMARY_V2;
     }
 
     @Override

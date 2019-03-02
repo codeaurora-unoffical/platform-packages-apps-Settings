@@ -18,32 +18,22 @@ package com.android.settings.applications.manageapplications;
 
 import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE;
 
-import static com.android.settings.applications.manageapplications.AppFilterRegistry
-        .FILTER_APPS_ALL;
-import static com.android.settings.applications.manageapplications.AppFilterRegistry
-        .FILTER_APPS_BLOCKED;
-import static com.android.settings.applications.manageapplications.AppFilterRegistry
-        .FILTER_APPS_DISABLED;
-import static com.android.settings.applications.manageapplications.AppFilterRegistry
-        .FILTER_APPS_ENABLED;
-import static com.android.settings.applications.manageapplications.AppFilterRegistry
-        .FILTER_APPS_FREQUENT;
-import static com.android.settings.applications.manageapplications.AppFilterRegistry
-        .FILTER_APPS_INSTANT;
-import static com.android.settings.applications.manageapplications.AppFilterRegistry
-        .FILTER_APPS_PERSONAL;
-import static com.android.settings.applications.manageapplications.AppFilterRegistry
-        .FILTER_APPS_POWER_WHITELIST;
-import static com.android.settings.applications.manageapplications.AppFilterRegistry
-        .FILTER_APPS_POWER_WHITELIST_ALL;
-import static com.android.settings.applications.manageapplications.AppFilterRegistry
-        .FILTER_APPS_RECENT;
-import static com.android.settings.applications.manageapplications.AppFilterRegistry
-        .FILTER_APPS_WORK;
+import static com.android.settings.applications.manageapplications.AppFilterRegistry.FILTER_APPS_ALL;
+import static com.android.settings.applications.manageapplications.AppFilterRegistry.FILTER_APPS_BLOCKED;
+import static com.android.settings.applications.manageapplications.AppFilterRegistry.FILTER_APPS_DISABLED;
+import static com.android.settings.applications.manageapplications.AppFilterRegistry.FILTER_APPS_ENABLED;
+import static com.android.settings.applications.manageapplications.AppFilterRegistry.FILTER_APPS_FREQUENT;
+import static com.android.settings.applications.manageapplications.AppFilterRegistry.FILTER_APPS_INSTANT;
+import static com.android.settings.applications.manageapplications.AppFilterRegistry.FILTER_APPS_PERSONAL;
+import static com.android.settings.applications.manageapplications.AppFilterRegistry.FILTER_APPS_POWER_WHITELIST;
+import static com.android.settings.applications.manageapplications.AppFilterRegistry.FILTER_APPS_POWER_WHITELIST_ALL;
+import static com.android.settings.applications.manageapplications.AppFilterRegistry.FILTER_APPS_RECENT;
+import static com.android.settings.applications.manageapplications.AppFilterRegistry.FILTER_APPS_WORK;
 
 import android.annotation.Nullable;
 import android.annotation.StringRes;
 import android.app.Activity;
+import android.app.settings.SettingsEnums;
 import android.app.usage.IUsageStatsManager;
 import android.content.Context;
 import android.content.Intent;
@@ -67,15 +57,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.Filter;
 import android.widget.FrameLayout;
+import android.widget.SearchView;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
+import androidx.annotation.WorkerThread;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
 import com.android.settings.Settings;
 import com.android.settings.Settings.GamesStorageActivity;
@@ -140,7 +132,7 @@ import java.util.Set;
  * intent.
  */
 public class ManageApplications extends InstrumentedFragment
-        implements View.OnClickListener, OnItemSelectedListener {
+        implements View.OnClickListener, OnItemSelectedListener, SearchView.OnQueryTextListener {
 
     static final String TAG = "ManageApplications";
     static final boolean DEBUG = true;
@@ -193,9 +185,9 @@ public class ManageApplications extends InstrumentedFragment
     private ApplicationsAdapter mApplications;
 
     private View mLoadingContainer;
-
     private View mListContainer;
     private RecyclerView mRecyclerView;
+    private SearchView mSearchView;
 
     // Size resource used for packages whose size computation failed for some reason
     CharSequence mInvalidSizeStr;
@@ -223,10 +215,15 @@ public class ManageApplications extends InstrumentedFragment
             LIST_TYPE_MAIN,
             LIST_TYPE_STORAGE));
 
+    @VisibleForTesting
+    View mSpinnerHeader;
+    @VisibleForTesting
+    FilterSpinnerAdapter mFilterAdapter;
+    @VisibleForTesting
+    View mContentContainer;
+
     private View mRootView;
-    private View mSpinnerHeader;
     private Spinner mFilterSpinner;
-    private FilterSpinnerAdapter mFilterAdapter;
     private IUsageStatsManager mUsageStatsManager;
     private UserManager mUserManager;
     private NotificationBackend mNotificationBackend;
@@ -333,6 +330,7 @@ public class ManageApplications extends InstrumentedFragment
             Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.manage_applications_apps, null);
         mLoadingContainer = mRootView.findViewById(R.id.loading_container);
+        mContentContainer = mRootView.findViewById(R.id.content_container);
         mListContainer = mRootView.findViewById(R.id.list_container);
         if (mListContainer != null) {
             // Create adapter and list view here
@@ -449,34 +447,34 @@ public class ManageApplications extends InstrumentedFragment
     public int getMetricsCategory() {
         switch (mListType) {
             case LIST_TYPE_MAIN:
-                return MetricsEvent.MANAGE_APPLICATIONS;
+                return SettingsEnums.MANAGE_APPLICATIONS;
             case LIST_TYPE_NOTIFICATION:
-                return MetricsEvent.MANAGE_APPLICATIONS_NOTIFICATIONS;
+                return SettingsEnums.MANAGE_APPLICATIONS_NOTIFICATIONS;
             case LIST_TYPE_STORAGE:
                 if (mStorageType == STORAGE_TYPE_MUSIC) {
-                    return MetricsEvent.APPLICATIONS_STORAGE_MUSIC;
+                    return SettingsEnums.APPLICATIONS_STORAGE_MUSIC;
                 }
-                return MetricsEvent.APPLICATIONS_STORAGE_APPS;
+                return SettingsEnums.APPLICATIONS_STORAGE_APPS;
             case LIST_TYPE_GAMES:
-                return MetricsEvent.APPLICATIONS_STORAGE_GAMES;
+                return SettingsEnums.APPLICATIONS_STORAGE_GAMES;
             case LIST_TYPE_MOVIES:
-                return MetricsEvent.APPLICATIONS_STORAGE_MOVIES;
+                return SettingsEnums.APPLICATIONS_STORAGE_MOVIES;
             case LIST_TYPE_PHOTOGRAPHY:
-                return MetricsEvent.APPLICATIONS_STORAGE_PHOTOS;
+                return SettingsEnums.APPLICATIONS_STORAGE_PHOTOS;
             case LIST_TYPE_USAGE_ACCESS:
-                return MetricsEvent.USAGE_ACCESS;
+                return SettingsEnums.USAGE_ACCESS;
             case LIST_TYPE_HIGH_POWER:
-                return MetricsEvent.APPLICATIONS_HIGH_POWER_APPS;
+                return SettingsEnums.APPLICATIONS_HIGH_POWER_APPS;
             case LIST_TYPE_OVERLAY:
-                return MetricsEvent.SYSTEM_ALERT_WINDOW_APPS;
+                return SettingsEnums.SYSTEM_ALERT_WINDOW_APPS;
             case LIST_TYPE_WRITE_SETTINGS:
-                return MetricsEvent.SYSTEM_ALERT_WINDOW_APPS;
+                return SettingsEnums.SYSTEM_ALERT_WINDOW_APPS;
             case LIST_TYPE_MANAGE_SOURCES:
-                return MetricsEvent.MANAGE_EXTERNAL_SOURCES;
+                return SettingsEnums.MANAGE_EXTERNAL_SOURCES;
             case LIST_TYPE_WIFI_ACCESS:
-                return MetricsEvent.CONFIGURE_WIFI;
+                return SettingsEnums.CONFIGURE_WIFI;
             default:
-                return MetricsEvent.VIEW_UNKNOWN;
+                return SettingsEnums.PAGE_UNKNOWN;
         }
     }
 
@@ -598,6 +596,13 @@ public class ManageApplications extends InstrumentedFragment
         HelpUtils.prepareHelpMenuItem(activity, menu, getHelpResource(), getClass().getName());
         mOptionsMenu = menu;
         inflater.inflate(R.menu.manage_apps, menu);
+
+        final MenuItem searchMenuItem = menu.findItem(R.id.search_app_list_menu);
+        if (searchMenuItem != null) {
+            mSearchView = (SearchView) searchMenuItem.getActionView();
+            mSearchView.setQueryHint(getText(R.string.search_settings));
+            mSearchView.setOnQueryTextListener(this);
+        }
 
         updateOptionsMenu();
     }
@@ -724,6 +729,17 @@ public class ManageApplications extends InstrumentedFragment
     public void onNothingSelected(AdapterView<?> parent) {
     }
 
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        mApplications.filterSearch(newText);
+        return false;
+    }
+
     public void updateView() {
         updateOptionsMenu();
         final Activity host = getActivity();
@@ -783,8 +799,7 @@ public class ManageApplications extends InstrumentedFragment
             }
             mFilterOptions.add(filter);
             Collections.sort(mFilterOptions);
-            mManageApplications.mSpinnerHeader.setVisibility(
-                    mFilterOptions.size() > 1 ? View.VISIBLE : View.GONE);
+            updateFilterView(mFilterOptions.size() > 1);
             notifyDataSetChanged();
             if (mFilterOptions.size() == 1) {
                 if (DEBUG) {
@@ -795,13 +810,12 @@ public class ManageApplications extends InstrumentedFragment
                 mManageApplications.onItemSelected(null, null, 0, 0);
             }
             if (mFilterOptions.size() > 1) {
-                if (filterType == mManageApplications.mFilterType) {
-                    int index = mFilterOptions.indexOf(filter);
-                    if (index != -1) {
-                        mManageApplications.mFilterSpinner.setSelection(index);
-                        mManageApplications.onItemSelected(null, null, index, 0);
-                        mManageApplications.mFilterType = AppFilterRegistry.FILTER_APPS_ALL;
-                    }
+                final AppFilterItem previousFilter = AppFilterRegistry.getInstance().get(
+                        mManageApplications.mFilterType);
+                final int index = mFilterOptions.indexOf(previousFilter);
+                if (index != -1) {
+                    mManageApplications.mFilterSpinner.setSelection(index);
+                    mManageApplications.onItemSelected(null, null, index, 0);
                 }
             }
         }
@@ -816,14 +830,13 @@ public class ManageApplications extends InstrumentedFragment
                         filter.getTitle()));
             }
             Collections.sort(mFilterOptions);
-            mManageApplications.mSpinnerHeader.setVisibility(
-                    mFilterOptions.size() > 1 ? View.VISIBLE : View.GONE);
+            updateFilterView(mFilterOptions.size() > 1);
             notifyDataSetChanged();
             if (mManageApplications.mFilter == filter) {
                 if (mFilterOptions.size() > 0) {
                     if (DEBUG) {
                         Log.d(TAG, "Auto selecting filter " + mFilterOptions.get(0)
-                            + mContext.getText(mFilterOptions.get(0).getTitle()));
+                                + mContext.getText(mFilterOptions.get(0).getTitle()));
                     }
                     mManageApplications.mFilterSpinner.setSelection(0);
                     mManageApplications.onItemSelected(null, null, 0, 0);
@@ -839,6 +852,26 @@ public class ManageApplications extends InstrumentedFragment
         @Override
         public CharSequence getItem(int position) {
             return mContext.getText(mFilterOptions.get(position).getTitle());
+        }
+
+        @VisibleForTesting
+        void updateFilterView(boolean hasFilter) {
+            // If we need to add a floating filter in this screen, we should have an extra top
+            // padding for putting floating filter view. Otherwise, the content of list will be
+            // overlapped by floating filter.
+            if (hasFilter) {
+                mManageApplications.mSpinnerHeader.setVisibility(View.VISIBLE);
+                mManageApplications.mContentContainer.setPadding(0 /* left */,
+                        mContext.getResources().getDimensionPixelSize(
+                                R.dimen.app_bar_height) /* top */,
+                        0 /* right */,
+                        0 /* bottom */);
+            } else {
+                mManageApplications.mSpinnerHeader.setVisibility(View.GONE);
+                mManageApplications.mContentContainer.setPadding(0 /* left */, 0 /* top */,
+                        0 /* right */,
+                        0 /* bottom */);
+            }
         }
     }
 
@@ -859,6 +892,7 @@ public class ManageApplications extends InstrumentedFragment
 
         private AppFilterItem mAppFilter;
         private ArrayList<ApplicationsState.AppEntry> mEntries;
+        private ArrayList<ApplicationsState.AppEntry> mOriginalEntries;
         private boolean mResumed;
         private int mLastSortMode = -1;
         private int mWhichSize = SIZE_TOTAL;
@@ -866,6 +900,7 @@ public class ManageApplications extends InstrumentedFragment
         private boolean mHasReceivedLoadEntries;
         private boolean mHasReceivedBridgeCallback;
         private FileViewHolderController mExtraViewController;
+        private SearchFilter mSearchFilter;
 
         // This is to remember and restore the last scroll position when this
         // fragment is paused. We need this special handling because app entries are added gradually
@@ -1100,6 +1135,13 @@ public class ManageApplications extends InstrumentedFragment
             });
         }
 
+        public void filterSearch(String query) {
+            if (mSearchFilter == null) {
+                mSearchFilter = new SearchFilter();
+            }
+            mSearchFilter.filter(query);
+        }
+
         @VisibleForTesting
         static boolean shouldUseStableItemHeight(int listType) {
             return true;
@@ -1146,6 +1188,7 @@ public class ManageApplications extends InstrumentedFragment
                 entries = removeDuplicateIgnoringUser(entries);
             }
             mEntries = entries;
+            mOriginalEntries = entries;
             notifyDataSetChanged();
             if (getItemCount() == 0) {
                 mManageApplications.mRecyclerView.setVisibility(View.GONE);
@@ -1153,6 +1196,14 @@ public class ManageApplications extends InstrumentedFragment
             } else {
                 mManageApplications.mEmptyView.setVisibility(View.GONE);
                 mManageApplications.mRecyclerView.setVisibility(View.VISIBLE);
+
+                if (mManageApplications.mSearchView != null
+                        && mManageApplications.mSearchView.isVisibleToUser()) {
+                    final CharSequence query = mManageApplications.mSearchView.getQuery();
+                    if (!TextUtils.isEmpty(query)) {
+                        filterSearch(query.toString());
+                    }
+                }
             }
             // Restore the last scroll position if the number of entries added so far is bigger than
             // it.
@@ -1403,6 +1454,38 @@ public class ManageApplications extends InstrumentedFragment
                 } else {
                     mDelayNotifyDataChange = true;
                 }
+            }
+        }
+
+        /**
+         * An array filter that constrains the content of the array adapter with a substring.
+         * Item that does not contains the specified substring will be removed from the list.</p>
+         */
+        private class SearchFilter extends Filter {
+            @WorkerThread
+            @Override
+            protected FilterResults performFiltering(CharSequence query) {
+                final ArrayList<ApplicationsState.AppEntry> matchedEntries;
+                if (TextUtils.isEmpty(query)) {
+                    matchedEntries = mOriginalEntries;
+                } else {
+                    matchedEntries = new ArrayList<>();
+                    for (ApplicationsState.AppEntry entry : mOriginalEntries) {
+                        if (entry.label.toLowerCase().contains(query.toString().toLowerCase())) {
+                            matchedEntries.add(entry);
+                        }
+                    }
+                }
+                final FilterResults results = new FilterResults();
+                results.values = matchedEntries;
+                results.count = matchedEntries.size();
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                mEntries = (ArrayList<ApplicationsState.AppEntry>) results.values;
+                notifyDataSetChanged();
             }
         }
     }

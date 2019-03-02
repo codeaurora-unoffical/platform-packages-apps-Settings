@@ -57,8 +57,11 @@ public class SetupChooseLockPattern extends ChooseLockPattern {
     public static class SetupChooseLockPatternFragment extends ChooseLockPatternFragment
             implements ChooseLockTypeDialogFragment.OnLockTypeSelectedListener {
 
+        private static final String TAG_SKIP_SCREEN_LOCK_DIALOG = "skip_screen_lock_dialog";
+
         @Nullable
         private Button mOptionsButton;
+        private boolean mLeftButtonIsSkip;
 
         @Override
         public View onCreateView(
@@ -68,20 +71,23 @@ public class SetupChooseLockPattern extends ChooseLockPattern {
                 mOptionsButton = view.findViewById(R.id.screen_lock_options);
                 mOptionsButton.setOnClickListener((btn) ->
                         ChooseLockTypeDialogFragment.newInstance(mUserId)
-                                .show(getChildFragmentManager(), null));
+                                .show(getChildFragmentManager(), TAG_SKIP_SCREEN_LOCK_DIALOG));
             }
-            // enable skip button only during setup wizard and not with fingerprint flow.
-            if (!mForFingerprint) {
-                Button skipButton = view.findViewById(R.id.skip_button);
-                skipButton.setVisibility(View.VISIBLE);
-                skipButton.setOnClickListener(v -> {
-                    SetupSkipDialog dialog = SetupSkipDialog.newInstance(
-                            getActivity().getIntent()
-                                    .getBooleanExtra(SetupSkipDialog.EXTRA_FRP_SUPPORTED, false));
-                    dialog.show(getFragmentManager());
-                });
-            }
+            // Show the skip button during SUW but not during Settings > Biometric Enrollment
+            mSkipOrClearButton.setOnClickListener(this::onSkipOrClearButtonClick);
             return view;
+        }
+
+        @Override
+        protected void onSkipOrClearButtonClick(View view) {
+            if (mLeftButtonIsSkip) {
+                SetupSkipDialog dialog = SetupSkipDialog.newInstance(
+                        getActivity().getIntent()
+                                .getBooleanExtra(SetupSkipDialog.EXTRA_FRP_SUPPORTED, false));
+                dialog.show(getFragmentManager());
+                return;
+            }
+            super.onSkipOrClearButtonClick(view);
         }
 
         @Override
@@ -101,6 +107,14 @@ public class SetupChooseLockPattern extends ChooseLockPattern {
                         (stage == Stage.Introduction || stage == Stage.HelpScreen ||
                                 stage == Stage.ChoiceTooShort || stage == Stage.FirstChoiceValid)
                                 ? View.VISIBLE : View.INVISIBLE);
+            }
+
+            if (stage.leftMode == LeftButtonMode.Gone && stage == Stage.Introduction) {
+                mSkipOrClearButton.setVisibility(View.VISIBLE);
+                mSkipOrClearButton.setText(getActivity(), R.string.skip_label);
+                mLeftButtonIsSkip = true;
+            } else {
+                mLeftButtonIsSkip = false;
             }
         }
 

@@ -18,11 +18,11 @@ package com.android.settings.applications;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.argThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -38,6 +38,7 @@ import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.ModuleInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.PowerManager;
@@ -50,8 +51,6 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 
 import com.android.settings.R;
-import com.android.settings.testutils.SettingsRobolectricTestRunner;
-import com.android.settings.testutils.shadow.ShadowPowerManager;
 import com.android.settingslib.applications.AppUtils;
 import com.android.settingslib.applications.ApplicationsState;
 import com.android.settingslib.applications.instantapps.InstantAppDataProvider;
@@ -63,6 +62,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.util.ReflectionHelpers;
@@ -70,7 +70,7 @@ import org.robolectric.util.ReflectionHelpers;
 import java.util.ArrayList;
 import java.util.List;
 
-@RunWith(SettingsRobolectricTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class RecentAppsPreferenceControllerTest {
 
     @Mock
@@ -93,6 +93,8 @@ public class RecentAppsPreferenceControllerTest {
     private ApplicationsState.AppEntry mAppEntry;
     @Mock
     private ApplicationInfo mApplicationInfo;
+    @Mock
+    private PowerManager mPowerManager;
 
     private Context mContext;
     private RecentAppsPreferenceController mController;
@@ -101,9 +103,13 @@ public class RecentAppsPreferenceControllerTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mContext = spy(RuntimeEnvironment.application);
+        when(mContext.getApplicationContext()).thenReturn(mContext);
+        ReflectionHelpers.setStaticField(ApplicationsState.class, "sInstance", mAppState);
         doReturn(mUsageStatsManager).when(mContext).getSystemService(Context.USAGE_STATS_SERVICE);
         doReturn(mUserManager).when(mContext).getSystemService(Context.USER_SERVICE);
         doReturn(mPackageManager).when(mContext).getPackageManager();
+        doReturn(mPowerManager).when(mContext).getSystemService(PowerManager.class);
+        when(mUserManager.getProfileIdsWithDisabled(anyInt())).thenReturn(new int[] {});
 
         mController = new RecentAppsPreferenceController(mContext, mAppState, null);
         when(mScreen.findPreference(anyString())).thenReturn(mCategory);
@@ -174,15 +180,15 @@ public class RecentAppsPreferenceControllerTest {
 
         // stat1, stat2 are valid apps. stat3 is invalid.
         when(mAppState.getEntry(stat1.mPackageName, UserHandle.myUserId()))
-            .thenReturn(mAppEntry);
+                .thenReturn(mAppEntry);
         when(mAppState.getEntry(stat2.mPackageName, UserHandle.myUserId()))
-            .thenReturn(mAppEntry);
+                .thenReturn(mAppEntry);
         when(mAppState.getEntry(stat3.mPackageName, UserHandle.myUserId()))
-            .thenReturn(null);
+                .thenReturn(null);
         when(mPackageManager.resolveActivity(any(Intent.class), anyInt()))
-            .thenReturn(new ResolveInfo());
+                .thenReturn(new ResolveInfo());
         when(mUsageStatsManager.queryUsageStats(anyInt(), anyLong(), anyLong()))
-            .thenReturn(stats);
+                .thenReturn(stats);
         mAppEntry.info = mApplicationInfo;
 
         mController.displayPreference(mScreen);
@@ -199,7 +205,7 @@ public class RecentAppsPreferenceControllerTest {
 
     @Test
     public void display_powerSaverMode_showNoRecents() {
-        mContext.getSystemService(PowerManager.class).setPowerSaveMode(true);
+        when(mPowerManager.isPowerSaveMode()).thenReturn(true);
 
         final List<UsageStats> stats = new ArrayList<>();
         final UsageStats stat1 = new UsageStats();
@@ -251,7 +257,7 @@ public class RecentAppsPreferenceControllerTest {
 
         // Only the regular app stat1 should have its intent resolve.
         when(mPackageManager.resolveActivity(argThat(intentMatcher(stat1.mPackageName)), anyInt()))
-            .thenReturn(new ResolveInfo());
+                .thenReturn(new ResolveInfo());
 
         when(mUsageStatsManager.queryUsageStats(anyInt(), anyLong(), anyLong()))
                 .thenReturn(stats);
@@ -311,13 +317,13 @@ public class RecentAppsPreferenceControllerTest {
 
         // stat1, stat2 are not displayable
         when(mAppState.getEntry(stat1.mPackageName, UserHandle.myUserId()))
-            .thenReturn(mock(ApplicationsState.AppEntry.class));
+                .thenReturn(mock(ApplicationsState.AppEntry.class));
         when(mAppState.getEntry(stat2.mPackageName, UserHandle.myUserId()))
-            .thenReturn(mock(ApplicationsState.AppEntry.class));
+                .thenReturn(mock(ApplicationsState.AppEntry.class));
         when(mPackageManager.resolveActivity(any(Intent.class), anyInt()))
-            .thenReturn(new ResolveInfo());
+                .thenReturn(new ResolveInfo());
         when(mUsageStatsManager.queryUsageStats(anyInt(), anyLong(), anyLong()))
-            .thenReturn(stats);
+                .thenReturn(stats);
 
         mController.displayPreference(mScreen);
 
@@ -336,16 +342,67 @@ public class RecentAppsPreferenceControllerTest {
         stats.add(stat1);
 
         when(mAppState.getEntry(stat1.mPackageName, UserHandle.myUserId()))
-            .thenReturn(mAppEntry);
+                .thenReturn(mAppEntry);
         when(mPackageManager.resolveActivity(any(Intent.class), anyInt()))
-            .thenReturn(new ResolveInfo());
+                .thenReturn(new ResolveInfo());
         when(mUsageStatsManager.queryUsageStats(anyInt(), anyLong(), anyLong()))
-            .thenReturn(stats);
+                .thenReturn(stats);
         mAppEntry.info = mApplicationInfo;
 
         mController.displayPreference(mScreen);
 
         verify(mCategory).addPreference(argThat(summaryMatches("0 minutes ago")));
+    }
+
+    @Test
+    public void displayPreference_shouldNotShowHiddenSystemModule() {
+        final List<UsageStats> stats = new ArrayList<>();
+        // Regular app.
+        final UsageStats stat1 = new UsageStats();
+        stat1.mLastTimeUsed = System.currentTimeMillis();
+        stat1.mPackageName = "com.foo.bar";
+        stats.add(stat1);
+
+        // Hidden system module.
+        final UsageStats stat2 = new UsageStats();
+        stat2.mLastTimeUsed = System.currentTimeMillis() + 200;
+        stat2.mPackageName = "com.foo.hidden";
+        stats.add(stat2);
+
+        ApplicationsState.AppEntry stat1Entry = mock(ApplicationsState.AppEntry.class);
+        ApplicationsState.AppEntry stat2Entry = mock(ApplicationsState.AppEntry.class);
+        stat1Entry.info = mApplicationInfo;
+        stat2Entry.info = mApplicationInfo;
+
+        when(mAppState.getEntry(stat1.mPackageName, UserHandle.myUserId())).thenReturn(stat1Entry);
+        when(mAppState.getEntry(stat2.mPackageName, UserHandle.myUserId())).thenReturn(stat2Entry);
+
+        final ModuleInfo moduleInfo1 = new ModuleInfo();
+        moduleInfo1.setPackageName(stat1.mPackageName);
+        moduleInfo1.setHidden(false);
+
+        final ModuleInfo moduleInfo2 = new ModuleInfo();
+        moduleInfo2.setPackageName(stat2.mPackageName);
+        moduleInfo2.setHidden(true);
+
+        ReflectionHelpers.setStaticField(ApplicationsState.class, "sInstance", null);
+        final List<ModuleInfo> modules = new ArrayList<>();
+        modules.add(moduleInfo2);
+        when(mPackageManager.getInstalledModules(anyInt() /* flags */))
+            .thenReturn(modules);
+
+        when(mPackageManager.resolveActivity(any(Intent.class), anyInt()))
+            .thenReturn(new ResolveInfo());
+        when(mUsageStatsManager.queryUsageStats(anyInt(), anyLong(), anyLong()))
+            .thenReturn(stats);
+
+        mController.displayPreference(mScreen);
+
+        // Only add stat1. stat2 is skipped because it is hidden module.
+        final ArgumentCaptor<Preference> prefCaptor = ArgumentCaptor.forClass(Preference.class);
+        verify(mCategory).addPreference(prefCaptor.capture());
+        final Preference pref = prefCaptor.getValue();
+        assertThat(pref.getKey()).isEqualTo(stat1.mPackageName);
     }
 
     private static ArgumentMatcher<Preference> summaryMatches(String expected) {

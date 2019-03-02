@@ -25,7 +25,6 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 
@@ -38,19 +37,19 @@ import androidx.fragment.app.FragmentTransaction;
 import com.android.internal.telephony.TelephonyIntents;
 import com.android.internal.util.CollectionUtils;
 import com.android.settings.R;
+import com.android.settings.core.FeatureFlags;
 import com.android.settings.core.SettingsBaseActivity;
+import com.android.settings.development.featureflags.FeatureFlagPersistent;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
 public class MobileNetworkActivity extends SettingsBaseActivity {
 
-    private static final String TAG = "MobileSettingsActivity";
+    private static final String TAG = "MobileNetworkActivity";
     @VisibleForTesting
     static final String MOBILE_SETTINGS_TAG = "mobile_settings:";
     @VisibleForTesting
@@ -70,7 +69,7 @@ public class MobileNetworkActivity extends SettingsBaseActivity {
         @Override
         public void onSubscriptionsChanged() {
             if (!Objects.equals(mSubscriptionInfos,
-                    mSubscriptionManager.getActiveSubscriptionInfoList())) {
+                    mSubscriptionManager.getActiveSubscriptionInfoList(true))) {
                 updateSubscriptions(null);
             }
         }
@@ -80,11 +79,15 @@ public class MobileNetworkActivity extends SettingsBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.mobile_network_settings_container);
+        if (FeatureFlagPersistent.isEnabled(this, FeatureFlags.NETWORK_INTERNET_V2)) {
+            setContentView(R.layout.mobile_network_settings_container_v2);
+        } else {
+            setContentView(R.layout.mobile_network_settings_container);
+        }
         setActionBar(findViewById(R.id.mobile_action_bar));
         mPhoneChangeReceiver = new PhoneChangeReceiver();
         mSubscriptionManager = getSystemService(SubscriptionManager.class);
-        mSubscriptionInfos = mSubscriptionManager.getActiveSubscriptionInfoList();
+        mSubscriptionInfos = mSubscriptionManager.getActiveSubscriptionInfoList(true);
         mCurSubscriptionId = savedInstanceState != null
                 ? savedInstanceState.getInt(Settings.EXTRA_SUB_ID, SUB_ID_NULL)
                 : SUB_ID_NULL;
@@ -126,9 +129,19 @@ public class MobileNetworkActivity extends SettingsBaseActivity {
 
     @VisibleForTesting
     void updateSubscriptions(Bundle savedInstanceState) {
-        mSubscriptionInfos = mSubscriptionManager.getActiveSubscriptionInfoList();
+        // Set the title to the name of the subscription. If we don't have subscription info, the
+        // title will just default to the label for this activity that's already specified in
+        // AndroidManifest.xml.
+        final SubscriptionInfo subscription = getSubscription();
+        if (subscription != null) {
+            setTitle(subscription.getDisplayName());
+        }
 
-        updateBottomNavigationView();
+        mSubscriptionInfos = mSubscriptionManager.getActiveSubscriptionInfoList(true);
+
+        if (!FeatureFlagPersistent.isEnabled(this, FeatureFlags.NETWORK_INTERNET_V2)) {
+            updateBottomNavigationView();
+        }
 
         if (savedInstanceState == null) {
             switchFragment(new MobileNetworkSettings(), getSubscriptionId());
@@ -136,25 +149,41 @@ public class MobileNetworkActivity extends SettingsBaseActivity {
     }
 
     /**
-     * Get the current subId to display. First check whether intent has {@link
-     * Settings#EXTRA_SUB_ID}. If not, just display first one in list
-     * since it is already sorted by sim slot.
+     * Get the current subscription to display. First check whether intent has {@link
+     * Settings#EXTRA_SUB_ID} and if so find the subscription with that id. If not, just return the
+     * first one in the mSubscriptionInfos list since it is already sorted by sim slot.
      */
     @VisibleForTesting
-    int getSubscriptionId() {
+    SubscriptionInfo getSubscription() {
         final Intent intent = getIntent();
         if (intent != null) {
             final int subId = intent.getIntExtra(Settings.EXTRA_SUB_ID, SUB_ID_NULL);
-            if (subId != SUB_ID_NULL && mSubscriptionManager.isActiveSubscriptionId(subId)) {
-                return subId;
+            if (subId != SUB_ID_NULL) {
+                for (SubscriptionInfo subscription :
+                        mSubscriptionManager.getAvailableSubscriptionInfoList()) {
+                    if (subscription.getSubscriptionId() == subId) {
+                        return subscription;
+                    }
+                }
             }
         }
 
         if (CollectionUtils.isEmpty(mSubscriptionInfos)) {
-            return SubscriptionManager.INVALID_SUBSCRIPTION_ID;
+            return null;
         }
+        return mSubscriptionInfos.get(0);
+    }
 
-        return mSubscriptionInfos.get(0).getSubscriptionId();
+    /**
+     * Get the current subId to display.
+     */
+    @VisibleForTesting
+    int getSubscriptionId() {
+        final SubscriptionInfo subscription = getSubscription();
+        if (subscription != null) {
+            return subscription.getSubscriptionId();
+        }
+        return SubscriptionManager.INVALID_SUBSCRIPTION_ID;
     }
 
     @VisibleForTesting

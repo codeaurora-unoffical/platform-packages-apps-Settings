@@ -23,7 +23,7 @@ import static com.android.settings.core.BasePreferenceController.CONDITIONALLY_U
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -34,17 +34,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkTemplate;
-import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
 
 import androidx.fragment.app.FragmentActivity;
+import androidx.preference.PreferenceFragmentCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.internal.logging.nano.MetricsProto;
 import com.android.settings.R;
 import com.android.settings.testutils.FakeFeatureFactory;
-import com.android.settings.testutils.SettingsRobolectricTestRunner;
 import com.android.settings.testutils.shadow.ShadowEntityHeaderController;
 import com.android.settings.widget.EntityHeaderController;
 import com.android.settingslib.NetworkPolicyEditor;
@@ -60,12 +59,13 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import java.util.concurrent.TimeUnit;
 
-@RunWith(SettingsRobolectricTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 @Config(shadows = ShadowEntityHeaderController.class)
 public class DataUsageSummaryPreferenceControllerTest {
 
@@ -92,7 +92,7 @@ public class DataUsageSummaryPreferenceControllerTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private EntityHeaderController mHeaderController;
     @Mock
-    private DataUsageSummary mDataUsageSummary;
+    private PreferenceFragmentCompat mPreferenceFragment;
     @Mock
     private TelephonyManager mTelephonyManager;
     @Mock
@@ -104,6 +104,7 @@ public class DataUsageSummaryPreferenceControllerTest {
     private FragmentActivity mActivity;
     private Context mContext;
     private DataUsageSummaryPreferenceController mController;
+    private int mDefaultSubscriptionId;
 
     @Before
     public void setUp() {
@@ -125,6 +126,7 @@ public class DataUsageSummaryPreferenceControllerTest {
                 .thenReturn(mConnectivityManager);
         when(mTelephonyManager.getSimState()).thenReturn(TelephonyManager.SIM_STATE_READY);
         when(mConnectivityManager.isNetworkSupported(TYPE_WIFI)).thenReturn(false);
+        mDefaultSubscriptionId = 1234;
         mController = new DataUsageSummaryPreferenceController(
                 mDataUsageController,
                 mDataInfoController,
@@ -133,7 +135,7 @@ public class DataUsageSummaryPreferenceControllerTest {
                 R.string.cell_data_template,
                 true,
                 null,
-                mActivity, null, null, null);
+                mActivity, null, null, null, mDefaultSubscriptionId);
     }
 
     @After
@@ -355,11 +357,7 @@ public class DataUsageSummaryPreferenceControllerTest {
                 R.string.cell_data_template,
                 true,
                 mSubscriptionManager,
-                mActivity, null, null, null);
-
-        final SubscriptionInfo subInfo = new SubscriptionInfo(0, "123456", 0, "name", "carrier",
-                0, 0, "number", 0, null, "123", "456", "ZX", false, null, null);
-        when(mSubscriptionManager.getDefaultDataSubscriptionInfo()).thenReturn(subInfo);
+                mActivity, null, null, null, mDefaultSubscriptionId);
         assertThat(mController.getAvailabilityStatus()).isEqualTo(AVAILABLE);
     }
 
@@ -373,7 +371,7 @@ public class DataUsageSummaryPreferenceControllerTest {
                 R.string.cell_data_template,
                 true,
                 mSubscriptionManager,
-                mActivity, null, null, null);
+                mActivity, null, null, null, mDefaultSubscriptionId);
 
         when(mTelephonyManager.getSimState()).thenReturn(TelephonyManager.SIM_STATE_ABSENT);
         when(mConnectivityManager.isNetworkSupported(TYPE_WIFI)).thenReturn(false);
@@ -390,7 +388,7 @@ public class DataUsageSummaryPreferenceControllerTest {
                 R.string.cell_data_template,
                 true,
                 mSubscriptionManager,
-                mActivity, null, null, null);
+                mActivity, null, null, null, mDefaultSubscriptionId);
 
         when(mTelephonyManager.getSimState()).thenReturn(TelephonyManager.SIM_STATE_ABSENT);
         when(mConnectivityManager.isNetworkSupported(TYPE_WIFI)).thenReturn(true);
@@ -409,9 +407,10 @@ public class DataUsageSummaryPreferenceControllerTest {
                 R.string.cell_data_template,
                 true,
                 mSubscriptionManager,
-                mActivity, mLifecycle, mHeaderController, mDataUsageSummary);
+                mActivity, mLifecycle, mHeaderController, mPreferenceFragment,
+                mDefaultSubscriptionId);
 
-        when(mDataUsageSummary.getListView()).thenReturn(recyclerView);
+        when(mPreferenceFragment.getListView()).thenReturn(recyclerView);
 
         mController.onStart();
 

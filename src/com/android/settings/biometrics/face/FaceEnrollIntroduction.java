@@ -17,30 +17,65 @@
 package com.android.settings.biometrics.face;
 
 import android.app.admin.DevicePolicyManager;
+import android.app.settings.SettingsEnums;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.hardware.face.FaceManager;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.internal.logging.nano.MetricsProto;
 import com.android.settings.R;
 import com.android.settings.Utils;
 import com.android.settings.biometrics.BiometricEnrollIntroduction;
 import com.android.settings.password.ChooseLockSettingsHelper;
 import com.android.settingslib.RestrictedLockUtilsInternal;
-import com.android.setupwizardlib.span.LinkSpan;
+
+import com.google.android.setupcompat.template.FooterBarMixin;
+import com.google.android.setupcompat.template.FooterButton;
+import com.google.android.setupdesign.span.LinkSpan;
 
 public class FaceEnrollIntroduction extends BiometricEnrollIntroduction {
 
     private static final String TAG = "FaceIntro";
 
     private FaceManager mFaceManager;
+    private FaceEnrollAccessibilityToggle mSwitchDiversity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mFaceManager = Utils.getFaceManagerOrNull(this);
+        final LinearLayout accessibilityLayout = findViewById(R.id.accessibility_layout);
+        final Button accessibilityButton = findViewById(R.id.accessibility_button);
+        accessibilityButton.setOnClickListener(view -> {
+            accessibilityButton.setVisibility(View.INVISIBLE);
+            accessibilityLayout.setVisibility(View.VISIBLE);
+        });
+
+        mSwitchDiversity = findViewById(R.id.toggle_diversity);
+
+        mFooterBarMixin = getLayout().getMixin(FooterBarMixin.class);
+        mFooterBarMixin.setSecondaryButton(
+                new FooterButton.Builder(this)
+                        .setText(R.string.security_settings_face_enroll_introduction_cancel)
+                        .setListener(this::onCancelButtonClick)
+                        .setButtonType(FooterButton.ButtonType.SKIP)
+                        .setTheme(R.style.SudGlifButton_Secondary)
+                        .build()
+        );
+
+        mFooterBarMixin.setPrimaryButton(
+                new FooterButton.Builder(this)
+                        .setText(R.string.wizard_next)
+                        .setListener(this::onNextButtonClick)
+                        .setButtonType(FooterButton.ButtonType.NEXT)
+                        .setTheme(R.style.SudGlifButton_Primary)
+                        .build()
+        );
     }
 
     @Override
@@ -70,13 +105,19 @@ public class FaceEnrollIntroduction extends BiometricEnrollIntroduction {
     }
 
     @Override
-    protected Button getCancelButton() {
-        return findViewById(R.id.face_cancel_button);
+    protected FooterButton getCancelButton() {
+        if (mFooterBarMixin != null) {
+            return mFooterBarMixin.getSecondaryButton();
+        }
+        return null;
     }
 
     @Override
-    protected Button getNextButton() {
-        return findViewById(R.id.face_next_button);
+    protected FooterButton getNextButton() {
+        if (mFooterBarMixin != null) {
+            return mFooterBarMixin.getPrimaryButton();
+        }
+        return null;
     }
 
     @Override
@@ -101,6 +142,7 @@ public class FaceEnrollIntroduction extends BiometricEnrollIntroduction {
 
     @Override
     protected long getChallenge() {
+        mFaceManager = Utils.getFaceManagerOrNull(this);
         if (mFaceManager == null) {
             return 0;
         }
@@ -114,12 +156,27 @@ public class FaceEnrollIntroduction extends BiometricEnrollIntroduction {
 
     @Override
     protected Intent getEnrollingIntent() {
-        return new Intent(this, FaceEnrollEnrolling.class);
+        final String flattenedString = getString(R.string.config_face_enroll);
+        final Intent intent = new Intent();
+        if (!TextUtils.isEmpty(flattenedString)) {
+            ComponentName componentName = ComponentName.unflattenFromString(flattenedString);
+            intent.setComponent(componentName);
+
+        } else {
+            intent.setClass(this, FaceEnrollEnrolling.class);
+        }
+        intent.putExtra(EXTRA_KEY_REQUIRE_DIVERSITY, mSwitchDiversity.isChecked());
+        return intent;
+    }
+
+    @Override
+    protected int getConfirmLockTitleResId() {
+        return R.string.security_settings_face_preference_title;
     }
 
     @Override
     public int getMetricsCategory() {
-        return MetricsProto.MetricsEvent.FACE_ENROLL_INTRO;
+        return SettingsEnums.FACE_ENROLL_INTRO;
     }
 
     @Override

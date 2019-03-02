@@ -17,18 +17,20 @@
 package com.android.settings.wifi;
 
 import android.app.Activity;
+import android.app.settings.SettingsEnums;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import androidx.annotation.VisibleForTesting;
 
-import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
 import com.android.settings.core.InstrumentedFragment;
+import com.android.settings.wifi.dpp.WifiDppUtils;
 
 public class AddNetworkFragment extends InstrumentedFragment implements WifiConfigUiBase,
         View.OnClickListener {
@@ -50,7 +52,7 @@ public class AddNetworkFragment extends InstrumentedFragment implements WifiConf
 
     @Override
     public int getMetricsCategory() {
-        return MetricsEvent.SETTINGS_WIFI_ADD_NETWORK;
+        return SettingsEnums.SETTINGS_WIFI_ADD_NETWORK;
     }
 
     @Override
@@ -63,6 +65,18 @@ public class AddNetworkFragment extends InstrumentedFragment implements WifiConf
         mSubmitBtn.setOnClickListener(this);
         mCancelBtn.setOnClickListener(this);
         mUIController = new WifiConfigController(this, rootView, null, getMode());
+
+        if (WifiDppUtils.isSharingNetworkEnabled(getContext())) {
+            final ImageButton scannerButton = rootView.findViewById(R.id.ssid_scanner_button);
+            if (scannerButton != null) {
+                scannerButton.setVisibility(View.VISIBLE);
+                scannerButton.setOnClickListener((View v) -> {
+                    // Launch QR code scanner to join a network.
+                    getContext().startActivity(
+                            WifiDppUtils.getEnrolleeQrCodeScannerIntent(/* ssid */ null));
+                });
+            }
+        }
 
         return rootView;
     }

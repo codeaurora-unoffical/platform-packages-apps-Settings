@@ -23,6 +23,7 @@ import static android.provider.Settings.Secure.LOCK_SCREEN_SHOW_NOTIFICATIONS;
 
 import static com.android.settingslib.RestrictedLockUtils.EnforcedAdmin;
 
+import android.app.settings.SettingsEnums;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -32,13 +33,11 @@ import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
 import com.android.settings.RestrictedRadioButton;
 import com.android.settings.SettingsActivity;
@@ -46,8 +45,11 @@ import com.android.settings.SettingsPreferenceFragment;
 import com.android.settings.SetupRedactionInterstitial;
 import com.android.settings.SetupWizardUtils;
 import com.android.settings.Utils;
-import com.android.settingslib.RestrictedLockUtils;
 import com.android.settingslib.RestrictedLockUtilsInternal;
+
+import com.google.android.setupcompat.template.FooterBarMixin;
+import com.google.android.setupcompat.template.FooterButton;
+import com.google.android.setupdesign.GlifLayout;
 
 public class RedactionInterstitial extends SettingsActivity {
 
@@ -91,7 +93,7 @@ public class RedactionInterstitial extends SettingsActivity {
     }
 
     public static class RedactionInterstitialFragment extends SettingsPreferenceFragment
-            implements RadioGroup.OnCheckedChangeListener, View.OnClickListener {
+            implements RadioGroup.OnCheckedChangeListener {
 
         private RadioGroup mRadioGroup;
         private RestrictedRadioButton mShowAllButton;
@@ -100,7 +102,7 @@ public class RedactionInterstitial extends SettingsActivity {
 
         @Override
         public int getMetricsCategory() {
-            return MetricsEvent.NOTIFICATION_REDACTION;
+            return SettingsEnums.NOTIFICATION_REDACTION;
         }
 
         @Override
@@ -130,19 +132,24 @@ public class RedactionInterstitial extends SettingsActivity {
                 ((RadioButton) view.findViewById(R.id.hide_all)).setVisibility(View.GONE);
             }
 
-            final Button button = (Button) view.findViewById(R.id.redaction_done_button);
-            button.setOnClickListener(this);
+            final GlifLayout layout = view.findViewById(R.id.setup_wizard_layout);
+            final FooterBarMixin mixin = layout.getMixin(FooterBarMixin.class);
+            mixin.setPrimaryButton(
+                    new FooterButton.Builder(getContext())
+                            .setText(R.string.app_notifications_dialog_done)
+                            .setListener(this::onDoneButtonClicked)
+                            .setButtonType(FooterButton.ButtonType.NEXT)
+                            .setTheme(R.style.SudGlifButton_Primary)
+                            .build()
+            );
         }
 
-        @Override
-        public void onClick(View v) {
-            if (v.getId() == R.id.redaction_done_button) {
-                SetupRedactionInterstitial.setEnabled(getContext(), false);
-                final RedactionInterstitial activity = (RedactionInterstitial) getActivity();
-                if (activity != null) {
-                    activity.setResult(RESULT_OK, null);
-                    finish();
-                }
+        private void onDoneButtonClicked(View view) {
+            SetupRedactionInterstitial.setEnabled(getContext(), false);
+            final RedactionInterstitial activity = (RedactionInterstitial) getActivity();
+            if (activity != null) {
+                activity.setResult(RESULT_OK, null);
+                finish();
             }
         }
 

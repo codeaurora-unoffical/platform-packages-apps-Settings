@@ -19,6 +19,7 @@ package com.android.settings.notification;
 import android.app.AutomaticZenRule;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.app.settings.SettingsEnums;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
@@ -37,7 +38,6 @@ import androidx.preference.Preference.OnPreferenceClickListener;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SwitchPreference;
 
-import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
 import com.android.settings.core.instrumentation.InstrumentedDialogFragment;
 import com.android.settingslib.core.AbstractPreferenceController;
@@ -64,7 +64,6 @@ public class ZenModeScheduleRuleSettings extends ZenModeRuleSettingsBase {
     private TimePickerPreference mEnd;
     private SwitchPreference mExitAtAlarm;
     private AlertDialog mDayDialog;
-
     private ScheduleInfo mSchedule;
 
     @Override
@@ -186,7 +185,6 @@ public class ZenModeScheduleRuleSettings extends ZenModeRuleSettingsBase {
         final int summaryFormat = nextDay ? R.string.zen_mode_end_time_next_day_summary_format : 0;
         mEnd.setSummaryFormat(summaryFormat);
     }
-
     @Override
     protected void updateControlsInternal() {
         updateDays();
@@ -201,17 +199,19 @@ public class ZenModeScheduleRuleSettings extends ZenModeRuleSettingsBase {
         List<AbstractPreferenceController> controllers = new ArrayList<>();
         mHeader = new ZenAutomaticRuleHeaderPreferenceController(context, this,
                 getSettingsLifecycle());
+        mActionButtons = new ZenRuleButtonsPreferenceController(context, this,
+                getSettingsLifecycle());
         mSwitch = new ZenAutomaticRuleSwitchPreferenceController(context, this,
                 getSettingsLifecycle());
-
         controllers.add(mHeader);
+        controllers.add(mActionButtons);
         controllers.add(mSwitch);
         return controllers;
     }
 
     @Override
     public int getMetricsCategory() {
-        return MetricsEvent.NOTIFICATION_ZEN_MODE_SCHEDULE_RULE;
+        return SettingsEnums.NOTIFICATION_ZEN_MODE_SCHEDULE_RULE;
     }
 
     @Override
@@ -302,7 +302,7 @@ public class ZenModeScheduleRuleSettings extends ZenModeRuleSettingsBase {
 
             @Override
             public int getMetricsCategory() {
-                return MetricsEvent.DIALOG_ZEN_TIMEPICKER;
+                return SettingsEnums.DIALOG_ZEN_TIMEPICKER;
             }
 
             @Override

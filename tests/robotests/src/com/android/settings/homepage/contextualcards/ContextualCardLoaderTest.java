@@ -27,48 +27,28 @@ import static org.mockito.Mockito.spy;
 import android.content.Context;
 import android.net.Uri;
 
-import com.android.settings.homepage.contextualcards.deviceinfo.BatterySlice;
-import com.android.settings.homepage.contextualcards.slices.ConnectedDeviceSlice;
-import com.android.settings.slices.SettingsSliceProvider;
-import com.android.settings.testutils.SettingsRobolectricTestRunner;
-import com.android.settings.wifi.WifiSlice;
+import com.android.settings.slices.CustomSliceRegistry;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.shadows.ShadowContentResolver;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RunWith(SettingsRobolectricTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class ContextualCardLoaderTest {
 
     private Context mContext;
     private ContextualCardLoader mContextualCardLoader;
-    private SettingsSliceProvider mProvider;
 
     @Before
     public void setUp() {
         mContext = RuntimeEnvironment.application;
         mContextualCardLoader = spy(new ContextualCardLoader(mContext));
-        mProvider = new SettingsSliceProvider();
-        ShadowContentResolver.registerProviderInternal(SettingsSliceProvider.SLICE_AUTHORITY,
-                mProvider);
-    }
-
-    @Test
-    public void createStaticCards_shouldContainCorrectCards() {
-        final Uri batteryInfo = BatterySlice.BATTERY_CARD_URI;
-        final List<Uri> expectedUris = Arrays.asList(batteryInfo);
-
-        final List<Uri> actualCardUris = mContextualCardLoader.createStaticCards().stream().map(
-                ContextualCard::getSliceUri).collect(Collectors.toList());
-
-        assertThat(actualCardUris).containsExactlyElementsIn(expectedUris);
     }
 
     @Test
@@ -102,29 +82,29 @@ public class ContextualCardLoaderTest {
     }
 
     @Test
-    public void getFinalDisplayableCards_twoEligibleCards_shouldShowAll() {
+    public void getDisplayableCards_twoEligibleCards_shouldShowAll() {
         final List<ContextualCard> cards = getContextualCardList().stream().limit(2)
                 .collect(Collectors.toList());
         doReturn(cards).when(mContextualCardLoader).filterEligibleCards(any(List.class));
 
-        final List<ContextualCard> result = mContextualCardLoader.getFinalDisplayableCards(cards);
+        final List<ContextualCard> result = mContextualCardLoader.getDisplayableCards(cards);
 
         assertThat(result).hasSize(cards.size());
     }
 
     @Test
-    public void getFinalDisplayableCards_fiveEligibleCardsNoLarge_shouldShowDefaultCardCount() {
+    public void getDisplayableCards_fiveEligibleCardsNoLarge_shouldShowDefaultCardCount() {
         final List<ContextualCard> fiveCards = getContextualCardListWithNoLargeCard();
         doReturn(fiveCards).when(mContextualCardLoader).filterEligibleCards(any(List.class));
 
-        final List<ContextualCard> result = mContextualCardLoader.getFinalDisplayableCards(
+        final List<ContextualCard> result = mContextualCardLoader.getDisplayableCards(
                 fiveCards);
 
         assertThat(result).hasSize(DEFAULT_CARD_COUNT);
     }
 
     @Test
-    public void getFinalDisplayableCards_threeEligibleCardsOneLarge_shouldShowThreeCards() {
+    public void getDisplayableCards_threeEligibleCardsOneLarge_shouldShowThreeCards() {
         final List<ContextualCard> cards = getContextualCardList().stream().limit(2)
                 .collect(Collectors.toList());
         cards.add(new ContextualCard.Builder()
@@ -135,18 +115,18 @@ public class ContextualCardLoaderTest {
                 .build());
         doReturn(cards).when(mContextualCardLoader).filterEligibleCards(any(List.class));
 
-        final List<ContextualCard> result = mContextualCardLoader.getFinalDisplayableCards(cards);
+        final List<ContextualCard> result = mContextualCardLoader.getDisplayableCards(cards);
 
         assertThat(result).hasSize(3);
     }
 
     @Test
-    public void getFinalDisplayableCards_threeEligibleCardsTwoLarge_shouldShowTwoCards() {
+    public void getDisplayableCards_threeEligibleCardsTwoLarge_shouldShowTwoCards() {
         final List<ContextualCard> threeCards = getContextualCardList().stream().limit(3)
                 .collect(Collectors.toList());
         doReturn(threeCards).when(mContextualCardLoader).filterEligibleCards(any(List.class));
 
-        final List<ContextualCard> result = mContextualCardLoader.getFinalDisplayableCards(
+        final List<ContextualCard> result = mContextualCardLoader.getDisplayableCards(
                 threeCards);
 
         assertThat(result).hasSize(2);
@@ -165,7 +145,7 @@ public class ContextualCardLoaderTest {
         cards.add(new ContextualCard.Builder()
                 .setName("test_wifi")
                 .setCardType(ContextualCard.CardType.SLICE)
-                .setSliceUri(WifiSlice.WIFI_URI)
+                .setSliceUri(CustomSliceRegistry.CONTEXTUAL_WIFI_SLICE_URI)
                 .build());
         cards.add(new ContextualCard.Builder()
                 .setName("test_flashlight")
@@ -176,7 +156,7 @@ public class ContextualCardLoaderTest {
         cards.add(new ContextualCard.Builder()
                 .setName("test_connected")
                 .setCardType(ContextualCard.CardType.SLICE)
-                .setSliceUri(ConnectedDeviceSlice.CONNECTED_DEVICE_URI)
+                .setSliceUri(CustomSliceRegistry.BLUETOOTH_DEVICES_SLICE_URI)
                 .build());
         cards.add(new ContextualCard.Builder()
                 .setName("test_gesture")
@@ -187,7 +167,7 @@ public class ContextualCardLoaderTest {
         cards.add(new ContextualCard.Builder()
                 .setName("test_battery")
                 .setCardType(ContextualCard.CardType.SLICE)
-                .setSliceUri(BatterySlice.BATTERY_CARD_URI)
+                .setSliceUri(CustomSliceRegistry.BATTERY_INFO_SLICE_URI)
                 .build());
         return cards;
     }
@@ -220,7 +200,7 @@ public class ContextualCardLoaderTest {
         cards.add(new ContextualCard.Builder()
                 .setName("test_battery")
                 .setCardType(ContextualCard.CardType.SLICE)
-                .setSliceUri(BatterySlice.BATTERY_CARD_URI)
+                .setSliceUri(CustomSliceRegistry.BATTERY_INFO_SLICE_URI)
                 .build());
         return cards;
     }

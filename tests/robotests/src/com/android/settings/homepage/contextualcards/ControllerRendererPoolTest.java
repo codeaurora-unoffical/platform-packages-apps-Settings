@@ -22,15 +22,15 @@ import android.content.Context;
 
 import androidx.lifecycle.LifecycleOwner;
 
-import com.android.settings.testutils.SettingsRobolectricTestRunner;
 import com.android.settingslib.core.lifecycle.Lifecycle;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
-@RunWith(SettingsRobolectricTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class ControllerRendererPoolTest {
 
     private static final int UNSUPPORTED_CARD_TYPE = -99999;
@@ -101,35 +101,6 @@ public class ControllerRendererPoolTest {
         final ContextualCardRenderer renderer = mPool.getRendererByViewType(mContext,
                 mLifecycleOwner,
                 UNSUPPORTED_VIEW_TYPE);
-
-        assertThat(renderer).isNull();
-        assertThat(mPool.getRenderers()).isEmpty();
-    }
-
-    @Test
-    public void getRenderer_hasSupportedCardTypeAndWidth_shouldReturnCorrespondingRenderer() {
-        ContextualCardLookupTable.LOOKUP_TABLE.stream().forEach(mapping -> assertThat(
-                mPool.getRendererByCardType(mContext, mLifecycleOwner,
-                        mapping.mCardType).getClass()).isEqualTo(mapping.mRendererClass));
-    }
-
-    @Test
-    public void getRenderer_hasSupportedCardTypeAndWidth_shouldHaveDistinctRenderersInPool() {
-        final long count = ContextualCardLookupTable.LOOKUP_TABLE.stream().map(
-                mapping -> mapping.mRendererClass).distinct().count();
-
-        ContextualCardLookupTable.LOOKUP_TABLE.stream().forEach(
-                mapping -> mPool.getRendererByCardType(mContext, mLifecycleOwner,
-                        mapping.mCardType));
-
-        assertThat(mPool.getRenderers()).hasSize((int) count);
-    }
-
-    @Test
-    public void getRenderer_hasUnsupportedCardType_shouldReturnNullAndPoolIsEmpty() {
-        final ContextualCardRenderer renderer = mPool.getRendererByCardType(mContext,
-                mLifecycleOwner,
-                UNSUPPORTED_CARD_TYPE);
 
         assertThat(renderer).isNull();
         assertThat(mPool.getRenderers()).isEmpty();

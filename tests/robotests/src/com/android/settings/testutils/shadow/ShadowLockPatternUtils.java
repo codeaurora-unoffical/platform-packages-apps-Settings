@@ -29,31 +29,30 @@ import java.util.List;
 @Implements(LockPatternUtils.class)
 public class ShadowLockPatternUtils {
 
-    private int mPasswordQuality = 1;
     private static boolean sDeviceEncryptionEnabled;
 
     @Implementation
-    public boolean isSecure(int id) {
+    protected boolean isSecure(int id) {
         return true;
     }
 
     @Implementation
-    public int getActivePasswordQuality(int userId) {
+    protected int getActivePasswordQuality(int userId) {
         return DevicePolicyManager.PASSWORD_QUALITY_UNSPECIFIED;
     }
 
     @Implementation
-    public int getKeyguardStoredPasswordQuality(int userHandle) {
-        return mPasswordQuality;
+    protected int getKeyguardStoredPasswordQuality(int userHandle) {
+        return 1;
     }
 
     @Implementation
-    public static boolean isDeviceEncryptionEnabled() {
+    protected static boolean isDeviceEncryptionEnabled() {
         return sDeviceEncryptionEnabled;
     }
 
     @Implementation
-    public List<ComponentName> getEnabledTrustAgents(int userId) {
+    protected List<ComponentName> getEnabledTrustAgents(int userId) {
         return null;
     }
 
@@ -61,13 +60,13 @@ public class ShadowLockPatternUtils {
         sDeviceEncryptionEnabled = deviceEncryptionEnabled;
     }
 
-    // Non-Android accessor.
-    public int getPasswordQuality() {
-        return mPasswordQuality;
+    @Implementation
+    protected byte[] getPasswordHistoryHashFactor(String currentPassword, int userId) {
+        return null;
     }
 
-    // Non-Android accessor.
-    public void setPasswordQuality(int passwordQuality) {
-        mPasswordQuality = passwordQuality;
+    @Implementation
+    protected boolean checkPasswordHistory(String passwordToCheck, byte[] hashFactor, int userId) {
+        return false;
     }
 }

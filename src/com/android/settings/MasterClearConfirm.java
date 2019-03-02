@@ -22,6 +22,7 @@ import static com.android.settingslib.RestrictedLockUtils.EnforcedAdmin;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.app.settings.SettingsEnums;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -39,12 +40,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.core.InstrumentedFragment;
 import com.android.settings.enterprise.ActionDisabledByAdminDialogHelper;
 import com.android.settingslib.RestrictedLockUtilsInternal;
-import com.android.setupwizardlib.TemplateLayout;
-import com.android.setupwizardlib.template.ButtonFooterMixin;
+
+import com.google.android.setupcompat.TemplateLayout;
+import com.google.android.setupcompat.template.FooterBarMixin;
+import com.google.android.setupcompat.template.FooterButton;
+import com.google.android.setupcompat.template.FooterButton.ButtonType;
 
 /**
  * Confirm and execute a reset of the device to a clean "just out of the box"
@@ -151,12 +154,15 @@ public class MasterClearConfirm extends InstrumentedFragment {
     private void establishFinalConfirmationState() {
         final TemplateLayout layout = mContentView.findViewById(R.id.setup_wizard_layout);
 
-        final ButtonFooterMixin buttonFooterMixin = layout.getMixin(ButtonFooterMixin.class);
-        buttonFooterMixin.removeAllViews();
-        buttonFooterMixin.addSpace();
-        buttonFooterMixin.addSpace();
-        buttonFooterMixin.addButton(R.string.master_clear_button_text,
-                R.style.SuwGlifButton_Primary).setOnClickListener(mFinalClickListener);
+        final FooterBarMixin mixin = layout.getMixin(FooterBarMixin.class);
+        mixin.setPrimaryButton(
+                new FooterButton.Builder(getActivity())
+                        .setText(R.string.master_clear_button_text)
+                        .setListener(mFinalClickListener)
+                        .setButtonType(ButtonType.OTHER)
+                        .setTheme(R.style.SudGlifButton_Primary)
+                        .build()
+        );
     }
 
     private void setUpActionBarAndTitle() {
@@ -219,6 +225,6 @@ public class MasterClearConfirm extends InstrumentedFragment {
 
     @Override
     public int getMetricsCategory() {
-        return MetricsEvent.MASTER_CLEAR_CONFIRM;
+        return SettingsEnums.MASTER_CLEAR_CONFIRM;
     }
 }

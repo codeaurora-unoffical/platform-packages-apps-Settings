@@ -26,10 +26,10 @@ import androidx.lifecycle.LifecycleOwner;
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.settings.homepage.contextualcards.conditional.ConditionContextualCardController;
 import com.android.settings.homepage.contextualcards.conditional.ConditionContextualCardRenderer;
-import com.android.settings.homepage.contextualcards.legacysuggestion
-        .LegacySuggestionContextualCardController;
-import com.android.settings.homepage.contextualcards.legacysuggestion
-        .LegacySuggestionContextualCardRenderer;
+import com.android.settings.homepage.contextualcards.conditional.ConditionFooterContextualCardRenderer;
+import com.android.settings.homepage.contextualcards.conditional.ConditionHeaderContextualCardRenderer;
+import com.android.settings.homepage.contextualcards.legacysuggestion.LegacySuggestionContextualCardController;
+import com.android.settings.homepage.contextualcards.legacysuggestion.LegacySuggestionContextualCardRenderer;
 import com.android.settings.homepage.contextualcards.slices.SliceContextualCardController;
 import com.android.settings.homepage.contextualcards.slices.SliceContextualCardRenderer;
 
@@ -86,13 +86,6 @@ public class ControllerRendererPool {
         return getRenderer(context, lifecycleOwner, clz);
     }
 
-    public ContextualCardRenderer getRendererByCardType(Context context,
-            LifecycleOwner lifecycleOwner, @ContextualCard.CardType int cardType) {
-        final Class<? extends ContextualCardRenderer> clz =
-                ContextualCardLookupTable.getCardRendererClassByCardType(cardType);
-        return getRenderer(context, lifecycleOwner, clz);
-    }
-
     private ContextualCardRenderer getRenderer(Context context, LifecycleOwner lifecycleOwner,
             @NonNull Class<? extends ContextualCardRenderer> clz) {
         for (ContextualCardRenderer renderer : mRenderers) {
@@ -114,7 +107,7 @@ public class ControllerRendererPool {
         if (ConditionContextualCardController.class == clz) {
             return new ConditionContextualCardController(context);
         } else if (SliceContextualCardController.class == clz) {
-            return new SliceContextualCardController();
+            return new SliceContextualCardController(context);
         } else if (LegacySuggestionContextualCardController.class == clz) {
             return new LegacySuggestionContextualCardController(context);
         }
@@ -131,6 +124,12 @@ public class ControllerRendererPool {
         } else if (LegacySuggestionContextualCardRenderer.class == clz) {
             return new LegacySuggestionContextualCardRenderer(context,
                     this /* controllerRendererPool */);
+        } else if (ConditionFooterContextualCardRenderer.class == clz) {
+            return new ConditionFooterContextualCardRenderer(context,
+                    this /*controllerRendererPool*/);
+        } else if (ConditionHeaderContextualCardRenderer.class == clz) {
+            return new ConditionHeaderContextualCardRenderer(context,
+                    this /*controllerRendererPool*/);
         }
         return null;
     }

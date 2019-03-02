@@ -20,6 +20,7 @@ import android.annotation.Nullable;
 import android.app.ActivityManager;
 import android.app.Dialog;
 import android.app.admin.DevicePolicyManager;
+import android.app.settings.SettingsEnums;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageItemInfo;
@@ -32,7 +33,11 @@ import android.util.IconDrawableFactory;
 import android.util.Log;
 import android.view.View;
 
-import com.android.internal.logging.nano.MetricsProto;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceScreen;
+import androidx.preference.SwitchPreference;
+
 import com.android.settings.R;
 import com.android.settings.Utils;
 import com.android.settings.core.instrumentation.InstrumentedDialogFragment;
@@ -41,11 +46,6 @@ import com.android.settings.widget.EmptyTextSettings;
 import com.android.settingslib.applications.ServiceListing;
 
 import java.util.List;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
-import androidx.preference.PreferenceScreen;
-import androidx.preference.SwitchPreference;
 
 public abstract class ManagedServiceSettings extends EmptyTextSettings {
     private static final String TAG = "ManagedServiceSettings";
@@ -193,7 +193,7 @@ public abstract class ManagedServiceSettings extends EmptyTextSettings {
 
         @Override
         public int getMetricsCategory() {
-            return MetricsProto.MetricsEvent.DIALOG_SERVICE_ACCESS_WARNING;
+            return SettingsEnums.DIALOG_SERVICE_ACCESS_WARNING;
         }
 
         public ScaryWarningDialogFragment setServiceInfo(ComponentName cn, String label,
@@ -240,9 +240,11 @@ public abstract class ManagedServiceSettings extends EmptyTextSettings {
         public final int warningDialogTitle;
         public final int warningDialogSummary;
         public final int emptyText;
+        public final String configIntentAction;
 
-        private Config(String tag, String setting, String intentAction, String permission,
-                String noun, int warningDialogTitle, int warningDialogSummary, int emptyText) {
+        private Config(String tag, String setting, String intentAction, String configIntentAction,
+                String permission, String noun, int warningDialogTitle, int warningDialogSummary,
+                int emptyText) {
             this.tag = tag;
             this.setting = setting;
             this.intentAction = intentAction;
@@ -251,6 +253,7 @@ public abstract class ManagedServiceSettings extends EmptyTextSettings {
             this.warningDialogTitle = warningDialogTitle;
             this.warningDialogSummary = warningDialogSummary;
             this.emptyText = emptyText;
+            this.configIntentAction = configIntentAction;
         }
 
         public static class Builder{
@@ -262,6 +265,7 @@ public abstract class ManagedServiceSettings extends EmptyTextSettings {
             private int mWarningDialogTitle;
             private int mWarningDialogSummary;
             private int mEmptyText;
+            private String mConfigIntentAction;
 
             public Builder setTag(String tag) {
                 mTag = tag;
@@ -275,6 +279,11 @@ public abstract class ManagedServiceSettings extends EmptyTextSettings {
 
             public Builder setIntentAction(String intentAction) {
                 mIntentAction = intentAction;
+                return this;
+            }
+
+            public Builder setConfigurationIntentAction(String action) {
+                mConfigIntentAction = action;
                 return this;
             }
 
@@ -304,8 +313,8 @@ public abstract class ManagedServiceSettings extends EmptyTextSettings {
             }
 
             public Config build() {
-                return new Config(mTag, mSetting, mIntentAction, mPermission, mNoun,
-                        mWarningDialogTitle, mWarningDialogSummary, mEmptyText);
+                return new Config(mTag, mSetting, mIntentAction, mConfigIntentAction, mPermission,
+                        mNoun, mWarningDialogTitle, mWarningDialogSummary, mEmptyText);
             }
         }
     }

@@ -16,43 +16,31 @@
 
 package com.android.settings.location;
 
-import android.app.Activity;
+import android.app.settings.SettingsEnums;
 import android.content.Context;
-import android.content.ContentResolver;
 import android.location.SettingInjectorService;
 import android.os.Bundle;
 import android.provider.SearchIndexableResource;
-import android.provider.Settings;
-import androidx.preference.PreferenceScreen;
-import androidx.preference.CheckBoxPreference;
-import android.util.Log;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceGroup;
 
-import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
 import com.android.settings.SettingsActivity;
-import com.android.settings.core.BasePreferenceController;
 import com.android.settings.dashboard.DashboardFragment;
-import com.android.settings.dashboard.SummaryLoader;
 import com.android.settings.search.BaseSearchIndexProvider;
 import com.android.settings.search.Indexable;
 import com.android.settings.widget.SwitchBar;
 import com.android.settingslib.core.AbstractPreferenceController;
 import com.android.settingslib.core.lifecycle.Lifecycle;
-import com.android.settingslib.location.RecentLocationApps;
+import com.android.settingslib.location.RecentLocationAccesses;
 import com.android.settingslib.search.SearchIndexable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * System location settings (Settings &gt; Location). The screen has three parts:
@@ -62,7 +50,7 @@ import java.util.Properties;
  *         <li>In switch bar: location master switch. Used to toggle location on and off.
  *         </li>
  *     </ul>
- *     <li>Recent location requests: automatically populated by {@link RecentLocationApps}</li>
+ *     <li>Recent location requests: automatically populated by {@link RecentLocationAccesses}</li>
  *     <li>Location services: multi-app settings provided from outside the Android framework. Each
  *     is injected by a system-partition app via the {@link SettingInjectorService} API.</li>
  * </ul>
@@ -81,7 +69,7 @@ public class LocationSettings extends DashboardFragment {
 
     @Override
     public int getMetricsCategory() {
-        return MetricsEvent.LOCATION;
+        return SettingsEnums.LOCATION;
     }
 
     @Override
@@ -113,12 +101,8 @@ public class LocationSettings extends DashboardFragment {
 
     static void addPreferencesSorted(List<Preference> prefs, PreferenceGroup container) {
         // If there's some items to display, sort the items and add them to the container.
-        Collections.sort(prefs, new Comparator<Preference>() {
-            @Override
-            public int compare(Preference lhs, Preference rhs) {
-                return lhs.getTitle().toString().compareTo(rhs.getTitle().toString());
-            }
-        });
+        Collections.sort(prefs,
+                Comparator.comparing(lhs -> lhs.getTitle().toString()));
         for (Preference entry : prefs) {
             container.addPreference(entry);
         }
@@ -132,13 +116,11 @@ public class LocationSettings extends DashboardFragment {
     private static List<AbstractPreferenceController> buildPreferenceControllers(
             Context context, LocationSettings fragment, Lifecycle lifecycle) {
         final List<AbstractPreferenceController> controllers = new ArrayList<>();
-        controllers.add(new AppLocationPermissionPreferenceController(context));
+        controllers.add(new AppLocationPermissionPreferenceController(context, lifecycle));
         controllers.add(new LocationForWorkPreferenceController(context, lifecycle));
-        controllers.add(
-                new RecentLocationRequestPreferenceController(context, fragment, lifecycle));
+        controllers.add(new RecentLocationAccessPreferenceController(context));
         controllers.add(new LocationScanningPreferenceController(context));
-        controllers.add(
-                new LocationServicePreferenceController(context, fragment, lifecycle));
+        controllers.add(new LocationServicePreferenceController(context, fragment, lifecycle));
         controllers.add(new LocationFooterPreferenceController(context, lifecycle));
         controllers.add(new AgpsPreferenceController(context));
         return controllers;
@@ -164,87 +146,4 @@ public class LocationSettings extends DashboardFragment {
                             null /* lifecycle */);
                 }
             };
-
-    //PreferenceController of AGPS
-    public static class AgpsPreferenceController extends BasePreferenceController {
-        // CMCC assisted gps SUPL(Secure User Plane Location) server address
-        private static final String ASSISTED_GPS_SUPL_HOST = "assisted_gps_supl_host";
-        // CMCC agps SUPL port address
-        private static final String ASSISTED_GPS_SUPL_PORT = "assisted_gps_supl_port";
-
-        private static final String KEY_ASSISTED_GPS = "assisted_gps";
-        private static final String PROPERTIES_FILE = "/etc/gps.conf";
-
-        private CheckBoxPreference mAgpsPreference;
-
-        public AgpsPreferenceController(Context context) {
-            super(context, KEY_ASSISTED_GPS);
-        }
-
-        @Override
-        public String getPreferenceKey() {
-            return KEY_ASSISTED_GPS;
-        }
-
-        @AvailabilityStatus
-        public int getAvailabilityStatus() {
-            return mContext.getResources().getBoolean(R.bool.config_agps_enabled)
-                    ? AVAILABLE
-                    : UNSUPPORTED_ON_DEVICE;
-        }
-
-        @Override
-        public void displayPreference(PreferenceScreen screen) {
-            super.displayPreference(screen);
-            mAgpsPreference =
-                    (CheckBoxPreference) screen.findPreference(KEY_ASSISTED_GPS);
-        }
-
-        @Override
-        public void updateState(Preference preference) {
-            if (mAgpsPreference != null) {
-                mAgpsPreference.setChecked(Settings.Global.getInt(
-                        mContext.getContentResolver(), Settings.Global.ASSISTED_GPS_ENABLED, 0) == 1);
-            }
-        }
-
-        @Override
-        public boolean handlePreferenceTreeClick(Preference preference) {
-            if (KEY_ASSISTED_GPS.equals(preference.getKey())) {
-                final ContentResolver cr = mContext.getContentResolver();
-                final boolean switchState = mAgpsPreference.isChecked();
-                if (switchState) {
-                    if (Settings.Global.getString(cr, ASSISTED_GPS_SUPL_HOST) == null
-                            || Settings.Global
-                            .getString(cr, ASSISTED_GPS_SUPL_PORT) == null) {
-                        FileInputStream stream = null;
-                        try {
-                            Properties properties = new Properties();
-                            File file = new File(PROPERTIES_FILE);
-                            stream = new FileInputStream(file);
-                            properties.load(stream);
-                            Settings.Global.putString(cr, ASSISTED_GPS_SUPL_HOST,
-                                    properties.getProperty("SUPL_HOST", null));
-                            Settings.Global.putString(cr, ASSISTED_GPS_SUPL_PORT,
-                                    properties.getProperty("SUPL_PORT", null));
-                        } catch (IOException e) {
-                            Log.e(TAG, "Could not open GPS configuration file "
-                                            + PROPERTIES_FILE + ", e=" + e);
-                        } finally {
-                            if (stream != null) {
-                                try {
-                                    stream.close();
-                                } catch (Exception e) {
-                                }
-                            }
-                        }
-                    }
-                }
-                Settings.Global.putInt(cr, Settings.Global.ASSISTED_GPS_ENABLED,
-                        switchState ? 1 : 0);
-                return true;
-            }
-            return false;
-        }
-    }
 }

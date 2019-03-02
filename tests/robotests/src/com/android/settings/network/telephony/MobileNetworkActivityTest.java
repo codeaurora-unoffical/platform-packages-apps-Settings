@@ -20,6 +20,7 @@ import static com.android.settings.network.telephony.MobileNetworkActivity.MOBIL
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -40,7 +41,6 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.android.internal.view.menu.ContextMenuBuilder;
 import com.android.settings.R;
-import com.android.settings.testutils.SettingsRobolectricTestRunner;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -50,12 +50,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@RunWith(SettingsRobolectricTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class MobileNetworkActivityTest {
 
     private static final int CURRENT_SUB_ID = 3;
@@ -108,7 +109,8 @@ public class MobileNetworkActivityTest {
     @Test
     public void updateBottomNavigationView_oneSubscription_shouldBeGone() {
         mSubscriptionInfos.add(mSubscriptionInfo);
-        doReturn(mSubscriptionInfos).when(mSubscriptionManager).getActiveSubscriptionInfoList();
+        doReturn(mSubscriptionInfos).when(mSubscriptionManager).getActiveSubscriptionInfoList(
+                eq(true));
 
         mMobileNetworkActivity.updateBottomNavigationView();
 
@@ -120,7 +122,8 @@ public class MobileNetworkActivityTest {
         final Menu menu = new ContextMenuBuilder(mContext);
         mSubscriptionInfos.add(mSubscriptionInfo);
         mSubscriptionInfos.add(mSubscriptionInfo);
-        doReturn(mSubscriptionInfos).when(mSubscriptionManager).getActiveSubscriptionInfoList();
+        doReturn(mSubscriptionInfos).when(mSubscriptionManager).getActiveSubscriptionInfoList(
+                eq(true));
         doReturn(menu).when(mBottomNavigationView).getMenu();
 
         mMobileNetworkActivity.updateBottomNavigationView();
@@ -143,6 +146,9 @@ public class MobileNetworkActivityTest {
         final Intent intent = new Intent();
         intent.putExtra(Settings.EXTRA_SUB_ID, CURRENT_SUB_ID);
         doReturn(intent).when(mMobileNetworkActivity).getIntent();
+        mSubscriptionInfos.add(mSubscriptionInfo);
+        mSubscriptionInfos.add(mSubscriptionInfo2);
+        doReturn(mSubscriptionInfos).when(mSubscriptionManager).getAvailableSubscriptionInfoList();
         doReturn(true).when(mSubscriptionManager).isActiveSubscriptionId(CURRENT_SUB_ID);
 
         assertThat(mMobileNetworkActivity.getSubscriptionId()).isEqualTo(CURRENT_SUB_ID);
@@ -159,14 +165,12 @@ public class MobileNetworkActivityTest {
 
     @Test
     public void onSaveInstanceState_saveCurrentSubId() {
-        mMobileNetworkActivity = Robolectric.buildActivity(
-                MobileNetworkActivity.class).get();
+        mMobileNetworkActivity = Robolectric.buildActivity(MobileNetworkActivity.class).get();
         mMobileNetworkActivity.mCurSubscriptionId = PREV_SUB_ID;
         final Bundle bundle = new Bundle();
 
         mMobileNetworkActivity.saveInstanceState(bundle);
 
-        assertThat(bundle.getInt(Settings.EXTRA_SUB_ID)).isEqualTo(
-                PREV_SUB_ID);
+        assertThat(bundle.getInt(Settings.EXTRA_SUB_ID)).isEqualTo(PREV_SUB_ID);
     }
 }

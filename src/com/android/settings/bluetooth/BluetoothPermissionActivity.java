@@ -33,9 +33,6 @@ import androidx.preference.Preference;
 import com.android.internal.app.AlertActivity;
 import com.android.internal.app.AlertController;
 import com.android.settings.R;
-import com.android.settingslib.bluetooth.CachedBluetoothDevice;
-import com.android.settingslib.bluetooth.CachedBluetoothDeviceManager;
-import com.android.settingslib.bluetooth.LocalBluetoothManager;
 
 /**
  * BluetoothPermissionActivity shows a dialog for accepting incoming
@@ -199,20 +196,7 @@ public class BluetoothPermissionActivity extends AlertActivity implements
 
     private void onNegative() {
         if (DEBUG) Log.d(TAG, "onNegative");
-
-        boolean always = true;
-        if (mRequestType == BluetoothDevice.REQUEST_TYPE_MESSAGE_ACCESS) {
-            LocalBluetoothManager bluetoothManager = Utils.getLocalBtManager(this);
-            CachedBluetoothDeviceManager cachedDeviceManager =
-                    bluetoothManager.getCachedDeviceManager();
-            CachedBluetoothDevice cachedDevice = cachedDeviceManager.findDevice(mDevice);
-            if (cachedDevice == null) {
-                cachedDevice = cachedDeviceManager.addDevice(mDevice);
-            }
-            always = cachedDevice.checkAndIncreaseMessageRejectionCount();
-        }
-
-        sendReplyIntentToReceiver(false, always);
+        sendReplyIntentToReceiver(false, true);
     }
 
     private void sendReplyIntentToReceiver(final boolean allowed, final boolean always) {

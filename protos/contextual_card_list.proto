@@ -18,7 +18,8 @@ message ContextualCard {
     SUGGESTION = 1;
     POSSIBLE = 2;
     IMPORTANT = 3;
-    EXCLUSIVE = 4;
+    EXCLUSIVE = 4 [deprecated = true];
+    DEFERRED_SETUP = 5;
   }
 
   /** Slice uri of the contextual card */
@@ -28,4 +29,6 @@ message ContextualCard {
   optional string cardName = 3;
 
   optional Category card_category = 4;
+
+  optional double card_score = 5;
 }

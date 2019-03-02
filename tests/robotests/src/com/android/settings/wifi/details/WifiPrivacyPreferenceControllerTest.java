@@ -27,19 +27,19 @@ import android.net.wifi.WifiConfiguration;
 import androidx.preference.DropDownPreference;
 
 import com.android.settings.R;
-import com.android.settings.testutils.SettingsRobolectricTestRunner;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
-@RunWith(SettingsRobolectricTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class WifiPrivacyPreferenceControllerTest {
 
-    private static final int PRIVACY_RANDOMIZED = 0;
-    private static final int PRIVACY_TRUSTED = 1;
+    private static final int PRIVACY_RANDOMIZED = WifiConfiguration.RANDOMIZATION_PERSISTENT;
+    private static final int PRIVACY_TRUSTED = WifiConfiguration.RANDOMIZATION_NONE;
 
     @Mock
     private WifiConfiguration mWifiConfiguration;
@@ -47,6 +47,7 @@ public class WifiPrivacyPreferenceControllerTest {
     private WifiPrivacyPreferenceController mPreferenceController;
     private Context mContext;
     private DropDownPreference mDropDownPreference;
+    private String[] perferenceString;
 
     @Before
     public void setUp() {
@@ -59,6 +60,8 @@ public class WifiPrivacyPreferenceControllerTest {
         mDropDownPreference = new DropDownPreference(mContext);
         mDropDownPreference.setEntries(R.array.wifi_privacy_entries);
         mDropDownPreference.setEntryValues(R.array.wifi_privacy_values);
+
+        perferenceString = mContext.getResources().getStringArray(R.array.wifi_privacy_entries);
     }
 
     @Test
@@ -67,7 +70,9 @@ public class WifiPrivacyPreferenceControllerTest {
 
         mPreferenceController.updateState(mDropDownPreference);
 
-        assertThat(mDropDownPreference.getEntry()).isEqualTo("Trusted");
+        int prefValue = mPreferenceController.translateMacRandomizedValueToPrefValue(
+                PRIVACY_TRUSTED);
+        assertThat(mDropDownPreference.getEntry()).isEqualTo(perferenceString[prefValue]);
     }
 
     @Test
@@ -76,7 +81,9 @@ public class WifiPrivacyPreferenceControllerTest {
 
         mPreferenceController.updateState(mDropDownPreference);
 
-        assertThat(mDropDownPreference.getEntry()).isEqualTo("Default (use randomized MAC)");
+        int prefValue = mPreferenceController.translateMacRandomizedValueToPrefValue(
+                PRIVACY_RANDOMIZED);
+        assertThat(mDropDownPreference.getEntry()).isEqualTo(perferenceString[prefValue]);
     }
 
     @Test
@@ -84,6 +91,6 @@ public class WifiPrivacyPreferenceControllerTest {
         mPreferenceController = spy(new WifiPrivacyPreferenceController(mContext));
 
         mPreferenceController.getRandomizationValue();
-        mPreferenceController.onPreferenceChange(mDropDownPreference, new String("1"));
+        mPreferenceController.onPreferenceChange(mDropDownPreference, "1");
     }
 }

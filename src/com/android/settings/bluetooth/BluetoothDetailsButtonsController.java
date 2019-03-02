@@ -16,15 +16,16 @@
 
 package com.android.settings.bluetooth;
 
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
 import com.android.settings.R;
-import com.android.settings.widget.ActionButtonPreference;
 import com.android.settingslib.bluetooth.CachedBluetoothDevice;
 import com.android.settingslib.core.lifecycle.Lifecycle;
+import com.android.settingslib.widget.ActionButtonsPreference;
 
 /**
  * This class adds two buttons: one to connect/disconnect from a device (depending on the current
@@ -35,12 +36,19 @@ public class BluetoothDetailsButtonsController extends BluetoothDetailsControlle
     private boolean mIsConnected;
 
     private boolean mConnectButtonInitialized;
-    private ActionButtonPreference mActionButtons;
+    private ActionButtonsPreference mActionButtons;
 
     public BluetoothDetailsButtonsController(Context context, PreferenceFragmentCompat fragment,
             CachedBluetoothDevice device, Lifecycle lifecycle) {
         super(context, fragment, device, lifecycle);
         mIsConnected = device.isConnected();
+    }
+
+    @Override
+    public boolean isAvailable() {
+        final boolean unthetheredHeadset = Utils.getBooleanMetaData(mCachedDevice.getDevice(),
+                BluetoothDevice.METADATA_IS_UNTHETHERED_HEADSET);
+        return !unthetheredHeadset;
     }
 
     private void onForgetButtonPressed() {
@@ -51,7 +59,8 @@ public class BluetoothDetailsButtonsController extends BluetoothDetailsControlle
 
     @Override
     protected void init(PreferenceScreen screen) {
-        mActionButtons = ((ActionButtonPreference) screen.findPreference(getPreferenceKey()))
+        mActionButtons = ((ActionButtonsPreference) screen.findPreference(
+                getPreferenceKey()))
                 .setButton1Text(R.string.forget)
                 .setButton1Icon(R.drawable.ic_settings_delete)
                 .setButton1OnClickListener((view) -> onForgetButtonPressed())
@@ -76,7 +85,7 @@ public class BluetoothDetailsButtonsController extends BluetoothDetailsControlle
             if (!mConnectButtonInitialized || previouslyConnected) {
                 mActionButtons
                         .setButton2Text(R.string.bluetooth_device_context_connect)
-                        // TODO (b/119646923) Icon is not ready.
+                        .setButton2Icon(R.drawable.ic_add_24dp)
                         .setButton2OnClickListener(
                                 view -> mCachedDevice.connect(true /* connectAllProfiles */));
                 mConnectButtonInitialized = true;

@@ -17,19 +17,27 @@
 package com.android.settings.biometrics.face;
 
 import android.app.Activity;
+import android.app.settings.SettingsEnums;
 import android.hardware.face.FaceManager;
 import android.os.UserHandle;
 
-import com.android.internal.logging.nano.MetricsProto;
 import com.android.settings.Utils;
 import com.android.settings.biometrics.BiometricEnrollSidecar;
+
+import java.util.Arrays;
 
 /**
  * Sidecar fragment to handle the state around face enrollment
  */
 public class FaceEnrollSidecar extends BiometricEnrollSidecar {
 
+    private final int[] mDisabledFeatures;
+
     private FaceManager mFaceManager;
+
+    public FaceEnrollSidecar(int[] disabledFeatures) {
+        mDisabledFeatures = Arrays.copyOf(disabledFeatures, disabledFeatures.length);
+    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -43,8 +51,9 @@ public class FaceEnrollSidecar extends BiometricEnrollSidecar {
         if (mUserId != UserHandle.USER_NULL) {
             mFaceManager.setActiveUser(mUserId);
         }
+
         mFaceManager.enroll(mToken, mEnrollmentCancel,
-                0 /* flags */, mUserId, mEnrollmentCallback);
+                mEnrollmentCallback, mDisabledFeatures);
     }
 
     private FaceManager.EnrollmentCallback mEnrollmentCallback
@@ -68,6 +77,6 @@ public class FaceEnrollSidecar extends BiometricEnrollSidecar {
 
     @Override
     public int getMetricsCategory() {
-        return MetricsProto.MetricsEvent.FACE_ENROLL_SIDECAR;
+        return SettingsEnums.FACE_ENROLL_SIDECAR;
     }
 }

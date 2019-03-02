@@ -15,10 +15,14 @@
  */
 package com.android.settings.accounts;
 
+import static android.content.Intent.EXTRA_USER;
+
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.app.settings.SettingsEnums;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.UserHandle;
 import android.os.UserManager;
@@ -26,7 +30,6 @@ import android.os.UserManager;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceScreen;
 
-import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
 import com.android.settings.Utils;
 import com.android.settings.dashboard.DashboardFragment;
@@ -56,6 +59,8 @@ public class AccountDetailDashboardFragment extends DashboardFragment {
     String mAccountType;
     private AccountSyncPreferenceController mAccountSynController;
     private RemoveAccountPreferenceController mRemoveAccountController;
+    @VisibleForTesting
+    UserHandle mUserHandle;
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -63,7 +68,7 @@ public class AccountDetailDashboardFragment extends DashboardFragment {
         getPreferenceManager().setPreferenceComparisonCallback(null);
         Bundle args = getArguments();
         final Activity activity = getActivity();
-        UserHandle userHandle = Utils.getSecureTargetUser(activity.getActivityToken(),
+        mUserHandle = Utils.getSecureTargetUser(activity.getActivityToken(),
                 (UserManager) getSystemService(Context.USER_SERVICE), args,
                 activity.getIntent().getExtras());
         if (args != null) {
@@ -77,8 +82,8 @@ public class AccountDetailDashboardFragment extends DashboardFragment {
                 mAccountType = args.getString(KEY_ACCOUNT_TYPE);
             }
         }
-        mAccountSynController.init(mAccount, userHandle);
-        mRemoveAccountController.init(mAccount, userHandle);
+        mAccountSynController.init(mAccount, mUserHandle);
+        mRemoveAccountController.init(mAccount, mUserHandle);
     }
 
     @Override
@@ -94,8 +99,7 @@ public class AccountDetailDashboardFragment extends DashboardFragment {
     void finishIfAccountMissing() {
         final Context context = getContext();
         final UserManager um = context.getSystemService(UserManager.class);
-        final AccountManager accountManager = (AccountManager) context.getSystemService(
-                AccountManager.class);
+        final AccountManager accountManager = context.getSystemService(AccountManager.class);
         for (UserHandle userHandle : um.getUserProfiles()) {
             for (Account account : accountManager.getAccountsAsUser(userHandle.getIdentifier())) {
                 if (account.equals(mAccount)) {
@@ -114,7 +118,7 @@ public class AccountDetailDashboardFragment extends DashboardFragment {
 
     @Override
     public int getMetricsCategory() {
-        return MetricsEvent.ACCOUNT;
+        return SettingsEnums.ACCOUNT;
     }
 
     @Override
@@ -155,7 +159,9 @@ public class AccountDetailDashboardFragment extends DashboardFragment {
         }
         final boolean display = mAccountType.equals(metadata.getString(METADATA_IA_ACCOUNT));
         if (display) {
-            tile.getIntent().putExtra(EXTRA_ACCOUNT_NAME, mAccount.name);
+            final Intent intent = tile.getIntent();
+            intent.putExtra(EXTRA_ACCOUNT_NAME, mAccount.name);
+            intent.putExtra(EXTRA_USER, mUserHandle);
         }
         return display;
     }

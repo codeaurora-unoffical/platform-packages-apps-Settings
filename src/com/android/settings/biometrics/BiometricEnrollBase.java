@@ -16,6 +16,8 @@
 
 package com.android.settings.biometrics;
 
+import static com.android.settings.Utils.SETTINGS_PACKAGE_NAME;
+
 import android.annotation.Nullable;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -24,7 +26,6 @@ import android.os.Bundle;
 import android.os.UserHandle;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.android.settings.R;
@@ -32,15 +33,19 @@ import com.android.settings.SetupWizardUtils;
 import com.android.settings.biometrics.fingerprint.FingerprintEnrollEnrolling;
 import com.android.settings.core.InstrumentedActivity;
 import com.android.settings.password.ChooseLockSettingsHelper;
-import com.android.setupwizardlib.GlifLayout;
+
+import com.google.android.setupcompat.template.FooterBarMixin;
+import com.google.android.setupcompat.template.FooterButton;
+import com.google.android.setupdesign.GlifLayout;
 
 /**
  * Base activity for all biometric enrollment steps.
  */
-public abstract class BiometricEnrollBase extends InstrumentedActivity
-        implements View.OnClickListener {
-    public static final String EXTRA_KEY_LAUNCHED_CONFIRM = "launched_confirm_lock";
+public abstract class BiometricEnrollBase extends InstrumentedActivity {
 
+    public static final String EXTRA_KEY_LAUNCHED_CONFIRM = "launched_confirm_lock";
+    public static final String EXTRA_KEY_REQUIRE_VISION = "accessibility_vision";
+    public static final String EXTRA_KEY_REQUIRE_DIVERSITY = "accessibility_diversity";
 
     /**
      * Used by the choose fingerprint wizard to indicate the wizard is
@@ -66,12 +71,16 @@ public abstract class BiometricEnrollBase extends InstrumentedActivity
      */
     public static final int RESULT_TIMEOUT = RESULT_FIRST_USER + 2;
 
-    public static final int CONFIRM_REQUEST = 1;
-    public static final int ENROLLING = 2;
+    public static final int CHOOSE_LOCK_GENERIC_REQUEST = 1;
+    public static final int BIOMETRIC_FIND_SENSOR_REQUEST = 2;
+    public static final int LEARN_MORE_REQUEST = 3;
+    public static final int CONFIRM_REQUEST = 4;
+    public static final int ENROLLING = 5;
 
     protected boolean mLaunchedConfirmLock;
     protected byte[] mToken;
     protected int mUserId;
+    protected FooterBarMixin mFooterBarMixin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,16 +113,8 @@ public abstract class BiometricEnrollBase extends InstrumentedActivity
         initViews();
     }
 
-    protected boolean shouldLaunchConfirmLock() {
-        return mToken == null && !mLaunchedConfirmLock;
-    }
-
     protected void initViews() {
         getWindow().setStatusBarColor(Color.TRANSPARENT);
-        Button nextButton = getNextButton();
-        if (nextButton != null) {
-            nextButton.setOnClickListener(this);
-        }
     }
 
     protected GlifLayout getLayout() {
@@ -137,23 +138,19 @@ public abstract class BiometricEnrollBase extends InstrumentedActivity
         setHeaderText(resId, false /* force */);
     }
 
-    protected Button getNextButton() {
-        return (Button) findViewById(R.id.next_button);
-    }
-
-    @Override
-    public void onClick(View v) {
-        if (v == getNextButton()) {
-            onNextButtonClick();
+    protected FooterButton getNextButton() {
+        if (mFooterBarMixin != null) {
+            return mFooterBarMixin.getPrimaryButton();
         }
+        return null;
     }
 
-    protected void onNextButtonClick() {
+    protected void onNextButtonClick(View view) {
     }
 
     protected Intent getFingerprintEnrollingIntent() {
         Intent intent = new Intent();
-        intent.setClassName("com.android.settings", FingerprintEnrollEnrolling.class.getName());
+        intent.setClassName(SETTINGS_PACKAGE_NAME, FingerprintEnrollEnrolling.class.getName());
         intent.putExtra(ChooseLockSettingsHelper.EXTRA_KEY_CHALLENGE_TOKEN, mToken);
         if (mUserId != UserHandle.USER_NULL) {
             intent.putExtra(Intent.EXTRA_USER_ID, mUserId);

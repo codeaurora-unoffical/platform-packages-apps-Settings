@@ -128,8 +128,10 @@ public class LegacySuggestionContextualCardController implements ContextualCardC
                 return;
             }
             final List<Suggestion> suggestions = mSuggestionController.getSuggestions();
-            Log.d(TAG, "Loaded suggests: "
-                    + suggestions == null ? "null" : String.valueOf(suggestions.size()));
+            final String suggestionCount = suggestions == null
+                    ? "null"
+                    : String.valueOf(suggestions.size());
+            Log.d(TAG, "Loaded suggests: " + suggestionCount);
 
             final List<ContextualCard> cards = new ArrayList<>();
             if (suggestions != null) {
@@ -144,7 +146,8 @@ public class LegacySuggestionContextualCardController implements ContextualCardC
                             .setPendingIntent(suggestion.getPendingIntent())
                             .setName(suggestion.getId())
                             .setTitleText(suggestion.getTitle().toString())
-                            .setSummaryText(suggestion.getSummary().toString());
+                            .setSummaryText(suggestion.getSummary().toString())
+                            .setViewType(LegacySuggestionContextualCardRenderer.VIEW_TYPE);
 
                     cards.add(cardBuilder.build());
                 }

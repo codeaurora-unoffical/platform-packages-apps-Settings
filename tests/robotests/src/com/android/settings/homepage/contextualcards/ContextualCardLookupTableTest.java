@@ -18,19 +18,18 @@ package com.android.settings.homepage.contextualcards;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import com.android.settings.homepage.contextualcards.ContextualCardLookupTable
-        .ControllerRendererMapping;
-import com.android.settings.testutils.SettingsRobolectricTestRunner;
+import com.android.settings.homepage.contextualcards.ContextualCardLookupTable.ControllerRendererMapping;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@RunWith(SettingsRobolectricTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class ContextualCardLookupTableTest {
 
     private static final int UNSUPPORTED_CARD_TYPE = -99999;
@@ -97,19 +96,5 @@ public class ContextualCardLookupTableTest {
         ContextualCardLookupTable.LOOKUP_TABLE.add(mapping2);
 
         ContextualCardLookupTable.getCardRendererClassByViewType(UNSUPPORTED_VIEW_TYPE);
-    }
-
-    @Test
-    public void getRendererClassByCardType_hasSupportedCardType_shouldGetCorrespondingRenderer() {
-        for (ControllerRendererMapping mapping : ContextualCardLookupTable.LOOKUP_TABLE) {
-            assertThat(ContextualCardLookupTable.getCardRendererClassByCardType(mapping.mCardType))
-                    .isEqualTo(mapping.mRendererClass);
-        }
-    }
-
-    @Test
-    public void getCardRendererClassByCardType_hasUnsupportedCardType_shouldAlwaysGetNull() {
-        assertThat(ContextualCardLookupTable.getCardRendererClassByCardType(UNSUPPORTED_CARD_TYPE))
-                .isNull();
     }
 }

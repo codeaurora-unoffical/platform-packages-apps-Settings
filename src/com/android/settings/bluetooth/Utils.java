@@ -16,6 +16,7 @@
 
 package com.android.settings.bluetooth;
 
+import android.app.settings.SettingsEnums;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
@@ -27,7 +28,6 @@ import android.widget.Toast;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 
-import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
 import com.android.settings.overlay.FeatureFactory;
 import com.android.settingslib.bluetooth.BluetoothUtils;
@@ -46,6 +46,8 @@ public final class Utils {
 
     static final boolean V = BluetoothUtils.V; // verbose logging
     static final boolean D =  BluetoothUtils.D;  // regular logging
+
+    public static final int META_INT_ERROR = -1;
 
     private Utils() {
     }
@@ -90,15 +92,10 @@ public final class Utils {
         return dialog;
     }
 
-    // TODO: wire this up to show connection errors...
-    static void showConnectingError(Context context, String name) {
-        showConnectingError(context, name, getLocalBtManager(context));
-    }
-
     @VisibleForTesting
     static void showConnectingError(Context context, String name, LocalBluetoothManager manager) {
         FeatureFactory.getFactory(context).getMetricsFeatureProvider().visible(context,
-            MetricsEvent.VIEW_UNKNOWN, MetricsEvent.ACTION_SETTINGS_BLUETOOTH_CONNECT_ERROR);
+            SettingsEnums.PAGE_UNKNOWN, SettingsEnums.ACTION_SETTINGS_BLUETOOTH_CONNECT_ERROR);
         showError(context, name, R.string.bluetooth_connecting_error_message, manager);
     }
 
@@ -156,5 +153,30 @@ public final class Utils {
     public static boolean isBluetoothScanningEnabled(Context context) {
         return Settings.Global.getInt(context.getContentResolver(),
                 Settings.Global.BLE_SCAN_ALWAYS_AVAILABLE, 0) == 1;
+    }
+
+    public static boolean getBooleanMetaData(BluetoothDevice bluetoothDevice, int key) {
+        if (bluetoothDevice == null) {
+            return false;
+        }
+        return Boolean.parseBoolean(bluetoothDevice.getMetadata(key));
+    }
+
+    public static String getStringMetaData(BluetoothDevice bluetoothDevice, int key) {
+        if (bluetoothDevice == null) {
+            return null;
+        }
+        return bluetoothDevice.getMetadata(key);
+    }
+
+    public static int getIntMetaData(BluetoothDevice bluetoothDevice, int key) {
+        if (bluetoothDevice == null) {
+            return META_INT_ERROR;
+        }
+        try {
+            return Integer.parseInt(bluetoothDevice.getMetadata(key));
+        } catch (NumberFormatException e) {
+            return META_INT_ERROR;
+        }
     }
 }

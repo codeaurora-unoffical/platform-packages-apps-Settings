@@ -18,6 +18,7 @@ package com.android.settings.wifi.p2p;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.settings.SettingsEnums;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -50,7 +51,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 
-import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
 import com.android.settings.dashboard.DashboardFragment;
 import com.android.settingslib.core.AbstractPreferenceController;
@@ -65,7 +65,7 @@ public class WifiP2pSettings extends DashboardFragment
         implements PersistentGroupInfoListener, PeerListListener {
 
     private static final String TAG = "WifiP2pSettings";
-    private static final boolean DBG = false;
+    private static final boolean DBG = Log.isLoggable(TAG, Log.DEBUG);
     private static final int MENU_ID_SEARCH = Menu.FIRST;
     private static final int MENU_ID_RENAME = Menu.FIRST + 1;
 
@@ -85,6 +85,7 @@ public class WifiP2pSettings extends DashboardFragment
     private boolean mWifiP2pSearching;
     private int mConnectedDevices;
     private boolean mLastGroupFormed = false;
+    private boolean mIsIgnoreInitConnectionInfoCallback = false;
 
     private P2pPeerCategoryPreferenceController mPeerCategoryController;
     private P2pPersistentCategoryPreferenceController mPersistentCategoryController;
@@ -131,6 +132,7 @@ public class WifiP2pSettings extends DashboardFragment
                     startSearch();
                 }
                 mLastGroupFormed = wifip2pinfo.groupFormed;
+                mIsIgnoreInitConnectionInfoCallback = true;
             } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
                 mThisDevice = (WifiP2pDevice) intent.getParcelableExtra(
                         WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
@@ -165,7 +167,7 @@ public class WifiP2pSettings extends DashboardFragment
 
     @Override
     public int getMetricsCategory() {
-        return MetricsEvent.WIFI_P2P;
+        return SettingsEnums.WIFI_P2P;
     }
 
     @Override
@@ -338,6 +340,29 @@ public class WifiP2pSettings extends DashboardFragment
         getActivity().registerReceiver(mReceiver, mIntentFilter);
         if (mWifiP2pManager != null) {
             mWifiP2pManager.requestPeers(mChannel, WifiP2pSettings.this);
+            mWifiP2pManager.requestDeviceInfo(mChannel, wifiP2pDevice -> {
+                if (DBG) {
+                    Log.d(TAG, "Get device info: " + wifiP2pDevice);
+                }
+                mThisDevice = wifiP2pDevice;
+                mThisDevicePreferenceController.updateDeviceName(wifiP2pDevice);
+            });
+            mIsIgnoreInitConnectionInfoCallback = false;
+            mWifiP2pManager.requestNetworkInfo(mChannel, networkInfo -> {
+                mWifiP2pManager.requestConnectionInfo(mChannel, wifip2pinfo -> {
+                    if (!mIsIgnoreInitConnectionInfoCallback) {
+                        if (networkInfo.isConnected()) {
+                            if (DBG) {
+                                Log.d(TAG, "Connected");
+                            }
+                        } else if (!mLastGroupFormed) {
+                            // Find peers when p2p doesn't connected.
+                            startSearch();
+                        }
+                        mLastGroupFormed = wifip2pinfo.groupFormed;
+                    }
+                });
+            });
         }
     }
 
@@ -507,13 +532,13 @@ public class WifiP2pSettings extends DashboardFragment
     public int getDialogMetricsCategory(int dialogId) {
         switch (dialogId) {
             case DIALOG_DISCONNECT:
-                return MetricsEvent.DIALOG_WIFI_P2P_DISCONNECT;
+                return SettingsEnums.DIALOG_WIFI_P2P_DISCONNECT;
             case DIALOG_CANCEL_CONNECT:
-                return MetricsEvent.DIALOG_WIFI_P2P_CANCEL_CONNECT;
+                return SettingsEnums.DIALOG_WIFI_P2P_CANCEL_CONNECT;
             case DIALOG_RENAME:
-                return MetricsEvent.DIALOG_WIFI_P2P_RENAME;
+                return SettingsEnums.DIALOG_WIFI_P2P_RENAME;
             case DIALOG_DELETE_GROUP:
-                return MetricsEvent.DIALOG_WIFI_P2P_DELETE_GROUP;
+                return SettingsEnums.DIALOG_WIFI_P2P_DELETE_GROUP;
         }
         return 0;
     }

@@ -19,6 +19,7 @@ package com.android.settings.fuelgauge;
 import android.annotation.UserIdInt;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.settings.SettingsEnums;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -32,14 +33,12 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 
-import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.internal.os.BatterySipper;
 import com.android.internal.os.BatteryStatsHelper;
 import com.android.internal.util.ArrayUtils;
 import com.android.settings.R;
 import com.android.settings.SettingsActivity;
 import com.android.settings.Utils;
-import com.android.settings.applications.LayoutPreference;
 import com.android.settings.applications.appinfo.AppButtonsPreferenceController;
 import com.android.settings.applications.appinfo.ButtonActionDialogFragment;
 import com.android.settings.core.InstrumentedPreferenceFragment;
@@ -52,6 +51,7 @@ import com.android.settingslib.applications.AppUtils;
 import com.android.settingslib.applications.ApplicationsState;
 import com.android.settingslib.core.AbstractPreferenceController;
 import com.android.settingslib.utils.StringUtil;
+import com.android.settingslib.widget.LayoutPreference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -258,7 +258,7 @@ public class AdvancedPowerUsageDetail extends DashboardFragment implements
 
     @Override
     public int getMetricsCategory() {
-        return MetricsEvent.FUELGAUGE_POWER_USAGE_DETAIL;
+        return SettingsEnums.FUELGAUGE_POWER_USAGE_DETAIL;
     }
 
     @Override

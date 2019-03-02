@@ -19,6 +19,7 @@ package com.android.settings.biometrics.fingerprint;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.app.Dialog;
+import android.app.settings.SettingsEnums;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Animatable2;
@@ -35,18 +36,19 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 
-import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
 import com.android.settings.biometrics.BiometricEnrollSidecar;
 import com.android.settings.biometrics.BiometricErrorDialog;
 import com.android.settings.biometrics.BiometricsEnrollEnrolling;
 import com.android.settings.core.instrumentation.InstrumentedDialogFragment;
+
+import com.google.android.setupcompat.template.FooterBarMixin;
+import com.google.android.setupcompat.template.FooterButton;
 
 /**
  * Activity which handles the actual enrolling for fingerprint.
@@ -110,7 +112,7 @@ public class FingerprintEnrollEnrolling extends BiometricsEnrollEnrolling {
 
         @Override
         public int getMetricsCategory() {
-            return MetricsEvent.DIALOG_FINGERPINT_ERROR;
+            return SettingsEnums.DIALOG_FINGERPINT_ERROR;
         }
 
         @Override
@@ -135,8 +137,15 @@ public class FingerprintEnrollEnrolling extends BiometricsEnrollEnrolling {
         mProgressBar = (ProgressBar) findViewById(R.id.fingerprint_progress_bar);
         mVibrator = getSystemService(Vibrator.class);
 
-        Button skipButton = findViewById(R.id.skip_button);
-        skipButton.setOnClickListener(this);
+        mFooterBarMixin = getLayout().getMixin(FooterBarMixin.class);
+        mFooterBarMixin.setSecondaryButton(
+                new FooterButton.Builder(this)
+                        .setText(R.string.security_settings_fingerprint_enroll_enrolling_skip)
+                        .setListener(this::onSkipButtonClick)
+                        .setButtonType(FooterButton.ButtonType.SKIP)
+                        .setTheme(R.style.SudGlifButton_Secondary)
+                        .build()
+        );
 
         final LayerDrawable fingerprintDrawable = (LayerDrawable) mProgressBar.getBackground();
         mIconAnimationDrawable = (AnimatedVectorDrawable)
@@ -410,7 +419,7 @@ public class FingerprintEnrollEnrolling extends BiometricsEnrollEnrolling {
 
     @Override
     public int getMetricsCategory() {
-        return MetricsEvent.FINGERPRINT_ENROLLING;
+        return SettingsEnums.FINGERPRINT_ENROLLING;
     }
 
     public static class IconTouchDialog extends InstrumentedDialogFragment {
@@ -432,7 +441,7 @@ public class FingerprintEnrollEnrolling extends BiometricsEnrollEnrolling {
 
         @Override
         public int getMetricsCategory() {
-            return MetricsEvent.DIALOG_FINGERPRINT_ICON_TOUCH;
+            return SettingsEnums.DIALOG_FINGERPRINT_ICON_TOUCH;
         }
     }
 }

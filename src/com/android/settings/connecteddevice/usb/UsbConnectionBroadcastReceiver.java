@@ -20,7 +20,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.usb.UsbManager;
-import android.hardware.usb.UsbPort;
 import android.hardware.usb.UsbPortStatus;
 
 import com.android.settingslib.core.lifecycle.LifecycleObserver;
@@ -49,8 +48,8 @@ public class UsbConnectionBroadcastReceiver extends BroadcastReceiver implements
         mUsbBackend = backend;
 
         mFunctions = UsbManager.FUNCTION_NONE;
-        mDataRole = UsbPort.DATA_ROLE_NONE;
-        mPowerRole = UsbPort.POWER_ROLE_NONE;
+        mDataRole = UsbPortStatus.DATA_ROLE_NONE;
+        mPowerRole = UsbPortStatus.POWER_ROLE_NONE;
     }
 
     @Override

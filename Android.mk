@@ -14,13 +14,16 @@ include $(CLEAR_VARS)
 LOCAL_PACKAGE_NAME := Settings
 LOCAL_PRIVATE_PLATFORM_APIS := true
 LOCAL_CERTIFICATE := platform
+LOCAL_PRODUCT_MODULE := true
 LOCAL_PRIVILEGED_MODULE := true
+LOCAL_REQUIRED_MODULES := privapp_whitelist_com.android.settings
 LOCAL_MODULE_TAGS := optional
 LOCAL_USE_AAPT2 := true
 
 LOCAL_SRC_FILES := $(call all-java-files-under, src)
 
 LOCAL_STATIC_ANDROID_LIBRARIES := \
+    androidx-constraintlayout_constraintlayout \
     androidx.slice_slice-builders \
     androidx.slice_slice-core \
     androidx.slice_slice-view \
@@ -30,6 +33,8 @@ LOCAL_STATIC_ANDROID_LIBRARIES := \
     androidx.preference_preference \
     androidx.recyclerview_recyclerview \
     com.google.android.material_material \
+    setupcompat \
+    setupdesign
 
 LOCAL_JAVA_LIBRARIES := \
     telephony-common \
@@ -37,6 +42,7 @@ LOCAL_JAVA_LIBRARIES := \
     telephony-ext
 
 LOCAL_STATIC_JAVA_LIBRARIES := \
+    androidx-constraintlayout_constraintlayout-solver \
     androidx.lifecycle_lifecycle-runtime \
     androidx.lifecycle_lifecycle-extensions \
     guava \
@@ -54,7 +60,6 @@ ifneq ($(INCREMENTAL_BUILDS),)
     LOCAL_JACK_FLAGS := --multi-dex native
 endif
 
-include frameworks/opt/setupwizard/library/common-gingerbread.mk
 include frameworks/base/packages/SettingsLib/common.mk
 include frameworks/base/packages/SettingsLib/search/common.mk
 

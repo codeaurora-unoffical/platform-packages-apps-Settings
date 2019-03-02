@@ -21,7 +21,6 @@ import android.os.Bundle;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
-import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceScreen;
 
 import com.android.settings.SettingsActivity;
@@ -32,6 +31,7 @@ import com.android.settings.fuelgauge.batterytip.actions.BatteryTipAction;
 import com.android.settings.fuelgauge.batterytip.tips.BatteryTip;
 import com.android.settings.fuelgauge.batterytip.tips.SummaryTip;
 import com.android.settings.overlay.FeatureFactory;
+import com.android.settings.widget.CardPreference;
 import com.android.settingslib.core.instrumentation.MetricsFeatureProvider;
 
 import java.util.HashMap;
@@ -42,6 +42,9 @@ import java.util.Map;
  * Controller in charge of the battery tip group
  */
 public class BatteryTipPreferenceController extends BasePreferenceController {
+
+    public static final String PREF_NAME = "battery_tip";
+
     private static final String TAG = "BatteryTipPreferenceController";
     private static final int REQUEST_ANOMALY_ACTION = 0;
     private static final String KEY_BATTERY_TIPS = "key_battery_tips";
@@ -53,7 +56,7 @@ public class BatteryTipPreferenceController extends BasePreferenceController {
     private MetricsFeatureProvider mMetricsFeatureProvider;
     private boolean mNeedUpdate;
     @VisibleForTesting
-    PreferenceGroup mPreferenceGroup;
+    CardPreference mCardPreference;
     @VisibleForTesting
     Context mPrefContext;
     InstrumentedPreferenceFragment mFragment;
@@ -86,12 +89,12 @@ public class BatteryTipPreferenceController extends BasePreferenceController {
     public void displayPreference(PreferenceScreen screen) {
         super.displayPreference(screen);
         mPrefContext = screen.getContext();
-        mPreferenceGroup = (PreferenceGroup) screen.findPreference(getPreferenceKey());
+        mCardPreference = screen.findPreference(getPreferenceKey());
 
         // Add summary tip in advance to avoid UI flakiness
         final SummaryTip summaryTip = new SummaryTip(BatteryTip.StateType.NEW,
                 Estimate.AVERAGE_TIME_TO_DISCHARGE_UNKNOWN);
-        mPreferenceGroup.addPreference(summaryTip.buildPreference(mPrefContext));
+        summaryTip.updatePreference(mCardPreference);
     }
 
     public void updateBatteryTips(List<BatteryTip> batteryTips) {
@@ -107,14 +110,12 @@ public class BatteryTipPreferenceController extends BasePreferenceController {
             }
         }
 
-        mPreferenceGroup.removeAll();
         for (int i = 0, size = batteryTips.size(); i < size; i++) {
             final BatteryTip batteryTip = mBatteryTips.get(i);
             batteryTip.sanityCheck(mContext);
             if (batteryTip.getState() != BatteryTip.StateType.INVISIBLE) {
-                final Preference preference = batteryTip.buildPreference(mPrefContext);
-                mBatteryTipMap.put(preference.getKey(), batteryTip);
-                mPreferenceGroup.addPreference(preference);
+                batteryTip.updatePreference(mCardPreference);
+                mBatteryTipMap.put(mCardPreference.getKey(), batteryTip);
                 batteryTip.log(mContext, mMetricsFeatureProvider);
                 mNeedUpdate = batteryTip.needUpdate();
                 break;

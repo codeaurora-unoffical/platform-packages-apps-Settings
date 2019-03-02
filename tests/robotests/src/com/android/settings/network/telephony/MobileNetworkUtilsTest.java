@@ -20,6 +20,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -41,19 +42,19 @@ import android.telephony.TelephonyManager;
 
 import com.android.internal.telephony.PhoneConstants;
 import com.android.settings.R;
-import com.android.settings.testutils.SettingsRobolectricTestRunner;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-@RunWith(SettingsRobolectricTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class MobileNetworkUtilsTest {
     private static final String PACKAGE_NAME = "com.android.app";
     private static final int SUB_ID_1 = 1;
@@ -104,7 +105,7 @@ public class MobileNetworkUtilsTest {
         when(mSubscriptionInfo1.getSubscriptionId()).thenReturn(SUB_ID_1);
         when(mSubscriptionInfo2.getSubscriptionId()).thenReturn(SUB_ID_2);
 
-        when(mSubscriptionManager.getActiveSubscriptionInfoList()).thenReturn(
+        when(mSubscriptionManager.getActiveSubscriptionInfoList(eq(true))).thenReturn(
                 Arrays.asList(mSubscriptionInfo1, mSubscriptionInfo2));
     }
 

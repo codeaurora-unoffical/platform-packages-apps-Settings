@@ -17,22 +17,24 @@
 package com.android.settings.biometrics.fingerprint;
 
 import android.app.admin.DevicePolicyManager;
+import android.app.settings.SettingsEnums;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.TextView;
 
-import com.android.internal.logging.nano.MetricsProto;
 import com.android.settings.R;
 import com.android.settings.Utils;
 import com.android.settings.biometrics.BiometricEnrollIntroduction;
 import com.android.settings.password.ChooseLockSettingsHelper;
 import com.android.settingslib.HelpUtils;
 import com.android.settingslib.RestrictedLockUtilsInternal;
-import com.android.setupwizardlib.span.LinkSpan;
+
+import com.google.android.setupcompat.template.FooterBarMixin;
+import com.google.android.setupcompat.template.FooterButton;
+import com.google.android.setupdesign.span.LinkSpan;
 
 public class FingerprintEnrollIntroduction extends BiometricEnrollIntroduction {
 
@@ -44,6 +46,25 @@ public class FingerprintEnrollIntroduction extends BiometricEnrollIntroduction {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mFingerprintManager = Utils.getFingerprintManagerOrNull(this);
+
+        mFooterBarMixin = getLayout().getMixin(FooterBarMixin.class);
+        mFooterBarMixin.setSecondaryButton(
+                new FooterButton.Builder(this)
+                        .setText(R.string.security_settings_face_enroll_introduction_cancel)
+                        .setListener(this::onCancelButtonClick)
+                        .setButtonType(FooterButton.ButtonType.SKIP)
+                        .setTheme(R.style.SudGlifButton_Secondary)
+                        .build()
+        );
+
+        mFooterBarMixin.setPrimaryButton(
+                new FooterButton.Builder(this)
+                        .setText(R.string.wizard_next)
+                        .setListener(this::onNextButtonClick)
+                        .setButtonType(FooterButton.ButtonType.NEXT)
+                        .setTheme(R.style.SudGlifButton_Primary)
+                        .build()
+        );
     }
 
     @Override
@@ -73,13 +94,19 @@ public class FingerprintEnrollIntroduction extends BiometricEnrollIntroduction {
     }
 
     @Override
-    protected Button getCancelButton() {
-        return findViewById(R.id.fingerprint_cancel_button);
+    protected FooterButton getCancelButton() {
+        if (mFooterBarMixin != null) {
+            return mFooterBarMixin.getSecondaryButton();
+        }
+        return null;
     }
 
     @Override
-    protected Button getNextButton() {
-        return findViewById(R.id.fingerprint_next_button);
+    protected FooterButton getNextButton() {
+        if (mFooterBarMixin != null) {
+            return mFooterBarMixin.getPrimaryButton();
+        }
+        return null;
     }
 
     @Override
@@ -105,6 +132,7 @@ public class FingerprintEnrollIntroduction extends BiometricEnrollIntroduction {
 
     @Override
     protected long getChallenge() {
+        mFingerprintManager = Utils.getFingerprintManagerOrNull(this);
         if (mFingerprintManager == null) {
             return 0;
         }
@@ -122,8 +150,13 @@ public class FingerprintEnrollIntroduction extends BiometricEnrollIntroduction {
     }
 
     @Override
+    protected int getConfirmLockTitleResId() {
+        return R.string.security_settings_fingerprint_preference_title;
+    }
+
+    @Override
     public int getMetricsCategory() {
-        return MetricsProto.MetricsEvent.FINGERPRINT_ENROLL_INTRO;
+        return SettingsEnums.FINGERPRINT_ENROLL_INTRO;
     }
 
     @Override

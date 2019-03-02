@@ -14,14 +14,19 @@
 
 package com.android.settings.applications.appinfo;
 
+import android.app.role.RoleManager;
+import android.app.settings.SettingsEnums;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.UserManager;
+import android.permission.PermissionControllerManager;
 import android.text.TextUtils;
 
 import androidx.preference.Preference;
+import androidx.preference.PreferenceScreen;
 
-import com.android.internal.logging.nano.MetricsProto;
+import com.android.internal.util.CollectionUtils;
 import com.android.settings.R;
 import com.android.settings.SettingsActivity;
 import com.android.settings.applications.DefaultAppSettings;
@@ -34,17 +39,63 @@ import com.android.settings.core.SubSettingLauncher;
  */
 public abstract class DefaultAppShortcutPreferenceControllerBase extends BasePreferenceController {
 
+    private final String mRoleName;
+
     protected final String mPackageName;
 
+    private final RoleManager mRoleManager;
+
+    private boolean mAppQualified;
+
+    private PreferenceScreen mPreferenceScreen;
+
+    public DefaultAppShortcutPreferenceControllerBase(Context context, String preferenceKey,
+            String roleName, String packageName) {
+        super(context, preferenceKey);
+
+        mRoleName = roleName;
+        mPackageName = packageName;
+
+        mRoleManager = context.getSystemService(RoleManager.class);
+
+        // TODO: STOPSHIP(b/110557011): Remove this check once we have all default apps migrated.
+        if (mRoleName != null) {
+            final PermissionControllerManager permissionControllerManager =
+                    mContext.getSystemService(PermissionControllerManager.class);
+            permissionControllerManager.isApplicationQualifiedForRole(mRoleName, mPackageName,
+                    mContext.getMainExecutor(), qualified -> {
+                        mAppQualified = qualified;
+                        refreshAvailability();
+                    });
+        }
+    }
+
+    // TODO: STOPSHIP(b/110557011): Remove this once we have all default apps migrated.
     public DefaultAppShortcutPreferenceControllerBase(Context context, String preferenceKey,
             String packageName) {
-        super(context, preferenceKey);
-        mPackageName = packageName;
+        this(context, preferenceKey, null /* roleName */, packageName);
+    }
+
+    @Override
+    public void displayPreference(PreferenceScreen screen) {
+        super.displayPreference(screen);
+
+        mPreferenceScreen = screen;
+    }
+
+    private void refreshAvailability() {
+        if (mPreferenceScreen != null) {
+            final Preference preference = mPreferenceScreen.findPreference(getPreferenceKey());
+            if (preference != null) {
+                preference.setVisible(isAvailable());
+                updateState(preference);
+            }
+        }
     }
 
     @Override
     public int getAvailabilityStatus() {
-        if (UserManager.get(mContext).isManagedProfile()) {
+        if (mContext.getSystemService(UserManager.class).isManagedProfile()) {
             return DISABLED_FOR_USER;
         }
         return hasAppCapability() ? AVAILABLE : UNSUPPORTED_ON_DEVICE;
@@ -52,24 +103,31 @@ public abstract class DefaultAppShortcutPreferenceControllerBase extends BasePre
 
     @Override
     public CharSequence getSummary() {
-        int summaryResId = isDefaultApp() ? R.string.yes : R.string.no;
+        final int summaryResId = isDefaultApp() ? R.string.yes : R.string.no;
         return mContext.getText(summaryResId);
     }
 
     @Override
     public boolean handlePreferenceTreeClick(Preference preference) {
-        if (TextUtils.equals(mPreferenceKey, preference.getKey())) {
+        if (!TextUtils.equals(mPreferenceKey, preference.getKey())) {
+            return false;
+        }
+        // TODO: STOPSHIP(b/110557011): Remove this check once we have all default apps migrated.
+        if (mRoleName != null) {
+            final Intent intent = new Intent(Intent.ACTION_MANAGE_DEFAULT_APP)
+                    .putExtra(Intent.EXTRA_ROLE_NAME, mRoleName);
+            mContext.startActivity(intent);
+        } else {
             final Bundle bundle = new Bundle();
             bundle.putString(SettingsActivity.EXTRA_FRAGMENT_ARG_KEY, mPreferenceKey);
             new SubSettingLauncher(mContext)
                     .setDestination(DefaultAppSettings.class.getName())
                     .setArguments(bundle)
                     .setTitleRes(R.string.configure_apps)
-                    .setSourceMetricsCategory(MetricsProto.MetricsEvent.VIEW_UNKNOWN)
+                    .setSourceMetricsCategory(SettingsEnums.PAGE_UNKNOWN)
                     .launch();
-            return true;
         }
-        return false;
+        return true;
     }
 
     /**
@@ -77,13 +135,26 @@ public abstract class DefaultAppShortcutPreferenceControllerBase extends BasePre
      *
      * @return true if the app has the default app capability
      */
-    protected abstract boolean hasAppCapability();
+    protected boolean hasAppCapability() {
+        // TODO: STOPSHIP(b/110557011): Remove this check once we have all default apps migrated.
+        if (mRoleName != null) {
+            return mAppQualified;
+        }
+        return false;
+    }
 
     /**
      * Check whether the app is the default app
      *
      * @return true if the app is the default app
      */
-    protected abstract boolean isDefaultApp();
-
+    protected boolean isDefaultApp() {
+        // TODO: STOPSHIP(b/110557011): Remove this check once we have all default apps migrated.
+        if (mRoleName != null) {
+            final String packageName = CollectionUtils.firstOrNull(mRoleManager.getRoleHolders(
+                    mRoleName));
+            return TextUtils.equals(mPackageName, packageName);
+        }
+        return false;
+    }
 }

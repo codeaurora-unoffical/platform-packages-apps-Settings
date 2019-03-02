@@ -17,7 +17,6 @@
 package com.android.settings.slices;
 
 import static com.android.settings.bluetooth.BluetoothSliceBuilder.ACTION_BLUETOOTH_SLICE_CHANGED;
-import static com.android.settings.flashlight.FlashlightSliceBuilder.ACTION_FLASHLIGHT_SLICE_CHANGED;
 import static com.android.settings.network.telephony.Enhanced4gLteSliceHelper.ACTION_ENHANCED_4G_LTE_CHANGED;
 import static com.android.settings.notification.ZenModeSliceBuilder.ACTION_ZEN_MODE_SLICE_CHANGED;
 import static com.android.settings.slices.SettingsSliceProvider.ACTION_COPY;
@@ -41,12 +40,10 @@ import android.provider.SettingsSlicesContract;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.bluetooth.BluetoothSliceBuilder;
 import com.android.settings.core.BasePreferenceController;
 import com.android.settings.core.SliderPreferenceController;
 import com.android.settings.core.TogglePreferenceController;
-import com.android.settings.flashlight.FlashlightSliceBuilder;
 import com.android.settings.notification.ZenModeSliceBuilder;
 import com.android.settings.overlay.FeatureFactory;
 
@@ -107,9 +104,6 @@ public class SliceBroadcastReceiver extends BroadcastReceiver {
                         .getSlicesFeatureProvider()
                         .getNewWifiCallingSliceHelper(context)
                         .handleWifiCallingPreferenceChanged(intent);
-                break;
-            case ACTION_FLASHLIGHT_SLICE_CHANGED:
-                FlashlightSliceBuilder.handleUriChange(context, intent);
                 break;
             case ACTION_COPY:
                 handleCopyAction(context, key, isPlatformSlice);
@@ -190,7 +184,7 @@ public class SliceBroadcastReceiver extends BroadcastReceiver {
 
         final BasePreferenceController controller = getPreferenceController(context, key);
 
-        if (!(controller instanceof CopyableSlice)) {
+        if (!(controller instanceof Copyable)) {
             throw new IllegalArgumentException(
                     "Copyable action passed for a non-copyable key:" + key);
         }
@@ -203,7 +197,7 @@ public class SliceBroadcastReceiver extends BroadcastReceiver {
             return;
         }
 
-        ((CopyableSlice) controller).copy();
+        ((Copyable) controller).copy();
     }
 
     /**
@@ -213,7 +207,7 @@ public class SliceBroadcastReceiver extends BroadcastReceiver {
     private void logSliceValueChange(Context context, String sliceKey, int newValue) {
         FeatureFactory.getFactory(context).getMetricsFeatureProvider()
                 .action(SettingsEnums.PAGE_UNKNOWN,
-                        MetricsEvent.ACTION_SETTINGS_SLICE_CHANGED,
+                        SettingsEnums.ACTION_SETTINGS_SLICE_CHANGED,
                         SettingsEnums.PAGE_UNKNOWN,
                         sliceKey, newValue);
     }

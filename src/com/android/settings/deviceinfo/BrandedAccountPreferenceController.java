@@ -17,13 +17,13 @@
 package com.android.settings.deviceinfo;
 
 import android.accounts.Account;
+import android.app.settings.SettingsEnums;
 import android.content.Context;
 import android.os.Bundle;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 
-import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
 import com.android.settings.accounts.AccountDetailDashboardFragment;
 import com.android.settings.accounts.AccountFeatureProvider;
@@ -32,11 +32,10 @@ import com.android.settings.core.SubSettingLauncher;
 import com.android.settings.overlay.FeatureFactory;
 
 public class BrandedAccountPreferenceController extends BasePreferenceController {
-    private static final String KEY_PREFERENCE_TITLE = "branded_account";
     private final Account[] mAccounts;
 
-    public BrandedAccountPreferenceController(Context context) {
-        super(context, KEY_PREFERENCE_TITLE);
+    public BrandedAccountPreferenceController(Context context, String key) {
+        super(context, key);
         final AccountFeatureProvider accountFeatureProvider = FeatureFactory.getFactory(
                 mContext).getAccountFeatureProvider();
         mAccounts = accountFeatureProvider.getAccounts(mContext);
@@ -44,6 +43,10 @@ public class BrandedAccountPreferenceController extends BasePreferenceController
 
     @Override
     public int getAvailabilityStatus() {
+        if (!mContext.getResources().getBoolean(
+                R.bool.config_show_branded_account_in_device_info)) {
+            return UNSUPPORTED_ON_DEVICE;
+        }
         if (mAccounts != null && mAccounts.length > 0) {
             return AVAILABLE;
         }
@@ -55,7 +58,7 @@ public class BrandedAccountPreferenceController extends BasePreferenceController
         super.displayPreference(screen);
         final AccountFeatureProvider accountFeatureProvider = FeatureFactory.getFactory(
                 mContext).getAccountFeatureProvider();
-        final Preference accountPreference = screen.findPreference(KEY_PREFERENCE_TITLE);
+        final Preference accountPreference = screen.findPreference(getPreferenceKey());
         if (accountPreference != null && (mAccounts == null || mAccounts.length == 0)) {
             screen.removePreference(accountPreference);
             return;
@@ -75,7 +78,7 @@ public class BrandedAccountPreferenceController extends BasePreferenceController
                     .setDestination(AccountDetailDashboardFragment.class.getName())
                     .setTitleRes(R.string.account_sync_title)
                     .setArguments(args)
-                    .setSourceMetricsCategory(MetricsEvent.DEVICEINFO)
+                    .setSourceMetricsCategory(SettingsEnums.DEVICEINFO)
                     .launch();
             return true;
         });

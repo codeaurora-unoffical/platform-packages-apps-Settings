@@ -42,7 +42,6 @@ import androidx.slice.builders.ListBuilder.InputRangeBuilder;
 import androidx.slice.builders.ListBuilder.RowBuilder;
 import androidx.slice.builders.SliceAction;
 
-import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
 import com.android.settings.SettingsActivity;
 import com.android.settings.SubSettings;
@@ -80,7 +79,7 @@ public class SliceBuilderUtils {
         final BasePreferenceController controller = getPreferenceController(context, sliceData);
         FeatureFactory.getFactory(context).getMetricsFeatureProvider()
                 .action(SettingsEnums.PAGE_UNKNOWN,
-                        MetricsEvent.ACTION_SETTINGS_SLICE_REQUESTED,
+                        SettingsEnums.ACTION_SETTINGS_SLICE_REQUESTED,
                         SettingsEnums.PAGE_UNKNOWN,
                         sliceData.getKey(),
                         0);
@@ -94,7 +93,7 @@ public class SliceBuilderUtils {
             return buildUnavailableSlice(context, sliceData);
         }
 
-        if (controller instanceof CopyableSlice) {
+        if (controller instanceof Copyable) {
             return buildCopyableSlice(context, sliceData, controller);
         }
 
@@ -168,10 +167,11 @@ public class SliceBuilderUtils {
      * @return {@link PendingIntent} for a non-primary {@link SliceAction}.
      */
     public static PendingIntent getActionIntent(Context context, String action, SliceData data) {
-        final Intent intent = new Intent(action);
-        intent.setClass(context, SliceBroadcastReceiver.class);
-        intent.putExtra(EXTRA_SLICE_KEY, data.getKey());
-        intent.putExtra(EXTRA_SLICE_PLATFORM_DEFINED, data.isPlatformDefined());
+        final Intent intent = new Intent(action)
+                .setData(data.getUri())
+                .setClass(context, SliceBroadcastReceiver.class)
+                .putExtra(EXTRA_SLICE_KEY, data.getKey())
+                .putExtra(EXTRA_SLICE_PLATFORM_DEFINED, data.isPlatformDefined());
         return PendingIntent.getBroadcast(context, 0 /* requestCode */, intent,
                 PendingIntent.FLAG_CANCEL_CURRENT);
     }
@@ -193,8 +193,9 @@ public class SliceBuilderUtils {
         CharSequence summaryText = controller.getSummary();
 
         // Priority 1 : User prefers showing the dynamic summary in slice view rather than static
-        // summary.
-        if (isDynamicSummaryAllowed && isValidSummary(context, summaryText)) {
+        // summary. Note it doesn't require a valid summary - so we can force some slices to have
+        // empty summaries (ex: volume).
+        if (isDynamicSummaryAllowed) {
             return summaryText;
         }
 
@@ -279,7 +280,8 @@ public class SliceBuilderUtils {
                         .setTitle(sliceData.getTitle())
                         .setSubtitle(subtitleText)
                         .setPrimaryAction(
-                                new SliceAction(contentIntent, icon, sliceData.getTitle()))
+                                SliceAction.createDeeplink(contentIntent, icon,
+                                        ListBuilder.ICON_IMAGE, sliceData.getTitle()))
                         .addEndItem(sliceAction))
                 .setKeywords(keywords)
                 .build();
@@ -299,7 +301,9 @@ public class SliceBuilderUtils {
                         .setTitle(sliceData.getTitle())
                         .setSubtitle(subtitleText)
                         .setPrimaryAction(
-                                new SliceAction(contentIntent, icon, sliceData.getTitle())))
+                                SliceAction.createDeeplink(contentIntent, icon,
+                                        ListBuilder.ICON_IMAGE,
+                                        sliceData.getTitle())))
                 .setKeywords(keywords)
                 .build();
     }
@@ -312,8 +316,8 @@ public class SliceBuilderUtils {
         final IconCompat icon = getSafeIcon(context, sliceData);
         @ColorInt final int color = Utils.getColorAccentDefaultColor(context);
         final CharSequence subtitleText = getSubtitleText(context, controller, sliceData);
-        final SliceAction primaryAction = new SliceAction(contentIntent, icon,
-                sliceData.getTitle());
+        final SliceAction primaryAction = SliceAction.createDeeplink(contentIntent, icon,
+                ListBuilder.ICON_IMAGE, sliceData.getTitle());
         final Set<String> keywords = buildSliceKeywords(sliceData);
 
         return new ListBuilder(context, sliceData.getUri(), ListBuilder.INFINITY)
@@ -334,7 +338,8 @@ public class SliceBuilderUtils {
         final SliceAction copyableAction = getCopyableAction(context, sliceData);
         final PendingIntent contentIntent = getContentPendingIntent(context, sliceData);
         final IconCompat icon = getSafeIcon(context, sliceData);
-        final SliceAction primaryAction = new SliceAction(contentIntent, icon,
+        final SliceAction primaryAction = SliceAction.createDeeplink(contentIntent, icon,
+                ListBuilder.ICON_IMAGE,
                 sliceData.getTitle());
         final CharSequence subtitleText = getSubtitleText(context, controller, sliceData);
         @ColorInt final int color = Utils.getColorAccentDefaultColor(context);
@@ -366,7 +371,7 @@ public class SliceBuilderUtils {
             boolean isChecked) {
         PendingIntent actionIntent = getActionIntent(context,
                 SettingsSliceProvider.ACTION_TOGGLE_CHANGED, sliceData);
-        return new SliceAction(actionIntent, null, isChecked);
+        return SliceAction.createToggle(actionIntent, null, isChecked);
     }
 
     private static PendingIntent getSliderAction(Context context, SliceData sliceData) {
@@ -378,7 +383,7 @@ public class SliceBuilderUtils {
                 SettingsSliceProvider.ACTION_COPY, sliceData);
         final IconCompat icon = IconCompat.createWithResource(context,
                 R.drawable.ic_content_copy_grey600_24dp);
-        return new SliceAction(intent, icon, sliceData.getTitle());
+        return SliceAction.create(intent, icon, ListBuilder.ICON_IMAGE, sliceData.getTitle());
     }
 
     private static boolean isValidSummary(Context context, CharSequence summary) {
@@ -419,17 +424,21 @@ public class SliceBuilderUtils {
         final String title = data.getTitle();
         final Set<String> keywords = buildSliceKeywords(data);
         @ColorInt final int color = Utils.getColorAccentDefaultColor(context);
-        final CharSequence summary = context.getText(R.string.disabled_dependent_setting_summary);
+
+        final String customSubtitle = data.getUnavailableSliceSubtitle();
+        final CharSequence subtitle = !TextUtils.isEmpty(customSubtitle) ? customSubtitle
+                : context.getText(R.string.disabled_dependent_setting_summary);
         final IconCompat icon = getSafeIcon(context, data);
-        final SliceAction primaryAction = new SliceAction(getContentPendingIntent(context, data),
-                icon, title);
+        final SliceAction primaryAction = SliceAction.createDeeplink(
+                getContentPendingIntent(context, data),
+                icon, ListBuilder.ICON_IMAGE, title);
 
         return new ListBuilder(context, data.getUri(), ListBuilder.INFINITY)
                 .setAccentColor(color)
                 .addRow(new RowBuilder()
                         .setTitle(title)
-                        .setTitleItem(icon, ListBuilder.SMALL_IMAGE)
-                        .setSubtitle(summary)
+                        .setTitleItem(icon, ListBuilder.ICON_IMAGE)
+                        .setSubtitle(subtitle)
                         .setPrimaryAction(primaryAction))
                 .setKeywords(keywords)
                 .build();
@@ -442,6 +451,12 @@ public class SliceBuilderUtils {
         if (iconResource == 0) {
             iconResource = R.drawable.ic_settings;
         }
-        return IconCompat.createWithResource(context, iconResource);
+        try {
+            return IconCompat.createWithResource(context, iconResource);
+        } catch (Exception e) {
+            Log.w(TAG, "Falling back to settings icon because there is an error getting slice icon "
+                    + data.getUri(), e);
+            return IconCompat.createWithResource(context, R.drawable.ic_settings);
+        }
     }
 }

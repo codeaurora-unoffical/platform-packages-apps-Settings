@@ -17,6 +17,7 @@
 package com.android.settings.deviceinfo.aboutphone;
 
 import android.app.Activity;
+import android.app.settings.SettingsEnums;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.UserInfo;
@@ -25,15 +26,10 @@ import android.os.UserManager;
 import android.provider.SearchIndexableResource;
 import android.view.View;
 
-import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
 import com.android.settings.Utils;
-import com.android.settings.accounts.EmergencyInfoPreferenceController;
-import com.android.settings.applications.LayoutPreference;
 import com.android.settings.dashboard.DashboardFragment;
-import com.android.settings.dashboard.SummaryLoader;
 import com.android.settings.deviceinfo.BluetoothAddressPreferenceController;
-import com.android.settings.deviceinfo.BrandedAccountPreferenceController;
 import com.android.settings.deviceinfo.BuildNumberPreferenceController;
 import com.android.settings.deviceinfo.DeviceModelPreferenceController;
 import com.android.settings.deviceinfo.DeviceNamePreferenceController;
@@ -53,6 +49,7 @@ import com.android.settings.widget.EntityHeaderController;
 import com.android.settingslib.core.AbstractPreferenceController;
 import com.android.settingslib.core.lifecycle.Lifecycle;
 import com.android.settingslib.search.SearchIndexable;
+import com.android.settingslib.widget.LayoutPreference;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,9 +62,11 @@ public class MyDeviceInfoFragment extends DashboardFragment
     private static final String LOG_TAG = "MyDeviceInfoFragment";
     private static final String KEY_MY_DEVICE_INFO_HEADER = "my_device_info_header";
 
+    private BuildNumberPreferenceController mBuildNumberPreferenceController;
+
     @Override
     public int getMetricsCategory() {
-        return MetricsEvent.DEVICEINFO;
+        return SettingsEnums.DEVICEINFO;
     }
 
     @Override
@@ -78,8 +77,12 @@ public class MyDeviceInfoFragment extends DashboardFragment
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        use(FirmwareVersionPreferenceController.class).setHost(this /*parent*/);
+        use(FirmwareVersionPreferenceController.class).setHost(this /* parent */);
         use(DeviceModelPreferenceController.class).setHost(this /* parent */);
+        use(ImeiInfoPreferenceController.class).setHost(this /* parent */);
+        use(DeviceNamePreferenceController.class).setHost(this /* parent */);
+        mBuildNumberPreferenceController = use(BuildNumberPreferenceController.class);
+        mBuildNumberPreferenceController.setHost(this /* parent */);
     }
 
     @Override
@@ -100,25 +103,13 @@ public class MyDeviceInfoFragment extends DashboardFragment
 
     @Override
     protected List<AbstractPreferenceController> createPreferenceControllers(Context context) {
-        return buildPreferenceControllers(context, getActivity(), this /* fragment */,
-                getSettingsLifecycle());
+        return buildPreferenceControllers(context, this /* fragment */, getSettingsLifecycle());
     }
 
     private static List<AbstractPreferenceController> buildPreferenceControllers(
-            Context context, Activity activity, MyDeviceInfoFragment fragment,
-            Lifecycle lifecycle) {
+            Context context, MyDeviceInfoFragment fragment, Lifecycle lifecycle) {
         final List<AbstractPreferenceController> controllers = new ArrayList<>();
-        controllers.add(new EmergencyInfoPreferenceController(context));
-        controllers.add(new BrandedAccountPreferenceController(context));
-        DeviceNamePreferenceController deviceNamePreferenceController =
-                new DeviceNamePreferenceController(context);
-        deviceNamePreferenceController.setHost(fragment);
-        if (lifecycle != null) {
-            lifecycle.addObserver(deviceNamePreferenceController);
-        }
-        controllers.add(deviceNamePreferenceController);
         controllers.add(new SimStatusPreferenceController(context, fragment));
-        controllers.add(new ImeiInfoPreferenceController(context, fragment));
         controllers.add(new IpAddressPreferenceController(context, lifecycle));
         controllers.add(new WifiMacAddressPreferenceController(context, lifecycle));
         controllers.add(new BluetoothAddressPreferenceController(context, lifecycle));
@@ -127,17 +118,13 @@ public class MyDeviceInfoFragment extends DashboardFragment
         controllers.add(new ManualPreferenceController(context));
         controllers.add(new FeedbackPreferenceController(fragment, context));
         controllers.add(new FccEquipmentIdPreferenceController(context));
-        controllers.add(
-                new BuildNumberPreferenceController(context, activity, fragment, lifecycle));
         controllers.add(new UptimePreferenceController(context, lifecycle));
         return controllers;
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        final BuildNumberPreferenceController buildNumberPreferenceController =
-                use(BuildNumberPreferenceController.class);
-        if (buildNumberPreferenceController.onActivityResult(requestCode, resultCode, data)) {
+        if (mBuildNumberPreferenceController.onActivityResult(requestCode, resultCode, data)) {
             return;
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -146,12 +133,18 @@ public class MyDeviceInfoFragment extends DashboardFragment
     private void initHeader() {
         // TODO: Migrate into its own controller.
         final LayoutPreference headerPreference =
-                (LayoutPreference) getPreferenceScreen().findPreference(KEY_MY_DEVICE_INFO_HEADER);
-        final View appSnippet = headerPreference.findViewById(R.id.entity_header);
+                getPreferenceScreen().findPreference(KEY_MY_DEVICE_INFO_HEADER);
+        final boolean shouldDisplayHeader = getContext().getResources().getBoolean(
+                R.bool.config_show_device_header_in_device_info);
+        headerPreference.setVisible(shouldDisplayHeader);
+        if (!shouldDisplayHeader) {
+            return;
+        }
+        final View headerView = headerPreference.findViewById(R.id.entity_header);
         final Activity context = getActivity();
         final Bundle bundle = getArguments();
         final EntityHeaderController controller = EntityHeaderController
-                .newInstance(context, this, appSnippet)
+                .newInstance(context, this, headerView)
                 .setRecyclerView(getListView(), getSettingsLifecycle())
                 .setButtonActions(EntityHeaderController.ActionType.ACTION_NONE,
                         EntityHeaderController.ActionType.ACTION_NONE);
@@ -198,8 +191,8 @@ public class MyDeviceInfoFragment extends DashboardFragment
                 @Override
                 public List<AbstractPreferenceController> createPreferenceControllers(
                         Context context) {
-                    return buildPreferenceControllers(context, null /*activity */,
-                            null /* fragment */, null /* lifecycle */);
+                    return buildPreferenceControllers(context, null /* fragment */,
+                            null /* lifecycle */);
                 }
             };
 }

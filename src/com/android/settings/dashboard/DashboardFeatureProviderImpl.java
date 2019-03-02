@@ -16,10 +16,13 @@
 
 package com.android.settings.dashboard;
 
+import static android.content.Intent.EXTRA_USER;
+
 import static com.android.settingslib.drawer.TileUtils.META_DATA_PREFERENCE_ICON_URI;
 import static com.android.settingslib.drawer.TileUtils.META_DATA_PREFERENCE_SUMMARY;
 import static com.android.settingslib.drawer.TileUtils.META_DATA_PREFERENCE_SUMMARY_URI;
 
+import android.app.settings.SettingsEnums;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.IContentProvider;
@@ -28,6 +31,7 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
 import android.os.Bundle;
+import android.os.UserHandle;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.ArrayMap;
@@ -38,7 +42,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
 import androidx.preference.Preference;
 
-import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
 import com.android.settings.SettingsActivity;
 import com.android.settings.dashboard.profileselector.ProfileSelectDialog;
@@ -160,9 +163,9 @@ public class DashboardFeatureProviderImpl implements DashboardFeatureProvider {
         }
         final Intent intent = new Intent(tile.getIntent())
                 .putExtra(MetricsFeatureProvider.EXTRA_SOURCE_METRICS_CATEGORY,
-                        MetricsEvent.DASHBOARD_SUMMARY)
+                        SettingsEnums.DASHBOARD_SUMMARY)
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        launchIntentOrSelectProfile(activity, tile, intent, MetricsEvent.DASHBOARD_SUMMARY);
+        launchIntentOrSelectProfile(activity, tile, intent, SettingsEnums.DASHBOARD_SUMMARY);
     }
 
     private void bindSummary(Preference preference, Tile tile) {
@@ -239,7 +242,14 @@ public class DashboardFeatureProviderImpl implements DashboardFeatureProvider {
             mMetricsFeatureProvider.logDashboardStartIntent(mContext, intent, sourceMetricCategory);
             activity.startActivityForResultAsUser(intent, 0, tile.userHandle.get(0));
         } else {
-            ProfileSelectDialog.show(activity.getSupportFragmentManager(), tile);
+            final UserHandle userHandle = intent.getParcelableExtra(EXTRA_USER);
+            if (userHandle != null && tile.userHandle.contains(userHandle)) {
+                mMetricsFeatureProvider.logDashboardStartIntent(
+                    mContext, intent, sourceMetricCategory);
+                activity.startActivityForResultAsUser(intent, 0, userHandle);
+            } else {
+                ProfileSelectDialog.show(activity.getSupportFragmentManager(), tile);
+            }
         }
     }
 

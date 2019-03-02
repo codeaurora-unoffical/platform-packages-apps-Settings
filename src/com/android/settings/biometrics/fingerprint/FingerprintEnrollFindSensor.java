@@ -16,20 +16,22 @@
 
 package com.android.settings.biometrics.fingerprint;
 
+import android.app.settings.SettingsEnums;
 import android.content.Intent;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 
 import androidx.annotation.Nullable;
 
-import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
 import com.android.settings.Utils;
 import com.android.settings.biometrics.BiometricEnrollBase;
 import com.android.settings.biometrics.BiometricEnrollSidecar.Listener;
 import com.android.settings.password.ChooseLockSettingsHelper;
+
+import com.google.android.setupcompat.template.FooterBarMixin;
+import com.google.android.setupcompat.template.FooterButton;
 
 /**
  * Activity explaining the fingerprint sensor location for fingerprint enrollment.
@@ -46,17 +48,21 @@ public class FingerprintEnrollFindSensor extends BiometricEnrollBase {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getContentView());
-        Button skipButton = findViewById(R.id.skip_button);
-        skipButton.setOnClickListener(this);
+        mFooterBarMixin = getLayout().getMixin(FooterBarMixin.class);
+        mFooterBarMixin.setSecondaryButton(
+                new FooterButton.Builder(this)
+                        .setText(R.string.skip_label)
+                        .setListener(this::onSkipButtonClick)
+                        .setButtonType(FooterButton.ButtonType.SKIP)
+                        .setTheme(R.style.SudGlifButton_Secondary)
+                        .build()
+        );
 
         setHeaderText(R.string.security_settings_fingerprint_enroll_find_sensor_title);
 
-        if (shouldLaunchConfirmLock()) {
-            launchConfirmLock(R.string.security_settings_fingerprint_preference_title,
-                    Utils.getFingerprintManagerOrNull(this).preEnroll());
-        } else if (mToken != null) {
-            startLookingForFingerprint(); // already confirmed, so start looking for fingerprint
-        }
+
+        startLookingForFingerprint(); // already confirmed, so start looking for fingerprint
+
         View animationView = findViewById(R.id.fingerprint_sensor_location_animation);
         if (animationView instanceof FingerprintFindSensorAnimation) {
             mAnimation = (FingerprintFindSensorAnimation) animationView;
@@ -123,18 +129,7 @@ public class FingerprintEnrollFindSensor extends BiometricEnrollBase {
         }
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.skip_button:
-                onSkipButtonClick();
-                break;
-            default:
-                super.onClick(v);
-        }
-    }
-
-    protected void onSkipButtonClick() {
+    protected void onSkipButtonClick(View view) {
         setResult(RESULT_SKIP);
         finish();
     }
@@ -161,7 +156,7 @@ public class FingerprintEnrollFindSensor extends BiometricEnrollBase {
         if (requestCode == CONFIRM_REQUEST) {
             if (resultCode == RESULT_OK && data != null) {
                 mToken = data.getByteArrayExtra(ChooseLockSettingsHelper.EXTRA_KEY_CHALLENGE_TOKEN);
-                overridePendingTransition(R.anim.suw_slide_next_in, R.anim.suw_slide_next_out);
+                overridePendingTransition(R.anim.sud_slide_next_in, R.anim.sud_slide_next_out);
                 getIntent().putExtra(ChooseLockSettingsHelper.EXTRA_KEY_CHALLENGE_TOKEN, mToken);
                 startLookingForFingerprint();
             } else {
@@ -196,6 +191,6 @@ public class FingerprintEnrollFindSensor extends BiometricEnrollBase {
 
     @Override
     public int getMetricsCategory() {
-        return MetricsEvent.FINGERPRINT_FIND_SENSOR;
+        return SettingsEnums.FINGERPRINT_FIND_SENSOR;
     }
 }

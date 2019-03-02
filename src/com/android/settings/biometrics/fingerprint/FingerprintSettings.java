@@ -17,9 +17,12 @@
 package com.android.settings.biometrics.fingerprint;
 
 
+import static com.android.settings.Utils.SETTINGS_PACKAGE_NAME;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.admin.DevicePolicyManager;
+import android.app.settings.SettingsEnums;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -33,8 +36,6 @@ import android.os.UserManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.VisibleForTesting;
@@ -45,7 +46,6 @@ import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.PreferenceViewHolder;
 
-import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
 import com.android.settings.SettingsPreferenceFragment;
 import com.android.settings.SubSettings;
@@ -266,7 +266,7 @@ public class FingerprintSettings extends SubSettings {
 
         @Override
         public int getMetricsCategory() {
-            return MetricsEvent.FINGERPRINT;
+            return SettingsEnums.FINGERPRINT;
         }
 
         @Override
@@ -462,7 +462,7 @@ public class FingerprintSettings extends SubSettings {
             final String key = pref.getKey();
             if (KEY_FINGERPRINT_ADD.equals(key)) {
                 Intent intent = new Intent();
-                intent.setClassName("com.android.settings",
+                intent.setClassName(SETTINGS_PACKAGE_NAME,
                         FingerprintEnrollEnrolling.class.getName());
                 intent.putExtra(Intent.EXTRA_USER_ID, mUserId);
                 intent.putExtra(ChooseLockSettingsHelper.EXTRA_KEY_CHALLENGE_TOKEN, mToken);
@@ -615,7 +615,7 @@ public class FingerprintSettings extends SubSettings {
             if (!helper.launchConfirmationActivity(CONFIRM_REQUEST,
                     getString(R.string.security_settings_fingerprint_preference_title),
                     null, null, challenge, mUserId)) {
-                intent.setClassName("com.android.settings", ChooseLockGeneric.class.getName());
+                intent.setClassName(SETTINGS_PACKAGE_NAME, ChooseLockGeneric.class.getName());
                 intent.putExtra(ChooseLockGeneric.ChooseLockGenericFragment.MINIMUM_QUALITY_KEY,
                         DevicePolicyManager.PASSWORD_QUALITY_SOMETHING);
                 intent.putExtra(ChooseLockGeneric.ChooseLockGenericFragment.HIDE_DISABLED_PREFS,
@@ -672,7 +672,7 @@ public class FingerprintSettings extends SubSettings {
 
             @Override
             public int getMetricsCategory() {
-                return MetricsEvent.DIALOG_FINGERPINT_EDIT;
+                return SettingsEnums.DIALOG_FINGERPINT_EDIT;
             }
 
             @Override
@@ -697,7 +697,7 @@ public class FingerprintSettings extends SubSettings {
                     final int fingerprintId = mFp.getBiometricId();
                     Log.v(TAG, "Removing fpId=" + fingerprintId);
                     mMetricsFeatureProvider.action(getContext(),
-                            MetricsEvent.ACTION_FINGERPRINT_DELETE,
+                            SettingsEnums.ACTION_FINGERPRINT_DELETE,
                             fingerprintId);
                     FingerprintSettingsFragment parent
                             = (FingerprintSettingsFragment) getTargetFragment();
@@ -744,7 +744,7 @@ public class FingerprintSettings extends SubSettings {
                                         if (!TextUtils.equals(newName, name)) {
                                             Log.d(TAG, "rename " + name + " to " + newName);
                                             mMetricsFeatureProvider.action(getContext(),
-                                                    MetricsEvent.ACTION_FINGERPRINT_RENAME,
+                                                    SettingsEnums.ACTION_FINGERPRINT_RENAME,
                                                     mFp.getBiometricId());
                                             FingerprintSettingsFragment parent
                                                     = (FingerprintSettingsFragment)
@@ -796,7 +796,7 @@ public class FingerprintSettings extends SubSettings {
 
             @Override
             public int getMetricsCategory() {
-                return MetricsEvent.DIALOG_FINGERPINT_EDIT;
+                return SettingsEnums.DIALOG_FINGERPINT_EDIT;
             }
         }
 
@@ -806,7 +806,7 @@ public class FingerprintSettings extends SubSettings {
 
             @Override
             public int getMetricsCategory() {
-                return MetricsEvent.DIALOG_FINGERPINT_DELETE_LAST;
+                return SettingsEnums.DIALOG_FINGERPINT_DELETE_LAST;
             }
 
             @Override

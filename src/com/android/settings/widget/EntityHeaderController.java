@@ -16,9 +16,6 @@
 
 package com.android.settings.widget;
 
-import static com.android.internal.logging.nano.MetricsProto.MetricsEvent
-        .ACTION_OPEN_APP_NOTIFICATION_SETTING;
-
 import android.annotation.IdRes;
 import android.annotation.UserIdInt;
 import android.app.ActionBar;
@@ -48,11 +45,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.settings.R;
 import com.android.settings.Utils;
 import com.android.settings.applications.AppInfoBase;
-import com.android.settings.applications.LayoutPreference;
 import com.android.settings.applications.appinfo.AppInfoDashboardFragment;
 import com.android.settings.overlay.FeatureFactory;
 import com.android.settingslib.applications.ApplicationsState;
 import com.android.settingslib.core.lifecycle.Lifecycle;
+import com.android.settingslib.widget.ActionBarShadowController;
+import com.android.settingslib.widget.LayoutPreference;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -238,6 +236,7 @@ public class EntityHeaderController {
         pref.setOrder(-1000);
         pref.setSelectable(false);
         pref.setKey(PREF_KEY_APP_HEADER);
+        pref.setAllowDividerBelow(true);
         return pref;
     }
 
@@ -320,10 +319,10 @@ public class EntityHeaderController {
         }
         actionBar.setBackgroundDrawable(
                 new ColorDrawable(
-                        Utils.getColorAttrDefaultColor(activity, android.R.attr.colorPrimary)));
+                        Utils.getColorAttrDefaultColor(activity, android.R.attr.colorPrimaryDark)));
         actionBar.setElevation(0);
         if (mRecyclerView != null && mLifecycle != null) {
-            ActionBarShadowController.attachToRecyclerView(mActivity, mLifecycle, mRecyclerView);
+            ActionBarShadowController.attachToView(mActivity, mLifecycle, mRecyclerView);
         }
 
         return this;
@@ -346,7 +345,7 @@ public class EntityHeaderController {
                 if (mEditOnClickListener == null) {
                     button.setVisibility(View.GONE);
                 } else {
-                    button.setImageResource(R.drawable.ic_mode_edit);
+                    button.setImageResource(com.android.internal.R.drawable.ic_mode_edit);
                     button.setVisibility(View.VISIBLE);
                     button.setOnClickListener(mEditOnClickListener);
                 }
@@ -359,7 +358,7 @@ public class EntityHeaderController {
                     button.setOnClickListener(v -> {
                         FeatureFactory.getFactory(mAppContext).getMetricsFeatureProvider()
                                 .action(SettingsEnums.PAGE_UNKNOWN,
-                                        ACTION_OPEN_APP_NOTIFICATION_SETTING,
+                                        SettingsEnums.ACTION_OPEN_APP_NOTIFICATION_SETTING,
                                         mMetricsCategory,
                                         null, 0);
                         mFragment.startActivity(mAppNotifPrefIntent);

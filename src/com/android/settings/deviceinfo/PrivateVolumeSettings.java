@@ -17,6 +17,7 @@
 package com.android.settings.deviceinfo;
 
 import android.app.Dialog;
+import android.app.settings.SettingsEnums;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -52,7 +53,6 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceScreen;
 
-import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
 import com.android.settings.R;
 import com.android.settings.Settings.StorageUseActivity;
 import com.android.settings.SettingsPreferenceFragment;
@@ -140,7 +140,7 @@ public class PrivateVolumeSettings extends SettingsPreferenceFragment {
 
     @Override
     public int getMetricsCategory() {
-        return MetricsEvent.DEVICEINFO_STORAGE;
+        return SettingsEnums.DEVICEINFO_STORAGE;
     }
 
     @Override
@@ -416,7 +416,8 @@ public class PrivateVolumeSettings extends SettingsPreferenceFragment {
                 .getPrimaryStorageCurrentVolume();
         migrate.setVisible((privateVol != null)
                 && (privateVol.getType() == VolumeInfo.TYPE_PRIVATE)
-                && !Objects.equals(mVolume, privateVol));
+                && !Objects.equals(mVolume, privateVol)
+                && privateVol.isMountedWritable());
     }
 
     @Override
@@ -706,7 +707,7 @@ public class PrivateVolumeSettings extends SettingsPreferenceFragment {
 
         @Override
         public int getMetricsCategory() {
-            return MetricsEvent.DIALOG_VOLUME_RENAME;
+            return SettingsEnums.DIALOG_VOLUME_RENAME;
         }
 
         @Override
@@ -754,7 +755,7 @@ public class PrivateVolumeSettings extends SettingsPreferenceFragment {
 
         @Override
         public int getMetricsCategory() {
-            return MetricsEvent.DIALOG_STORAGE_SYSTEM_INFO;
+            return SettingsEnums.DIALOG_STORAGE_SYSTEM_INFO;
         }
 
         @Override
@@ -785,7 +786,7 @@ public class PrivateVolumeSettings extends SettingsPreferenceFragment {
 
         @Override
         public int getMetricsCategory() {
-            return MetricsEvent.DIALOG_STORAGE_OTHER_INFO;
+            return SettingsEnums.DIALOG_STORAGE_OTHER_INFO;
         }
 
         @Override
@@ -827,7 +828,7 @@ public class PrivateVolumeSettings extends SettingsPreferenceFragment {
 
         @Override
         public int getMetricsCategory() {
-            return MetricsEvent.DIALOG_STORAGE_USER_INFO;
+            return SettingsEnums.DIALOG_STORAGE_USER_INFO;
         }
 
         @Override
@@ -861,7 +862,7 @@ public class PrivateVolumeSettings extends SettingsPreferenceFragment {
 
         @Override
         public int getMetricsCategory() {
-            return MetricsEvent.DIALOG_STORAGE_CLEAR_CACHE;
+            return SettingsEnums.DIALOG_STORAGE_CLEAR_CACHE;
         }
 
         @Override

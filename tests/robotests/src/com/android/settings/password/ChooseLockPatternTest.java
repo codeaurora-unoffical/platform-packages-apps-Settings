@@ -27,25 +27,19 @@ import android.view.View;
 import com.android.settings.R;
 import com.android.settings.password.ChooseLockPattern.ChooseLockPatternFragment;
 import com.android.settings.password.ChooseLockPattern.IntentBuilder;
-import com.android.settings.testutils.SettingsRobolectricTestRunner;
-import com.android.settings.testutils.shadow.SettingsShadowResources;
-import com.android.settings.testutils.shadow.SettingsShadowResourcesImpl;
 import com.android.settings.testutils.shadow.ShadowUtils;
 import com.android.settingslib.testutils.DrawableTestHelper;
-import com.android.setupwizardlib.GlifLayout;
+
+import com.google.android.setupdesign.GlifLayout;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-@RunWith(SettingsRobolectricTestRunner.class)
-@Config(shadows = {
-    SettingsShadowResources.class,
-    SettingsShadowResourcesImpl.class,
-    SettingsShadowResources.SettingsShadowTheme.class,
-    ShadowUtils.class
-})
+@RunWith(RobolectricTestRunner.class)
+@Config(shadows = ShadowUtils.class)
 public class ChooseLockPatternTest {
 
     @Test
@@ -113,7 +107,7 @@ public class ChooseLockPatternTest {
         ChooseLockPatternFragment fragment = (ChooseLockPatternFragment)
                 activity.getSupportFragmentManager().findFragmentById(R.id.main_content);
 
-        View iconView = fragment.getView().findViewById(R.id.suw_layout_icon);
+        View iconView = fragment.getView().findViewById(R.id.suc_layout_icon);
         assertThat(iconView.getVisibility()).isEqualTo(View.GONE);
     }
 

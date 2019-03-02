@@ -29,17 +29,22 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.android.settings.R;
 import com.android.settings.password.ChooseLockGeneric.ChooseLockGenericFragment;
+import com.android.settings.password.ChooseLockPassword.ChooseLockPasswordFragment.Stage;
 import com.android.settings.password.ChooseLockPassword.IntentBuilder;
 import com.android.settings.password.SetupChooseLockPassword.SetupChooseLockPasswordFragment;
-import com.android.settings.testutils.SettingsRobolectricTestRunner;
 import com.android.settings.testutils.shadow.SettingsShadowResources;
-import com.android.settings.testutils.shadow.SettingsShadowResourcesImpl;
+import com.android.settings.testutils.shadow.ShadowAlertDialogCompat;
 import com.android.settings.testutils.shadow.ShadowUtils;
+import com.android.settings.widget.ScrollToParentEditText;
+
+import com.google.android.setupcompat.PartnerCustomizationLayout;
+import com.google.android.setupcompat.template.FooterBarMixin;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.Shadows;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
@@ -51,17 +56,12 @@ import org.robolectric.shadows.ShadowDialog;
 import java.util.Collections;
 import java.util.List;
 
-@RunWith(SettingsRobolectricTestRunner.class)
-@Config(shadows = {
-        SettingsShadowResources.class,
-        SettingsShadowResourcesImpl.class,
-        SettingsShadowResources.SettingsShadowTheme.class,
-        ShadowUtils.class
-})
+@RunWith(RobolectricTestRunner.class)
+@Config(shadows = {SettingsShadowResources.class, ShadowUtils.class, ShadowAlertDialogCompat.class})
 public class SetupChooseLockPasswordTest {
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         SettingsShadowResources.overrideResource(
                 com.android.internal.R.string.config_headlineFontFamily, "");
     }
@@ -136,6 +136,46 @@ public class SetupChooseLockPasswordTest {
                 .isEqualTo("bar");
     }
 
+    @Test
+    public void createActivity_skipButtonInIntroductionStage_shouldBeVisible() {
+        SetupChooseLockPassword activity = createSetupChooseLockPassword();
+
+        final PartnerCustomizationLayout layout = activity.findViewById(R.id.setup_wizard_layout);
+        final Button skipOrClearButton =
+                layout.getMixin(FooterBarMixin.class).getSecondaryButtonView();
+        assertThat(skipOrClearButton).isNotNull();
+        assertThat(skipOrClearButton.getVisibility()).isEqualTo(View.VISIBLE);
+
+        skipOrClearButton.performClick();
+        final AlertDialog chooserDialog = ShadowAlertDialogCompat.getLatestAlertDialog();
+        assertThat(chooserDialog).isNotNull();
+    }
+
+    @Test
+    public void createActivity_inputPasswordInConfirmStage_clearButtonShouldBeShown() {
+        SetupChooseLockPassword activity = createSetupChooseLockPassword();
+
+        SetupChooseLockPasswordFragment fragment =
+            (SetupChooseLockPasswordFragment) activity.getSupportFragmentManager()
+                .findFragmentById(R.id.main_content);
+
+        ScrollToParentEditText passwordEntry = activity.findViewById(R.id.password_entry);
+        passwordEntry.setText("");
+        fragment.updateStage(Stage.NeedToConfirm);
+
+        final PartnerCustomizationLayout layout = activity.findViewById(R.id.setup_wizard_layout);
+        final Button skipOrClearButton =
+                layout.getMixin(FooterBarMixin.class).getSecondaryButtonView();
+        assertThat(skipOrClearButton.isEnabled()).isTrue();
+        assertThat(skipOrClearButton.getVisibility()).isEqualTo(View.GONE);
+
+        passwordEntry.setText("1234");
+        fragment.updateUi();
+        assertThat(skipOrClearButton.getVisibility()).isEqualTo(View.VISIBLE);
+        assertThat(skipOrClearButton.getText())
+                .isEqualTo(application.getString(R.string.lockpassword_clear_label));
+    }
+
     private SetupChooseLockPassword createSetupChooseLockPassword() {
         final Intent intent =
                 SetupChooseLockPassword.modifyIntentForSetup(
@@ -148,7 +188,7 @@ public class SetupChooseLockPasswordTest {
     @Implements(ChooseLockGenericController.class)
     public static class ShadowChooseLockGenericController {
         @Implementation
-        public List<ScreenLockType> getVisibleScreenLockTypes(int quality,
+        protected List<ScreenLockType> getVisibleScreenLockTypes(int quality,
                 boolean includeDisabled) {
             return Collections.emptyList();
         }

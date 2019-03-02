@@ -15,9 +15,7 @@ package com.android.settings.location;
 
 import static com.android.settingslib.RestrictedLockUtilsInternal.checkIfRestrictionEnforced;
 import static com.android.settingslib.Utils.updateLocationEnabled;
-import static com.android.settingslib.Utils.updateLocationMode;
 
-import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -35,15 +33,15 @@ import com.android.settingslib.RestrictedLockUtils;
 import com.android.settingslib.RestrictedLockUtilsInternal;
 import com.android.settingslib.core.lifecycle.Lifecycle;
 import com.android.settingslib.core.lifecycle.LifecycleObserver;
-import com.android.settingslib.core.lifecycle.events.OnPause;
-import com.android.settingslib.core.lifecycle.events.OnResume;
+import com.android.settingslib.core.lifecycle.events.OnStart;
+import com.android.settingslib.core.lifecycle.events.OnStop;
 
 
 /**
  * A class that listens to location settings change and modifies location settings
  * settings.
  */
-public class LocationEnabler implements LifecycleObserver, OnResume, OnPause {
+public class LocationEnabler implements LifecycleObserver, OnStart, OnStop {
 
     private static final String TAG = "LocationEnabler";
     @VisibleForTesting
@@ -73,7 +71,7 @@ public class LocationEnabler implements LifecycleObserver, OnResume, OnPause {
     }
 
     @Override
-    public void onResume() {
+    public void onStart() {
         if (mReceiver == null) {
             mReceiver = new BroadcastReceiver() {
                 @Override
@@ -90,12 +88,8 @@ public class LocationEnabler implements LifecycleObserver, OnResume, OnPause {
     }
 
     @Override
-    public void onPause() {
-        try {
-            mContext.unregisterReceiver(mReceiver);
-        } catch (RuntimeException e) {
-            // Ignore exceptions caused by race condition
-        }
+    public void onStop() {
+        mContext.unregisterReceiver(mReceiver);
     }
 
     void refreshLocationMode() {
@@ -125,26 +119,6 @@ public class LocationEnabler implements LifecycleObserver, OnResume, OnPause {
             return;
         }
         updateLocationEnabled(mContext, enabled, UserHandle.myUserId(),
-                Settings.Secure.LOCATION_CHANGER_SYSTEM_SETTINGS);
-        refreshLocationMode();
-    }
-
-    void setLocationMode(int mode) {
-        final int currentMode = Settings.Secure.getInt(mContext.getContentResolver(),
-                Settings.Secure.LOCATION_MODE, Settings.Secure.LOCATION_MODE_OFF);
-        if (isRestricted()) {
-            // Location toggling disabled by user restriction. Read the current location mode to
-            // update the location master switch.
-            if (Log.isLoggable(TAG, Log.INFO)) {
-                Log.i(TAG, "Restricted user, not setting location mode");
-            }
-            if (mListener != null) {
-                mListener.onLocationModeChanged(currentMode, true);
-            }
-            return;
-        }
-
-        updateLocationMode(mContext, currentMode, mode, ActivityManager.getCurrentUser(),
                 Settings.Secure.LOCATION_CHANGER_SYSTEM_SETTINGS);
         refreshLocationMode();
     }

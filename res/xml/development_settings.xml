@@ -59,10 +59,12 @@
             android:entries="@array/hdcp_checking_titles"
             android:entryValues="@array/hdcp_checking_values" />
 
-        <SwitchPreference
+        <ListPreference
             android:key="bt_hci_snoop_log"
             android:title="@string/bt_hci_snoop_log"
-            android:summary="@string/bt_hci_snoop_log_summary" />
+            android:dialogTitle="@string/bt_hci_snoop_log_summary"
+            android:entries="@array/bt_hci_snoop_log_entries"
+            android:entryValues="@array/bt_hci_snoop_log_values" />
 
         <com.android.settingslib.RestrictedSwitchPreference
             android:key="oem_unlock_enable"
@@ -191,6 +193,13 @@
             android:title="@string/enable_gpu_debug_layers"
             android:summary="@string/enable_gpu_debug_layers_summary" />
 
+        <Preference
+            android:key="game_driver_dashboard"
+            android:title="@string/game_driver_dashboard_title"
+            android:summary="@string/game_driver_dashboard_summary"
+            android:fragment="com.android.settings.development.gamedriver.GameDriverDashboard"
+            settings:searchable="false" />
+
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -218,11 +227,6 @@
             android:summary="@string/wifi_verbose_logging_summary" />
 
         <SwitchPreference
-            android:key="wifi_connected_mac_randomization"
-            android:title="@string/wifi_connected_mac_randomization"
-            android:summary="@string/wifi_connected_mac_randomization_summary" />
-
-        <SwitchPreference
             android:key="mobile_data_always_on"
             android:title="@string/mobile_data_always_on"
             android:summary="@string/mobile_data_always_on_summary" />
@@ -237,11 +241,6 @@
             android:fragment="com.android.settings.connecteddevice.usb.UsbDefaultFragment"
             android:icon="@drawable/ic_usb"
             android:title="@string/usb_default_label"/>
-
-        <SwitchPreference
-            android:key="cbrs_data_switch"
-            android:title="@string/cbrs_data_switch"
-            android:summary="@string/cbrs_data_switch" />
 
         <SwitchPreference
             android:key="bluetooth_show_devices_without_names"
@@ -429,13 +428,6 @@
             android:summary="%s"
             android:title="@string/simulate_color_space" />
 
-        <Preference android:key="angle_enabled_app"
-            android:title="@string/angle_enabled_app" />
-
-        <Preference android:key="updated_gfx_driver_dev_opt_in_app"
-            android:summary="@string/updated_gfx_driver_dev_opt_in_app_summary"
-            android:title="@string/updated_gfx_driver_dev_opt_in_app" />
-
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -488,6 +480,11 @@
             android:key="background_check"
             android:fragment="com.android.settings.applications.appops.BackgroundCheckSummary"
             android:title="@string/background_check_pref" />
+
+        <SwitchPreference
+            android:key="allow_background_activity_starts"
+            android:title="@string/allow_background_activity_starts"
+            android:summary="@string/allow_background_activity_starts_summary" />
 
         <SwitchPreference
             android:key="show_first_crash_dialog"
@@ -564,4 +561,19 @@
 
     </com.android.settings.development.autofill.AutofillPreferenceCategory>
 
+    <PreferenceCategory
+        android:key="theme_customization_category"
+        android:title="@string/theme_customization_category"
+        android:order="1200"> <!-- Incremented by 100 from last order (i.e. 1100) -->
+
+        <ListPreference
+            android:key="android.theme.customization.accent_color"
+            android:title="@string/theme_customization_accent_color_title"/>
+        <ListPreference
+            android:key="android.theme.customization.font"
+            android:title="@string/theme_customization_font_title"/>
+        <ListPreference
+            android:key="android.theme.customization.adaptive_icon_shape"
+            android:title="@string/theme_customization_icon_shape_title"/>
+    </PreferenceCategory>
 </PreferenceScreen>
