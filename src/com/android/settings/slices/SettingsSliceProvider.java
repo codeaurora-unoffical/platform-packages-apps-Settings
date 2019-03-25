@@ -21,7 +21,6 @@ import static android.Manifest.permission.READ_SEARCH_INDEXABLES;
 import android.app.slice.SliceManager;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.StrictMode;
@@ -46,7 +45,6 @@ import com.android.settings.overlay.FeatureFactory;
 import com.android.settingslib.SliceBroadcastRelay;
 import com.android.settingslib.utils.ThreadUtils;
 
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -131,8 +129,6 @@ public class SettingsSliceProvider extends SliceProvider {
     @VisibleForTesting
     Map<Uri, SliceData> mSliceDataCache;
 
-    final Set<Uri> mRegisteredUris = new ArraySet<>();
-
     final Map<Uri, SliceBackgroundWorker> mPinnedWorkers = new ArrayMap<>();
 
     public SettingsSliceProvider() {
@@ -150,18 +146,6 @@ public class SettingsSliceProvider extends SliceProvider {
     }
 
     @Override
-    public Uri onMapIntentToUri(Intent intent) {
-        try {
-            return getContext().getSystemService(SliceManager.class).mapIntentToUri(
-                    SliceDeepLinkSpringBoard.parse(
-                            intent.getData(), getContext().getPackageName()));
-        } catch (URISyntaxException e) {
-            Log.e(TAG, "Uri syntax error, can't map intent to uri.", e);
-            return null;
-        }
-    }
-
-    @Override
     public void onSlicePinned(Uri sliceUri) {
         if (mCustomSliceManager.isValidUri(sliceUri)) {
             final CustomSliceable sliceable = mCustomSliceManager.getSliceableFromUri(sliceUri);
@@ -169,7 +153,7 @@ public class SettingsSliceProvider extends SliceProvider {
             if (filter != null) {
                 registerIntentToUri(filter, sliceUri);
             }
-            ThreadUtils.postOnMainThread(() -> startBackgroundWorker(sliceable));
+            ThreadUtils.postOnMainThread(() -> startBackgroundWorker(sliceable, sliceUri));
             return;
         }
 
@@ -187,14 +171,8 @@ public class SettingsSliceProvider extends SliceProvider {
 
     @Override
     public void onSliceUnpinned(Uri sliceUri) {
-        if (mRegisteredUris.contains(sliceUri)) {
-            Log.d(TAG, "Unregistering uri broadcast relay: " + sliceUri);
-            SliceBroadcastRelay.unregisterReceivers(getContext(), sliceUri);
-            mRegisteredUris.remove(sliceUri);
-        }
-        ThreadUtils.postOnMainThread(() -> {
-            stopBackgroundWorker(sliceUri);
-        });
+        SliceBroadcastRelay.unregisterReceivers(getContext(), sliceUri);
+        ThreadUtils.postOnMainThread(() -> stopBackgroundWorker(sliceUri));
         mSliceDataCache.remove(sliceUri);
     }
 
@@ -348,20 +326,19 @@ public class SettingsSliceProvider extends SliceProvider {
         }
     }
 
-    private void startBackgroundWorker(CustomSliceable sliceable) {
+    private void startBackgroundWorker(Sliceable sliceable, Uri uri) {
         final Class workerClass = sliceable.getBackgroundWorkerClass();
         if (workerClass == null) {
             return;
         }
 
-        final Uri uri = sliceable.getUri();
         if (mPinnedWorkers.containsKey(uri)) {
             return;
         }
 
         Log.d(TAG, "Starting background worker for: " + uri);
         final SliceBackgroundWorker worker = SliceBackgroundWorker.getInstance(
-                getContext(), sliceable);
+                getContext(), sliceable, uri);
         mPinnedWorkers.put(uri, worker);
         worker.onSlicePinned();
     }
@@ -419,6 +396,8 @@ public class SettingsSliceProvider extends SliceProvider {
             registerIntentToUri(filter, uri);
         }
 
+        ThreadUtils.postOnMainThread(() -> startBackgroundWorker(controller, uri));
+
         final List<Uri> pinnedSlices = getContext().getSystemService(
                 SliceManager.class).getPinnedSlices();
         if (pinnedSlices.contains(uri)) {
@@ -433,9 +412,7 @@ public class SettingsSliceProvider extends SliceProvider {
 
     @VisibleForTesting
     void loadSliceInBackground(Uri uri) {
-        ThreadUtils.postOnBackgroundThread(() -> {
-            loadSlice(uri);
-        });
+        ThreadUtils.postOnBackgroundThread(() -> loadSlice(uri));
     }
 
     /**
@@ -464,8 +441,9 @@ public class SettingsSliceProvider extends SliceProvider {
 
     private List<Uri> getSpecialCaseOemUris() {
         return Arrays.asList(
-                CustomSliceRegistry.ZEN_MODE_SLICE_URI,
-                CustomSliceRegistry.FLASHLIGHT_SLICE_URI
+                CustomSliceRegistry.FLASHLIGHT_SLICE_URI,
+                CustomSliceRegistry.MOBILE_DATA_SLICE_URI,
+                CustomSliceRegistry.ZEN_MODE_SLICE_URI
         );
     }
 
@@ -475,8 +453,6 @@ public class SettingsSliceProvider extends SliceProvider {
      * {@param intentFilter} happen.
      */
     void registerIntentToUri(IntentFilter intentFilter, Uri sliceUri) {
-        Log.d(TAG, "Registering Uri for broadcast relay: " + sliceUri);
-        mRegisteredUris.add(sliceUri);
         SliceBroadcastRelay.registerReceiver(getContext(), sliceUri, SliceRelayReceiver.class,
                 intentFilter);
     }

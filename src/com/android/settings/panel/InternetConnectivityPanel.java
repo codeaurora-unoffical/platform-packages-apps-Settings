@@ -16,6 +16,7 @@
 
 package com.android.settings.panel;
 
+import android.app.settings.SettingsEnums;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -55,6 +56,7 @@ public class InternetConnectivityPanel implements PanelContent {
     public List<Uri> getSlices() {
         final List<Uri> uris = new ArrayList<>();
         uris.add(CustomSliceRegistry.WIFI_SLICE_URI);
+        uris.add(CustomSliceRegistry.MOBILE_DATA_SLICE_URI);
         uris.add(CustomSliceRegistry.AIRPLANE_URI);
         return uris;
     }
@@ -62,5 +64,10 @@ public class InternetConnectivityPanel implements PanelContent {
     @Override
     public Intent getSeeMoreIntent() {
         return new Intent(Settings.ACTION_WIRELESS_SETTINGS);
+    }
+
+    @Override
+    public int getMetricsCategory() {
+        return SettingsEnums.PANEL_INTERNET_CONNECTIVITY;
     }
 }

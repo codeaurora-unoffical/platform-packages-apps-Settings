@@ -71,6 +71,7 @@ public class Settings extends SettingsActivity {
     public static class AppUsageAccessSettingsActivity extends SettingsActivity { /* empty */ }
     public static class LocationSettingsActivity extends SettingsActivity { /* empty */ }
     public static class ScanningSettingsActivity extends SettingsActivity { /* empty */ }
+    public static class PrivacyDashboardActivity extends SettingsActivity { /* empty */ }
     public static class PrivacySettingsActivity extends SettingsActivity { /* empty */ }
     public static class FactoryResetActivity extends SettingsActivity { /* empty */ }
     public static class RunningServicesActivity extends SettingsActivity { /* empty */ }
@@ -109,6 +110,7 @@ public class Settings extends SettingsActivity {
     public static class ZenModeEventRuleSettingsActivity extends SettingsActivity { /* empty */ }
     public static class SoundSettingsActivity extends SettingsActivity { /* empty */ }
     public static class ConfigureNotificationSettingsActivity extends SettingsActivity { /* empty */ }
+    public static class NotificationAssistantSettingsActivity extends SettingsActivity{ /* empty */ }
     public static class NotificationAppListActivity extends SettingsActivity { /* empty */ }
     public static class AppNotificationSettingsActivity extends SettingsActivity { /* empty */ }
     public static class ChannelNotificationSettingsActivity extends SettingsActivity { /* empty */ }
@@ -155,6 +157,7 @@ public class Settings extends SettingsActivity {
     }
     public static class WebViewAppPickerActivity extends SettingsActivity { /* empty */ }
     public static class AdvancedConnectedDeviceActivity extends SettingsActivity { /* empty */ }
+    public static class BluetoothDeviceDetailActivity extends SettingsActivity { /* empty */ }
 
     // Top level categories for new IA
     public static class NetworkDashboardActivity extends SettingsActivity {}

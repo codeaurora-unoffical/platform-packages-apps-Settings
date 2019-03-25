@@ -23,6 +23,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
 import android.app.usage.IUsageStatsManager;
 import android.app.usage.UsageEvents;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -71,6 +72,7 @@ public class NotificationBackend {
         row.icon = IconDrawableFactory.newInstance(context).getBadgedIcon(app);
         row.banned = getNotificationsBanned(row.pkg, row.uid);
         row.showBadge = canShowBadge(row.pkg, row.uid);
+        row.allowBubbles = canBubble(row.pkg, row.uid);
         row.userId = UserHandle.getUserId(row.uid);
         row.blockedChannelCount = getBlockedChannelCount(row.pkg, row.uid);
         row.channelCount = getChannelCount(row.pkg, row.uid);
@@ -174,6 +176,26 @@ public class NotificationBackend {
             return false;
         }
     }
+
+    public boolean canBubble(String pkg, int uid) {
+        try {
+            return sINM.areBubblesAllowedForPackage(pkg, uid);
+        } catch (Exception e) {
+            Log.w(TAG, "Error calling NoMan", e);
+            return false;
+        }
+    }
+
+    public boolean setAllowBubbles(String pkg, int uid, boolean allow) {
+        try {
+            sINM.setBubblesAllowed(pkg, uid, allow);
+            return true;
+        } catch (Exception e) {
+            Log.w(TAG, "Error calling NoMan", e);
+            return false;
+        }
+    }
+
 
     public NotificationChannel getChannel(String pkg, int uid, String channelId) {
         if (channelId == null) {
@@ -389,6 +411,29 @@ public class NotificationBackend {
         }
     }
 
+    public ComponentName getAllowedNotificationAssistant() {
+        try {
+            return sINM.getAllowedNotificationAssistant();
+        } catch (Exception e) {
+            Log.w(TAG, "Error calling NoMan", e);
+            return null;
+        }
+    }
+
+    public boolean setNotificationAssistantGranted(ComponentName cn) {
+        try {
+            sINM.setNotificationAssistantAccessGranted(cn, true);
+            if (cn == null) {
+                return sINM.getAllowedNotificationAssistant() == null;
+            } else {
+                return cn.equals(sINM.getAllowedNotificationAssistant());
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Error calling NoMan", e);
+            return false;
+        }
+    }
+
     /**
      * NotificationsSentState contains how often an app sends notifications and how recently it sent
      * one.
@@ -416,6 +461,7 @@ public class NotificationBackend {
         public boolean lockedImportance;
         public String lockedChannelId;
         public boolean showBadge;
+        public boolean allowBubbles;
         public int userId;
         public int blockedChannelCount;
         public int channelCount;
