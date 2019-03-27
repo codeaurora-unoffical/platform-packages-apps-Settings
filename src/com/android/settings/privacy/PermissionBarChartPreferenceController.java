@@ -24,17 +24,24 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.permission.PermissionControllerManager;
 import android.permission.RuntimePermissionUsageInfo;
+import android.provider.DeviceConfig;
 import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.preference.Preference;
+import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceScreen;
 
 import com.android.settings.R;
 import com.android.settings.core.BasePreferenceController;
+import com.android.settingslib.Utils;
+import com.android.settingslib.core.lifecycle.LifecycleObserver;
+import com.android.settingslib.core.lifecycle.events.OnCreate;
+import com.android.settingslib.core.lifecycle.events.OnSaveInstanceState;
+import com.android.settingslib.core.lifecycle.events.OnStart;
 import com.android.settingslib.widget.BarChartInfo;
 import com.android.settingslib.widget.BarChartPreference;
 import com.android.settingslib.widget.BarViewInfo;
@@ -42,17 +49,20 @@ import com.android.settingslib.widget.BarViewInfo;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.Executors;
 
 
 public class PermissionBarChartPreferenceController extends BasePreferenceController implements
-        PermissionControllerManager.OnPermissionUsageResultCallback {
+        PermissionControllerManager.OnPermissionUsageResultCallback, LifecycleObserver, OnCreate,
+        OnStart, OnSaveInstanceState {
 
     private static final String TAG = "BarChartPreferenceCtl";
+    private static final String KEY_PERMISSION_USAGE = "usage_infos";
 
+    @VisibleForTesting
+    List<RuntimePermissionUsageInfo> mOldUsageInfos;
     private PackageManager mPackageManager;
+    private PrivacyDashboardFragment mParent;
     private BarChartPreference mBarChartPreference;
-    private List<RuntimePermissionUsageInfo> mOldUsageInfos;
 
     public PermissionBarChartPreferenceController(Context context, String preferenceKey) {
         super(context, preferenceKey);
@@ -60,15 +70,34 @@ public class PermissionBarChartPreferenceController extends BasePreferenceContro
         mPackageManager = context.getPackageManager();
     }
 
+    public void setFragment(PrivacyDashboardFragment fragment) {
+        mParent = fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            mOldUsageInfos = savedInstanceState.getParcelableArrayList(KEY_PERMISSION_USAGE);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableList(KEY_PERMISSION_USAGE, mOldUsageInfos);
+    }
+
     @Override
     public int getAvailabilityStatus() {
-        return AVAILABLE_UNSEARCHABLE;
+        return Boolean.parseBoolean(
+                DeviceConfig.getProperty(DeviceConfig.Privacy.NAMESPACE,
+                        DeviceConfig.Privacy.PROPERTY_PERMISSIONS_HUB_ENABLED)) ?
+                AVAILABLE_UNSEARCHABLE : UNSUPPORTED_ON_DEVICE;
     }
 
     @Override
     public void displayPreference(PreferenceScreen screen) {
         super.displayPreference(screen);
-        mBarChartPreference = (BarChartPreference) screen.findPreference(getPreferenceKey());
+        mBarChartPreference = screen.findPreference(getPreferenceKey());
 
         final BarChartInfo info = new BarChartInfo.Builder()
                 .setTitle(R.string.permission_bar_chart_title)
@@ -82,10 +111,21 @@ public class PermissionBarChartPreferenceController extends BasePreferenceContro
                 .build();
 
         mBarChartPreference.initializeBarChart(info);
+        if (!mOldUsageInfos.isEmpty()) {
+            mBarChartPreference.setBarViewInfos(createBarViews(mOldUsageInfos));
+        }
     }
 
     @Override
-    public void updateState(Preference preference) {
+    public void onStart() {
+        if (!isAvailable()) {
+            return;
+        }
+
+        // We don't hide chart when we have existing data.
+        mBarChartPreference.updateLoadingState(mOldUsageInfos.isEmpty() /* isLoading */);
+        // But we still need to hint user with progress bar that we are updating new usage data.
+        mParent.setLoadingEnabled(true /* enabled */);
         retrievePermissionUsageData();
     }
 
@@ -99,6 +139,9 @@ public class PermissionBarChartPreferenceController extends BasePreferenceContro
             mBarChartPreference.setBarViewInfos(createBarViews(usageInfos));
             mOldUsageInfos = usageInfos;
         }
+
+        mBarChartPreference.updateLoadingState(false /* isLoading */);
+        mParent.setLoadingEnabled(false /* enabled */);
     }
 
     private void retrievePermissionUsageData() {
@@ -143,6 +186,7 @@ public class PermissionBarChartPreferenceController extends BasePreferenceContro
         try {
             icon = mPackageManager.getPermissionGroupInfo(permissionGroup.toString(), 0)
                     .loadIcon(mPackageManager);
+            icon.setTintList(Utils.getColorAttr(mContext, android.R.attr.textColorSecondary));
         } catch (PackageManager.NameNotFoundException e) {
             Log.w(TAG, "Cannot find group icon for " + permissionGroup, e);
         }

@@ -52,7 +52,12 @@ import java.lang.reflect.InvocationTargetException;
  * <p>
  *     If you implement this interface, you should add your Slice to {@link CustomSliceManager}.
  */
-public interface CustomSliceable {
+public interface CustomSliceable extends Sliceable {
+
+    /**
+     * The color representing not to be tinted for the slice.
+     */
+    int COLOR_NOT_TINTED = -1;
 
     /**
      * @return an complete instance of the {@link Slice}.
@@ -71,34 +76,12 @@ public interface CustomSliceable {
      *
      * @param intent which has the action taken on a {@link Slice}.
      */
-    void onNotifyChange(Intent intent);
+    default void onNotifyChange(Intent intent) {}
 
     /**
      * @return an {@link Intent} to the source of the Slice data.
      */
     Intent getIntent();
-
-    /**
-     * Settings Slices which can represent components that are updatable by the framework should
-     * listen to changes matched to the {@link IntentFilter} returned here.
-     *
-     * @return an {@link IntentFilter} for updates related to the {@link Slice} returned by
-     * {@link #getSlice()}.
-     */
-    default IntentFilter getIntentFilter() {
-        return null;
-    }
-
-    /**
-     * Settings Slices which can represent component lists that are updatable by the
-     * {@link SliceBackgroundWorker} class returned here.
-     *
-     * @return a {@link SliceBackgroundWorker} class for fetching the list of results in the
-     * background.
-     */
-    default Class<? extends SliceBackgroundWorker> getBackgroundWorkerClass() {
-        return null;
-    }
 
     /**
      * Standardize the intents returned to indicate actions by the Slice.
@@ -115,12 +98,16 @@ public interface CustomSliceable {
                 PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
+    @Override
+    default boolean isSliceable() {
+        return true;
+    }
+
     /**
      * Build an instance of a {@link CustomSliceable} which has a {@link Context}-only constructor.
      */
     static CustomSliceable createInstance(Context context, Class<CustomSliceable> sliceableClass) {
         try {
-            //final Class<CustomSliceable> clazz = Class.forName(sliceableClassName);
             final Constructor<CustomSliceable> sliceable =
                     sliceableClass.getConstructor(Context.class);
             final Object[] params = new Object[]{context};
