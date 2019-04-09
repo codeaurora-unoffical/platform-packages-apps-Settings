@@ -65,6 +65,8 @@ import androidx.preference.PreferenceScreen;
 
 import com.android.internal.logging.nano.MetricsProto;
 import com.android.settings.R;
+import com.android.settings.core.FeatureFlags;
+import com.android.settings.development.featureflags.FeatureFlagPersistent;
 import com.android.settings.testutils.shadow.ShadowDevicePolicyManager;
 import com.android.settings.testutils.shadow.ShadowEntityHeaderController;
 import com.android.settings.widget.EntityHeaderController;
@@ -382,9 +384,9 @@ public class WifiDetailPreferenceControllerTest {
     }
 
     @Test
-    public void entityHeader_shouldHaveLabelSetToSsid() {
-        String label = "ssid";
-        when(mockAccessPoint.getSsidStr()).thenReturn(label);
+    public void entityHeader_shouldHaveLabelSetToTitle() {
+        String label = "title";
+        when(mockAccessPoint.getTitle()).thenReturn(label);
 
         displayAndResume();
 
@@ -647,6 +649,19 @@ public class WifiDetailPreferenceControllerTest {
         nc.removeCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
         updateNetworkCapabilities(nc);
         inOrder.verify(mockHeaderController).setSummary(summary);
+
+        // UI will be refreshed when device connects to a partial connectivity network.
+        summary = "Limited connection";
+        when(mockAccessPoint.getSettingsSummary()).thenReturn(summary);
+        nc.addCapability(NetworkCapabilities.NET_CAPABILITY_PARTIAL_CONNECTIVITY);
+        updateNetworkCapabilities(nc);
+        inOrder.verify(mockHeaderController).setSummary(summary);
+
+        // Although UI will be refreshed when network become validated. The Settings should
+        // continue to display "Limited connection" if network still provides partial connectivity.
+        nc.addCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
+        updateNetworkCapabilities(nc);
+        inOrder.verify(mockHeaderController).setSummary(summary);
     }
 
     @Test
@@ -753,6 +768,38 @@ public class WifiDetailPreferenceControllerTest {
         verify(mockWifiManager).forget(mockWifiConfig.networkId, null);
         verify(mockMetricsFeatureProvider)
                 .action(mockActivity, MetricsProto.MetricsEvent.ACTION_WIFI_FORGET);
+    }
+
+    @Test
+    public void forgetNetwork_v1_Passpoint() {
+        FeatureFlagPersistent.setEnabled(mContext, FeatureFlags.NETWORK_INTERNET_V2, false);
+
+        mockWifiConfig.networkId = 5;
+        when(mockWifiConfig.isPasspoint()).thenReturn(true);
+
+        mController.displayPreference(mockScreen);
+        mForgetClickListener.getValue().onClick(null);
+
+        verify(mockWifiManager).removePasspointConfiguration(mockWifiConfig.FQDN);
+        verify(mockMetricsFeatureProvider)
+                .action(mockActivity, MetricsProto.MetricsEvent.ACTION_WIFI_FORGET);
+    }
+
+    @Test
+    public void forgetNetwork_PasspointV2_shouldShowDialog() {
+        final WifiDetailPreferenceController spyController = spy(mController);
+
+        mockWifiConfig.networkId = 5;
+        when(mockWifiConfig.isPasspoint()).thenReturn(true);
+        spyController.displayPreference(mockScreen);
+        FeatureFlagPersistent.setEnabled(mContext, FeatureFlags.NETWORK_INTERNET_V2, true);
+
+        mForgetClickListener.getValue().onClick(null);
+
+        verify(mockWifiManager, times(0)).removePasspointConfiguration(mockWifiConfig.FQDN);
+        verify(mockMetricsFeatureProvider, times(0))
+                .action(mockActivity, MetricsProto.MetricsEvent.ACTION_WIFI_FORGET);
+        verify(spyController).showConfirmForgetDialog();
     }
 
     @Test
