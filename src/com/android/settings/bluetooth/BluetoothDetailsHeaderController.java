@@ -66,10 +66,8 @@ public class BluetoothDetailsHeaderController extends BluetoothDetailsController
     }
 
     protected void setHeaderProperties() {
-        final Pair<Drawable, String> pair = BluetoothUtils
-                .getBtClassDrawableWithDescription(mContext, mCachedDevice,
-                        mContext.getResources().getFraction(R.fraction.bt_battery_scale_fraction, 1,
-                                1));
+        final Pair<Drawable, String> pair =
+                BluetoothUtils.getBtRainbowDrawableWithDescription(mContext, mCachedDevice);
         String summaryText = mCachedDevice.getConnectionSummary();
         // If both the hearing aids are connected, two device status should be shown.
         // If Second Summary is unavailable, to set it to null.
@@ -83,8 +81,10 @@ public class BluetoothDetailsHeaderController extends BluetoothDetailsController
 
     @Override
     protected void refresh() {
-        setHeaderProperties();
-        mHeaderController.done(mFragment.getActivity(), true /* rebindActions */);
+        if (isAvailable()) {
+            setHeaderProperties();
+            mHeaderController.done(mFragment.getActivity(), true /* rebindActions */);
+        }
     }
 
     @Override

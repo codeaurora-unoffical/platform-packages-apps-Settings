@@ -159,6 +159,7 @@ public final class Utils {
         if (bluetoothDevice == null) {
             return false;
         }
+
         return Boolean.parseBoolean(bluetoothDevice.getMetadata(key));
     }
 

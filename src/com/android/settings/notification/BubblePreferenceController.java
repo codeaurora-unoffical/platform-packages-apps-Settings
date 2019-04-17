@@ -21,6 +21,7 @@ import static android.provider.Settings.Secure.NOTIFICATION_BUBBLES;
 import android.content.Context;
 import android.provider.Settings;
 
+import com.android.settings.R;
 import com.android.settings.core.PreferenceControllerMixin;
 import com.android.settingslib.RestrictedSwitchPreference;
 
@@ -30,7 +31,7 @@ public class BubblePreferenceController extends NotificationPreferenceController
         implements PreferenceControllerMixin, Preference.OnPreferenceChangeListener {
 
     private static final String TAG = "BubblePrefContr";
-    private static final String KEY = "bubble";
+    private static final String KEY = "bubble_pref";
     private static final int SYSTEM_WIDE_ON = 1;
     private static final int SYSTEM_WIDE_OFF = 0;
 
@@ -74,6 +75,8 @@ public class BubblePreferenceController extends NotificationPreferenceController
                 pref.setEnabled(isChannelConfigurable() && !pref.isDisabledByAdmin());
             } else {
                 pref.setChecked(mAppRow.allowBubbles);
+                pref.setSummary(mContext.getString(
+                        R.string.bubbles_app_toggle_summary, mAppRow.label));
             }
         }
     }

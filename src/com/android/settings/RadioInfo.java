@@ -41,7 +41,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
-import android.provider.Telephony;
 import android.telephony.CarrierConfigManager;
 import android.telephony.CellIdentityCdma;
 import android.telephony.CellIdentityGsm;
@@ -89,7 +88,6 @@ import com.android.ims.ImsConfig;
 import com.android.ims.ImsException;
 import com.android.ims.ImsManager;
 import com.android.internal.telephony.Phone;
-import com.android.internal.telephony.PhoneConfigurationManager;
 import com.android.internal.telephony.PhoneFactory;
 
 import java.io.IOException;
@@ -457,6 +455,13 @@ public class RadioInfo extends Activity {
         imsWfcProvisionedSwitch = (Switch) findViewById(R.id.wfc_provisioned_switch);
         eabProvisionedSwitch = (Switch) findViewById(R.id.eab_provisioned_switch);
 
+        if (!ImsManager.isImsSupportedOnDevice(phone.getContext())) {
+            imsVolteProvisionedSwitch.setVisibility(View.GONE);
+            imsVtProvisionedSwitch.setVisibility(View.GONE);
+            imsWfcProvisionedSwitch.setVisibility(View.GONE);
+            eabProvisionedSwitch.setVisibility(View.GONE);
+        }
+
         cbrsDataSwitch = (Switch) findViewById(R.id.cbrs_data_switch);
         cbrsDataSwitch.setVisibility(isCbrsSupported() ? View.VISIBLE : View.GONE);
 
@@ -464,7 +469,7 @@ public class RadioInfo extends Activity {
         if (isDsdsSupported()) {
             dsdsSwitch.setVisibility(View.VISIBLE);
             dsdsSwitch.setOnClickListener(v -> {
-                if (mTelephonyManager.isRebootRequiredForModemConfigChange()) {
+                if (mTelephonyManager.doesSwitchMultiSimConfigTriggerReboot()) {
                     // Undo the click action until user clicks the confirm dialog.
                     dsdsSwitch.toggle();
                     showDsdsChangeDialog();
@@ -631,8 +636,10 @@ public class RadioInfo extends Activity {
                 R.string.radioInfo_menu_viewFDN).setOnMenuItemClickListener(mViewFDNCallback);
         menu.add(1, MENU_ITEM_VIEW_SDN, 0,
                 R.string.radioInfo_menu_viewSDN).setOnMenuItemClickListener(mViewSDNCallback);
-        menu.add(1, MENU_ITEM_GET_IMS_STATUS,
-                0, R.string.radioInfo_menu_getIMS).setOnMenuItemClickListener(mGetImsStatus);
+        if (ImsManager.isImsSupportedOnDevice(phone.getContext())) {
+            menu.add(1, MENU_ITEM_GET_IMS_STATUS,
+                    0, R.string.radioInfo_menu_getIMS).setOnMenuItemClickListener(mGetImsStatus);
+        }
         menu.add(1, MENU_ITEM_TOGGLE_DATA,
                 0, R.string.radio_info_data_connection_disable).setOnMenuItemClickListener(mToggleData);
         return true;
@@ -1384,6 +1391,9 @@ public class RadioInfo extends Activity {
     }
 
     private void updateImsProvisionedState() {
+        if (!ImsManager.isImsSupportedOnDevice(phone.getContext())) {
+            return;
+        }
         log("updateImsProvisionedState isImsVolteProvisioned()=" + isImsVolteProvisioned());
         //delightful hack to prevent on-checked-changed calls from
         //actually forcing the ims provisioning to its transient/current value.
@@ -1559,7 +1569,8 @@ public class RadioInfo extends Activity {
     }
 
     private static boolean isDsdsSupported() {
-        return TelephonyManager.getDefault().isMultisimSupported();
+        return (TelephonyManager.getDefault().isMultiSimSupported()
+            == TelephonyManager.MULTISIM_ALLOWED);
     }
 
     private static boolean isDsdsEnabled() {

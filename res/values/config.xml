@@ -156,6 +156,11 @@
         com.android.settings.intelligence
     </string>
 
+    <!-- Package Installer package name -->
+    <string name="config_package_installer_package_name" translatable="false">
+        com.android.packageinstaller
+    </string>
+
     <!-- Settings intelligence interaction log intent action -->
     <string name="config_settingsintelligence_log_action" translatable="false"></string>
 
@@ -330,6 +335,9 @@
     <!-- Whether device_model should be shown or not. -->
     <bool name="config_show_device_model">true</bool>
 
+    <!-- Whether top_level_accessibility should be shown or not. -->
+    <bool name="config_show_top_level_accessibility">true</bool>
+
     <!-- Whether top_level_battery should be shown or not. -->
     <bool name="config_show_top_level_battery">true</bool>
 
@@ -351,6 +359,12 @@
     <!-- Whether or not extra preview panels should be used for screen zoom setting. -->
     <bool name="config_enable_extra_screen_zoom_preview">true</bool>
 
+    <!-- Whether to support CT PA requirement or not -->
+    <bool name="config_support_CT_PA">false</bool>
+
     <!-- Slice Uri to query nearby devices. -->
     <string name="config_nearby_devices_slice_uri" translatable="false">content://com.google.android.gms.nearby.fastpair/device_status_list_item</string>
+
+    <!-- Grayscale settings intent -->
+    <string name="config_grayscale_settings_intent" translate="false"></string>
 </resources>

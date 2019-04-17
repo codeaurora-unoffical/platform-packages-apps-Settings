@@ -111,6 +111,9 @@ public abstract class NotificationPreferenceController extends AbstractPreferenc
     }
 
     protected boolean isChannelConfigurable() {
+        if (mAppRow != null && mAppRow.lockedImportance) {
+            return false;
+        }
         if (mChannel != null && mAppRow != null) {
             return !Objects.equals(mChannel.getId(), mAppRow.lockedChannelId);
         }
@@ -121,6 +124,11 @@ public abstract class NotificationPreferenceController extends AbstractPreferenc
         if (mChannel != null && mAppRow != null) {
             if (!isChannelConfigurable()) {
                 return mChannel.getImportance() == IMPORTANCE_NONE;
+            }
+
+            if (mChannel.isImportanceLockedByOEM()
+                    || mChannel.isImportanceLockedByCriticalDeviceFunction()) {
+                return false;
             }
 
             return mChannel.isBlockableSystem() || !mAppRow.systemApp

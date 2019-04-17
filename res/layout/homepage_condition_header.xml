@@ -19,6 +19,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:contentDescription="@string/condition_expand_show"
     style="@style/ContextualCardStyle">
 
     <LinearLayout
@@ -45,7 +46,8 @@
             android:paddingTop="@dimen/homepage_condition_header_indicator_padding_top"
             android:paddingStart="@dimen/homepage_condition_header_indicator_padding_start"
             android:paddingEnd="@dimen/homepage_condition_header_indicator_padding_end"
-            android:src="@*android:drawable/ic_expand_more"/>
+            android:src="@drawable/ic_expand_more_inverse"
+            android:tint="?android:attr/colorControlNormal"/>
 
     </LinearLayout>
 

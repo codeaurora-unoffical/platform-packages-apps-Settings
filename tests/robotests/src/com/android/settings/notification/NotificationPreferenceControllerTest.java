@@ -219,6 +219,20 @@ public class NotificationPreferenceControllerTest {
     }
 
     @Test
+    public void testIsConfigurable_appLevel() {
+        NotificationBackend.AppRow appRow = new NotificationBackend.AppRow();
+        appRow.lockedChannelId = "something";
+        appRow.lockedImportance = true;
+
+        mController.onResume(appRow, mock(NotificationChannel.class), null, null);
+        assertFalse(mController.isChannelConfigurable());
+
+        appRow.lockedImportance = false;
+        mController.onResume(appRow, mock(NotificationChannel.class), null, null);
+        assertTrue(mController.isChannelConfigurable());
+    }
+
+    @Test
     public void testIsChannelBlockable_nonSystemAppsBlockable() {
         NotificationBackend.AppRow appRow = new NotificationBackend.AppRow();
         appRow.systemApp = false;
@@ -301,6 +315,30 @@ public class NotificationPreferenceControllerTest {
 
         mController.onResume(appRow, null, group, null);
         assertTrue(mController.isChannelGroupBlockable());
+    }
+
+    @Test
+    public void testIsChannelBlockable_oemLocked() {
+        NotificationBackend.AppRow appRow = new NotificationBackend.AppRow();
+        appRow.systemApp = false;
+        NotificationChannel channel = mock(NotificationChannel.class);
+        when(channel.isImportanceLockedByOEM()).thenReturn(true);
+        when(channel.getImportance()).thenReturn(IMPORTANCE_DEFAULT);
+
+        mController.onResume(appRow, channel, null, null);
+        assertFalse(mController.isChannelBlockable());
+    }
+
+    @Test
+    public void testIsChannelBlockable_criticalDeviceFunction() {
+        NotificationBackend.AppRow appRow = new NotificationBackend.AppRow();
+        appRow.systemApp = false;
+        NotificationChannel channel = mock(NotificationChannel.class);
+        when(channel.isImportanceLockedByCriticalDeviceFunction()).thenReturn(true);
+        when(channel.getImportance()).thenReturn(IMPORTANCE_DEFAULT);
+
+        mController.onResume(appRow, channel, null, null);
+        assertFalse(mController.isChannelBlockable());
     }
 
     @Test

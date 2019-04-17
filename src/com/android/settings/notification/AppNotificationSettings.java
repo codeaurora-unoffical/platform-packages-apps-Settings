@@ -33,7 +33,6 @@ import androidx.preference.SwitchPreference;
 
 import com.android.internal.widget.LockPatternUtils;
 import com.android.settings.R;
-import com.android.settings.widget.MasterCheckBoxPreference;
 import com.android.settingslib.RestrictedSwitchPreference;
 import com.android.settingslib.core.AbstractPreferenceController;
 
@@ -138,6 +137,10 @@ public class AppNotificationSettings extends NotificationSettingsBase {
                 context, mImportanceListener, mBackend));
         mControllers.add(new ImportancePreferenceController(
                 context, mImportanceListener, mBackend));
+        mControllers.add(new MinImportancePreferenceController(
+                context, mImportanceListener, mBackend));
+        mControllers.add(new HighImportancePreferenceController(
+                context, mImportanceListener, mBackend));
         mControllers.add(new SoundPreferenceController(context, this,
                 mImportanceListener, mBackend));
         mControllers.add(new LightsPreferenceController(context, mBackend));
@@ -149,7 +152,7 @@ public class AppNotificationSettings extends NotificationSettingsBase {
         mControllers.add(new DescriptionPreferenceController(context));
         mControllers.add(new NotificationsOffPreferenceController(context));
         mControllers.add(new DeletedChannelsPreferenceController(context, mBackend));
-        mControllers.add(new BubblePreferenceController(context, mBackend));
+        mControllers.add(new BubbleSummaryPreferenceController(context, mBackend));
         return new ArrayList<>(mControllers);
     }
 

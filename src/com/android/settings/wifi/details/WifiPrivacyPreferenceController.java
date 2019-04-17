@@ -41,6 +41,7 @@ public class WifiPrivacyPreferenceController extends BasePreferenceController im
     private WifiConfiguration mWifiConfiguration;
     private WifiManager mWifiManager;
     private boolean mIsEphemeral = false;
+    private boolean mIsPasspoint = false;
 
     public WifiPrivacyPreferenceController(Context context) {
         super(context, KEY_WIFI_PRIVACY);
@@ -56,10 +57,15 @@ public class WifiPrivacyPreferenceController extends BasePreferenceController im
         mIsEphemeral = isEphemeral;
     }
 
+    public void setIsPasspoint(boolean isPasspoint) {
+        mIsPasspoint = isPasspoint;
+    }
+
     @Override
     public int getAvailabilityStatus() {
-        return FeatureFlagUtils.isEnabled(mContext, FeatureFlags.WIFI_MAC_RANDOMIZATION)
-                ? AVAILABLE : CONDITIONALLY_UNAVAILABLE;
+        return mContext.getResources().getBoolean(
+                com.android.internal.R.bool.config_wifi_connected_mac_randomization_supported) ?
+                AVAILABLE : CONDITIONALLY_UNAVAILABLE;
     }
 
     @Override
@@ -70,7 +76,7 @@ public class WifiPrivacyPreferenceController extends BasePreferenceController im
         updateSummary(dropDownPreference, randomizationLevel);
 
         // Makes preference not selectable, when this is a ephemeral network.
-        if (mIsEphemeral) {
+        if (mIsEphemeral || mIsPasspoint) {
             preference.setSelectable(false);
             dropDownPreference.setSummary(R.string.wifi_privacy_settings_ephemeral_summary);
         }
