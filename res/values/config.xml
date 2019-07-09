@@ -406,6 +406,9 @@
     <!-- Whether or not extra preview panels should be used for screen zoom setting. -->
     <bool name="config_enable_extra_screen_zoom_preview">true</bool>
 
+    <!-- Whether to add AGPS parameter settings -->
+    <bool name="config_agps_enabled">false</bool>
+
     <!-- Whether to support CT PA requirement or not -->
     <bool name="config_support_CT_PA">false</bool>
 
@@ -417,4 +420,7 @@
 
     <!-- List containing the injected tile keys which are suppressed. -->
     <string-array name="config_suppress_injected_tile_keys" translatable="false"/>
+
+    <!-- "Show work policy info" intent action. TODO(b/134391103): Replace with final SystemAPI intent when it's available. -->
+    <string name="config_work_policy_info_intent_action" translatable="false"/>
 </resources>
