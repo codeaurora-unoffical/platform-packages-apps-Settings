@@ -163,8 +163,10 @@ public class BrightnessLevelPreferenceController extends AbstractPreferenceContr
     @VisibleForTesting
     boolean isInVrMode() {
         try {
-            return IVrManager.Stub.asInterface(ServiceManager.getService(Context.VR_SERVICE))
-                    .getVrModeState();
+            IVrManager vm = IVrManager.Stub.asInterface(ServiceManager.getService(Context.VR_SERVICE));
+            if(vm != null){
+                return vm.getVrModeState();
+            }
         } catch (RemoteException e) {
             Log.e(TAG, "Failed to check vr mode!", e);
         }
