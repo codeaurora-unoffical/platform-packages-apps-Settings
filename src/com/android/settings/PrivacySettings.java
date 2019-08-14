@@ -229,11 +229,13 @@ public class PrivacySettings extends SettingsPreferenceFragment {
         final IBackupManager backupManager = IBackupManager.Stub.asInterface(
                 ServiceManager.getService(Context.BACKUP_SERVICE));
         boolean isServiceActive = false;
-        try {
-            isServiceActive = backupManager.isBackupServiceActive(UserHandle.myUserId());
-        } catch (RemoteException e) {
-            Log.w(TAG, "Failed querying backup manager service activity status. " +
-                    "Assuming it is inactive.");
+        if(backupManager != null){
+            try {
+                isServiceActive = backupManager.isBackupServiceActive(UserHandle.myUserId());
+            } catch (RemoteException e) {
+                Log.w(TAG, "Failed querying backup manager service activity status. " +
+                        "Assuming it is inactive.");
+            }
         }
         boolean vendorSpecific = context.getPackageManager().
                 resolveContentProvider(GSETTINGS_PROVIDER, 0) == null;
