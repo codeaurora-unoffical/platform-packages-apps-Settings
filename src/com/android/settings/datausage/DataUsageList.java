@@ -121,6 +121,7 @@ public class DataUsageList extends DataUsageBase {
         if (!isBandwidthControlEnabled()) {
             Log.w(TAG, "No bandwidth control; leaving");
             getActivity().finish();
+            return;
         }
 
         try {
@@ -217,11 +218,11 @@ public class DataUsageList extends DataUsageBase {
 
     @Override
     public void onDestroy() {
-        mUidDetailProvider.clearCache();
-        mUidDetailProvider = null;
-
-        TrafficStats.closeQuietly(mStatsSession);
-
+        if (isBandwidthControlEnabled()) {
+            mUidDetailProvider.clearCache();
+            mUidDetailProvider = null;
+            TrafficStats.closeQuietly(mStatsSession);
+        }
         super.onDestroy();
     }
 
