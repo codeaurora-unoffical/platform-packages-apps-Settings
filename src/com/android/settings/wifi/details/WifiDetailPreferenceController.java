@@ -573,7 +573,7 @@ public class WifiDetailPreferenceController extends AbstractPreferenceController
         int signalLevel = mAccessPoint.getLevel();
         int wifiGeneration = mAccessPoint.getWifiGeneration();
         boolean isReady = (mAccessPoint.isVhtMax8SpatialStreamsSupported()
-                          && mAccessPoint.isTwtSupported());
+                          && mAccessPoint.isHe8ssCapableAp());
 
         // Disappears signal view if not in range. e.g. for saved networks.
         if (mIsOutOfRange) {
@@ -702,7 +702,11 @@ public class WifiDetailPreferenceController extends AbstractPreferenceController
         }
 
         mMacAddressPref.setVisible(true);
-        mMacAddressPref.setSummary(macAddress);
+        if (macAddress.equals(WifiInfo.DEFAULT_MAC_ADDRESS)) {
+            mMacAddressPref.setSummary(R.string.device_info_not_available);
+        } else {
+            mMacAddressPref.setSummary(macAddress);
+        }
     }
 
     private String getMacAddress() {
