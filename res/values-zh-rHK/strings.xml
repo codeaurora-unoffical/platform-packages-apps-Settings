@@ -1078,7 +1078,7 @@
     <string name="brightness" msgid="8480105032417444275">"亮度"</string>
     <string name="brightness_title" msgid="5746272622112982836">"光暗度"</string>
     <string name="brightness_summary" msgid="838917350127550703">"調校螢幕亮度"</string>
-    <string name="auto_brightness_title" msgid="6341042882350279391">"自動調校亮度"</string>
+    <string name="auto_brightness_title" msgid="6341042882350279391">"自動調校光暗"</string>
     <string name="auto_brightness_summary" msgid="1799041158760605375">"按環境光線優化亮度"</string>
     <string name="auto_brightness_summary_off" msgid="2802336459335410626">"關閉"</string>
     <string name="auto_brightness_summary_very_low" msgid="6483976609035853764">"偏好的亮度為非常低"</string>
@@ -1535,7 +1535,7 @@
     <string name="location_category_recent_location_requests" msgid="1938721350424447421">"最近的位置資訊要求"</string>
     <string name="location_recent_location_requests_see_all" msgid="9063541547120162593">"查看全部"</string>
     <string name="location_no_recent_apps" msgid="2800907699722178041">"最近沒有應用程式要求存取位置資料"</string>
-    <string name="location_category_location_services" msgid="7437150886946685979">"位置資訊服務"</string>
+    <string name="location_category_location_services" msgid="7437150886946685979">"定位服務"</string>
     <string name="location_high_battery_use" msgid="517199943258508020">"高耗電量"</string>
     <string name="location_low_battery_use" msgid="8602232529541903596">"低耗電量"</string>
     <string name="location_scanning_screen_title" msgid="4408076862929611554">"掃瞄"</string>
@@ -1544,7 +1544,7 @@
     <string name="location_scanning_bluetooth_always_scanning_title" msgid="5444989508204520019">"藍牙掃瞄"</string>
     <string name="location_scanning_bluetooth_always_scanning_description" msgid="1285526059945206128">"允許應用程式和服務隨時掃瞄附近的裝置 (即使藍牙功能已關閉)。此操作可用來改善適地性功能和服務。"</string>
     <string name="location_network_based" msgid="9134175479520582215">"Wi-Fi 和流動網絡位置"</string>
-    <string name="location_neighborhood_level" msgid="5141318121229984788">"允許應用程式使用 Google 的位置資訊服務，藉此更快確定您的約略位置。系統會收集匿名的位置資料傳送給 Google。"</string>
+    <string name="location_neighborhood_level" msgid="5141318121229984788">"允許應用程式使用 Google 的定位服務，藉此更快確定您的約略位置。系統會收集匿名的位置資料傳送給 Google。"</string>
     <string name="location_neighborhood_level_wifi" msgid="4234820941954812210">"根據 Wi-Fi 確定位置"</string>
     <string name="location_gps" msgid="8392461023569708478">"GPS 衛星"</string>
     <string name="location_street_level" product="tablet" msgid="1669562198260860802">"允許應用程式使用平板電腦的 GPS 找出您的精確位置"</string>
@@ -2439,8 +2439,8 @@
     <string name="credentials_erased" msgid="2907836028586342969">"憑證儲存空間已清除。"</string>
     <string name="credentials_not_erased" msgid="7685932772284216097">"無法清除憑證儲存空間。"</string>
     <string name="credentials_enabled" msgid="7588607413349978930">"已啟用認證儲存空間。"</string>
-    <string name="credentials_configure_lock_screen_hint" msgid="8058230497337529036">"您的裝置必須設有安全螢幕鎖定功能，才能使用認證儲存空間"</string>
-    <string name="credentials_configure_lock_screen_button" msgid="253239765216055321">"設定上鎖方式"</string>
+    <string name="credentials_configure_lock_screen_hint" msgid="8058230497337529036">"您必須為裝置設定安全的螢幕鎖定功能，才能使用認證儲存空間"</string>
+    <string name="credentials_configure_lock_screen_button" msgid="253239765216055321">"設定螢幕鎖定"</string>
     <string name="usage_access_title" msgid="332333405495457839">"可存取使用狀況的應用程式"</string>
     <string name="emergency_tone_title" msgid="254495218194925271">"緊急撥號訊號"</string>
     <string name="emergency_tone_summary" msgid="722259232924572153">"設定撥打緊急電話時的運作方式"</string>
@@ -3483,7 +3483,7 @@
     <string name="runtime_permissions_summary_no_permissions_requested" msgid="7655100570513818534">"沒有要求權限"</string>
     <string name="filter_all_apps" msgid="1988403195820688644">"所有應用程式"</string>
     <string name="filter_enabled_apps" msgid="5395727306799456250">"已安裝的應用程式"</string>
-    <string name="filter_instant_apps" msgid="574277769963965565">"即時應用程式"</string>
+    <string name="filter_instant_apps" msgid="574277769963965565">"免安裝應用程式"</string>
     <string name="filter_personal_apps" msgid="3277727374174355971">"個人"</string>
     <string name="filter_work_apps" msgid="24519936790795574">"工作"</string>
     <string name="filter_notif_all_apps" msgid="2299049859443680242">"應用程式：全部"</string>
@@ -3637,7 +3637,7 @@
     <string name="running_frequency" msgid="6622624669948277693">"頻率"</string>
     <string name="memory_maximum_usage" msgid="6513785462055278341">"最高用量"</string>
     <string name="no_data_usage" msgid="9131454024293628063">"並未使用數據"</string>
-    <string name="zen_access_warning_dialog_title" msgid="1198189958031157142">"允許「<xliff:g id="APP">%1$s</xliff:g>」存取「請勿騷擾」？"</string>
+    <string name="zen_access_warning_dialog_title" msgid="1198189958031157142">"允許「<xliff:g id="APP">%1$s</xliff:g>」存取「請勿騷擾」嗎？"</string>
     <string name="zen_access_warning_dialog_summary" msgid="4015885767653010873">"應用程式能開啟或關閉「請勿騷擾」，並變更有關設定。"</string>
     <string name="zen_access_disabled_package_warning" msgid="302820100078584431">"請啟用功能，通知存取權已開放"</string>
     <string name="zen_access_revoke_warning_dialog_title" msgid="558779234015793950">"要撤銷「<xliff:g id="APP">%1$s</xliff:g>」存取「請勿騷擾」的權限嗎？"</string>
@@ -3892,9 +3892,9 @@
     <string name="notification_log_details_none" msgid="184131801230614059">"無"</string>
     <string name="notification_log_details_ranking_null" msgid="244660392058720919">"沒有評級物件。"</string>
     <string name="notification_log_details_ranking_none" msgid="599607025882587844">"評級物件不包含此密鑰。"</string>
-    <string name="display_cutout_emulation" msgid="6306593933746393170">"模擬具有凹口的顯示屏"</string>
+    <string name="display_cutout_emulation" msgid="7466869822418376317">"顯示屏凹口"</string>
     <string name="display_cutout_emulation_keywords" msgid="4495418317471622562">"顯示屏凹口 (缺口)"</string>
-    <string name="display_cutout_emulation_none" msgid="5144174674654097316">"無"</string>
+    <string name="display_cutout_emulation_device_default" msgid="7957250558326167503">"裝置預設設定"</string>
     <string name="special_access" msgid="3458780842491881155">"特別應用程式權限"</string>
     <plurals name="special_access_summary" formatted="false" msgid="260765309935675867">
       <item quantity="other"><xliff:g id="COUNT">%d</xliff:g> 個應用程式可使用無限數據</item>
@@ -3982,10 +3982,10 @@
     <string name="oem_unlock_enable_disabled_summary_sim_locked_device" msgid="4149387448213399630">"無法在已遭流動網絡供應商鎖定的裝置上啟用"</string>
     <string name="oem_lock_info_message" msgid="9218313722236417510">"請重新啟動裝置以啟用裝置保護功能。"</string>
     <string name="automatic_storage_manager_freed_bytes" msgid="7517560170441007788">"已釋放共 <xliff:g id="SIZE">%1$s</xliff:g>\n\n上次執行時間：<xliff:g id="DATE">%2$s</xliff:g>"</string>
-    <string name="web_action_enable_title" msgid="4051513950976670853">"即時應用程式"</string>
+    <string name="web_action_enable_title" msgid="4051513950976670853">"免安裝應用程式"</string>
     <string name="web_action_enable_summary" msgid="3108127559723396382">"即使您沒有安裝應用程式，亦可在應用程式內開啟連結"</string>
-    <string name="web_action_section_title" msgid="7364647086538399136">"即時應用程式"</string>
-    <string name="instant_apps_settings" msgid="8827777916518348213">"即時應用程式偏好設定"</string>
+    <string name="web_action_section_title" msgid="7364647086538399136">"免安裝應用程式"</string>
+    <string name="instant_apps_settings" msgid="8827777916518348213">"免安裝應用程式偏好設定"</string>
     <string name="domain_url_section_title" msgid="7046835219056428883">"已安裝的應用程式"</string>
     <string name="automatic_storage_manager_activation_warning" msgid="6353100011690933254">"您的儲存空間即將由儲存空間管理員管理"</string>
     <string name="account_for_section_header" msgid="5356566418548737121">"<xliff:g id="USER_NAME">%1$s</xliff:g>的帳戶"</string>
@@ -4078,7 +4078,7 @@
     <string name="storage_volume_total" msgid="3499221850532701342">"已使用 (共 <xliff:g id="TOTAL">%1$s</xliff:g>)"</string>
     <string name="storage_percent_full" msgid="6095012055875077036">"已使用"</string>
     <string name="clear_instant_app_data" msgid="2004222610585890909">"清除應用程式"</string>
-    <string name="clear_instant_app_confirmation" msgid="7451671214898856857">"您要移除此即時應用程式嗎？"</string>
+    <string name="clear_instant_app_confirmation" msgid="7451671214898856857">"您要移除此免安裝應用程式嗎？"</string>
     <string name="launch_instant_app" msgid="391581144859010499">"開啟"</string>
     <string name="game_storage_settings" msgid="3410689937046696557">"遊戲"</string>
     <string name="audio_files_title" msgid="4777048870657911307">"音訊檔案"</string>
@@ -4099,7 +4099,7 @@
     <string name="storage_manager_indicator" msgid="1516810749625915020">"儲存空間管理員：<xliff:g id="STATUS">^1</xliff:g>"</string>
     <string name="storage_manager_indicator_off" msgid="7488057587180724388">"關閉"</string>
     <string name="storage_manager_indicator_on" msgid="8625551710194584733">"開啟"</string>
-    <string name="install_type_instant" msgid="3174425974536078647">"即時應用程式"</string>
+    <string name="install_type_instant" msgid="3174425974536078647">"免安裝應用程式"</string>
     <string name="automatic_storage_manager_deactivation_warning" msgid="5605210730828410482">"要停用儲存空間管理員嗎？"</string>
     <string name="storage_movies_tv" msgid="5498394447562086890">"電影和電視應用程式"</string>
     <string name="carrier_provisioning" msgid="4398683675591893169">"流動網絡供應商佈建資料"</string>
@@ -4155,5 +4155,4 @@
     <string name="pref_title_network_details" msgid="7186418845727358964">"網絡詳細資料"</string>
     <string name="about_phone_device_name_warning" msgid="8885670415541365348">"您的裝置名稱會在手機的應用程式上顯示。當您連接藍牙裝置或設定 Wi-Fi 熱點時，其他人亦可能會看到您的裝置名稱。"</string>
     <string name="devices_title" msgid="7701726109334110391">"裝置"</string>
-    <string name="display_cutout_emulation_device_default" msgid="7957250558326167503">"預設"</string>
 </resources>
