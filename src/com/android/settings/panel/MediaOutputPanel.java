@@ -89,7 +89,7 @@ public class MediaOutputPanel implements PanelContent, LocalMediaManager.DeviceC
         if (mMediaController != null) {
             final MediaMetadata metadata = mMediaController.getMetadata();
             if (metadata != null) {
-                return metadata.getString(MediaMetadata.METADATA_KEY_ARTIST);
+                return metadata.getDescription().getTitle();
             }
         }
         return mContext.getText(R.string.media_volume_title);
@@ -100,10 +100,10 @@ public class MediaOutputPanel implements PanelContent, LocalMediaManager.DeviceC
         if (mMediaController != null) {
             final MediaMetadata metadata = mMediaController.getMetadata();
             if (metadata != null) {
-                return metadata.getString(MediaMetadata.METADATA_KEY_ALBUM);
+                return metadata.getDescription().getSubtitle();
             }
         }
-        return mContext.getText(R.string.media_output_panel_title);
+        return null;
     }
 
     @Override
@@ -166,7 +166,7 @@ public class MediaOutputPanel implements PanelContent, LocalMediaManager.DeviceC
     }
 
     @Override
-    public CharSequence getCustomButtonTitle() {
+    public CharSequence getCustomizedButtonTitle() {
         return mContext.getText(R.string.media_output_panel_stop_casting_button);
     }
 
@@ -220,6 +220,7 @@ public class MediaOutputPanel implements PanelContent, LocalMediaManager.DeviceC
                 if (TextUtils.equals(controller.getPackageName(), mPackageName)) {
                     mMediaController = controller;
                     mMediaController.registerCallback(mCb);
+                    mCallback.onHeaderChanged();
                     break;
                 }
             }
@@ -258,7 +259,9 @@ public class MediaOutputPanel implements PanelContent, LocalMediaManager.DeviceC
 
         @Override
         public void onPlaybackStateChanged(PlaybackState state) {
-            if (mCallback != null && state.getState() != PlaybackState.STATE_PLAYING) {
+            final int playState = state.getState();
+            if (mCallback != null && (playState == PlaybackState.STATE_STOPPED
+                    || playState == PlaybackState.STATE_PAUSED)) {
                 mCallback.forceClose();
             }
         }
