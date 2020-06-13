@@ -448,7 +448,7 @@
     <string name="security_settings_face_settings_require_confirmation_details" msgid="6454776517804994007">"Ao utilizar Desbl. Através Rosto em apl., solicitar sempre confirmação"</string>
     <string name="security_settings_face_settings_remove_face_data" msgid="6491161841504747384">"Elim. dados faciais"</string>
     <string name="security_settings_face_settings_enroll" msgid="4656842124181309056">"Configure o Desbloqueio através do rosto"</string>
-    <string name="security_settings_face_settings_footer" msgid="4263048343191609059">"Utilize o Desbloqueio Através do Rosto para desbloquear o dispositivo, iniciar sessão em aplicações e confirmar pagamentos.\n\nTenha em atenção:\nPode desbloquear o telemóvel involuntariamente ao olhar para o mesmo.\n\nAlguém pode desbloquear o telemóvel se o segurar junto ao seu rosto com os olhos abertos.\n\nAlguém muito parecido consigo, como um irmão com traços semelhantes, pode desbloquear o telemóvel."</string>
+    <string name="security_settings_face_settings_footer" msgid="5545455769328594736">"Utilize o Desbloqueio através do rosto para desbloquear o dispositivo, iniciar sessão em apps e confirmar pagamentos.\n\nTenha em atenção:\nPode desbloquear o telemóvel involuntariamente ao olhar para o mesmo.\n\nAlguém pode desbloquear o telemóvel se o segurar junto ao seu rosto.\n\nAlguém muito parecido consigo, como um irmão com traços semelhantes, pode desbloquear o telemóvel."</string>
     <string name="security_settings_face_settings_footer_attention_not_supported" msgid="4460565590744451205">"Utilize o Desbloqueio através do rosto para desbloquear o dispositivo, iniciar sessão em aplicações e confirmar pagamentos.\n\nTenha em atenção:\nPode desbloquear o telemóvel involuntariamente ao olhar para o mesmo.\n\nAlguém pode desbloquear o telemóvel se o segurar junto ao seu rosto, mesmo com os olhos fechados.\n\nAlguém muito parecido consigo, como um irmão com traços semelhantes, pode desbloquear o telemóvel."</string>
     <string name="security_settings_face_settings_remove_dialog_title" msgid="2596803378375165362">"Eliminar os dados do rosto?"</string>
     <string name="security_settings_face_settings_remove_dialog_details" msgid="3458998128212675289">"Os dados do rosto utilizados pelo Desbloqueio através do rosto serão eliminados permanentemente e em segurança. Após a remoção, precisará do PIN, do padrão ou da palavra-passe para desbloquear o telemóvel, iniciar sessão nas aplicações e confirmar pagamentos."</string>
@@ -1845,7 +1845,7 @@
     <string name="install_applications" msgid="3921609656584369901">"Fontes desconhecidas"</string>
     <string name="install_applications_title" msgid="7890233747559108106">"Permit. todas as fontes app"</string>
     <string name="recent_app_category_title" msgid="189758417804427533">"Aplicações abertas recentemente"</string>
-    <string name="see_all_apps_title" msgid="8363320482315507386">"Ver as <xliff:g id="COUNT">%1$d</xliff:g> aplicações"</string>
+    <string name="see_all_apps_title" msgid="8363320482315507386">"Ver as <xliff:g id="COUNT">%1$d</xliff:g> apps"</string>
     <string name="install_all_warning" product="tablet" msgid="7010749217925069520">"O seu tablet e os dados pessoais são mais vulneráveis a ataques de aplicações desconhecidas. Ao instalar aplicações desta fonte, aceita ser responsável por quaisquer danos no tablet ou perdas de dados que possam resultar da utilização do mesmo."</string>
     <string name="install_all_warning" product="default" msgid="652516435709047343">"O seu telemóvel e os dados pessoais são mais vulneráveis a ataques de aplicações desconhecidas. Ao instalar aplicações desta fonte, aceita ser responsável por quaisquer danos no telemóvel ou perdas de dados que possam resultar da utilização do mesmo."</string>
     <string name="install_all_warning" product="device" msgid="2348262609815354500">"O dispositivo e os dados pessoais são mais vulneráveis a ataques de aplicações desconhecidas. Ao instalar aplicações desta fonte, aceita ser responsável por quaisquer danos no dispositivo ou perdas de dados que possam resultar da utilização do mesmo."</string>
@@ -2076,7 +2076,7 @@
     <string name="onscreen_keyboard_settings_summary" msgid="3975358507879701606">"Definições do teclado no ecrã"</string>
     <string name="builtin_keyboard_settings_title" msgid="5096171620714179661">"Teclado físico"</string>
     <string name="builtin_keyboard_settings_summary" msgid="4332792334499933856">"Definições do teclado físico"</string>
-    <string name="gadget_picker_title" msgid="7615902510050731400">"Escolher miniaplicação"</string>
+    <string name="gadget_picker_title" msgid="7615902510050731400">"Escolher gadget"</string>
     <string name="widget_picker_title" msgid="7641298325488989676">"Escolher widget"</string>
     <string name="allow_bind_app_widget_activity_allow_bind_title" msgid="3537968409832846255">"Criar widget e permitir o acesso?"</string>
     <string name="allow_bind_app_widget_activity_allow_bind" msgid="5694218981358874429">"Depois de criar o widget, <xliff:g id="WIDGET_HOST_NAME">%1$s</xliff:g> pode aceder a todos os dados apresentados."</string>
@@ -2394,10 +2394,8 @@
     <string name="battery_tip_dialog_summary_message" product="device" msgid="8222461068860745749">"As suas aplicações estão a utilizar uma quantidade de bateria normal. Se as aplicações utilizarem demasiada bateria, o dispositivo sugere ações que pode realizar.\n\nPode sempre ativar a Poupança de bateria se estiver a ficar sem bateria."</string>
     <string name="smart_battery_manager_title" msgid="3677620516657920364">"Battery Manager"</string>
     <string name="smart_battery_title" msgid="9095903608520254254">"Gerir aplicações automaticamente"</string>
-    <string name="smart_battery_summary" msgid="1492277404000064998">"Limitar a bateria para as aplicações que não utiliza frequentemente"</string>
-    <string name="smart_battery_footer" product="default" msgid="8407121907452993645">"Quando o Battery Manager deteta a existência de aplicações a consumir a bateria rapidamente, tem a opção de restringir estas aplicações. As aplicações restringidas poderão não funcionar corretamente e as notificações poderão sofrer atrasos."</string>
-    <string name="smart_battery_footer" product="tablet" msgid="8407121907452993645">"Quando o Battery Manager deteta a existência de aplicações a consumir a bateria rapidamente, tem a opção de restringir estas aplicações. As aplicações restringidas poderão não funcionar corretamente e as notificações poderão sofrer atrasos."</string>
-    <string name="smart_battery_footer" product="device" msgid="8407121907452993645">"Quando o Battery Manager deteta a existência de aplicações a consumir a bateria rapidamente, tem a opção de restringir estas aplicações. As aplicações restringidas poderão não funcionar corretamente e as notificações poderão sofrer atrasos."</string>
+    <string name="smart_battery_summary" product="default" msgid="1492277404000064998">"Limitar a bateria para as aplicações que não utiliza frequentemente"</string>
+    <string name="smart_battery_footer" msgid="8407121907452993645">"Quando o Battery Manager deteta a existência de aplicações a consumir a bateria rapidamente, tem a opção de restringir estas aplicações. As aplicações restringidas poderão não funcionar corretamente e as notificações poderão sofrer atrasos."</string>
     <string name="restricted_app_title" msgid="6585080822121007436">"Aplicações restritas"</string>
     <plurals name="restricted_app_summary" formatted="false" msgid="6059772951505411003">
       <item quantity="other">Limiar a utilização da bateria para %1$d aplicações</item>
@@ -2407,7 +2405,7 @@
     <string name="restricted_app_detail_footer" msgid="3683577206409650564">"Estas aplicações têm consumido bateria em segundo plano. As aplicações restringidas poderão não funcionar corretamente e as notificações poderão sofrer atrasos."</string>
     <string name="battery_auto_restriction_title" msgid="827206218118093357">"Utilizar o Battery Manager"</string>
     <string name="battery_auto_restriction_summary" msgid="2140896101984815711">"Detetar quando as aplicações consomem rapidamente a bateria"</string>
-    <string name="battery_manager_on" msgid="3197525907390349054">"Ativado / A detetar quando as aplicações consomem rapidamente a bateria"</string>
+    <string name="battery_manager_on" product="default" msgid="3197525907390349054">"Ativado / A detetar quando as aplicações consomem rapidamente a bateria"</string>
     <string name="battery_manager_off" msgid="673547668722420924">"Desativado"</string>
     <plurals name="battery_manager_app_restricted" formatted="false" msgid="6714534362166394848">
       <item quantity="other">%1$d aplicações restritas</item>
@@ -3120,7 +3118,7 @@
     <string name="connected_devices_dashboard_no_nfc_summary" msgid="8424794257586524040">"Bluetooth, modo de condução"</string>
     <string name="connected_devices_dashboard_no_driving_mode_summary" msgid="7155882619333726331">"Bluetooth, NFC"</string>
     <string name="connected_devices_dashboard_no_driving_mode_no_nfc_summary" msgid="1175254057213044560">"Bluetooth"</string>
-    <string name="app_and_notification_dashboard_title" msgid="2861781687031832943">"Aplicações e notificações"</string>
+    <string name="app_and_notification_dashboard_title" msgid="2861781687031832943">"Apps e notificações"</string>
     <string name="app_and_notification_dashboard_summary" msgid="8047683010984186106">"Aplicações recentes, aplicações predefinidas"</string>
     <string name="notification_settings_work_profile" msgid="6076211850526353975">"O acesso às notificações não está disponível para aplicações no perfil de trabalho."</string>
     <string name="account_dashboard_title" msgid="2735150283267749852">"Contas"</string>
@@ -3395,7 +3393,7 @@
     <string name="bubbles_app_toggle_title" msgid="5319021259954576150">"Balões"</string>
     <string name="bubbles_app_toggle_summary" msgid="1574515698567947948">"Permitir que a aplicação <xliff:g id="APP_NAME">%1$s</xliff:g> mostre algumas notificações como balões"</string>
     <string name="bubbles_feature_disabled_dialog_title" msgid="1233382767099262132">"Ative os balões"</string>
-    <string name="bubbles_feature_disabled_dialog_text" msgid="6969068442520056407">"Para ativar os balões para esta aplicação, primeiro, tem de os ativar para o dispositivo. Esta ação afeta outras aplicações nas quais tenha ativado previamente os balões."</string>
+    <string name="bubbles_feature_disabled_dialog_text" msgid="6969068442520056407">"Para ativar os balões para esta app, primeiro, tem de os ativar para o dispositivo. Esta ação afeta outras apps nas quais tenha ativado previamente os balões."</string>
     <string name="bubbles_feature_disabled_button_approve" msgid="597665528889599104">"Ativar para o dispositivo"</string>
     <string name="bubbles_feature_disabled_button_cancel" msgid="8963409459448350600">"Cancelar"</string>
     <string name="swipe_direction_title" msgid="4260320464727178413">"Ações de deslize rápido com o dedo"</string>

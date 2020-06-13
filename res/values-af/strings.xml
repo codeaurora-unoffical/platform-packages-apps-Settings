@@ -448,7 +448,7 @@
     <string name="security_settings_face_settings_require_confirmation_details" msgid="6454776517804994007">"Vereis bevestigingstap altyd as gesigslot in programme gebruik word"</string>
     <string name="security_settings_face_settings_remove_face_data" msgid="6491161841504747384">"Vee gesigdata uit"</string>
     <string name="security_settings_face_settings_enroll" msgid="4656842124181309056">"Stel gesigslot op"</string>
-    <string name="security_settings_face_settings_footer" msgid="4263048343191609059">"Gebruik gesigslot om jou toestel te ontsluit, by programme aan te meld en betalings te bevestig.\n\nHou in gedagte:\nAs jy na die foon kyk, sal dit dalk ontsluit wanneer jy nie bedoel om dit te doen nie.\n\nIemand anders kan jou foon ontsluit as dit voor jou gesig gehou word terwyl jou oë oop is.\n\nJou foon kan ontsluit word deur iemand wat baie soos jy lyk, byvoorbeeld \'n identiese broer of suster."</string>
+    <string name="security_settings_face_settings_footer" msgid="5545455769328594736">"Gebruik gesigslot om jou toestel te ontsluit, by programme aan te meld en betalings te bevestig.\n\nHou in gedagte:\nAs jy na die foon kyk, sal dit dalk ontsluit wanneer jy nie bedoel om dit te doen nie.\n\nIemand anders kan jou foon ontsluit as dit voor jou gesig gehou word.\n\nJou foon kan ontsluit word deur iemand wat baie soos jy lyk, byvoorbeeld \'n identiese broer of suster."</string>
     <string name="security_settings_face_settings_footer_attention_not_supported" msgid="4460565590744451205">"Gebruik gesigslot om jou toestel te ontsluit, by programme aan te meld en betalings te bevestig.\n\nHou in gedagte:\nAs jy na die foon kyk, sal dit dalk ontsluit wanneer jy nie bedoel om dit te doen nie.\n\nIemand anders kan jou foon ontsluit as dit voor jou gesig gehou word, selfs al is jou oë toe.\n\nJou foon kan ontsluit word deur iemand wat baie soos jy lyk, soos \'n identiese broer of suster."</string>
     <string name="security_settings_face_settings_remove_dialog_title" msgid="2596803378375165362">"Vee gesigdata uit?"</string>
     <string name="security_settings_face_settings_remove_dialog_details" msgid="3458998128212675289">"Die gesigdata wat deur gesigslot gebruik is, sal permanent en veilig uitgevee word. Nadat dit uitgevee is, sal jy jou PIN, patroon of wagwoord moet hê om jou foon te ontsluit, by programme aan te meld en betalings te bevestig."</string>
@@ -2394,10 +2394,8 @@
     <string name="battery_tip_dialog_summary_message" product="device" msgid="8222461068860745749">"Jou programme gebruik \'n gewone hoeveelheid batterykrag. As programme te veel batterykrag gebruik, sal jou toestel handelinge voorstel wat jy kan uitvoer.\n\nJy kan altyd Batterybespaarder aanskakel as jou battery begin pap raak."</string>
     <string name="smart_battery_manager_title" msgid="3677620516657920364">"Batterybestuurder"</string>
     <string name="smart_battery_title" msgid="9095903608520254254">"Bestuur programme outomaties"</string>
-    <string name="smart_battery_summary" msgid="1492277404000064998">"Beperk die batterygebruik van programme wat jy nie gereeld gebruik nie"</string>
-    <string name="smart_battery_footer" product="default" msgid="8407121907452993645">"Wanneer Batterybestuurder bespeur dat programme jou battery leegmaak, het jy die opsie om daardie programme te beperk. Beperkte programme sal dalk nie behoorlik werk nie en kennisgewings sal dalk vertraag word."</string>
-    <string name="smart_battery_footer" product="tablet" msgid="8407121907452993645">"Wanneer Batterybestuurder bespeur dat programme jou battery leegmaak, het jy die opsie om daardie programme te beperk. Beperkte programme sal dalk nie behoorlik werk nie en kennisgewings sal dalk vertraag word."</string>
-    <string name="smart_battery_footer" product="device" msgid="8407121907452993645">"Wanneer Batterybestuurder bespeur dat programme jou battery leegmaak, het jy die opsie om daardie programme te beperk. Beperkte programme sal dalk nie behoorlik werk nie en kennisgewings sal dalk vertraag word."</string>
+    <string name="smart_battery_summary" product="default" msgid="1492277404000064998">"Beperk die batterygebruik van programme wat jy nie gereeld gebruik nie"</string>
+    <string name="smart_battery_footer" msgid="8407121907452993645">"Wanneer Batterybestuurder bespeur dat programme jou battery leegmaak, het jy die opsie om daardie programme te beperk. Beperkte programme sal dalk nie behoorlik werk nie en kennisgewings sal dalk vertraag word."</string>
     <string name="restricted_app_title" msgid="6585080822121007436">"Beperkte programme"</string>
     <plurals name="restricted_app_summary" formatted="false" msgid="6059772951505411003">
       <item quantity="other">Beperk tans batterygebruik vir %1$d programme</item>
@@ -2407,7 +2405,7 @@
     <string name="restricted_app_detail_footer" msgid="3683577206409650564">"Hierdie programme het battery in die agtergrond gebruik. Beperkte programme sal dalk nie behoorlik werk nie en kennisgewings sal dalk vertraag word."</string>
     <string name="battery_auto_restriction_title" msgid="827206218118093357">"Gebruik Batterybestuurder"</string>
     <string name="battery_auto_restriction_summary" msgid="2140896101984815711">"Bespeur wanneer programme battery leegmaak"</string>
-    <string name="battery_manager_on" msgid="3197525907390349054">"Aan / Bespeur wanneer programme battery leegmaak"</string>
+    <string name="battery_manager_on" product="default" msgid="3197525907390349054">"Aan / Bespeur wanneer programme battery leegmaak"</string>
     <string name="battery_manager_off" msgid="673547668722420924">"Af"</string>
     <plurals name="battery_manager_app_restricted" formatted="false" msgid="6714534362166394848">
       <item quantity="other">%1$d programme word beperk</item>

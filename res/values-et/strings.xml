@@ -448,7 +448,7 @@
     <string name="security_settings_face_settings_require_confirmation_details" msgid="6454776517804994007">"Face Unlocki kasutamisel rakendustes nõutakse alati kinnitustoimingut"</string>
     <string name="security_settings_face_settings_remove_face_data" msgid="6491161841504747384">"Kustuta näoandmed"</string>
     <string name="security_settings_face_settings_enroll" msgid="4656842124181309056">"Funktsiooni Face Unlock seadistamine"</string>
-    <string name="security_settings_face_settings_footer" msgid="4263048343191609059">"Kasutage Face Unlocki oma seadme avamiseks, rakendustesse sisselogimiseks ja maksete kinnitamiseks.\n\nTasub teada:\nTelefoni vaatamisel võib see soovimatult avaneda.\n\nKeegi teine võib teie telefoni avada, kui seda hoitakse teie näo ees ja teie silmad on avatud.\n\nVõib juhtuda, et teiega sarnane inimene, näiteks teie laps või identne vend/õde, saab teie telefoni avada."</string>
+    <string name="security_settings_face_settings_footer" msgid="5545455769328594736">"Kasutage Face Unlocki oma seadme avamiseks, rakendustesse sisselogimiseks ja maksete kinnitamiseks.\n\nTasub teada.\nTelefoni vaatamisel võib see soovimatult avaneda.\n\nKeegi teine võib teie telefoni avada, kui seda hoitakse teie näo ees.\n\nVõib juhtuda, et teiega väga sarnane inimene, näiteks teie kaksikvend/-õde, saab teie telefoni avada."</string>
     <string name="security_settings_face_settings_footer_attention_not_supported" msgid="4460565590744451205">"Kasutage Face Unlocki oma seadme avamiseks, rakendustesse sisselogimiseks ja maksete kinnitamiseks.\n\nTasub teada.\nTelefoni vaatamisel võib see soovimatult avaneda.\n\nKeegi teine võib teie telefoni avada, kui seda hoitakse teie näo ees. Seda isegi siis, kui teie silmad on suletud.\n\nTelefoni saab avada teiega sarnane inimene, nt teie identne vend/õde."</string>
     <string name="security_settings_face_settings_remove_dialog_title" msgid="2596803378375165362">"Kas soovite näoandmed kustutada?"</string>
     <string name="security_settings_face_settings_remove_dialog_details" msgid="3458998128212675289">"Face Unlocki kasutatavad näoandmed kustutatakse jäädavalt ja turvaliselt. Pärast eemaldamist vajate telefoni avamiseks, rakendustesse sisselogimiseks ja maksete kinnitamiseks PIN-koodi, mustrit või parooli."</string>
@@ -520,7 +520,7 @@
     <string name="fingerprint_enroll_button_next" msgid="1034110123277869532">"Järgmine"</string>
     <string name="security_settings_fingerprint_enroll_disclaimer" msgid="7875826823637114097">"Lisaks telefoni avamisele saate oma sõrmejälje abil volitada ka ostusid ja juurdepääsu rakendustele. "<annotation id="url">"Lisateave"</annotation></string>
     <string name="security_settings_fingerprint_enroll_disclaimer_lockscreen_disabled" msgid="4260983700868889294">" Ekraaniluku valik on keelatud. Küsige lisateavet organisatsiooni administraatorilt. "<annotation id="admin_details">"Rohkem üksikasju"</annotation>\n\n"Saate ka edaspidi sõrmejäljega oste volitada ja rakendustele juurde pääseda. "<annotation id="url">"Lisateave"</annotation></string>
-    <string name="security_settings_fingerprint_enroll_lift_touch_again" msgid="2590665137265458789">"Tõstke sõrme, seejärel puudutage sõrmejäljelugejat uuesti"</string>
+    <string name="security_settings_fingerprint_enroll_lift_touch_again" msgid="2590665137265458789">"Tõstke sõrme, seejärel puudutage sõrmejäljeandurit uuesti"</string>
     <string name="fingerprint_add_max" msgid="8639321019299347447">"Saate lisada kuni <xliff:g id="COUNT">%d</xliff:g> sõrmejälge"</string>
     <string name="fingerprint_intro_error_max" msgid="4431784409732135610">"Olete lisanud maksimaalse arvu sõrmejälgi"</string>
     <string name="fingerprint_intro_error_unknown" msgid="877005321503793963">"Rohkem sõrmejälgi ei saa lisada"</string>
@@ -987,7 +987,7 @@
     <string name="wifi_dpp_lockscreen_title" msgid="5246641326066972419">"Kinnitage oma isik"</string>
     <string name="wifi_dpp_wifi_password" msgid="4992986319806934381">"WiFi-võrgu parool: <xliff:g id="PASSWORD">%1$s</xliff:g>"</string>
     <string name="wifi_dpp_hotspot_password" msgid="688464342650820420">"Kuumkoha parool: <xliff:g id="PASSWORD">%1$s</xliff:g>"</string>
-    <string name="wifi_dpp_add_device" msgid="8695656122114721335">"Lisa seade"</string>
+    <string name="wifi_dpp_add_device" msgid="8695656122114721335">"Seadme lisamine"</string>
     <string name="wifi_dpp_connect_network_using_qr_code" msgid="6975258007798254937">"Kasutage sellesse võrku seadme lisamiseks QR-koodi"</string>
     <string name="retry" msgid="7542103800274026915">"Proovi uuesti"</string>
     <string name="wifi_shared" msgid="8850748923537589782">"Jaga seadme teiste kasutajatega"</string>
@@ -1776,9 +1776,9 @@
     <string name="lockpassword_password_set_toast" msgid="6615759749393973795">"Parool on määratud"</string>
     <string name="lockpassword_pin_set_toast" msgid="5415783847198570890">"PIN-kood on määratud"</string>
     <string name="lockpassword_pattern_set_toast" msgid="3090582314362416762">"Muster on määratud"</string>
-    <string name="lockpassword_choose_your_password_header_for_face" msgid="5359649947642749079">"Face Unlocki kasutamiseks määrake parool"</string>
-    <string name="lockpassword_choose_your_pattern_header_for_face" msgid="9220480399170764760">"Face Unlocki kasutamiseks määrake muster"</string>
-    <string name="lockpassword_choose_your_pin_header_for_face" msgid="2285401208117502869">"Face Unlocki kasutamiseks määrake PIN"</string>
+    <string name="lockpassword_choose_your_password_header_for_face" msgid="5359649947642749079">"Määrake Face Unlocki kasutamiseks parool"</string>
+    <string name="lockpassword_choose_your_pattern_header_for_face" msgid="9220480399170764760">"Määrake Face Unlocki kasutamiseks muster"</string>
+    <string name="lockpassword_choose_your_pin_header_for_face" msgid="2285401208117502869">"Määrake Face Unlocki kasutamiseks PIN-kood"</string>
     <string name="lockpassword_confirm_your_pattern_generic" msgid="7692794426682501482">"Jätkamiseks kasutage seadme mustrit"</string>
     <string name="lockpassword_confirm_your_pin_generic" msgid="9206928587904701094">"Jätkamiseks sisestage seadme PIN-kood"</string>
     <string name="lockpassword_confirm_your_password_generic" msgid="2616127423884477152">"Jätkamiseks sisestage seadme parool"</string>
@@ -1839,7 +1839,7 @@
     <string name="lock_settings_profile_unified_summary" msgid="777095092175037385">"Sama mis seadme ekraanilukk"</string>
     <string name="manageapplications_settings_title" msgid="9198876415524237657">"Halda rakendusi"</string>
     <string name="manageapplications_settings_summary" msgid="848586372489062357">"Installitud rakenduste haldamine ja eemaldamine"</string>
-    <string name="applications_settings" msgid="1941993743933425622">"Rakenduste teave"</string>
+    <string name="applications_settings" msgid="1941993743933425622">"Rakenduse teave"</string>
     <string name="applications_settings_summary" msgid="8206066893744768531">"Rakenduste haldamine, kiirkäivituse otseteede seadistamine"</string>
     <string name="applications_settings_header" msgid="3154670675856048015">"Rakenduse seaded"</string>
     <string name="install_applications" msgid="3921609656584369901">"Tundmatud allikad"</string>
@@ -1851,7 +1851,7 @@
     <string name="install_all_warning" product="device" msgid="2348262609815354500">"Teie seade ja isiklikud andmed on tundmatute rakenduste rünnakute suhtes haavatavamad. Sellest allikast rakendusi installides nõustute, et vastutate seadme kõigi kahjude ja andmekao eest, mis võivad selliste rakenduste kasutamisest tuleneda."</string>
     <string name="advanced_settings" msgid="2368905204839169094">"Täpsemad seaded"</string>
     <string name="advanced_settings_summary" msgid="1823765348195530035">"Luba rohkem seadete valikuid"</string>
-    <string name="application_info_label" msgid="1015706497694165866">"Rakenduste teave"</string>
+    <string name="application_info_label" msgid="1015706497694165866">"Rakenduse teave"</string>
     <string name="storage_label" msgid="2522307545547515733">"Mäluruum"</string>
     <string name="auto_launch_label" msgid="4069860409309364872">"Avamine vaikimisi"</string>
     <string name="auto_launch_label_generic" msgid="5033137408273064599">"Vaikeseaded"</string>
@@ -2394,10 +2394,8 @@
     <string name="battery_tip_dialog_summary_message" product="device" msgid="8222461068860745749">"Teie rakendused kasutavad akut tavapärases ulatuses. Kui rakendused kasutavad liiga palju akut, soovitab seade teile selle vastu sobilikke meetmeid.\n\nKui aku hakkab tühjaks saama, võite alati akusäästja sisse lülitada."</string>
     <string name="smart_battery_manager_title" msgid="3677620516657920364">"Akuhaldur"</string>
     <string name="smart_battery_title" msgid="9095903608520254254">"Halda rakendusi automaatselt"</string>
-    <string name="smart_battery_summary" msgid="1492277404000064998">"Akukasutuse piiramine rakenduste puhul, mida te ei kasuta sageli"</string>
-    <string name="smart_battery_footer" product="default" msgid="8407121907452993645">"Kui akuhaldur tuvastab, et rakendused kurnavad akut, on teil võimalik nende rakenduste tööd piirata. Piiratud rakendused ei pruugi korralikult töötada ja märguanded võivad viibida."</string>
-    <string name="smart_battery_footer" product="tablet" msgid="8407121907452993645">"Kui akuhaldur tuvastab, et rakendused kurnavad akut, on teil võimalik nende rakenduste tööd piirata. Piiratud rakendused ei pruugi korralikult töötada ja märguanded võivad viibida."</string>
-    <string name="smart_battery_footer" product="device" msgid="8407121907452993645">"Kui akuhaldur tuvastab, et rakendused kurnavad akut, on teil võimalik nende rakenduste tööd piirata. Piiratud rakendused ei pruugi korralikult töötada ja märguanded võivad viibida."</string>
+    <string name="smart_battery_summary" product="default" msgid="1492277404000064998">"Akukasutuse piiramine rakenduste puhul, mida te ei kasuta sageli"</string>
+    <string name="smart_battery_footer" msgid="8407121907452993645">"Kui akuhaldur tuvastab, et rakendused kurnavad akut, on teil võimalik nende rakenduste tööd piirata. Piiratud rakendused ei pruugi korralikult töötada ja märguanded võivad viibida."</string>
     <string name="restricted_app_title" msgid="6585080822121007436">"Piiratud rakendused"</string>
     <plurals name="restricted_app_summary" formatted="false" msgid="6059772951505411003">
       <item quantity="other">Akukasutust piiratakse %1$d rakenduse jaoks</item>
@@ -2407,7 +2405,7 @@
     <string name="restricted_app_detail_footer" msgid="3683577206409650564">"Need rakendused kasutavad taustal akut. Piiratud rakendused ei pruugi korralikult töötada ja märguanded võivad viibida."</string>
     <string name="battery_auto_restriction_title" msgid="827206218118093357">"Akuhalduri kasutamine"</string>
     <string name="battery_auto_restriction_summary" msgid="2140896101984815711">"Tuvasta, kui rakendused kurnavad akut"</string>
-    <string name="battery_manager_on" msgid="3197525907390349054">"Sees / Tuvastatakse, kui rakendused kurnavad akut"</string>
+    <string name="battery_manager_on" product="default" msgid="3197525907390349054">"Sees / Tuvastatakse, kui rakendused kurnavad akut"</string>
     <string name="battery_manager_off" msgid="673547668722420924">"Väljas"</string>
     <plurals name="battery_manager_app_restricted" formatted="false" msgid="6714534362166394848">
       <item quantity="other">%1$d rakendust on piiratud</item>
@@ -2465,7 +2463,7 @@
     <string name="usage_type_computed_power" msgid="5191902025833668752">"Arvutatud energiatarbimine"</string>
     <string name="usage_type_actual_power" msgid="1221358930299037926">"Tuvastatud energiatarbimine"</string>
     <string name="battery_action_stop" msgid="6998228610098034316">"Sunni peatuma"</string>
-    <string name="battery_action_app_details" msgid="7201369216798227707">"Rakenduste teave"</string>
+    <string name="battery_action_app_details" msgid="7201369216798227707">"Rakenduse teave"</string>
     <string name="battery_action_app_settings" msgid="2437124469335488464">"Rakenduse seaded"</string>
     <string name="battery_action_display" msgid="6515712081248863749">"Ekraani seaded"</string>
     <string name="battery_action_wifi" msgid="1829212604573932607">"WiFi-seaded"</string>
@@ -2727,7 +2725,7 @@
     <string name="data_usage_app_summary_title" msgid="4933742247928064178">"Mobiilne andmeside, WiFi"</string>
     <string name="data_usage_accounting" msgid="6832015632699116754">"Operaatori andmemahuarvestus võib erineda seadme omast"</string>
     <string name="data_usage_app" msgid="6367974637783240699">"Rakenduse kasutamine"</string>
-    <string name="data_usage_app_info_label" msgid="3542220416056122841">"RAKENDUSTE TEAVE"</string>
+    <string name="data_usage_app_info_label" msgid="3542220416056122841">"RAKENDUSE TEAVE"</string>
     <string name="data_usage_cellular_data" msgid="1917226172511825849">"Mobiilne andmeside"</string>
     <string name="data_usage_data_limit" msgid="1120291692444009289">"Andmemahupiirangu määramine"</string>
     <string name="data_usage_cycle" msgid="6875568429140150029">"Andmete kasutamistsükkel"</string>
