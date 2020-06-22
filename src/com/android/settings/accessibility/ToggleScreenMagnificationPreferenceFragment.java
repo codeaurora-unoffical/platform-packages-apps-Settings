@@ -25,10 +25,7 @@ import android.app.settings.SettingsEnums;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.Resources;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnPreparedListener;
+import android.icu.text.CaseMap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -36,18 +33,11 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.accessibility.AccessibilityManager;
 import android.view.accessibility.AccessibilityManager.TouchExplorationStateChangeListener;
 import android.widget.CheckBox;
-import android.widget.ImageView;
-import android.widget.RelativeLayout.LayoutParams;
-import android.widget.VideoView;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.preference.Preference;
-import androidx.preference.PreferenceScreen;
-import androidx.preference.PreferenceViewHolder;
 
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.settings.R;
@@ -56,6 +46,7 @@ import com.android.settings.accessibility.AccessibilityUtil.UserShortcutType;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
@@ -81,83 +72,6 @@ public class ToggleScreenMagnificationPreferenceFragment extends
     private static final char COMPONENT_NAME_SEPARATOR = ':';
     private static final TextUtils.SimpleStringSplitter sStringColonSplitter =
             new TextUtils.SimpleStringSplitter(COMPONENT_NAME_SEPARATOR);
-    protected VideoPreference mVideoPreference;
-
-    protected class VideoPreference extends Preference {
-        private ImageView mVideoBackgroundView;
-        private OnGlobalLayoutListener mLayoutListener;
-
-        public VideoPreference(Context context) {
-            super(context);
-        }
-
-        @Override
-        public void onBindViewHolder(PreferenceViewHolder view) {
-            super.onBindViewHolder(view);
-            Resources res = getPrefContext().getResources();
-            final int backgroundAssetWidth = res.getDimensionPixelSize(
-                    R.dimen.screen_magnification_video_background_width);
-            final int videoAssetWidth = res
-                    .getDimensionPixelSize(R.dimen.screen_magnification_video_width);
-            final int videoAssetHeight = res
-                    .getDimensionPixelSize(R.dimen.screen_magnification_video_height);
-            final int videoAssetMarginTop = res.getDimensionPixelSize(
-                    R.dimen.screen_magnification_video_margin_top);
-            view.setDividerAllowedAbove(false);
-            view.setDividerAllowedBelow(false);
-            mVideoBackgroundView = (ImageView) view.findViewById(R.id.video_background);
-            final VideoView videoView = (VideoView) view.findViewById(R.id.video);
-
-            // Loop the video.
-            videoView.setOnPreparedListener(new OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mediaPlayer) {
-                    mediaPlayer.setLooping(true);
-                }
-            });
-
-            // Make sure the VideoView does not request audio focus.
-            videoView.setAudioFocusRequest(AudioManager.AUDIOFOCUS_NONE);
-
-            // Resolve and set the video content
-            Bundle args = getArguments();
-            if ((args != null) && args.containsKey(
-                    AccessibilitySettings.EXTRA_VIDEO_RAW_RESOURCE_ID)) {
-                videoView.setVideoURI(Uri.parse(String.format("%s://%s/%s",
-                        ContentResolver.SCHEME_ANDROID_RESOURCE,
-                        getPrefContext().getPackageName(),
-                        args.getInt(AccessibilitySettings.EXTRA_VIDEO_RAW_RESOURCE_ID))));
-            }
-
-            // Make sure video controls (e.g. for pausing) are not displayed.
-            videoView.setMediaController(null);
-
-            // LayoutListener for adjusting the position of the VideoView on the background image.
-            mLayoutListener = new OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    final int backgroundViewWidth = mVideoBackgroundView.getWidth();
-
-                    LayoutParams videoLp = (LayoutParams) videoView.getLayoutParams();
-                    videoLp.width = videoAssetWidth * backgroundViewWidth / backgroundAssetWidth;
-                    videoLp.height = videoAssetHeight * backgroundViewWidth / backgroundAssetWidth;
-                    videoLp.setMargins(0,
-                            videoAssetMarginTop * backgroundViewWidth / backgroundAssetWidth, 0, 0);
-                    videoView.setLayoutParams(videoLp);
-                    videoView.invalidate();
-                    videoView.start();
-                }
-            };
-
-            mVideoBackgroundView.getViewTreeObserver().addOnGlobalLayoutListener(mLayoutListener);
-        }
-
-        @Override
-        protected void onPrepareForRemoval() {
-            mVideoBackgroundView.getViewTreeObserver()
-                    .removeOnGlobalLayoutListener(mLayoutListener);
-        }
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -169,6 +83,10 @@ public class ToggleScreenMagnificationPreferenceFragment extends
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         mPackageName = getString(R.string.accessibility_screen_magnification_title);
+        mImageUri = new Uri.Builder().scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
+                .authority(getPrefContext().getPackageName())
+                .appendPath(String.valueOf(R.drawable.accessibility_magnification_banner))
+                .build();
         mTouchExplorationStateChangeListener = isTouchExplorationEnabled -> {
             removeDialog(DialogEnums.EDIT_SHORTCUT);
             mShortcutPreference.setSummary(getShortcutTypeSummary(getPrefContext()));
@@ -178,13 +96,6 @@ public class ToggleScreenMagnificationPreferenceFragment extends
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        final PreferenceScreen preferenceScreen = getPreferenceScreen();
-        mVideoPreference = new VideoPreference(getPrefContext());
-        mVideoPreference.setSelectable(false);
-        mVideoPreference.setPersistent(false);
-        mVideoPreference.setLayoutResource(R.layout.magnification_video_preference);
-        preferenceScreen.addPreference(mVideoPreference);
-
         initShortcutPreference();
 
         super.onViewCreated(view, savedInstanceState);
@@ -192,7 +103,7 @@ public class ToggleScreenMagnificationPreferenceFragment extends
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putInt(EXTRA_SHORTCUT_TYPE, mUserShortcutTypeCache);
+        outState.putInt(EXTRA_SHORTCUT_TYPE, mUserShortcutTypesCache);
         super.onSaveInstanceState(outState);
     }
 
@@ -203,11 +114,6 @@ public class ToggleScreenMagnificationPreferenceFragment extends
         final AccessibilityManager am = getPrefContext().getSystemService(
                 AccessibilityManager.class);
         am.addTouchExplorationStateChangeListener(mTouchExplorationStateChangeListener);
-
-        VideoView videoView = (VideoView) getView().findViewById(R.id.video);
-        if (videoView != null) {
-            videoView.start();
-        }
 
         updateShortcutPreferenceData();
         updateShortcutPreference();
@@ -224,24 +130,22 @@ public class ToggleScreenMagnificationPreferenceFragment extends
 
     @Override
     public Dialog onCreateDialog(int dialogId) {
+        final AlertDialog dialog;
         switch (dialogId) {
             case DialogEnums.GESTURE_NAVIGATION_TUTORIAL:
                 return AccessibilityGestureNavigationTutorial
                         .showGestureNavigationTutorialDialog(getPrefContext());
-            case DialogEnums.ACCESSIBILITY_BUTTON_TUTORIAL:
-                return AccessibilityGestureNavigationTutorial
-                        .showAccessibilityButtonTutorialDialog(getPrefContext());
             case DialogEnums.MAGNIFICATION_EDIT_SHORTCUT:
                 final CharSequence dialogTitle = getPrefContext().getString(
                         R.string.accessibility_shortcut_title, mPackageName);
-                final AlertDialog dialog =
-                        AccessibilityEditDialogUtils.showMagnificationEditShortcutDialog(
+                dialog = AccessibilityEditDialogUtils.showMagnificationEditShortcutDialog(
                                 getPrefContext(), dialogTitle,
                                 this::callOnAlertDialogCheckboxClicked);
                 initializeDialogCheckBox(dialog);
                 return dialog;
+            default:
+                return super.onCreateDialog(dialogId);
         }
-        throw new IllegalArgumentException("Unsupported dialogId " + dialogId);
     }
 
     private void setDialogTextAreaClickListener(View dialogView, CheckBox checkBox) {
@@ -281,7 +185,7 @@ public class ToggleScreenMagnificationPreferenceFragment extends
     }
 
     private void updateAlertDialogCheckState() {
-        if (mUserShortcutTypeCache != UserShortcutType.EMPTY) {
+        if (mUserShortcutTypesCache != UserShortcutType.EMPTY) {
             updateCheckStatus(mSoftwareTypeCheckBox, UserShortcutType.SOFTWARE);
             updateCheckStatus(mHardwareTypeCheckBox, UserShortcutType.HARDWARE);
             updateCheckStatus(mTripleTapTypeCheckBox, UserShortcutType.TRIPLETAP);
@@ -289,32 +193,32 @@ public class ToggleScreenMagnificationPreferenceFragment extends
     }
 
     private void updateCheckStatus(CheckBox checkBox, @UserShortcutType int type) {
-        checkBox.setChecked((mUserShortcutTypeCache & type) == type);
+        checkBox.setChecked((mUserShortcutTypesCache & type) == type);
     }
 
     private void updateUserShortcutType(boolean saveChanges) {
-        mUserShortcutTypeCache = UserShortcutType.EMPTY;
+        mUserShortcutTypesCache = UserShortcutType.EMPTY;
         if (mSoftwareTypeCheckBox.isChecked()) {
-            mUserShortcutTypeCache |= UserShortcutType.SOFTWARE;
+            mUserShortcutTypesCache |= UserShortcutType.SOFTWARE;
         }
         if (mHardwareTypeCheckBox.isChecked()) {
-            mUserShortcutTypeCache |= UserShortcutType.HARDWARE;
+            mUserShortcutTypesCache |= UserShortcutType.HARDWARE;
         }
         if (mTripleTapTypeCheckBox.isChecked()) {
-            mUserShortcutTypeCache |= UserShortcutType.TRIPLETAP;
+            mUserShortcutTypesCache |= UserShortcutType.TRIPLETAP;
         }
 
         if (saveChanges) {
-            final boolean isChanged = (mUserShortcutTypeCache != UserShortcutType.EMPTY);
+            final boolean isChanged = (mUserShortcutTypesCache != UserShortcutType.EMPTY);
             if (isChanged) {
-                setUserShortcutType(getPrefContext(), mUserShortcutTypeCache);
+                setUserShortcutType(getPrefContext(), mUserShortcutTypesCache);
             }
-            mUserShortcutType = mUserShortcutTypeCache;
+            mUserShortcutType = mUserShortcutTypesCache;
         }
     }
 
     private void setUserShortcutType(Context context, int type) {
-        Set<String> info = SharedPreferenceUtils.getUserShortcutType(context);
+        Set<String> info = SharedPreferenceUtils.getUserShortcutTypes(context);
         if (info.isEmpty()) {
             info = new HashSet<>();
         } else {
@@ -335,7 +239,7 @@ public class ToggleScreenMagnificationPreferenceFragment extends
             return context.getText(R.string.switch_off_text);
         }
 
-        final int shortcutType = getUserShortcutType(context, UserShortcutType.EMPTY);
+        final int shortcutType = getUserShortcutTypes(context, UserShortcutType.EMPTY);
         int resId = R.string.accessibility_shortcut_edit_summary_software;
         if (AccessibilityUtil.isGestureNavigateEnabled(context)) {
             resId = AccessibilityUtil.isTouchExploreEnabled(context)
@@ -350,13 +254,13 @@ public class ToggleScreenMagnificationPreferenceFragment extends
         }
         if ((shortcutType & UserShortcutType.HARDWARE) == UserShortcutType.HARDWARE) {
             final CharSequence hardwareTitle = context.getText(
-                    R.string.accessibility_shortcut_edit_dialog_title_hardware);
+                    R.string.accessibility_shortcut_hardware_keyword);
             list.add(hardwareTitle);
         }
 
         if ((shortcutType & UserShortcutType.TRIPLETAP) == UserShortcutType.TRIPLETAP) {
             final CharSequence tripleTapTitle = context.getText(
-                    R.string.accessibility_shortcut_edit_dialog_title_triple_tap);
+                    R.string.accessibility_shortcut_triple_tap_keyword);
             list.add(tripleTapTitle);
         }
 
@@ -365,12 +269,14 @@ public class ToggleScreenMagnificationPreferenceFragment extends
             list.add(softwareTitle);
         }
         final String joinStrings = TextUtils.join(/* delimiter= */", ", list);
-        return AccessibilityUtil.capitalize(joinStrings);
+
+        return CaseMap.toTitle().wholeString().noLowercase().apply(Locale.getDefault(), /* iter= */
+                null, joinStrings);
     }
 
     @Override
-    protected int getUserShortcutType(Context context, @UserShortcutType int defaultValue) {
-        final Set<String> info = SharedPreferenceUtils.getUserShortcutType(context);
+    protected int getUserShortcutTypes(Context context, @UserShortcutType int defaultValue) {
+        final Set<String> info = SharedPreferenceUtils.getUserShortcutTypes(context);
         final Set<String> filtered = info.stream().filter(
                 str -> str.contains(MAGNIFICATION_CONTROLLER_NAME)).collect(
                 Collectors.toSet());
@@ -383,7 +289,8 @@ public class ToggleScreenMagnificationPreferenceFragment extends
         return shortcut.getType();
     }
 
-    private void callOnAlertDialogCheckboxClicked(DialogInterface dialog, int which) {
+    @Override
+    protected void callOnAlertDialogCheckboxClicked(DialogInterface dialog, int which) {
         updateUserShortcutType(/* saveChanges= */ true);
         optInAllMagnificationValuesToSettings(getPrefContext(), mUserShortcutType);
         optOutAllMagnificationValuesFromSettings(getPrefContext(), ~mUserShortcutType);
@@ -408,8 +315,13 @@ public class ToggleScreenMagnificationPreferenceFragment extends
             case DialogEnums.MAGNIFICATION_EDIT_SHORTCUT:
                 return SettingsEnums.DIALOG_MAGNIFICATION_EDIT_SHORTCUT;
             default:
-                return 0;
+                return super.getDialogMetricsCategory(dialogId);
         }
+    }
+
+    @Override
+    int getUserShortcutTypes() {
+        return getUserShortcutTypeFromSettings(getPrefContext());
     }
 
     @Override
@@ -417,9 +329,7 @@ public class ToggleScreenMagnificationPreferenceFragment extends
         if (enabled && TextUtils.equals(
                 Settings.Secure.ACCESSIBILITY_DISPLAY_MAGNIFICATION_NAVBAR_ENABLED,
                 preferenceKey)) {
-            showDialog(AccessibilityUtil.isGestureNavigateEnabled(getPrefContext())
-                    ? DialogEnums.GESTURE_NAVIGATION_TUTORIAL
-                    : DialogEnums.ACCESSIBILITY_BUTTON_TUTORIAL);
+            showDialog(DialogEnums.LAUNCH_ACCESSIBILITY_TUTORIAL);
         }
         MagnificationPreferenceFragment.setChecked(getContentResolver(), preferenceKey, enabled);
     }
@@ -431,24 +341,11 @@ public class ToggleScreenMagnificationPreferenceFragment extends
     }
 
     @Override
-    protected void onProcessArguments(Bundle arguments) {
-        super.onProcessArguments(arguments);
-        if (arguments == null) {
-            return;
-        }
-
-        if (arguments.containsKey(AccessibilitySettings.EXTRA_VIDEO_RAW_RESOURCE_ID)) {
-            mVideoPreference.setVisible(true);
-        } else {
-            mVideoPreference.setVisible(false);
-        }
-    }
-
-    @Override
     public void onToggleClicked(ShortcutPreference preference) {
-        final int shortcutTypes = getUserShortcutType(getPrefContext(), UserShortcutType.SOFTWARE);
+        final int shortcutTypes = getUserShortcutTypes(getPrefContext(), UserShortcutType.SOFTWARE);
         if (preference.isChecked()) {
             optInAllMagnificationValuesToSettings(getPrefContext(), shortcutTypes);
+            showDialog(DialogEnums.LAUNCH_ACCESSIBILITY_TUTORIAL);
         } else {
             optOutAllMagnificationValuesFromSettings(getPrefContext(), shortcutTypes);
         }
@@ -458,20 +355,21 @@ public class ToggleScreenMagnificationPreferenceFragment extends
     @Override
     public void onSettingsClicked(ShortcutPreference preference) {
         // Do not restore shortcut in shortcut chooser dialog when shortcutPreference is turned off.
-        mUserShortcutTypeCache = mShortcutPreference.isChecked()
-                ? getUserShortcutType(getPrefContext(), UserShortcutType.SOFTWARE)
+        mUserShortcutTypesCache = mShortcutPreference.isChecked()
+                ? getUserShortcutTypes(getPrefContext(), UserShortcutType.SOFTWARE)
                 : UserShortcutType.EMPTY;
         showDialog(DialogEnums.MAGNIFICATION_EDIT_SHORTCUT);
     }
 
-    private void updateShortcutPreferenceData() {
+    @Override
+    protected void updateShortcutPreferenceData() {
         // Get the user shortcut type from settings provider.
         mUserShortcutType = getUserShortcutTypeFromSettings(getPrefContext());
         if (mUserShortcutType != UserShortcutType.EMPTY) {
             setUserShortcutType(getPrefContext(), mUserShortcutType);
         } else {
             //  Get the user shortcut type from shared_prefs if cannot get from settings provider.
-            mUserShortcutType = getUserShortcutType(getPrefContext(), UserShortcutType.SOFTWARE);
+            mUserShortcutType = getUserShortcutTypes(getPrefContext(), UserShortcutType.SOFTWARE);
         }
     }
 
@@ -486,8 +384,9 @@ public class ToggleScreenMagnificationPreferenceFragment extends
         mShortcutPreference.setTitle(title);
     }
 
-    private void updateShortcutPreference() {
-        final int shortcutTypes = getUserShortcutType(getPrefContext(), UserShortcutType.SOFTWARE);
+    @Override
+    protected void updateShortcutPreference() {
+        final int shortcutTypes = getUserShortcutTypes(getPrefContext(), UserShortcutType.SOFTWARE);
         mShortcutPreference.setChecked(
                 hasMagnificationValuesInSettings(getPrefContext(), shortcutTypes));
         mShortcutPreference.setSummary(getShortcutTypeSummary(getPrefContext()));

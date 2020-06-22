@@ -81,9 +81,6 @@ public class MediaOutputSlice implements CustomSliceable {
 
     @Override
     public Slice getSlice() {
-        // Reload theme for switching dark mode on/off
-        mContext.getTheme().applyStyle(R.style.Theme_Settings_Home, true /* force */);
-
         final ListBuilder listBuilder = new ListBuilder(mContext, getUri(), ListBuilder.INFINITY)
                 .setAccentColor(COLOR_NOT_TINTED);
         if (!isVisible()) {
@@ -96,7 +93,11 @@ public class MediaOutputSlice implements CustomSliceable {
 
         if (worker.getSelectedMediaDevice().size() > 1) {
             // Insert group item to the first when it is available
-            listBuilder.addInputRange(getGroupRow());
+            if (worker.getSessionVolumeMax() > 0 && !worker.hasAdjustVolumeUserRestriction()) {
+                listBuilder.addInputRange(getGroupSliderRow());
+            } else {
+                listBuilder.addRow(getGroupRow());
+            }
             // Add all other devices
             for (MediaDevice device : devices) {
                 addRow(device, null /* connectedDevice */, listBuilder);
@@ -105,7 +106,9 @@ public class MediaOutputSlice implements CustomSliceable {
             final MediaDevice connectedDevice = worker.getCurrentConnectedMediaDevice();
             if (devices.size() == 1) {
                 // Zero state
-                addRow(connectedDevice, connectedDevice, listBuilder);
+                for (MediaDevice device : devices) {
+                    addRow(device, device, listBuilder);
+                }
                 listBuilder.addRow(getPairNewRow());
             } else {
                 final boolean isTouched = worker.getIsTouched();
@@ -150,7 +153,7 @@ public class MediaOutputSlice implements CustomSliceable {
         return builder;
     }
 
-    private ListBuilder.InputRangeBuilder getGroupRow() {
+    private ListBuilder.InputRangeBuilder getGroupSliderRow() {
         final IconCompat icon = IconCompat.createWithResource(mContext,
                 R.drawable.ic_speaker_group_black_24dp);
         final CharSequence sessionName = getWorker().getSessionName();
@@ -172,6 +175,24 @@ public class MediaOutputSlice implements CustomSliceable {
         return builder;
     }
 
+    private ListBuilder.RowBuilder getGroupRow() {
+        final IconCompat icon = IconCompat.createWithResource(mContext,
+                R.drawable.ic_speaker_group_black_24dp);
+        final CharSequence sessionName = getWorker().getSessionName();
+        final CharSequence title = TextUtils.isEmpty(sessionName)
+                ? mContext.getString(R.string.media_output_group) : sessionName;
+        final PendingIntent broadcastAction =
+                getBroadcastIntent(mContext, MEDIA_GROUP_DEVICE, MEDIA_GROUP_DEVICE.hashCode());
+        final SliceAction primarySliceAction = SliceAction.createDeeplink(broadcastAction, icon,
+                ListBuilder.ICON_IMAGE, title);
+        final ListBuilder.RowBuilder builder = new ListBuilder.RowBuilder()
+                .setTitleItem(icon, ListBuilder.ICON_IMAGE)
+                .setTitle(title)
+                .setPrimaryAction(primarySliceAction)
+                .addEndItem(getEndItemSliceAction());
+        return builder;
+    }
+
     private void addRow(MediaDevice device, MediaDevice connectedDevice, ListBuilder listBuilder) {
         if (connectedDevice != null && TextUtils.equals(device.getId(), connectedDevice.getId())) {
             final String title = device.getName();
@@ -182,7 +203,7 @@ public class MediaOutputSlice implements CustomSliceable {
             final SliceAction primarySliceAction = SliceAction.createDeeplink(broadcastAction, icon,
                     ListBuilder.ICON_IMAGE, title);
 
-            if (device.getMaxVolume() > 0) {
+            if (device.getMaxVolume() > 0 && !getWorker().hasAdjustVolumeUserRestriction()) {
                 final ListBuilder.InputRangeBuilder builder = new ListBuilder.InputRangeBuilder()
                         .setTitleItem(icon, ListBuilder.ICON_IMAGE)
                         .setTitle(title)
@@ -268,11 +289,16 @@ public class MediaOutputSlice implements CustomSliceable {
 
         if (device.getDeviceType() == MediaDevice.MediaDeviceType.TYPE_BLUETOOTH_DEVICE
                 && !device.isConnected()) {
-            if (device.getState() == LocalMediaManager.MediaDeviceState.STATE_CONNECTING) {
+            final int state = device.getState();
+            if (state == LocalMediaManager.MediaDeviceState.STATE_CONNECTING
+                    || state == LocalMediaManager.MediaDeviceState.STATE_CONNECTING_FAILED) {
                 rowBuilder.setTitle(deviceName);
                 rowBuilder.setPrimaryAction(SliceAction.create(broadcastAction, deviceIcon,
                         ListBuilder.ICON_IMAGE, deviceName));
-                rowBuilder.setSubtitle(mContext.getText(R.string.media_output_switching));
+                rowBuilder.setSubtitle(
+                        (state == LocalMediaManager.MediaDeviceState.STATE_CONNECTING)
+                                ? mContext.getText(R.string.media_output_switching)
+                                : mContext.getText(R.string.bluetooth_connect_failed));
             } else {
                 // Append status to title only for the disconnected Bluetooth device.
                 final SpannableString spannableTitle = new SpannableString(
@@ -356,7 +382,7 @@ public class MediaOutputSlice implements CustomSliceable {
 
     @Override
     public Class getBackgroundWorkerClass() {
-        return MediaDeviceUpdateWorker.class;
+        return MediaOutputSliceWorker.class;
     }
 
     private boolean isVisible() {
@@ -368,6 +394,5 @@ public class MediaOutputSlice implements CustomSliceable {
         return getWorker() != null
                 && !com.android.settingslib.Utils.isAudioModeOngoingCall(mContext)
                 && getWorker().getMediaDevices().size() > 0;
-
     }
 }

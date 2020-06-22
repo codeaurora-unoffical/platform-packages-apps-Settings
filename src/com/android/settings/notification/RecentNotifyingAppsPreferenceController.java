@@ -31,6 +31,7 @@ import android.text.TextUtils;
 import android.util.ArrayMap;
 import android.util.ArraySet;
 import android.util.IconDrawableFactory;
+import android.util.Slog;
 
 import com.android.settings.R;
 import com.android.settings.Utils;
@@ -66,8 +67,7 @@ public class RecentNotifyingAppsPreferenceController extends AbstractPreferenceC
 
     private static final String TAG = "RecentNotisCtrl";
     private static final String KEY_PREF_CATEGORY = "recent_notifications_category";
-    @VisibleForTesting
-    static final String KEY_DIVIDER = "all_notifications_divider";
+
     @VisibleForTesting
     static final String KEY_SEE_ALL = "all_notifications";
     private static final int SHOW_RECENT_APP_COUNT = 3;
@@ -86,7 +86,6 @@ public class RecentNotifyingAppsPreferenceController extends AbstractPreferenceC
 
     private PreferenceCategory mCategory;
     private Preference mSeeAllPref;
-    private Preference mDivider;
     protected List<Integer> mUserIds;
 
     public RecentNotifyingAppsPreferenceController(Context context, NotificationBackend backend,
@@ -130,14 +129,12 @@ public class RecentNotifyingAppsPreferenceController extends AbstractPreferenceC
         PreferenceControllerMixin.super.updateNonIndexableKeys(keys);
         // Don't index category name into search. It's not actionable.
         keys.add(KEY_PREF_CATEGORY);
-        keys.add(KEY_DIVIDER);
     }
 
     @Override
     public void displayPreference(PreferenceScreen screen) {
         mCategory = screen.findPreference(getPreferenceKey());
         mSeeAllPref = screen.findPreference(KEY_SEE_ALL);
-        mDivider = screen.findPreference(KEY_DIVIDER);
         super.displayPreference(screen);
         refreshUi(mCategory.getContext());
     }
@@ -208,7 +205,6 @@ public class RecentNotifyingAppsPreferenceController extends AbstractPreferenceC
 
     private void displayOnlyAllAppsLink() {
         mCategory.setTitle(null);
-        mDivider.setVisible(false);
         mSeeAllPref.setTitle(R.string.notifications_title);
         mSeeAllPref.setIcon(null);
         int prefCount = mCategory.getPreferenceCount();
@@ -222,7 +218,6 @@ public class RecentNotifyingAppsPreferenceController extends AbstractPreferenceC
 
     private void displayRecentApps(Context prefContext, List<NotifyingApp> recentApps) {
         mCategory.setTitle(R.string.recent_notifications);
-        mDivider.setVisible(true);
         mSeeAllPref.setSummary(null);
         mSeeAllPref.setIcon(R.drawable.ic_chevron_right_24dp);
 
@@ -300,15 +295,19 @@ public class RecentNotifyingAppsPreferenceController extends AbstractPreferenceC
         List<NotifyingApp> displayableApps = new ArrayList<>(SHOW_RECENT_APP_COUNT);
         int count = 0;
         for (NotifyingApp app : mApps) {
-            final ApplicationsState.AppEntry appEntry = mApplicationsState.getEntry(
-                    app.getPackage(), app.getUserId());
-            if (appEntry == null) {
-                continue;
-            }
-            displayableApps.add(app);
-            count++;
-            if (count >= SHOW_RECENT_APP_COUNT) {
-                break;
+            try {
+                final ApplicationsState.AppEntry appEntry = mApplicationsState.getEntry(
+                        app.getPackage(), app.getUserId());
+                if (appEntry == null) {
+                    continue;
+                }
+                displayableApps.add(app);
+                count++;
+                if (count >= SHOW_RECENT_APP_COUNT) {
+                    break;
+                }
+            } catch (Exception e) {
+                Slog.e(TAG, "Failed to find app " + app.getPackage() + "/" + app.getUserId(), e);
             }
         }
         return displayableApps;

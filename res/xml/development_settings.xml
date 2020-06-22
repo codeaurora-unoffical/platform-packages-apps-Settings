@@ -38,6 +38,7 @@
         <Preference
             android:key="bug_report_handler"
             android:title="@string/bug_report_handler_title"
+            android:summary="@string/summary_placeholder"
             android:fragment="com.android.settings.bugreporthandler.BugReportHandlerPicker" />
 
         <Preference
@@ -64,6 +65,7 @@
         <ListPreference
             android:key="hdcp_checking"
             android:title="@string/hdcp_checking_title"
+            android:summary="@string/summary_placeholder"
             android:dialogTitle="@string/hdcp_checking_dialog_title"
             android:entries="@array/hdcp_checking_titles"
             android:entryValues="@array/hdcp_checking_values" />
@@ -249,6 +251,11 @@
             android:title="@string/show_refresh_rate"
             android:summary="@string/show_refresh_rate_summary" />
 
+        <SwitchPreference
+            android:key="overlay_settings"
+            android:title="@string/overlay_settings_title"
+            android:summary="@string/overlay_settings_summary" />
+
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -279,6 +286,11 @@
             android:key="wifi_scan_throttling"
             android:title="@string/wifi_scan_throttling"
             android:summary="@string/wifi_scan_throttling_summary" />
+
+        <SwitchPreference
+            android:key="wifi_enhanced_mac_randomization"
+            android:title="@string/wifi_enhanced_mac_randomization"
+            android:summary="@string/wifi_enhanced_mac_randomization_summary" />
 
         <SwitchPreference
             android:key="mobile_data_always_on"
@@ -577,15 +589,16 @@
             android:title="@string/show_all_anrs"
             android:summary="@string/show_all_anrs_summary" />
 
+        <ListPreference
+            android:key="cached_apps_freezer"
+            android:title="@string/cached_apps_freezer"
+            android:entries="@array/cached_apps_freezer_entries"
+            android:entryValues="@array/cached_apps_freezer_values" />
+
         <SwitchPreference
             android:key="show_notification_channel_warnings"
             android:title="@string/show_notification_channel_warnings"
             android:summary="@string/show_notification_channel_warnings_summary" />
-
-        <SwitchPreference
-            android:key="enforce_shortcuts_for_conversations"
-            android:title="@string/enforce_shortcuts_for_conversations"
-            android:summary="@string/enforce_shortcuts_for_conversations_summary" />
 
         <SwitchPreference
             android:key="asst_capability_prioritizer"
@@ -630,12 +643,6 @@
         <Preference
             android:key="reset_shortcut_manager_throttling"
             android:title="@string/reset_shortcut_manager_throttling" />
-
-        <SwitchPreference
-            android:key="notification_bubbles"
-            android:title="@string/notification_bubbles_title"
-            android:summary="@string/notification_bubbles_developer_setting_summary"/>
-
     </PreferenceCategory>
 
     <com.android.settings.development.autofill.AutofillPreferenceCategory

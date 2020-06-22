@@ -25,12 +25,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.media.RoutingSessionInfo;
 import android.net.Uri;
+import android.os.UserHandle;
+import android.os.UserManager;
 import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
 import com.android.settings.slices.SliceBackgroundWorker;
+import com.android.settingslib.RestrictedLockUtilsInternal;
 import com.android.settingslib.Utils;
 import com.android.settingslib.media.LocalMediaManager;
 import com.android.settingslib.media.MediaDevice;
@@ -47,8 +51,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class MediaDeviceUpdateWorker extends SliceBackgroundWorker
         implements LocalMediaManager.DeviceCallback {
 
-    private final Context mContext;
-    private final Collection<MediaDevice> mMediaDevices = new CopyOnWriteArrayList<>();
+    protected final Context mContext;
+    protected final Collection<MediaDevice> mMediaDevices = new CopyOnWriteArrayList<>();
     private final DevicesChangedBroadcastReceiver mReceiver;
     private final String mPackageName;
 
@@ -69,7 +73,8 @@ public class MediaDeviceUpdateWorker extends SliceBackgroundWorker
     protected void onSlicePinned() {
         mMediaDevices.clear();
         mIsTouched = false;
-        if (mLocalMediaManager == null) {
+        if (mLocalMediaManager == null || !TextUtils.equals(mPackageName,
+                mLocalMediaManager.getPackageName())) {
             mLocalMediaManager = new LocalMediaManager(mContext, mPackageName, null);
         }
 
@@ -123,10 +128,11 @@ public class MediaDeviceUpdateWorker extends SliceBackgroundWorker
 
     public void connectDevice(MediaDevice device) {
         ThreadUtils.postOnBackgroundThread(() -> {
-            mLocalMediaManager.connectDevice(device);
-            ThreadUtils.postOnMainThread(() -> {
-                notifySliceChange();
-            });
+            if (mLocalMediaManager.connectDevice(device)) {
+                ThreadUtils.postOnMainThread(() -> {
+                    notifySliceChange();
+                });
+            }
         });
     }
 
@@ -170,6 +176,23 @@ public class MediaDeviceUpdateWorker extends SliceBackgroundWorker
         return mLocalMediaManager.getSelectedMediaDevice();
     }
 
+    List<MediaDevice> getDeselectableMediaDevice() {
+        return mLocalMediaManager.getDeselectableMediaDevice();
+    }
+
+    boolean isDeviceIncluded(Collection<MediaDevice> deviceCollection, MediaDevice targetDevice) {
+        for (MediaDevice device : deviceCollection) {
+            if (TextUtils.equals(device.getId(), targetDevice.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void adjustSessionVolume(String sessionId, int volume) {
+        mLocalMediaManager.adjustSessionVolume(sessionId, volume);
+    }
+
     void adjustSessionVolume(int volume) {
         mLocalMediaManager.adjustSessionVolume(volume);
     }
@@ -186,15 +209,14 @@ public class MediaDeviceUpdateWorker extends SliceBackgroundWorker
         return mLocalMediaManager.getSessionName();
     }
 
-    /**
-     * Find the active MediaDevice.
-     *
-     * @param type the media device type.
-     * @return MediaDevice list
-     *
-     */
-    public List<MediaDevice> getActiveMediaDevice(@MediaDevice.MediaDeviceType int type) {
-        return mLocalMediaManager.getActiveMediaDevice(type);
+    List<RoutingSessionInfo> getActiveRemoteMediaDevice() {
+        final List<RoutingSessionInfo> sessionInfos = new ArrayList<>();
+        for (RoutingSessionInfo info : mLocalMediaManager.getActiveMediaSession()) {
+            if (!info.isSystemSession()) {
+                sessionInfos.add(info);
+            }
+        }
+        return sessionInfos;
     }
 
     /**
@@ -212,6 +234,17 @@ public class MediaDeviceUpdateWorker extends SliceBackgroundWorker
 
     String getPackageName() {
         return mPackageName;
+    }
+
+    boolean hasAdjustVolumeUserRestriction() {
+        if (RestrictedLockUtilsInternal.checkIfRestrictionEnforced(
+                mContext, UserManager.DISALLOW_ADJUST_VOLUME, UserHandle.myUserId()) != null) {
+            return true;
+        }
+        final UserManager um = (UserManager) mContext.getSystemService(Context.USER_SERVICE);
+        return um.hasBaseUserRestriction(UserManager.DISALLOW_ADJUST_VOLUME,
+                UserHandle.of(UserHandle.myUserId()));
+
     }
 
     private class DevicesChangedBroadcastReceiver extends BroadcastReceiver {

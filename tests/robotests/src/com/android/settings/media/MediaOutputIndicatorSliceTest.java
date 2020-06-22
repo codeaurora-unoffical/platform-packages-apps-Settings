@@ -21,15 +21,15 @@ import static com.android.settings.slices.CustomSliceRegistry.MEDIA_OUTPUT_INDIC
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageStats;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.session.MediaController;
@@ -48,21 +48,21 @@ import com.android.settings.Utils;
 import com.android.settings.slices.SliceBackgroundWorker;
 import com.android.settings.testutils.shadow.ShadowBluetoothUtils;
 import com.android.settingslib.bluetooth.LocalBluetoothManager;
-import com.android.settingslib.media.LocalMediaManager;
 import com.android.settingslib.media.MediaDevice;
 import com.android.settingslib.media.MediaOutputSliceConstants;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
+import org.robolectric.shadows.ShadowPackageManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,6 +75,7 @@ public class MediaOutputIndicatorSliceTest {
     private static final String TEST_DEVICE_1_NAME = "test_device_1_name";
     private static final String TEST_DEVICE_2_NAME = "test_device_2_name";
     private static final String TEST_PACKAGE_NAME = "com.test";
+    private static final String TEST_APPLICATION_LABEL = "APP Test Label";
 
     private static MediaOutputIndicatorWorker sMediaOutputIndicatorWorker;
 
@@ -84,8 +85,6 @@ public class MediaOutputIndicatorSliceTest {
     private LocalBluetoothManager mLocalBluetoothManager;
     @Mock
     private MediaController mMediaController;
-    @Mock
-    private LocalMediaManager mLocalMediaManager;
     @Mock
     private MediaDevice mDevice1;
     @Mock
@@ -97,6 +96,10 @@ public class MediaOutputIndicatorSliceTest {
     private MediaOutputIndicatorSlice mMediaOutputIndicatorSlice;
     private AudioManager mAudioManager;
     private MediaSession.Token mToken;
+    private ShadowPackageManager mShadowPackageManager;
+    private ApplicationInfo mAppInfo;
+    private PackageInfo mPackageInfo;
+    private PackageStats mPackageStats;
 
     @Before
     public void setUp() throws Exception {
@@ -125,15 +128,22 @@ public class MediaOutputIndicatorSliceTest {
 
     @Test
     public void getSlice_withConnectedDevice_verifyMetadata() {
+        initPackage();
+        mShadowPackageManager.addPackage(mPackageInfo, mPackageStats);
         mDevices.add(mDevice1);
         when(sMediaOutputIndicatorWorker.getMediaDevices()).thenReturn(mDevices);
+        when(sMediaOutputIndicatorWorker.getPackageName()).thenReturn(TEST_PACKAGE_NAME);
+        doReturn(mMediaController).when(sMediaOutputIndicatorWorker)
+                .getActiveLocalMediaController();
         doReturn(mDevice1).when(sMediaOutputIndicatorWorker).getCurrentConnectedMediaDevice();
         mAudioManager.setMode(AudioManager.MODE_NORMAL);
 
         final Slice mediaSlice = mMediaOutputIndicatorSlice.getSlice();
         final SliceMetadata metadata = SliceMetadata.from(mContext, mediaSlice);
 
-        assertThat(metadata.getTitle()).isEqualTo(mContext.getText(R.string.media_output_title));
+        assertThat(metadata.getTitle()).isEqualTo(mContext.getString(
+                R.string.media_output_label_title, Utils.getApplicationLabel(mContext,
+                        TEST_PACKAGE_NAME)));
         assertThat(metadata.getSubtitle()).isEqualTo(TEST_DEVICE_1_NAME);
         assertThat(metadata.isErrorSlice()).isFalse();
     }
@@ -193,47 +203,69 @@ public class MediaOutputIndicatorSliceTest {
     }
 
     @Test
-    public void onNotifyChange_noWorker_doNothing() {
-        sMediaOutputIndicatorWorker = null;
-        mMediaOutputIndicatorSlice.onNotifyChange(new Intent());
-
-        verify(mContext, never()).startActivity(any());
-    }
-
-    @Test
-    public void onNotifyChange_withActiveLocalMedia_verifyIntentExtra() {
+    public void getMediaOutputSliceIntent_withActiveLocalMedia_verifyIntentExtra() {
         when(mMediaController.getSessionToken()).thenReturn(mToken);
         when(mMediaController.getPackageName()).thenReturn(TEST_PACKAGE_NAME);
         doReturn(mMediaController).when(sMediaOutputIndicatorWorker)
                 .getActiveLocalMediaController();
+        final Intent intent = mMediaOutputIndicatorSlice.getMediaOutputSliceIntent();
 
-        final ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        mMediaOutputIndicatorSlice.onNotifyChange(new Intent());
-        verify(mContext).startActivity(intentCaptor.capture());
-
-        assertThat(TextUtils.equals(TEST_PACKAGE_NAME, intentCaptor.getValue().getStringExtra(
+        assertThat(TextUtils.equals(TEST_PACKAGE_NAME, intent.getStringExtra(
                 MediaOutputSliceConstants.EXTRA_PACKAGE_NAME))).isTrue();
-        assertThat(TextUtils.equals(Utils.SETTINGS_PACKAGE_NAME, intentCaptor.getValue()
-                .getPackage())).isTrue();
-        assertThat(mToken == intentCaptor.getValue().getExtras().getParcelable(
+        assertThat(MediaOutputSliceConstants.ACTION_MEDIA_OUTPUT).isEqualTo(intent.getAction());
+        assertThat(TextUtils.equals(Utils.SETTINGS_PACKAGE_NAME, intent.getPackage())).isTrue();
+        assertThat(mToken == intent.getExtras().getParcelable(
                 MediaOutputSliceConstants.KEY_MEDIA_SESSION_TOKEN)).isTrue();
     }
 
     @Test
-    public void onNotifyChange_withoutActiveLocalMedia_verifyIntentExtra() {
+    public void getMediaOutputSliceIntent_withoutActiveLocalMedia_verifyIntentExtra() {
+        doReturn(mMediaController).when(sMediaOutputIndicatorWorker)
+                .getActiveLocalMediaController();
+        final Intent intent = mMediaOutputIndicatorSlice.getMediaOutputSliceIntent();
+
+        assertThat(TextUtils.isEmpty(intent.getStringExtra(
+                MediaOutputSliceConstants.EXTRA_PACKAGE_NAME))).isTrue();
+        assertThat(MediaOutputSliceConstants.ACTION_MEDIA_OUTPUT).isEqualTo(intent.getAction());
+        assertThat(TextUtils.equals(Utils.SETTINGS_PACKAGE_NAME, intent.getPackage())).isTrue();
+        assertThat(intent.getExtras().getParcelable(
+                MediaOutputSliceConstants.KEY_MEDIA_SESSION_TOKEN) == null).isTrue();
+    }
+
+    @Test
+    public void isVisible_allConditionMatched_returnTrue() {
+        mAudioManager.setMode(AudioManager.MODE_NORMAL);
+        mDevices.add(mDevice1);
+
+        when(sMediaOutputIndicatorWorker.getMediaDevices()).thenReturn(mDevices);
         doReturn(mMediaController).when(sMediaOutputIndicatorWorker)
                 .getActiveLocalMediaController();
 
-        final ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        mMediaOutputIndicatorSlice.onNotifyChange(new Intent());
-        verify(mContext).startActivity(intentCaptor.capture());
+        assertThat(mMediaOutputIndicatorSlice.isVisible()).isTrue();
+    }
 
-        assertThat(TextUtils.isEmpty(intentCaptor.getValue().getStringExtra(
-                MediaOutputSliceConstants.EXTRA_PACKAGE_NAME))).isTrue();
-        assertThat(TextUtils.equals(Utils.SETTINGS_PACKAGE_NAME, intentCaptor.getValue()
-                .getPackage())).isTrue();
-        assertThat(intentCaptor.getValue().getExtras().getParcelable(
-                MediaOutputSliceConstants.KEY_MEDIA_SESSION_TOKEN) == null).isTrue();
+    @Test
+    public void isVisible_noActiveSession_returnFalse() {
+        mAudioManager.setMode(AudioManager.MODE_NORMAL);
+        mDevices.add(mDevice1);
+
+        when(sMediaOutputIndicatorWorker.getMediaDevices()).thenReturn(mDevices);
+        doReturn(null).when(sMediaOutputIndicatorWorker)
+                .getActiveLocalMediaController();
+
+        assertThat(mMediaOutputIndicatorSlice.isVisible()).isFalse();
+    }
+
+    private void initPackage() {
+        mShadowPackageManager = Shadows.shadowOf(mContext.getPackageManager());
+        mAppInfo = new ApplicationInfo();
+        mAppInfo.flags = ApplicationInfo.FLAG_INSTALLED;
+        mAppInfo.packageName = TEST_PACKAGE_NAME;
+        mAppInfo.name = TEST_APPLICATION_LABEL;
+        mPackageInfo = new PackageInfo();
+        mPackageInfo.packageName = TEST_PACKAGE_NAME;
+        mPackageInfo.applicationInfo = mAppInfo;
+        mPackageStats = new PackageStats(TEST_PACKAGE_NAME);
     }
 
     @Implements(SliceBackgroundWorker.class)

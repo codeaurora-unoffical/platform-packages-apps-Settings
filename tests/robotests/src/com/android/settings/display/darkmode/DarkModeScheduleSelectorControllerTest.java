@@ -98,22 +98,15 @@ public class DarkModeScheduleSelectorControllerTest {
     public void nightMode_updateStateNone_dropDownValueChangedToNone() {
         when(mUiService.getNightMode()).thenReturn(UiModeManager.MODE_NIGHT_YES);
         mController.displayPreference(mScreen);
+        mController.updateState(mScreen);
         verify(mPreference).setValueIndex(0);
-    }
-
-    @Test
-    public void nightMode_selectNightMode_locationOff() {
-        when(mLocationManager.isLocationEnabled()).thenReturn(false);
-        mController.onPreferenceChange(mPreference,
-                mContext.getString(R.string.dark_ui_auto_mode_never));
-        assertFalse(mController.onPreferenceChange(mPreference,
-                mContext.getString(R.string.dark_ui_auto_mode_auto)));
     }
 
     @Test
     public void nightMode_updateStateNone_dropDownValueChangedToAuto() {
         when(mUiService.getNightMode()).thenReturn(UiModeManager.MODE_NIGHT_AUTO);
         mController.displayPreference(mScreen);
+        mController.updateState(mScreen);
         verify(mPreference).setValueIndex(1);
     }
 
@@ -121,6 +114,7 @@ public class DarkModeScheduleSelectorControllerTest {
     public void batterySaver_dropDown_disabledSelector() {
         when(mPM.isPowerSaveMode()).thenReturn(true);
         mController.displayPreference(mScreen);
+        mController.updateState(mScreen);
         verify(mPreference).setEnabled(eq(false));
     }
 }

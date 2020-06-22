@@ -25,6 +25,7 @@ import static com.android.settings.slices.CustomSliceRegistry.MEDIA_OUTPUT_SLICE
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -101,10 +102,11 @@ public class MediaOutputSliceTest {
         mShadowBluetoothAdapter.setEnabled(true);
 
         mMediaOutputSlice = new MediaOutputSlice(mContext);
-        mMediaDeviceUpdateWorker = new MediaDeviceUpdateWorker(mContext,
-                MEDIA_OUTPUT_SLICE_URI);
+        mMediaDeviceUpdateWorker = spy(new MediaDeviceUpdateWorker(mContext,
+                MEDIA_OUTPUT_SLICE_URI));
         mMediaDeviceUpdateWorker.onDeviceListUpdate(mDevices);
         mMediaDeviceUpdateWorker.mLocalMediaManager = mLocalMediaManager;
+        doReturn(false).when(mMediaDeviceUpdateWorker).hasAdjustVolumeUserRestriction();
         mMediaOutputSlice.init(mMediaDeviceUpdateWorker);
     }
 
@@ -508,6 +510,44 @@ public class MediaOutputSliceTest {
 
         assertThat(TextUtils.indexOf(sliceInfo, mContext.getText(R.string.media_output_switching)))
                 .isNotEqualTo(-1);
+    }
+
+    @Test
+    public void getSlice_disconnectedBtOnTransferringFailed_containTransferringFailedSubtitle() {
+        final List<MediaDevice> mSelectedDevices = new ArrayList<>();
+        final List<MediaDevice> mSelectableDevices = new ArrayList<>();
+        mDevices.clear();
+        final MediaDevice device = mock(MediaDevice.class);
+        when(device.getName()).thenReturn(TEST_DEVICE_1_NAME);
+        when(device.getIcon()).thenReturn(mTestDrawable);
+        when(device.getMaxVolume()).thenReturn(100);
+        when(device.isConnected()).thenReturn(true);
+        when(device.getDeviceType()).thenReturn(MediaDevice.MediaDeviceType.TYPE_BLUETOOTH_DEVICE);
+        when(device.getId()).thenReturn(TEST_DEVICE_1_ID);
+        final MediaDevice device2 = mock(MediaDevice.class);
+        when(device2.getName()).thenReturn(TEST_DEVICE_2_NAME);
+        when(device2.getIcon()).thenReturn(mTestDrawable);
+        when(device2.getMaxVolume()).thenReturn(100);
+        when(device2.isConnected()).thenReturn(false);
+        when(device2.getState()).thenReturn(
+                LocalMediaManager.MediaDeviceState.STATE_CONNECTING_FAILED);
+        when(device2.getDeviceType()).thenReturn(MediaDevice.MediaDeviceType.TYPE_BLUETOOTH_DEVICE);
+        when(device2.getId()).thenReturn(TEST_DEVICE_2_ID);
+        mSelectedDevices.add(device);
+        mSelectableDevices.add(device2);
+        when(mLocalMediaManager.getCurrentConnectedDevice()).thenReturn(device);
+        mDevices.add(device);
+        mDevices.add(device2);
+        when(mLocalMediaManager.getSelectedMediaDevice()).thenReturn(mSelectedDevices);
+        when(mLocalMediaManager.getSelectableMediaDevice()).thenReturn(mSelectableDevices);
+        mMediaDeviceUpdateWorker.onDeviceListUpdate(mDevices);
+
+        final Slice mediaSlice = mMediaOutputSlice.getSlice();
+        final String sliceInfo = SliceQuery.findAll(mediaSlice, FORMAT_SLICE, HINT_LIST_ITEM,
+                null).toString();
+
+        assertThat(TextUtils.indexOf(sliceInfo,
+                mContext.getText(R.string.bluetooth_connect_failed))).isNotEqualTo(-1);
     }
 
     @Test

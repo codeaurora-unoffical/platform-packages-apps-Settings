@@ -16,15 +16,16 @@
 -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/slice_slider_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <androidx.slice.widget.SliceView
         android:id="@+id/slice_view"
-        style="@style/SliceViewSliderStyle"
+        style="@style/Widget.SliceView.Panel.Slider"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"/>
+        android:paddingStart="0dp"
+        android:paddingEnd="0dp"/>
 </LinearLayout>

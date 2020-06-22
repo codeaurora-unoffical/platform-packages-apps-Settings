@@ -42,6 +42,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.content.pm.UserInfo;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.content.res.Resources.NotFoundException;
@@ -58,6 +59,7 @@ import android.net.LinkProperties;
 import android.net.Network;
 import android.net.wifi.WifiManager;
 import android.os.BatteryManager;
+import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -67,6 +69,7 @@ import android.os.ServiceManager;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.os.storage.StorageManager;
+import android.os.SystemProperties;
 import android.os.storage.VolumeInfo;
 import android.preference.PreferenceFrameLayout;
 import android.provider.ContactsContract.CommonDataKinds;
@@ -119,6 +122,8 @@ import org.codeaurora.internal.IExtTelephony;
 public final class Utils extends com.android.settingslib.Utils {
 
     private static final String TAG = "Settings";
+
+    public static final String FILE_PROVIDER_AUTHORITY = "com.android.settings.files";
 
     /**
      * Set the preference's title to the matching activity's label.
@@ -870,9 +875,11 @@ public final class Utils extends com.android.settingslib.Utils {
      * Return whether or not the user should have a SIM Cards option in Settings.
      */
     public static boolean showSimCardTile(Context context) {
+        boolean isPrimaryCardEnabled = SystemProperties.getBoolean(
+                "persist.vendor.radio.primarycard", false);
         final TelephonyManager tm =
                 (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-        return tm.getSimCount() > 1;
+        return isPrimaryCardEnabled && (tm.getSimCount() > 1);
     }
 
     /**
@@ -1090,7 +1097,7 @@ public final class Utils extends com.android.settingslib.Utils {
      */
     public static boolean isSimSettingsApkAvailable() {
         IExtTelephony extTelephony =
-                IExtTelephony.Stub.asInterface(ServiceManager.getService("extphone"));
+                IExtTelephony.Stub.asInterface(ServiceManager.getService("qti.radio.extphone"));
         try {
             if (extTelephony != null &&
                     extTelephony.isVendorApkAvailable("com.qualcomm.qti.simsettings")) {
@@ -1109,7 +1116,7 @@ public final class Utils extends com.android.settingslib.Utils {
     public static boolean isNetworkSettingsApkAvailable() {
         // check whether the target handler exist in system
         IExtTelephony extTelephony =
-                IExtTelephony.Stub.asInterface(ServiceManager.getService("extphone"));
+                IExtTelephony.Stub.asInterface(ServiceManager.getService("qti.radio.extphone"));
         try {
             if (extTelephony != null &&
                     extTelephony.isVendorApkAvailable("com.qualcomm.qti.networksetting")) {
@@ -1126,7 +1133,7 @@ public final class Utils extends com.android.settingslib.Utils {
     public static boolean isAdvancedPlmnScanSupported() {
         boolean propVal = false;
         IExtTelephony extTelephony = IExtTelephony.Stub
-                .asInterface(ServiceManager.getService("extphone"));
+                .asInterface(ServiceManager.getService("qti.radio.extphone"));
         try {
             propVal = extTelephony
                     .getPropertyValueBool("persist.vendor.radio.enableadvancedscan", true);
@@ -1210,5 +1217,25 @@ public final class Utils extends com.android.settingslib.Utils {
             f = Fragment.instantiate(activity, fragmentName, args);
         }
         return f;
+    }
+
+    /**
+     * Returns true if current binder uid is Settings Intelligence.
+     */
+    public static boolean isSettingsIntelligence(Context context) {
+        final int callingUid = Binder.getCallingUid();
+        final String callingPackage = context.getPackageManager().getPackagesForUid(callingUid)[0];
+        final boolean isSettingsIntelligence = TextUtils.equals(callingPackage,
+                context.getString(R.string.config_settingsintelligence_package_name));
+        return isSettingsIntelligence;
+    }
+
+    /**
+     * Returns true if the night mode is enabled.
+     */
+    public static boolean isNightMode(Context context) {
+        final int currentNightMode =
+                context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        return currentNightMode == Configuration.UI_MODE_NIGHT_YES;
     }
 }

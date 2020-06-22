@@ -33,6 +33,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.internal.logging.InstanceId;
+import com.android.internal.logging.UiEventLogger;
 import com.android.settings.R;
 
 public class NotificationSbnViewHolder extends RecyclerView.ViewHolder {
@@ -44,6 +46,7 @@ public class NotificationSbnViewHolder extends RecyclerView.ViewHolder {
     private final TextView mTitle;
     private final TextView mSummary;
     private final ImageView mProfileBadge;
+    private final View mDivider;
 
     NotificationSbnViewHolder(View itemView) {
         super(itemView);
@@ -53,6 +56,7 @@ public class NotificationSbnViewHolder extends RecyclerView.ViewHolder {
         mTitle = itemView.findViewById(R.id.title);
         mSummary = itemView.findViewById(R.id.text);
         mProfileBadge = itemView.findViewById(R.id.profile_badge);
+        mDivider = itemView.findViewById(R.id.divider);
     }
 
     void setSummary(CharSequence summary) {
@@ -81,39 +85,57 @@ public class NotificationSbnViewHolder extends RecyclerView.ViewHolder {
 
     void setProfileBadge(Drawable badge) {
         mProfileBadge.setImageDrawable(badge);
+        mProfileBadge.setVisibility(badge != null ? View.VISIBLE : View.GONE);
     }
 
-    void addOnClick(String pkg, int userId, PendingIntent pi) {
-        itemView.setOnClickListener(v -> {
-            if (pi != null) {
-                try {
-                    pi.send();
-                } catch (PendingIntent.CanceledException e) {
-                    Slog.e(TAG, "Could not launch", e);
+    void setDividerVisible(boolean visible) {
+        mDivider.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    void addOnClick(int position, String pkg, int uid, int userId, PendingIntent pi,
+            InstanceId instanceId,
+            boolean isSnoozed, UiEventLogger uiEventLogger) {
+        Intent appIntent = itemView.getContext().getPackageManager()
+                .getLaunchIntentForPackage(pkg);
+        boolean isPendingIntentValid = pi != null && PendingIntent.getActivity(
+                itemView.getContext(), 0, pi.getIntent(), PendingIntent.FLAG_NO_CREATE) != null;
+        if (isPendingIntentValid || appIntent != null) {
+            itemView.setOnClickListener(v -> {
+                uiEventLogger.logWithInstanceIdAndPosition(
+                        isSnoozed
+                                ? NotificationHistoryActivity.NotificationHistoryEvent
+                                .NOTIFICATION_HISTORY_SNOOZED_ITEM_CLICK
+                                : NotificationHistoryActivity.NotificationHistoryEvent
+                                .NOTIFICATION_HISTORY_RECENT_ITEM_CLICK,
+                        uid, pkg, instanceId, position);
+                if (pi != null) {
+                    try {
+                        pi.send();
+                    } catch (PendingIntent.CanceledException e) {
+                        Slog.e(TAG, "Could not launch", e);
+                    }
+                } else if (appIntent != null) {
+                    appIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    try {
+                        itemView.getContext().startActivityAsUser(appIntent, UserHandle.of(userId));
+                    } catch (ActivityNotFoundException e) {
+                        Slog.e(TAG, "no launch activity", e);
+                    }
                 }
-            } else {
-                Intent appIntent = itemView.getContext().getPackageManager()
-                        .getLaunchIntentForPackage(pkg);
-                appIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                try {
-                    itemView.getContext().startActivityAsUser(appIntent, UserHandle.of(userId));
-                } catch (ActivityNotFoundException e) {
-                    Slog.e(TAG, "no launch activity", e);
+            });
+            ViewCompat.setAccessibilityDelegate(itemView, new AccessibilityDelegateCompat() {
+                @Override
+                public void onInitializeAccessibilityNodeInfo(View host,
+                        AccessibilityNodeInfoCompat info) {
+                    super.onInitializeAccessibilityNodeInfo(host, info);
+                    CharSequence description = host.getResources().getText(
+                            R.string.notification_history_open_notification);
+                    AccessibilityNodeInfoCompat.AccessibilityActionCompat customClick =
+                            new AccessibilityNodeInfoCompat.AccessibilityActionCompat(
+                                    AccessibilityNodeInfoCompat.ACTION_CLICK, description);
+                    info.addAction(customClick);
                 }
-            }
-        });
-        ViewCompat.setAccessibilityDelegate(itemView, new AccessibilityDelegateCompat() {
-            @Override
-            public void onInitializeAccessibilityNodeInfo(View host,
-                    AccessibilityNodeInfoCompat info) {
-                super.onInitializeAccessibilityNodeInfo(host, info);
-                CharSequence description = host.getResources().getText(
-                        R.string.notification_history_open_notification);
-                AccessibilityNodeInfoCompat.AccessibilityActionCompat customClick =
-                        new AccessibilityNodeInfoCompat.AccessibilityActionCompat(
-                                AccessibilityNodeInfoCompat.ACTION_CLICK, description);
-                info.addAction(customClick);
-            }
-        });
+            });
+        }
     }
 }

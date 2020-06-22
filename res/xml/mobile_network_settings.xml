@@ -204,7 +204,7 @@
         <PreferenceCategory
             android:key="network_operators_category_key"
             android:title="@string/network_operator_category"
-            settings:controller="com.android.settings.widget.PreferenceCategoryController">
+            settings:controller="com.android.settings.network.telephony.NetworkPreferenceCategoryController">
 
             <SwitchPreference
                 android:key="auto_select_key"
@@ -225,6 +225,15 @@
             android:title="@string/mobile_network_apn_title"
             settings:allowDividerAbove="true"
             settings:controller="com.android.settings.network.telephony.ApnPreferenceController"/>
+
+        <PreferenceScreen
+            android:key="uplmn_settings_key"
+            android:persistent="false"
+            android:title="@string/uplmn_settings_title"
+            android:summary="@string/uplmn_settings_summary"
+            settings:allowDividerAbove="true"
+            settings:controller="com.android.settings.network.telephony.UserPLMNPreferenceController">
+        </PreferenceScreen>
 
         <Preference
             android:key="carrier_settings_key"

@@ -200,13 +200,17 @@ public class PanelFragment extends Fragment {
         loadAllSlices();
 
         final IconCompat icon = mPanel.getIcon();
+        final CharSequence title = mPanel.getTitle();
         if (icon == null) {
-            mTitleView.setText(mPanel.getTitle());
+            mTitleView.setVisibility(View.VISIBLE);
+            mPanelHeader.setVisibility(View.GONE);
+            mTitleView.setText(title);
         } else {
             mTitleView.setVisibility(View.GONE);
             mPanelHeader.setVisibility(View.VISIBLE);
+            mPanelHeader.setAccessibilityPaneTitle(title);
             mTitleIcon.setImageIcon(icon.toIcon(getContext()));
-            mHeaderTitle.setText(mPanel.getTitle());
+            mHeaderTitle.setText(title);
             mHeaderSubtitle.setText(mPanel.getSubTitle());
             if (mPanel.getHeaderIconIntent() != null) {
                 mTitleIcon.setOnClickListener(getHeaderIconListener());
@@ -220,6 +224,7 @@ public class PanelFragment extends Fragment {
             if (TextUtils.isEmpty(customTitle)) {
                 mSeeMoreButton.setVisibility(View.GONE);
             } else {
+                mSeeMoreButton.setVisibility(View.VISIBLE);
                 mSeeMoreButton.setText(customTitle);
             }
         } else if (mPanel.getSeeMoreIntent() == null) {

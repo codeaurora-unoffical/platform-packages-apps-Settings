@@ -101,8 +101,8 @@
   <string-array name="eap_ocsp_type">
     <item msgid="7202884222741437608">"Nu se validează"</item>
     <item msgid="5703177653586269306">"Solicitați starea certificatelor"</item>
-    <item msgid="326388247868439528">"Solicitați starea certificatelor"</item>
-    <item msgid="1090956283885790552">"Solicitați toate stările certificatelor care nu prezintă încredere"</item>
+    <item msgid="326388247868439528">"Solicitați obligatoriu starea certificatelor"</item>
+    <item msgid="1090956283885790552">"Solicitați toate stările certif. care nu prezintă încredere"</item>
   </string-array>
   <string-array name="wifi_p2p_wps_setup">
     <item msgid="1446717102923442720">"Buton WPS"</item>
@@ -383,6 +383,13 @@
     <item msgid="3942006483573485941">"Prestabilită"</item>
     <item msgid="824386705928670045">"Mare"</item>
     <item msgid="2790561781512874585">"Foarte mare"</item>
+  </string-array>
+  <string-array name="captioning_font_size_selector_summaries">
+    <item msgid="5700290209695344464">"Dimensiune foarte mică a textului"</item>
+    <item msgid="4400431625665186389">"Dimensiune mică a textului"</item>
+    <item msgid="2340994108094808362">"Dimensiunea prestabilită a textului"</item>
+    <item msgid="6446684863055375405">"Dimensiune mare a textului"</item>
+    <item msgid="6838252010935384975">"Dimensiune foarte mare a textului"</item>
   </string-array>
   <string-array name="captioning_edge_type_selector_titles">
     <item msgid="70686029249840227">"Prestabilită"</item>

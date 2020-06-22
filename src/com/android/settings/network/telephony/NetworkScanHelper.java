@@ -153,19 +153,11 @@ public class NetworkScanHelper {
             radioAccessSpecifiers.add(
                     new RadioAccessSpecifier(AccessNetworkType.EUTRAN, null, null));
         }
-        // If a device supports 5G stand-alone then the code below should be re-enabled; however
-        // a device supporting only non-standalone mode cannot perform PLMN selection and camp on
-        // a 5G network, which means that it shouldn't scan for 5G at the expense of battery as
-        // part of the manual network selection process.
-        //
-        // FIXME(b/151119451): re-enable this code once there is a way to distinguish SA from NSA
-        // support in the modem.
-        //
-        // if (networkTypeBitmap3gpp == 0
-        //        || (networkTypeBitmap3gpp & TelephonyManager.NETWORK_CLASS_BITMASK_5G) != 0) {
-        //    radioAccessSpecifiers.add(
-        //            new RadioAccessSpecifier(AccessNetworkType.NGRAN, null, null));
-        // }
+        if (networkTypeBitmap3gpp == 0
+               || (networkTypeBitmap3gpp & TelephonyManager.NETWORK_CLASS_BITMASK_5G) != 0) {
+            radioAccessSpecifiers.add(
+                    new RadioAccessSpecifier(AccessNetworkType.NGRAN, null, null));
+        }
 
         return new NetworkScanRequest(
                 NetworkScanRequest.SCAN_TYPE_ONE_SHOT,
@@ -203,7 +195,7 @@ public class NetworkScanHelper {
             mContext.registerReceiver(mLegacyIncrScanReceiver, filter);
             boolean success = false;
             mExtTelephony = IExtTelephony.Stub
-                    .asInterface(ServiceManager.getService("extphone"));
+                    .asInterface(ServiceManager.getService("qti.radio.extphone"));
             try {
                 success = mExtTelephony.performIncrementalScan(mTelephonyManager.getSlotIndex());
             } catch (RemoteException | NullPointerException ex) {
@@ -231,10 +223,15 @@ public class NetworkScanHelper {
 
         try {
             if (mExtTelephony != null) {
-                mExtTelephony.abortIncrementalScan(mTelephonyManager.getSlotIndex());
+                int slotIndex = mTelephonyManager.getSlotIndex();
+                if (slotIndex >= 0 && slotIndex < mTelephonyManager.getActiveModemCount()) {
+                    mExtTelephony.abortIncrementalScan(slotIndex);
+                } else {
+                    Log.d(TAG, "slotIndex is invalid, skipping abort");
+                }
                 mExtTelephony = null;
+                mContext.unregisterReceiver(mLegacyIncrScanReceiver);
             }
-            mContext.unregisterReceiver(mLegacyIncrScanReceiver);
         } catch (RemoteException | NullPointerException ex) {
             Log.e(TAG, "abortIncrementalScan Exception: ", ex);
         } catch (IllegalArgumentException ex) {

@@ -16,6 +16,10 @@
 
 package com.android.settings.applications.appinfo;
 
+import static com.android.settings.core.instrumentation.SettingsStatsLog.AUTO_REVOKED_APP_INTERACTION;
+import static com.android.settings.core.instrumentation.SettingsStatsLog.AUTO_REVOKED_APP_INTERACTION__ACTION__OPEN_IN_SETTINGS;
+import static com.android.settings.core.instrumentation.SettingsStatsLog.AUTO_REVOKED_APP_INTERACTION__ACTION__REMOVE_IN_SETTINGS;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.admin.DevicePolicyManager;
@@ -52,6 +56,7 @@ import com.android.settings.applications.specialaccess.deviceadmin.DeviceAdminAd
 import com.android.settings.core.BasePreferenceController;
 import com.android.settings.core.InstrumentedPreferenceFragment;
 import com.android.settings.core.PreferenceControllerMixin;
+import com.android.settings.core.instrumentation.SettingsStatsLog;
 import com.android.settings.overlay.FeatureFactory;
 import com.android.settingslib.RestrictedLockUtils;
 import com.android.settingslib.RestrictedLockUtilsInternal;
@@ -116,11 +121,14 @@ public class AppButtonsPreferenceController extends BasePreferenceController imp
     private Intent mAppLaunchIntent;
     private ApplicationsState.Session mSession;
     private RestrictedLockUtils.EnforcedAdmin mAppsControlDisallowedAdmin;
+    private PreferenceScreen mScreen;
 
+    private long mSessionId;
     private boolean mUpdatedSysApp = false;
     private boolean mListeningToPackageRemove = false;
     private boolean mFinishing = false;
     private boolean mAppsControlDisallowedBySystem;
+    private boolean mAccessedFromAutoRevoke;
 
     public AppButtonsPreferenceController(SettingsActivity activity,
             InstrumentedPreferenceFragment fragment,
@@ -148,6 +156,8 @@ public class AppButtonsPreferenceController extends BasePreferenceController imp
         mRequestUninstall = requestUninstall;
         mRequestRemoveDeviceAdmin = requestRemoveDeviceAdmin;
         mAppLaunchIntent = mPm.getLaunchIntentForPackage(mPackageName);
+        mSessionId = activity.getIntent().getLongExtra(Intent.ACTION_AUTO_REVOKE_PERMISSIONS, 0);
+        mAccessedFromAutoRevoke = mSessionId != 0;
 
         if (packageName != null) {
             mAppEntry = mState.getEntry(packageName, mUserId);
@@ -167,19 +177,9 @@ public class AppButtonsPreferenceController extends BasePreferenceController imp
     @Override
     public void displayPreference(PreferenceScreen screen) {
         super.displayPreference(screen);
+        mScreen = screen;
         if (isAvailable()) {
-            mButtonsPref = ((ActionButtonsPreference) screen.findPreference(
-                    KEY_ACTION_BUTTONS))
-                    .setButton1Text(R.string.launch_instant_app)
-                    .setButton1Icon(R.drawable.ic_settings_open)
-                    .setButton1OnClickListener(v -> launchApplication())
-                    .setButton2Text(R.string.uninstall_text)
-                    .setButton2Icon(R.drawable.ic_settings_delete)
-                    .setButton2OnClickListener(new UninstallAndDisableButtonListener())
-                    .setButton3Text(R.string.force_stop)
-                    .setButton3Icon(R.drawable.ic_settings_force_stop)
-                    .setButton3OnClickListener(new ForceStopButtonListener())
-                    .setButton3Enabled(false);
+            initButtonPreference();
         }
     }
 
@@ -211,6 +211,13 @@ public class AppButtonsPreferenceController extends BasePreferenceController imp
 
         @Override
         public void onClick(View v) {
+            if (mAccessedFromAutoRevoke) {
+
+                Log.i(TAG, "sessionId: " + mSessionId + " uninstalling " + mPackageName
+                        + " with uid " + getUid() + ", reached from auto revoke");
+                SettingsStatsLog.write(AUTO_REVOKED_APP_INTERACTION, mSessionId, getUid(),
+                        mPackageName, AUTO_REVOKED_APP_INTERACTION__ACTION__REMOVE_IN_SETTINGS);
+            }
             final String packageName = mAppEntry.info.packageName;
             // Uninstall
             if (mDpm.packageHasActiveAdmins(mPackageInfo.packageName)) {
@@ -663,11 +670,31 @@ public class AppButtonsPreferenceController extends BasePreferenceController imp
             }
         }
 
+        // When the app was installed from instant state, buttons preferences could be null.
+        if (mButtonsPref == null) {
+            initButtonPreference();
+            mButtonsPref.setVisible(true);
+        }
         updateOpenButton();
         updateUninstallButton();
         updateForceStopButton();
 
         return true;
+    }
+
+    private void initButtonPreference() {
+        mButtonsPref = ((ActionButtonsPreference) mScreen.findPreference(
+                KEY_ACTION_BUTTONS))
+                .setButton1Text(R.string.launch_instant_app)
+                .setButton1Icon(R.drawable.ic_settings_open)
+                .setButton1OnClickListener(v -> launchApplication())
+                .setButton2Text(R.string.uninstall_text)
+                .setButton2Icon(R.drawable.ic_settings_delete)
+                .setButton2OnClickListener(new UninstallAndDisableButtonListener())
+                .setButton3Text(R.string.force_stop)
+                .setButton3Icon(R.drawable.ic_settings_force_stop)
+                .setButton3OnClickListener(new ForceStopButtonListener())
+                .setButton3Enabled(false);
     }
 
     private void startListeningToPackageRemove() {
@@ -690,8 +717,26 @@ public class AppButtonsPreferenceController extends BasePreferenceController imp
 
     private void launchApplication() {
         if (mAppLaunchIntent != null) {
+            if (mAccessedFromAutoRevoke) {
+
+                Log.i(TAG, "sessionId: " + mSessionId + " uninstalling " + mPackageName
+                        + " with uid " + getUid() + ", reached from auto revoke");
+                SettingsStatsLog.write(AUTO_REVOKED_APP_INTERACTION, mSessionId, getUid(),
+                        mPackageName, AUTO_REVOKED_APP_INTERACTION__ACTION__OPEN_IN_SETTINGS);
+            }
             mContext.startActivityAsUser(mAppLaunchIntent, new UserHandle(mUserId));
         }
+    }
+
+    private int getUid() {
+        int uid = -1;
+        if (mPackageInfo == null) {
+            retrieveAppEntry();
+        }
+        if (mPackageInfo != null) {
+            uid = mPackageInfo.applicationInfo.uid;
+        }
+        return uid;
     }
 
     private boolean isInstantApp() {

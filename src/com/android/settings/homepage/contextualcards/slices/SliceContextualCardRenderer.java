@@ -21,6 +21,7 @@ import static android.app.slice.Slice.HINT_ERROR;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Bundle;
 import android.util.ArrayMap;
 import android.util.ArraySet;
 import android.util.Log;
@@ -29,6 +30,9 @@ import android.widget.Button;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
@@ -43,6 +47,7 @@ import com.android.settings.homepage.contextualcards.CardContentProvider;
 import com.android.settings.homepage.contextualcards.ContextualCard;
 import com.android.settings.homepage.contextualcards.ContextualCardRenderer;
 import com.android.settings.homepage.contextualcards.ControllerRendererPool;
+import com.android.settings.homepage.contextualcards.slices.SliceFullCardRendererHelper.SliceViewHolder;
 import com.android.settingslib.utils.ThreadUtils;
 
 import java.util.Map;
@@ -98,6 +103,11 @@ public class SliceContextualCardRenderer implements ContextualCardRenderer, Life
             return;
         }
 
+        // Show cached slice first before slice binding completed to avoid jank.
+        if (holder.getItemViewType() != VIEW_TYPE_HALF_WIDTH) {
+            ((SliceViewHolder) holder).sliceView.setSlice(card.getSlice());
+        }
+
         LiveData<Slice> sliceLiveData = mSliceLiveDataMap.get(uri);
 
         if (sliceLiveData == null) {
@@ -145,11 +155,11 @@ public class SliceContextualCardRenderer implements ContextualCardRenderer, Life
 
         if (holder.getItemViewType() != VIEW_TYPE_STICKY) {
             initDismissalActions(holder, card);
-        }
 
-        if (card.isPendingDismiss()) {
-            showDismissalView(holder);
-            mFlippedCardSet.add(holder);
+            if (card.isPendingDismiss()) {
+                showDismissalView(holder);
+                mFlippedCardSet.add(holder);
+            }
         }
     }
 
@@ -167,6 +177,27 @@ public class SliceContextualCardRenderer implements ContextualCardRenderer, Life
             resetCardView(holder);
             mSliceLiveDataMap.get(card.getSliceUri()).removeObservers(mLifecycleOwner);
         });
+
+        ViewCompat.setAccessibilityDelegate(getInitialView(holder),
+                new AccessibilityDelegateCompat() {
+                    @Override
+                    public void onInitializeAccessibilityNodeInfo(View host,
+                            AccessibilityNodeInfoCompat info) {
+                        super.onInitializeAccessibilityNodeInfo(host, info);
+                        info.addAction(AccessibilityNodeInfoCompat.ACTION_DISMISS);
+                        info.setDismissable(true);
+                    }
+
+                    @Override
+                    public boolean performAccessibilityAction(View host, int action, Bundle args) {
+                        if (action == AccessibilityNodeInfoCompat.ACTION_DISMISS) {
+                            mControllerRendererPool.getController(mContext,
+                                    card.getCardType()).onDismissed(card);
+                        }
+                        return super.performAccessibilityAction(host, action, args);
+                    }
+                });
+
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)

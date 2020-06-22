@@ -34,6 +34,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.service.notification.ConversationChannelWrapper;
 
+import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
@@ -169,12 +170,12 @@ public class ConversationListPreferenceControllerTest {
         ccw.setPkg("pkg");
         ccw.setUid(1);
         ShortcutInfo si = mock(ShortcutInfo.class);
-        when(si.getShortLabel()).thenReturn("conversation name");
+        when(si.getLabel()).thenReturn("conversation name");
         ccw.setShortcutInfo(si);
         ccw.setGroupLabel("group");
         ccw.setParentChannelLabel("parent");
 
-        assertThat(mController.getTitle(ccw).toString()).isEqualTo(si.getShortLabel());
+        assertThat(mController.getTitle(ccw).toString()).isEqualTo(si.getLabel());
     }
 
     @Test
@@ -191,7 +192,7 @@ public class ConversationListPreferenceControllerTest {
     }
 
     @Test
-    public void testGetIntent() {
+    public void testGetSubSettingLauncher() {
         ConversationChannelWrapper ccw = new ConversationChannelWrapper();
         NotificationChannel channel = new NotificationChannel("a", "child", 2);
         channel.setConversationId("parent", "convo id");
@@ -199,7 +200,7 @@ public class ConversationListPreferenceControllerTest {
         ccw.setPkg("pkg");
         ccw.setUid(1);
         ccw.setParentChannelLabel("parent label");
-        Intent intent = mController.getIntent(ccw, "title");
+        Intent intent = mController.getSubSettingLauncher(ccw, "title").toIntent();
 
         Bundle extras = intent.getExtras();
         assertThat(extras.getString(AppInfoBase.ARG_PACKAGE_NAME)).isEqualTo(ccw.getPkg());
@@ -224,6 +225,11 @@ public class ConversationListPreferenceControllerTest {
         @Override
         public String getPreferenceKey() {
             return "test";
+        }
+
+        @Override
+        Preference getSummaryPreference() {
+            return null;
         }
     }
 }

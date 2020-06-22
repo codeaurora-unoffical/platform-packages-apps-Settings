@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
 import android.os.Bundle;
+import android.os.UserHandle;
 import android.provider.Settings;
 import android.service.notification.ConversationChannelWrapper;
 import android.text.TextUtils;
@@ -72,24 +73,33 @@ public abstract class ConversationListPreferenceController extends AbstractPrefe
             containerGroup.setVisible(false);
         } else {
             containerGroup.setVisible(true);
+            Preference summaryPref = getSummaryPreference();
+            if (summaryPref != null) {
+                containerGroup.addPreference(summaryPref);
+            }
         }
     }
+
+    abstract Preference getSummaryPreference();
 
     abstract boolean matchesFilter(ConversationChannelWrapper conversation);
 
     protected void populateConversations(List<ConversationChannelWrapper> conversations,
             PreferenceGroup containerGroup) {
+        int order = 100;
         for (ConversationChannelWrapper conversation : conversations) {
             if (conversation.getNotificationChannel().isDemoted()
                     || !matchesFilter(conversation)) {
                 continue;
             }
-            containerGroup.addPreference(createConversationPref(conversation));
+            containerGroup.addPreference(createConversationPref(conversation, order++));
         }
     }
 
-    protected Preference createConversationPref(final ConversationChannelWrapper conversation) {
+    protected Preference createConversationPref(final ConversationChannelWrapper conversation,
+            int order) {
         Preference pref = new Preference(mContext);
+        pref.setOrder(order);
 
         pref.setTitle(getTitle(conversation));
         pref.setSummary(getSummary(conversation));
@@ -97,7 +107,10 @@ public abstract class ConversationListPreferenceController extends AbstractPrefe
                 conversation.getPkg(), conversation.getUid(),
                 conversation.getNotificationChannel().isImportantConversation()));
         pref.setKey(conversation.getNotificationChannel().getId());
-        pref.setIntent(getIntent(conversation, pref.getTitle()));
+        pref.setOnPreferenceClickListener(preference -> {
+            getSubSettingLauncher(conversation, pref.getTitle()).launch();
+            return true;
+        });
 
         return pref;
     }
@@ -112,11 +125,12 @@ public abstract class ConversationListPreferenceController extends AbstractPrefe
     CharSequence getTitle(ConversationChannelWrapper conversation) {
         ShortcutInfo si = conversation.getShortcutInfo();
         return si != null
-                ? si.getShortLabel()
+                ? si.getLabel()
                 : conversation.getNotificationChannel().getName();
     }
 
-    Intent getIntent(ConversationChannelWrapper conversation, CharSequence title) {
+    SubSettingLauncher getSubSettingLauncher(ConversationChannelWrapper conversation,
+            CharSequence title) {
         Bundle channelArgs = new Bundle();
         channelArgs.putInt(AppInfoBase.ARG_PACKAGE_UID, conversation.getUid());
         channelArgs.putString(AppInfoBase.ARG_PACKAGE_NAME, conversation.getPkg());
@@ -129,9 +143,9 @@ public abstract class ConversationListPreferenceController extends AbstractPrefe
                 .setDestination(ChannelNotificationSettings.class.getName())
                 .setArguments(channelArgs)
                 .setExtras(channelArgs)
+                .setUserHandle(UserHandle.getUserHandleForUid(conversation.getUid()))
                 .setTitleText(title)
-                .setSourceMetricsCategory(SettingsEnums.NOTIFICATION_CONVERSATION_LIST_SETTINGS)
-                .toIntent();
+                .setSourceMetricsCategory(SettingsEnums.NOTIFICATION_CONVERSATION_LIST_SETTINGS);
     }
 
     protected Comparator<ConversationChannelWrapper> mConversationComparator =
@@ -149,8 +163,8 @@ public abstract class ConversationListPreferenceController extends AbstractPrefe
                         return o1.getNotificationChannel().getId().compareTo(
                                 o2.getNotificationChannel().getId());
                     }
-                    return sCollator.compare(o1.getShortcutInfo().getShortLabel(),
-                            o2.getShortcutInfo().getShortLabel());
+                    return sCollator.compare(o1.getShortcutInfo().getLabel(),
+                            o2.getShortcutInfo().getLabel());
                 }
             };
 }

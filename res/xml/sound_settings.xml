@@ -45,6 +45,7 @@
         android:title="@string/media_output_title"
         android:dialogTitle="@string/media_output_title"
         android:order="-175"
+        settings:searchable="false"
         settings:controller="com.android.settings.sound.MediaOutputPreferenceController"/>
 
     <!-- Call volume -->
@@ -61,6 +62,7 @@
         android:title="@string/take_call_on_title"
         android:dialogTitle="@string/take_call_on_title"
         android:order="-165"
+        settings:searchable="false"
         settings:controller="com.android.settings.sound.HandsFreeProfileOutputPreferenceController"/>
 
     <!-- Ring volume -->
@@ -94,7 +96,8 @@
         android:key="vibrate_for_calls"
         android:title="@string/vibrate_when_ringing_title"
         android:order="-130"
-        settings:controller="com.android.settings.sound.VibrateForCallsPreferenceController"/>
+        settings:controller="com.android.settings.sound.VibrateForCallsPreferenceController"
+        settings:keywords="@string/keywords_vibrate_for_calls"/>
 
     <!-- Interruptions -->
     <com.android.settingslib.RestrictedPreference
@@ -110,7 +113,7 @@
     <Preference
         android:key="gesture_prevent_ringing_sound"
         android:title="@string/gesture_prevent_ringing_sound_title"
-        android:order="-110"
+        android:order="-107"
         android:fragment="com.android.settings.gestures.PreventRingingGestureSettings"
         settings:controller="com.android.settings.gestures.PreventRingingParentPreferenceController"/>
 
@@ -153,6 +156,11 @@
         <SwitchPreference
           android:key="dial_pad_tones"
           android:title="@string/dial_pad_tones_title"/>
+
+        <!-- Call connected tones -->
+        <SwitchPreference
+          android:key="call_connected_tones"
+          android:title="@string/call_connected_tones_title" />
 
         <!-- Screen locking sounds -->
         <SwitchPreference

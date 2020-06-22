@@ -16,7 +16,7 @@
 
 package com.android.settings.accessibility;
 
-import static com.android.settings.accessibility.AccessibilityUtil.AccessibilityServiceFragmentType.LEGACY;
+import static com.android.settings.accessibility.AccessibilityUtil.AccessibilityServiceFragmentType.VOLUME_SHORTCUT_TOGGLE;
 
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.settings.SettingsEnums;
@@ -24,7 +24,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.ServiceInfo;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -102,10 +101,10 @@ public class AccessibilitySettingsForSetupWizard extends SettingsPreferenceFragm
         super.onResume();
         updateAccessibilityServicePreference(mScreenReaderPreference,
                 SCREEN_READER_PACKAGE_NAME, SCREEN_READER_SERVICE_NAME,
-                LegacyToggleScreenReaderPreferenceFragmentForSetupWizard.class.getName());
+                VolumeShortcutToggleScreenReaderPreferenceFragmentForSetupWizard.class.getName());
         updateAccessibilityServicePreference(mSelectToSpeakPreference,
                 SELECT_TO_SPEAK_PACKAGE_NAME, SELECT_TO_SPEAK_SERVICE_NAME,
-                LegacyToggleSelectToSpeakPreferenceFragmentForSetupWizard.class.getName());
+                VolumeShortcutToggleSelectToSpeakPreferenceFragmentForSetupWizard.class.getName());
         configureMagnificationPreferenceIfNeeded(mDisplayMagnificationPreference);
     }
 
@@ -147,7 +146,7 @@ public class AccessibilitySettingsForSetupWizard extends SettingsPreferenceFragm
     }
 
     private void updateAccessibilityServicePreference(Preference preference,
-            String packageName, String serviceName, String targetLegacyFragment) {
+            String packageName, String serviceName, String targetFragment) {
         final AccessibilityServiceInfo info = findService(packageName, serviceName);
         if (info == null) {
             getPreferenceScreen().removePreference(preference);
@@ -159,8 +158,8 @@ public class AccessibilitySettingsForSetupWizard extends SettingsPreferenceFragm
         preference.setTitle(title);
         ComponentName componentName = new ComponentName(serviceInfo.packageName, serviceInfo.name);
         preference.setKey(componentName.flattenToString());
-        if (AccessibilityUtil.getAccessibilityServiceFragmentType(info) == LEGACY) {
-            preference.setFragment(targetLegacyFragment);
+        if (AccessibilityUtil.getAccessibilityServiceFragmentType(info) == VOLUME_SHORTCUT_TOGGLE) {
+            preference.setFragment(targetFragment);
         }
 
         // Update the extras.
@@ -172,10 +171,9 @@ public class AccessibilitySettingsForSetupWizard extends SettingsPreferenceFragm
         extras.putString(AccessibilitySettings.EXTRA_TITLE, title);
 
         String description = info.loadDescription(getPackageManager());
-        if (TextUtils.isEmpty(description)) {
-            description = getString(R.string.accessibility_service_default_description);
-        }
         extras.putString(AccessibilitySettings.EXTRA_SUMMARY, description);
+
+        extras.putInt(AccessibilitySettings.EXTRA_ANIMATED_IMAGE_RES, info.getAnimatedImageRes());
 
         final String htmlDescription = info.loadHtmlDescription(getPackageManager());
         extras.putString(AccessibilitySettings.EXTRA_HTML_DESCRIPTION, htmlDescription);

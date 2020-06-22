@@ -23,6 +23,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.RemoteException;
+import android.os.ServiceManager;
 import android.os.UserManager;
 import android.provider.SearchIndexableResource;
 import android.provider.Settings;
@@ -36,36 +38,39 @@ import android.view.MenuItem;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
-import androidx.preference.PreferenceScreen;
 
 import com.android.internal.telephony.IccCardConstants;
 import com.android.internal.telephony.TelephonyIntents;
 import com.android.settings.R;
-import com.android.settings.dashboard.RestrictedDashboardFragment;
 import com.android.settings.datausage.BillingCyclePreferenceController;
 import com.android.settings.datausage.DataUsageSummaryPreferenceController;
+import com.android.settings.network.ActiveSubsciptionsListener;
 import com.android.settings.network.telephony.cdma.CdmaSubscriptionPreferenceController;
 import com.android.settings.network.telephony.cdma.CdmaSystemSelectPreferenceController;
 import com.android.settings.network.telephony.gsm.AutoSelectPreferenceController;
 import com.android.settings.network.telephony.gsm.OpenNetworkSelectPagePreferenceController;
 import com.android.settings.search.BaseSearchIndexProvider;
-import com.android.settings.widget.PreferenceCategoryController;
 import com.android.settingslib.core.AbstractPreferenceController;
 import com.android.settingslib.search.SearchIndexable;
+import com.android.settingslib.utils.ThreadUtils;
 
-import java.util.ArrayList;
+import org.codeaurora.internal.IExtTelephony;
+
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 @SearchIndexable(forTarget = SearchIndexable.ALL & ~SearchIndexable.ARC)
-public class MobileNetworkSettings extends RestrictedDashboardFragment {
+public class MobileNetworkSettings extends AbstractMobileNetworkSettings {
 
     private static final String LOG_TAG = "NetworkSettings";
     public static final int REQUEST_CODE_EXIT_ECM = 17;
     public static final int REQUEST_CODE_DELETE_SUBSCRIPTION = 18;
     @VisibleForTesting
     static final String KEY_CLICKED_PREF = "key_clicked_pref";
+
+    // UICC provisioning status
+    public static final int CARD_NOT_PROVISIONED = 0;
+    public static final int CARD_PROVISIONED = 1;
 
     //String keys for preference lookup
     private static final String BUTTON_CDMA_SYSTEM_SELECT_KEY = "cdma_system_select_key";
@@ -81,7 +86,9 @@ public class MobileNetworkSettings extends RestrictedDashboardFragment {
     private UserManager mUserManager;
     private String mClickedPrefKey;
 
-    private List<AbstractPreferenceController> mHiddenControllerList;
+    private ActiveSubsciptionsListener mActiveSubsciptionsListener;
+    private boolean mDropFirstSubscriptionChangeNotify;
+    private int mActiveSubsciptionsListenerCount;
 
     private final BroadcastReceiver mSimStateReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -97,18 +104,16 @@ public class MobileNetworkSettings extends RestrictedDashboardFragment {
     private void setScreenState() {
         int simState = mTelephonyManager.getSimState();
         boolean screenState = simState != TelephonyManager.SIM_STATE_ABSENT;
-        if (PrimaryCardAndSubsidyLockUtils.DBG) {
-            Log.d(LOG_TAG, "isPrimaryCardEnabled(): "
-                    + PrimaryCardAndSubsidyLockUtils.isPrimaryCardEnabled());
-            Log.d(LOG_TAG, "isDetect4gCardEnabled(): "
-                    + PrimaryCardAndSubsidyLockUtils.isDetect4gCardEnabled());
-        }
-        if (screenState
-                && PrimaryCardAndSubsidyLockUtils.isPrimaryCardEnabled()
-                && PrimaryCardAndSubsidyLockUtils.isDetect4gCardEnabled()) {
-            int provStatus =
-                    PrimaryCardAndSubsidyLockUtils.getUiccCardProvisioningStatus(mPhoneId);
-            screenState = provStatus != PrimaryCardAndSubsidyLockUtils.CARD_NOT_PROVISIONED;
+        if (screenState) {
+            int provStatus = CARD_NOT_PROVISIONED;
+            IExtTelephony extTelephony = IExtTelephony.Stub
+                    .asInterface(ServiceManager.getService("qti.radio.extphone"));
+            try {
+                provStatus = extTelephony.getCurrentUiccCardProvisioningStatus(mPhoneId);
+            } catch (RemoteException | NullPointerException ex) {
+                Log.e(LOG_TAG, "getUiccCardProvisioningStatus: " + mPhoneId + ", Exception: ", ex);
+            }
+            screenState = provStatus != CARD_NOT_PROVISIONED;
             Log.d(LOG_TAG, "Provisioning Status: " + provStatus + ", screenState: " + screenState);
         }
         Log.d(LOG_TAG, "Setting screen state to: " + screenState);
@@ -169,6 +174,11 @@ public class MobileNetworkSettings extends RestrictedDashboardFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
 
+        final DataUsageSummaryPreferenceController dataUsageSummaryPreferenceController =
+                use(DataUsageSummaryPreferenceController.class);
+        if (dataUsageSummaryPreferenceController != null) {
+            dataUsageSummaryPreferenceController.init(mSubId);
+        }
         use(DataDefaultSubscriptionController.class).init(getLifecycle());
         use(CallsDefaultSubscriptionController.class).init(getLifecycle());
         use(SmsDefaultSubscriptionController.class).init(getLifecycle());
@@ -185,6 +195,7 @@ public class MobileNetworkSettings extends RestrictedDashboardFragment {
         use(MobileDataPreferenceController.class).init(getFragmentManager(), mSubId);
         use(RoamingPreferenceController.class).init(getFragmentManager(), mSubId);
         use(ApnPreferenceController.class).init(mSubId);
+        use(UserPLMNPreferenceController.class).init(mSubId);
         use(CarrierPreferenceController.class).init(mSubId);
         use(DataUsagePreferenceController.class).init(mSubId);
         use(PreferredNetworkModePreferenceController.class).init(getLifecycle(), mSubId);
@@ -195,14 +206,13 @@ public class MobileNetworkSettings extends RestrictedDashboardFragment {
                 use(WifiCallingPreferenceController.class).init(mSubId);
 
         final OpenNetworkSelectPagePreferenceController openNetworkSelectPagePreferenceController =
-                use(OpenNetworkSelectPagePreferenceController.class).init(mSubId);
+                use(OpenNetworkSelectPagePreferenceController.class).init(getLifecycle(), mSubId);
         final AutoSelectPreferenceController autoSelectPreferenceController =
                 use(AutoSelectPreferenceController.class)
-                        .init(mSubId)
+                        .init(getLifecycle(), mSubId)
                         .addListener(openNetworkSelectPagePreferenceController);
-        use(PreferenceCategoryController.class).setChildren(
-                Arrays.asList(autoSelectPreferenceController));
-
+        use(NetworkPreferenceCategoryController.class).init(getLifecycle(), mSubId)
+                .setChildren(Arrays.asList(autoSelectPreferenceController));
         mCdmaSystemSelectPreferenceController = use(CdmaSystemSelectPreferenceController.class);
         mCdmaSystemSelectPreferenceController.init(getPreferenceManager(), mSubId);
         mCdmaSubscriptionPreferenceController = use(CdmaSubscriptionPreferenceController.class);
@@ -226,64 +236,36 @@ public class MobileNetworkSettings extends RestrictedDashboardFragment {
     @Override
     public void onCreate(Bundle icicle) {
         Log.i(LOG_TAG, "onCreate:+");
+
+        final TelephonyStatusControlSession session =
+                setTelephonyAvailabilityStatus(getPreferenceControllersAsList());
+
         super.onCreate(icicle);
         final Context context = getContext();
-
         mUserManager = (UserManager) context.getSystemService(Context.USER_SERVICE);
         mTelephonyManager = context.getSystemService(TelephonyManager.class)
                 .createForSubscriptionId(mSubId);
 
+        session.close();
+
         onRestoreInstance(icicle);
-    }
-
-    @Override
-    public void onExpandButtonClick() {
-        final PreferenceScreen screen = getPreferenceScreen();
-        mHiddenControllerList.stream()
-                .filter(controller -> controller.isAvailable())
-                .forEach(controller -> {
-                    final String key = controller.getPreferenceKey();
-                    final Preference preference = screen.findPreference(key);
-                    controller.updateState(preference);
-                });
-        super.onExpandButtonClick();
-    }
-
-    /*
-     * Replace design within {@link DashboardFragment#updatePreferenceStates()}
-     */
-    @Override
-    protected void updatePreferenceStates() {
-        mHiddenControllerList = new ArrayList<AbstractPreferenceController>();
-
-        final PreferenceScreen screen = getPreferenceScreen();
-        final Collection<List<AbstractPreferenceController>> controllerLists =
-                getPreferenceControllers();
-        controllerLists.stream().flatMap(Collection::stream)
-                .forEach(controller -> {
-                    final String key = controller.getPreferenceKey();
-                    if (TextUtils.isEmpty(key)) {
-                        return;
-                    }
-                    final Preference preference = screen.findPreference(key);
-                    if (preference == null) {
-                        return;
-                    }
-                    if (!isPreferenceExpanded(preference)) {
-                        mHiddenControllerList.add(controller);
-                        return;
-                    }
-                    if (!controller.isAvailable()) {
-                        return;
-                    }
-                    controller.updateState(preference);
-                });
     }
 
     @Override
     public void onResume() {
         Log.i(LOG_TAG, "onResume:+");
         super.onResume();
+        if (mActiveSubsciptionsListener == null) {
+            mActiveSubsciptionsListener = new ActiveSubsciptionsListener(
+                    getContext().getMainLooper(), getContext(), mSubId) {
+                public void onChanged() {
+                    onSubscriptionDetailChanged();
+                }
+            };
+            mDropFirstSubscriptionChangeNotify = true;
+        }
+        mActiveSubsciptionsListener.start();
+
         Context context = getContext();
         if (context != null) {
             context.registerReceiver(mSimStateReceiver,
@@ -291,6 +273,31 @@ public class MobileNetworkSettings extends RestrictedDashboardFragment {
         } else {
             Log.i(LOG_TAG, "context is null, not registering SimStateReceiver");
         }
+    }
+
+    private void onSubscriptionDetailChanged() {
+        if (mDropFirstSubscriptionChangeNotify) {
+            mDropFirstSubscriptionChangeNotify = false;
+            Log.d(LOG_TAG, "Callback during onResume()");
+            return;
+        }
+        mActiveSubsciptionsListenerCount++;
+        if (mActiveSubsciptionsListenerCount != 1) {
+            return;
+        }
+
+        ThreadUtils.postOnMainThread(() -> {
+            mActiveSubsciptionsListenerCount = 0;
+            redrawPreferenceControllers();
+        });
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mActiveSubsciptionsListener != null) {
+            mActiveSubsciptionsListener.stop();
+        }
+        super.onDestroy();
     }
 
     @Override

@@ -1461,7 +1461,10 @@ public class ManageApplications extends InstrumentedFragment
                 ApplicationsState.AppEntry entry = mEntries.get(position);
                 synchronized (entry) {
                     holder.setTitle(entry.label);
-                    holder.setIcon(Utils.getBadgedIcon(mContext, entry.info));
+                    mState.ensureLabelDescription(entry);
+                    holder.itemView.setContentDescription(entry.labelDescription);
+                    mState.ensureIcon(entry);
+                    holder.setIcon(entry.icon);
                     updateSummary(holder, entry);
                     updateSwitch(holder, entry);
                     holder.updateDisableView(entry.info);

@@ -16,6 +16,8 @@
 
 package com.android.settings.accessibility;
 
+import static com.android.settings.accessibility.AccessibilityStatsLogUtils.logAccessibilityServiceEnabled;
+
 import android.accessibilityservice.AccessibilityShortcutInfo;
 import android.app.ActivityOptions;
 import android.content.ActivityNotFoundException;
@@ -55,6 +57,7 @@ public class LaunchAccessibilityActivityPreferenceFragment extends
 
     @Override
     protected void onPreferenceToggled(String preferenceKey, boolean enabled) {
+        logAccessibilityServiceEnabled(mComponentName, enabled);
         launchShortcutTargetActivity(getPrefContext().getDisplayId(), mComponentName);
     }
 
@@ -101,6 +104,12 @@ public class LaunchAccessibilityActivityPreferenceFragment extends
     }
 
     @Override
+    int getUserShortcutTypes() {
+        return AccessibilityUtil.getUserShortcutTypesFromSettings(getPrefContext(),
+                mComponentName);
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Do not call super. We don't want to see the "Help & feedback" option on this page so as
         // not to confuse users who think they might be able to send feedback about a specific
@@ -139,7 +148,7 @@ public class LaunchAccessibilityActivityPreferenceFragment extends
         final Bundle bundle = ActivityOptions.makeBasic().setLaunchDisplayId(displayId).toBundle();
 
         intent.setComponent(name);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {
             final int userId = UserHandle.myUserId();
             getPrefContext().startActivityAsUser(intent, bundle, UserHandle.of(userId));

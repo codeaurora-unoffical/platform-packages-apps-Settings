@@ -38,6 +38,7 @@ import com.android.settingslib.bluetooth.BluetoothCallback;
 import com.android.settingslib.bluetooth.LocalBluetoothManager;
 import com.android.settingslib.media.LocalMediaManager;
 import com.android.settingslib.media.MediaDevice;
+import com.android.settingslib.utils.ThreadUtils;
 
 import com.google.common.annotations.VisibleForTesting;
 
@@ -58,6 +59,7 @@ public class MediaOutputIndicatorWorker extends SliceBackgroundWorker implements
     private final Collection<MediaDevice> mMediaDevices = new CopyOnWriteArrayList<>();
 
     private LocalBluetoothManager mLocalBluetoothManager;
+    private String mPackageName;
 
     @VisibleForTesting
     LocalMediaManager mLocalMediaManager;
@@ -80,23 +82,29 @@ public class MediaOutputIndicatorWorker extends SliceBackgroundWorker implements
         mContext.registerReceiver(mReceiver, intentFilter);
         mLocalBluetoothManager.getEventManager().registerCallback(this);
 
-        if (mLocalMediaManager == null) {
+        ThreadUtils.postOnBackgroundThread(() -> {
             final MediaController controller = getActiveLocalMediaController();
-            String packageName = null;
-            if (controller != null) {
-                packageName = controller.getPackageName();
+            if (controller == null) {
+                mPackageName = null;
+            } else {
+                mPackageName = controller.getPackageName();
             }
-            mLocalMediaManager = new LocalMediaManager(mContext, packageName, null);
-        }
-
-        mLocalMediaManager.registerCallback(this);
-        mLocalMediaManager.startScan();
+            if (mLocalMediaManager == null || !TextUtils.equals(mPackageName,
+                    mLocalMediaManager.getPackageName())) {
+                mLocalMediaManager = new LocalMediaManager(mContext, mPackageName,
+                        null /* notification */);
+            }
+            mLocalMediaManager.registerCallback(this);
+            mLocalMediaManager.startScan();
+        });
     }
 
     @Override
     protected void onSliceUnpinned() {
-        mLocalMediaManager.unregisterCallback(this);
-        mLocalMediaManager.stopScan();
+        if (mLocalMediaManager != null) {
+            mLocalMediaManager.unregisterCallback(this);
+            mLocalMediaManager.stopScan();
+        }
 
         if (mLocalBluetoothManager == null) {
             Log.e(TAG, "Bluetooth is not supported on this device");
@@ -166,6 +174,10 @@ public class MediaOutputIndicatorWorker extends SliceBackgroundWorker implements
 
     MediaDevice getCurrentConnectedMediaDevice() {
         return mLocalMediaManager.getCurrentConnectedDevice();
+    }
+
+    String getPackageName() {
+        return mPackageName;
     }
 
     private class DevicesChangedBroadcastReceiver extends BroadcastReceiver {

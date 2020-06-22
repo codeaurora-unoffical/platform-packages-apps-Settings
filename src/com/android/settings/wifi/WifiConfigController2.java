@@ -46,6 +46,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.AccessibilityDelegate;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 import android.view.inputmethod.EditorInfo;
@@ -193,7 +194,6 @@ public class WifiConfigController2 implements TextWatcher,
     private ProxySettings mProxySettings = ProxySettings.UNASSIGNED;
     private ProxyInfo mHttpProxy = null;
     private StaticIpConfiguration mStaticIpConfiguration = null;
-    private boolean mRequestFocus = true;
 
     private String[] mLevels;
     private int mMode;
@@ -208,17 +208,10 @@ public class WifiConfigController2 implements TextWatcher,
 
     public WifiConfigController2(WifiConfigUiBase2 parent, View view, WifiEntry wifiEntry,
             int mode) {
-        this (parent, view, wifiEntry, mode, true /* requestFocus */);
-    }
-
-    public WifiConfigController2(WifiConfigUiBase2 parent, View view, WifiEntry wifiEntry,
-            int mode, boolean requestFocus) {
         mConfigUi = parent;
-
         mView = view;
         mWifiEntry = wifiEntry;
         mContext = mConfigUi.getContext();
-        mRequestFocus = requestFocus;
 
         // Init Wi-Fi manager
         mWifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
@@ -452,10 +445,8 @@ public class WifiConfigController2 implements TextWatcher,
             enableSubmitIfAppropriate();
         }
 
-        // After done view show and hide, request focus from parameter.
-        if (mRequestFocus) {
-            mView.findViewById(R.id.l_wifidialog).requestFocus();
-        }
+        // After done view show and hide, request focus
+        mView.findViewById(R.id.l_wifidialog).requestFocus();
     }
 
     @VisibleForTesting
@@ -1025,6 +1016,8 @@ public class WifiConfigController2 implements TextWatcher,
             mEapUserCertSpinner.setOnItemSelectedListener(this);
             mEapIdentityView = (TextView) mView.findViewById(R.id.identity);
             mEapAnonymousView = (TextView) mView.findViewById(R.id.anonymous);
+
+            setAccessibilityDelegateForSecuritySpinners();
         }
 
         if (refreshEapMethods) {
@@ -1153,6 +1146,26 @@ public class WifiConfigController2 implements TextWatcher,
         } else {
             showEapFieldsByMethod(mEapMethodSpinner.getSelectedItemPosition());
         }
+    }
+
+    private void setAccessibilityDelegateForSecuritySpinners() {
+        final AccessibilityDelegate selectedEventBlocker = new AccessibilityDelegate() {
+            @Override
+            public void sendAccessibilityEvent(View host, int eventType) {
+                if (eventType == AccessibilityEvent.TYPE_VIEW_SELECTED) {
+                    // Ignore TYPE_VIEW_SELECTED or there will be multiple Spinner selected
+                    // information for WifiController2#showSecurityFields.
+                    return;
+                }
+                super.sendAccessibilityEvent(host, eventType);
+            }
+        };
+
+        mEapMethodSpinner.setAccessibilityDelegate(selectedEventBlocker);
+        mPhase2Spinner.setAccessibilityDelegate(selectedEventBlocker);
+        mEapCaCertSpinner.setAccessibilityDelegate(selectedEventBlocker);
+        mEapOcspSpinner.setAccessibilityDelegate(selectedEventBlocker);
+        mEapUserCertSpinner.setAccessibilityDelegate(selectedEventBlocker);
     }
 
     /**
@@ -1590,15 +1603,8 @@ public class WifiConfigController2 implements TextWatcher,
         } else if (parent == mProxySettingsSpinner) {
             showProxyFields();
         } else if (parent == mHiddenSettingsSpinner) {
-            mHiddenWarningView.setVisibility(
-                    position == NOT_HIDDEN_NETWORK
-                            ? View.GONE
-                            : View.VISIBLE);
-            if (position == HIDDEN_NETWORK) {
-                mDialogContainer.post(() -> {
-                    mDialogContainer.fullScroll(View.FOCUS_DOWN);
-                });
-            }
+            mHiddenWarningView.setVisibility(position == NOT_HIDDEN_NETWORK
+                    ? View.GONE : View.VISIBLE);
         } else {
             showIpConfigFields();
         }

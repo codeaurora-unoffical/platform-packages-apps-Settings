@@ -138,7 +138,10 @@ public class AppInfoDashboardFragment extends DashboardFragment
     public void onAttach(Context context) {
         super.onAttach(context);
         final String packageName = getPackageName();
-        use(TimeSpentInAppPreferenceController.class).setPackageName(packageName);
+        final TimeSpentInAppPreferenceController timeSpentInAppPreferenceController = use(
+                TimeSpentInAppPreferenceController.class);
+        timeSpentInAppPreferenceController.setPackageName(packageName);
+        timeSpentInAppPreferenceController.initLifeCycleOwner(this);
 
         use(AppDataUsagePreferenceController.class).setParentFragment(this);
         final AppInstallerInfoPreferenceController installer =
@@ -147,7 +150,11 @@ public class AppInfoDashboardFragment extends DashboardFragment
         installer.setParentFragment(this);
         use(AppInstallerPreferenceCategoryController.class).setChildren(Arrays.asList(installer));
         use(AppNotificationPreferenceController.class).setParentFragment(this);
-        use(AppOpenByDefaultPreferenceController.class).setParentFragment(this);
+
+        use(AppOpenByDefaultPreferenceController.class)
+                .setPackageName(packageName)
+                .setParentFragment(this);
+
         use(AppPermissionPreferenceController.class).setParentFragment(this);
         use(AppPermissionPreferenceController.class).setPackageName(packageName);
         use(AppSettingPreferenceController.class)
@@ -283,6 +290,11 @@ public class AppInfoDashboardFragment extends DashboardFragment
         controllers.add(new DefaultSmsShortcutPreferenceController(context, packageName));
 
         return controllers;
+    }
+
+    @Override
+    protected boolean isParalleledControllers() {
+        return true;
     }
 
     void addToCallbackList(Callback callback) {
