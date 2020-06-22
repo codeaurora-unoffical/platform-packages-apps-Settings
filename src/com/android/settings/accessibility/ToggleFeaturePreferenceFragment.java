@@ -28,6 +28,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
+import android.icu.text.CaseMap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -61,6 +62,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
@@ -126,15 +128,6 @@ public abstract class ToggleFeaturePreferenceFragment extends SettingsPreference
                     getPrefContext());
             setPreferenceScreen(preferenceScreen);
         }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
-        mTouchExplorationStateChangeListener = isTouchExplorationEnabled -> {
-            removeDialog(DialogEnums.EDIT_SHORTCUT);
-            mShortcutPreference.setSummary(getShortcutTypeSummary(getPrefContext()));
-        };
 
         final List<String> shortcutFeatureKeys = new ArrayList<>();
         shortcutFeatureKeys.add(Settings.Secure.ACCESSIBILITY_BUTTON_TARGETS);
@@ -145,6 +138,15 @@ public abstract class ToggleFeaturePreferenceFragment extends SettingsPreference
                 updateShortcutPreferenceData();
                 updateShortcutPreference();
             }
+        };
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+            Bundle savedInstanceState) {
+        mTouchExplorationStateChangeListener = isTouchExplorationEnabled -> {
+            removeDialog(DialogEnums.EDIT_SHORTCUT);
+            mShortcutPreference.setSummary(getShortcutTypeSummary(getPrefContext()));
         };
         return super.onCreateView(inflater, container, savedInstanceState);
     }
@@ -581,7 +583,7 @@ public abstract class ToggleFeaturePreferenceFragment extends SettingsPreference
         }
         if ((shortcutTypes & UserShortcutType.HARDWARE) == UserShortcutType.HARDWARE) {
             final CharSequence hardwareTitle = context.getText(
-                    R.string.accessibility_shortcut_edit_dialog_title_hardware);
+                    R.string.accessibility_shortcut_hardware_keyword);
             list.add(hardwareTitle);
         }
 
@@ -590,7 +592,9 @@ public abstract class ToggleFeaturePreferenceFragment extends SettingsPreference
             list.add(softwareTitle);
         }
         final String joinStrings = TextUtils.join(/* delimiter= */", ", list);
-        return AccessibilityUtil.capitalize(joinStrings);
+
+        return CaseMap.toTitle().wholeString().noLowercase().apply(Locale.getDefault(), /* iter= */
+                null, joinStrings);
     }
 
     protected int getUserShortcutTypes(Context context, @UserShortcutType int defaultValue) {
