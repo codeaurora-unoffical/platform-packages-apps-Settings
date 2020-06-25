@@ -448,7 +448,7 @@
     <string name="security_settings_face_settings_require_confirmation_details" msgid="6454776517804994007">"При користење „Отклучување со лик“ во апликации, секогаш барај потврда"</string>
     <string name="security_settings_face_settings_remove_face_data" msgid="6491161841504747384">"Избриши под. за лик"</string>
     <string name="security_settings_face_settings_enroll" msgid="4656842124181309056">"Поставете „Отклучување со лик“"</string>
-    <string name="security_settings_face_settings_footer" msgid="4263048343191609059">"Користете „Отклучување со лик“ за отклучување на уредот, најавување на апликации и потврдување плаќања.\n\nИмајте предвид:\nТелефонот може да се отклучи кога гледате во него, дури и ако немате таква намера.\n\nНекој друг може да го отклучи вашиот телефон ако го подигне до вашиот лик кога очите ви се отворени.\n\nТелефонот може да го отклучи некој што многу наликува на вас, на пример, ваш идентичен близнак."</string>
+    <string name="security_settings_face_settings_footer" msgid="5545455769328594736">"Користете „Отклучување со лик“ за отклучување на уредот, најавување на апликации и потврдување плаќања.\n\nИмајте предвид:\nТелефонот може да се отклучи кога гледате во него, дури и ако немате таква намера.\n\nНекој друг може да го отклучи вашиот телефон ако го подигне до вашиот лик.\n\nТелефонот може да го отклучи некој што многу наликува на вас, на пример, ваш идентичен близнак."</string>
     <string name="security_settings_face_settings_footer_attention_not_supported" msgid="4460565590744451205">"Користете „Отклучување со лик“ за отклучување на уредот, најавување на апликации и потврдување плаќања.\n\nИмајте предвид:\nПоглед кон телефонот може да го отклучи и кога немате таква намера.\n\nНекој друг може да го отклучи вашиот телефон ако го подигне до вашиот лик, дури и ако очите ви се затворени.\n\nНекој што многу наликува на вас може да го отклучи вашиот телефон, на пример, ваш идентичен близнак."</string>
     <string name="security_settings_face_settings_remove_dialog_title" msgid="2596803378375165362">"Да се избришат податоците за ликот?"</string>
     <string name="security_settings_face_settings_remove_dialog_details" msgid="3458998128212675289">"Податоците за лицето што се користат за „Отклучување со лик“ ќе се избришат трајно и безбедно. По отстранувањето, ќе ви треба PIN, шема или лозинка за да го отклучувате телефонот, да се најавувате на апликациите и да ги потврдувате плаќањата."</string>
@@ -1743,7 +1743,7 @@
     <string name="copyright_title" msgid="83245306827757857">"Авторски права"</string>
     <string name="license_title" msgid="8745742085916617540">"Лиценца"</string>
     <string name="module_license_title" msgid="8705484239826702828">"Лиценци за ажурирање на системот на Google Play"</string>
-    <string name="terms_title" msgid="2071742973672326073">"Правила и услови"</string>
+    <string name="terms_title" msgid="2071742973672326073">"Одредби и услови"</string>
     <string name="webview_license_title" msgid="5832692241345780517">"Системска лиценца за WebView"</string>
     <string name="wallpaper_attributions" msgid="3080339190260272255">"Тапети"</string>
     <string name="wallpaper_attributions_values" msgid="987277439026021925">"Извор на сателитски снимки:\n©2014 CNES/Astrium, DigitalGlobe, Bluesky"</string>
@@ -2394,10 +2394,8 @@
     <string name="battery_tip_dialog_summary_message" product="device" msgid="8222461068860745749">"Вашите апликации користат нормално количество батерија. Ако апликациите трошат многу батерија, уредот ќе ви каже што може да преземете.\n\nСекогаш може да вклучите „Штедач на батерија“ ако батеријата ви е при крај."</string>
     <string name="smart_battery_manager_title" msgid="3677620516657920364">"Управник со батерија"</string>
     <string name="smart_battery_title" msgid="9095903608520254254">"Автоматско управување со апликациите"</string>
-    <string name="smart_battery_summary" msgid="1492277404000064998">"Ограничете ја батеријата за апликации што не ги користите често"</string>
-    <string name="smart_battery_footer" product="default" msgid="8407121907452993645">"Кога „Управникот со батерија“ ќе открие дека апликациите трошат батерија, ќе имате опција да ги ограничите тие апликации. Ограничените апликации може да не работат правилно и известувањата може да бидат одложени."</string>
-    <string name="smart_battery_footer" product="tablet" msgid="8407121907452993645">"Кога „Управникот со батерија“ ќе открие дека апликациите трошат батерија, ќе имате опција да ги ограничите тие апликации. Ограничените апликации може да не работат правилно и известувањата може да бидат одложени."</string>
-    <string name="smart_battery_footer" product="device" msgid="8407121907452993645">"Кога „Управникот со батерија“ ќе открие дека апликациите трошат батерија, ќе имате опција да ги ограничите тие апликации. Ограничените апликации може да не работат правилно и известувањата може да бидат одложени."</string>
+    <string name="smart_battery_summary" product="default" msgid="1492277404000064998">"Ограничете ја батеријата за апликации што не ги користите често"</string>
+    <string name="smart_battery_footer" msgid="8407121907452993645">"Кога „Управникот со батерија“ ќе открие дека апликациите трошат батерија, ќе имате опција да ги ограничите тие апликации. Ограничените апликации може да не работат правилно и известувањата може да бидат одложени."</string>
     <string name="restricted_app_title" msgid="6585080822121007436">"Ограничени апликации"</string>
     <plurals name="restricted_app_summary" formatted="false" msgid="6059772951505411003">
       <item quantity="one">Ограничување на користењето батерија за %1$d апликација</item>
@@ -2407,7 +2405,7 @@
     <string name="restricted_app_detail_footer" msgid="3683577206409650564">"Овие апликации ја користеле батеријата во заднина. Ограничените апликации може да не работат правилно и известувањата може да бидат одложени."</string>
     <string name="battery_auto_restriction_title" msgid="827206218118093357">"Користење управник со батерија"</string>
     <string name="battery_auto_restriction_summary" msgid="2140896101984815711">"Откријте кога апликациите ја трошат батеријата"</string>
-    <string name="battery_manager_on" msgid="3197525907390349054">"Вклучено/Се открива кога апликациите ја трошат батеријата"</string>
+    <string name="battery_manager_on" product="default" msgid="3197525907390349054">"Вклучено/Се открива кога апликациите ја трошат батеријата"</string>
     <string name="battery_manager_off" msgid="673547668722420924">"Исклучен"</string>
     <plurals name="battery_manager_app_restricted" formatted="false" msgid="6714534362166394848">
       <item quantity="one">%1$d апликација е ограничена</item>
@@ -3699,9 +3697,9 @@
     <string name="slot_number" msgid="2663789411468530397">"(Отвор<xliff:g id="SLOT_NUM">%1$d</xliff:g>)"</string>
     <string name="launch_by_default" msgid="892824422067985734">"Отвори стандардно"</string>
     <string name="app_launch_domain_links_title" msgid="6702041169676128550">"За отворање линкови"</string>
-    <string name="app_launch_open_domain_urls_title" msgid="4805388403977096285">"Отвори поддржани врски"</string>
+    <string name="app_launch_open_domain_urls_title" msgid="4805388403977096285">"Отворај поддржани линкови"</string>
     <string name="app_launch_open_domain_urls_summary" msgid="3609156836041234957">"Отвори без прашање"</string>
-    <string name="app_launch_supported_domain_urls_title" msgid="5088779668667217369">"Поддржани врски"</string>
+    <string name="app_launch_supported_domain_urls_title" msgid="5088779668667217369">"Поддржани линкови"</string>
     <string name="app_launch_other_defaults_title" msgid="3296350563585863885">"Останати стандарди"</string>
     <string name="storage_summary_format" msgid="5721782272185284276">"<xliff:g id="SIZE">%1$s</xliff:g> употребени во <xliff:g id="STORAGE_TYPE">%2$s</xliff:g>"</string>
     <string name="storage_type_internal" msgid="8072987826282477558">"Внатрешен капацитет"</string>
@@ -3759,7 +3757,7 @@
     <string name="tap_to_wake" msgid="3313433536261440068">"Допрете за будење"</string>
     <string name="tap_to_wake_summary" msgid="6641039858241611072">"Допрете двапати каде било на екранот за да го разбудите уредот"</string>
     <string name="domain_urls_title" msgid="7012209752049678876">"За отворање линкови"</string>
-    <string name="domain_urls_summary_none" msgid="1132578967643384733">"Не отворај поддржани врски"</string>
+    <string name="domain_urls_summary_none" msgid="1132578967643384733">"Не отворај поддржани линкови"</string>
     <string name="domain_urls_summary_one" msgid="3312008753802762892">"Отвори <xliff:g id="DOMAIN">%s</xliff:g>"</string>
     <string name="domain_urls_summary_some" msgid="1197692164421314523">"Отворете <xliff:g id="DOMAIN">%s</xliff:g> и други URL-адреси"</string>
     <string name="domain_urls_apps_summary_off" msgid="2534980824850890416">"Ниедна апликација не отвора поддржани линкови"</string>
@@ -4620,7 +4618,7 @@
     <string name="copyable_slice_toast" msgid="1008251852798990606">"<xliff:g id="COPY_CONTENT">%1$s</xliff:g> копирано во привремената меморија."</string>
     <string name="search_bar_account_avatar_content_description" msgid="880523277036898350"></string>
     <string name="permission_bar_chart_empty_text" msgid="4856719891991325077">"0 апликации користеле дозволи"</string>
-    <string name="permission_bar_chart_title" msgid="2493212904955611441">"Користење дозволи во последните 24 часа"</string>
+    <string name="permission_bar_chart_title" msgid="2493212904955611441">"Користење дозволи во минатите 24 часа"</string>
     <string name="permission_bar_chart_details" msgid="5816698018592357088">"Прикажи ги сите на контролната табла"</string>
     <plurals name="permission_bar_chart_label" formatted="false" msgid="4853396794340896078">
       <item quantity="one"><xliff:g id="NUMBER">%s</xliff:g> апликација</item>
