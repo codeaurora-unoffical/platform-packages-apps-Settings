@@ -448,7 +448,7 @@
     <string name="security_settings_face_settings_require_confirmation_details" msgid="6454776517804994007">"মুখাৱয়বেৰে আনলক কৰা সুবিধাৰে এপ্‌ খোলোঁতে প্ৰতিবাৰেই নিশ্চিতকৰণৰ প্ৰয়োজন"</string>
     <string name="security_settings_face_settings_remove_face_data" msgid="6491161841504747384">"মুখমণ্ডলৰ ডেটা মচক"</string>
     <string name="security_settings_face_settings_enroll" msgid="4656842124181309056">"মুখাৱয়বৰদ্বাৰা আনলক কৰা সুবিধা ছেটআপ কৰক"</string>
-    <string name="security_settings_face_settings_footer" msgid="4263048343191609059">"আপোনাৰ ডিভাইচ আনলক কৰিবলৈ, এপত ছাইন ইন কৰিবলৈ আৰু পৰিশোধসমূহ নিশ্চিত কৰিবলৈ মুখাৱয়বৰ দ্বাৰা খোলাৰ সুবিধা ব্যৱহাৰ কৰক।\n\nমনত ৰাখিব:\nআপুনি নিবিচাৰিলেও ফ’নটোলৈ চোৱাৰ ফলত সেইটো আনলক হ’ব।\n\nআপোনাৰ দুচকু খোলা ৰাখিলে আন কোনোবাই ফ’নটো আপোনাৰ মুখৰ আগত দাঙি ধৰিও সেইটো আনলক কৰিব পাৰে।\n\nআপোনাৰ ফ’নটো এনে কোনো লোকেও আনলক কৰিব পাৰে যি দেখাত প্ৰায় আপোনাৰ দৰে, যেনে আপোনাৰ সন্তান বা দেখাত একেই ভাতৃ-ভগ্নী।"</string>
+    <string name="security_settings_face_settings_footer" msgid="5545455769328594736">"আপোনাৰ ডিভাইচ আনলক কৰিবলৈ, এপত ছাইন ইন কৰিবলৈ আৰু পৰিশোধসমূহ নিশ্চিত কৰিবলৈ মুখাৱয়বৰ দ্বাৰা খোলাৰ সুবিধাটো ব্যৱহাৰ কৰক।\n\nমনত ৰাখিব:\nআপুনি নিবিচাৰিলেও ফ’নটোলৈ চোৱাৰ ফলত সেইটো আনলক হ’ব পাৰে।\n\nঅন্য কোনোবাই আপোনাৰ ফ’নটো আপোনাৰ মুখৰ আগত দাঙি ধৰি আনলক কৰিব পাৰে।\n\nআপোনাৰ ফ’নটো এনে কোনো লোকেও আনলক কৰিব পাৰে যি দেখাত প্ৰায় আপোনাৰ দৰে, যেনে একেই সহোদৰ-সহোদৰা।"</string>
     <string name="security_settings_face_settings_footer_attention_not_supported" msgid="4460565590744451205">"আপোনাৰ ডিভাইচটো আনলক কৰিবলৈ মুখাৱয়বৰ দ্বাৰা আনলক কৰা সুবিধাটো ব্যৱহাৰ কৰক, এপ্‌সমূহত ছাইন ইন কৰক আৰু পৰিশোধসমূহ নিশ্চিত কৰক।\n\n মনত ৰাখিব:\nআপুনি নিবিচাৰিলেও ফ’নটোলৈ চোৱাৰ ফলত সেইটো আনলক হ’ব পাৰে।\n\nআপোনাৰ দুচকু বন্ধ হৈ থাকিলেও আন কোনোবাই ফ’নটো আপোনাৰ মুখৰ আগত দাঙি ধৰি সেইটো আনলক কৰিব পাৰে।\n\nআপোনাৰ ফ’নটো এনে কোনো লোকেও আনলক কৰিব পাৰে যি দেখাত বহুখিনি আপোনাৰ দৰে, যেনে দেখাত একেই সহোদৰ-সহোদৰা।"</string>
     <string name="security_settings_face_settings_remove_dialog_title" msgid="2596803378375165362">"মুখমণ্ডলৰ ডেটা মচিবনে?"</string>
     <string name="security_settings_face_settings_remove_dialog_details" msgid="3458998128212675289">"মুখাৱয়বৰ দ্বাৰা আনলক কৰা সুবিধাটোৱে ব্যৱহাৰ কৰা মুখাৱয়ব সম্পৰ্কীয় ডেটা স্থায়ী আৰু সুৰক্ষিতভাৱে মচা হ’ব। আঁতৰোৱাৰ পাছত, আপোনাৰ ফ’নটো আনলক কৰিবলৈ, এপ্‌সমূহত ছাইন ইন কৰিবলৈ আৰু পৰিশোধসমূহ নিশ্চিত কৰিবলৈ আপোনাক নিজৰ পিন, আৰ্হি অথবা পাছৱৰ্ডৰ প্ৰয়োজন হ’ব।"</string>
@@ -2394,10 +2394,8 @@
     <string name="battery_tip_dialog_summary_message" product="device" msgid="8222461068860745749">"আপোনাৰ এপসমূহে বৰ্তমান সাধাৰণ পৰিমাণৰ বেটাৰি ব্যৱহাৰ কৰি আছে। যদিহে এপসমূহে অত্যধিক বেটাৰি ব্যৱহাৰ কৰে, তেন্তে আপোনাৰ ডিভাইচটোৱে আপুনি ল\'ব পৰা কাৰ্যপন্থাৰ বিষয়ে আপোনাক পৰামৰ্শ দিব।\n\nবেটাৰি কমি গ\'লে আপুনি সদায় বেটাৰি সঞ্চয়কাৰী অন কৰিব পাৰে।"</string>
     <string name="smart_battery_manager_title" msgid="3677620516657920364">"বেটাৰি মেনেজাৰ"</string>
     <string name="smart_battery_title" msgid="9095903608520254254">"এপসমূহক স্বয়ংক্ৰিয়ভাৱে পৰিচালনা কৰক"</string>
-    <string name="smart_battery_summary" msgid="1492277404000064998">"আপুনি সঘনাই ব্য়ৱহাৰ নকৰা এপসমূহৰ বাবে বেটাৰিৰ ব্য়ৱহাৰ সীমিত কৰক"</string>
-    <string name="smart_battery_footer" product="default" msgid="8407121907452993645">"বেটাৰি মেনেজাৰে যেতিয়া এপসমূহে বেছিকৈ বেটাৰিৰ চ্চাৰ্জ হ্ৰাস কৰাটো চিনাক্ত কৰে তেতিয়া আপোনাৰ লগত এই এপসমূহক সীমিত কৰাৰ সুবিধা থাকিব। সীমিত কৰা এপসমূহে ভালকৈ কাম নকৰিব পাৰে আৰু জাননীসমূহ পলমকৈ আহিব পাৰে।"</string>
-    <string name="smart_battery_footer" product="tablet" msgid="8407121907452993645">"বেটাৰি মেনেজাৰে যেতিয়া এপসমূহে বেছিকৈ বেটাৰিৰ চ্চাৰ্জ হ্ৰাস কৰাটো চিনাক্ত কৰে তেতিয়া আপোনাৰ লগত এই এপসমূহক সীমিত কৰাৰ সুবিধা থাকিব। সীমিত কৰা এপসমূহে ভালকৈ কাম নকৰিব পাৰে আৰু জাননীসমূহ পলমকৈ আহিব পাৰে।"</string>
-    <string name="smart_battery_footer" product="device" msgid="8407121907452993645">"বেটাৰি মেনেজাৰে যেতিয়া এপসমূহে বেছিকৈ বেটাৰিৰ চ্চাৰ্জ হ্ৰাস কৰাটো চিনাক্ত কৰে তেতিয়া আপোনাৰ লগত এই এপসমূহক সীমিত কৰাৰ সুবিধা থাকিব। সীমিত কৰা এপসমূহে ভালকৈ কাম নকৰিব পাৰে আৰু জাননীসমূহ পলমকৈ আহিব পাৰে।"</string>
+    <string name="smart_battery_summary" product="default" msgid="1492277404000064998">"আপুনি সঘনাই ব্য়ৱহাৰ নকৰা এপসমূহৰ বাবে বেটাৰিৰ ব্য়ৱহাৰ সীমিত কৰক"</string>
+    <string name="smart_battery_footer" msgid="8407121907452993645">"বেটাৰি মেনেজাৰে যেতিয়া এপসমূহে বেছিকৈ বেটাৰিৰ চ্চাৰ্জ হ্ৰাস কৰাটো চিনাক্ত কৰে তেতিয়া আপোনাৰ লগত এই এপসমূহক সীমিত কৰাৰ সুবিধা থাকিব। সীমিত কৰা এপসমূহে ভালকৈ কাম নকৰিব পাৰে আৰু জাননীসমূহ পলমকৈ আহিব পাৰে।"</string>
     <string name="restricted_app_title" msgid="6585080822121007436">"সীমাবদ্ধ কৰা এপসমূহ"</string>
     <plurals name="restricted_app_summary" formatted="false" msgid="6059772951505411003">
       <item quantity="one">%1$dটা এপৰ বেটাৰি ব্য়ৱহাৰ সীমিতকৰণ</item>
@@ -2407,7 +2405,7 @@
     <string name="restricted_app_detail_footer" msgid="3683577206409650564">"এই এপসমূহে বহু সময়ধৰি নেপথ্য়ত বেটাৰি ব্য়ৱহাৰ কৰি আছে। সীমিত কৰা এপসমূহে ভালকৈ কাম নকৰিবও পাৰে আৰু জাননীসমূহ পলমকৈ আহিব পাৰে।"</string>
     <string name="battery_auto_restriction_title" msgid="827206218118093357">"বেটাৰি মেনেজাৰ ব্য়ৱহাৰ কৰক"</string>
     <string name="battery_auto_restriction_summary" msgid="2140896101984815711">"এপসমূহে বেটাৰিৰ চ্চাৰ্জ বেছিকৈ হ্ৰাস কৰাটো চিনাক্ত কৰক"</string>
-    <string name="battery_manager_on" msgid="3197525907390349054">"অন আছে / এপসমূহে বেটাৰিৰ চ্চাৰ্জ বেছিকৈ হ্ৰাস কৰাটো চিনাক্ত কৰি থকা হৈছে"</string>
+    <string name="battery_manager_on" product="default" msgid="3197525907390349054">"অন আছে / এপসমূহে বেটাৰিৰ চ্চাৰ্জ বেছিকৈ হ্ৰাস কৰাটো চিনাক্ত কৰি থকা হৈছে"</string>
     <string name="battery_manager_off" msgid="673547668722420924">"অফ অৱস্থাত আছে"</string>
     <plurals name="battery_manager_app_restricted" formatted="false" msgid="6714534362166394848">
       <item quantity="one">%1$d এপক নিষিদ্ধ কৰা হ’ল</item>
@@ -2694,7 +2692,7 @@
     <string name="sync_one_time_sync" msgid="8114337154112057462">"এতিয়াই ছিংক কৰিবলৈ টিপক<xliff:g id="LAST_SYNC_TIME">
 %1$s</xliff:g>"</string>
     <string name="sync_gmail" msgid="228561698646018808">"Gmail"</string>
-    <string name="sync_calendar" msgid="4603704438090387251">"কেলেণ্ডাৰ"</string>
+    <string name="sync_calendar" msgid="4603704438090387251">"Calendar"</string>
     <string name="sync_contacts" msgid="2376465611511325472">"সম্পৰ্কসমূহ"</string>
     <string name="sync_plug" msgid="7956982719077985381"><font fgcolor="#ffffffff">"Google ছিংকলৈ আপোনাক স্বাগতম!"</font>" \nডেটা ছিংক কৰাৰ এইয়া Googleৰ এটা পদক্ষেপ, যাৰদ্বাৰা আপুনি য\'তেই নাথাকক ত\'তে সম্পৰ্কসূচী, সাক্ষাতৰ সময়সূচীকে ধৰি আপোনাৰ বাবে অতি দৰকাৰী তথ্যসমূহ থাওকতে পাব।"</string>
     <string name="header_application_sync_settings" msgid="7427706834875419243">"এপৰ ছিংক ছেটিংসমূহ"</string>
@@ -3389,13 +3387,13 @@
     <string name="hide_silent_icons_title" msgid="5951392023601167577">"সাধাৰণ জাননীসমূহৰ পৰা আইকনসমূহ লুকুৱাওক"</string>
     <string name="hide_silent_icons_summary" msgid="623763437631637232">"সাধাৰণ জাননীসমূহৰ আইকনসমূহ স্থিতিৰ দণ্ডত দেখুওৱা নহয়"</string>
     <string name="notification_badging_title" msgid="3149547223586336353">"জাননী বিন্দুক অনুমতি দিয়ক"</string>
-    <string name="notification_bubbles_title" msgid="5681506665322329301">"বাবল"</string>
-    <string name="notification_bubbles_developer_setting_summary" msgid="3675697756601760093">"কিছুমান জাননী স্ক্ৰীণত বাবল হিচাপে দেখা যাব পাৰে"</string>
-    <string name="bubbles_feature_education" msgid="4088275802688887634">"কিছুমান জাননী আৰু অন্য সমল স্ক্ৰীণত বাবল হিচাপে দেখা যাব পাৰে। কোনো এটা বাবল খুলিবলৈ তাত টিপক। সোইটো অগ্ৰাহ্য কৰিবলৈ, টানি আনি স্ক্ৰীণৰ তলৰ অংশত এৰক।"</string>
-    <string name="bubbles_app_toggle_title" msgid="5319021259954576150">"বাবল"</string>
-    <string name="bubbles_app_toggle_summary" msgid="1574515698567947948">"<xliff:g id="APP_NAME">%1$s</xliff:g> এপক কিছুমান জাননী বাবল হিচাপে দেখুৱাবলৈ অনুমতি দিয়ক"</string>
-    <string name="bubbles_feature_disabled_dialog_title" msgid="1233382767099262132">"বাবল অন কৰক"</string>
-    <string name="bubbles_feature_disabled_dialog_text" msgid="6969068442520056407">"আপুনি এই এপ্‌টোৰ বাবল অন কৰিবলৈ প্ৰথমে নিজৰ ডিভাইচৰ বাবল অন কৰাৰ প্ৰয়োজন। এই কাৰ্যই আপুনি আগতে বাবল অন কৰা অন্য এপ্‌বোৰৰ ক্ষেত্ৰত প্ৰভাৱ পেলায়।"</string>
+    <string name="notification_bubbles_title" msgid="5681506665322329301">"Bubbles"</string>
+    <string name="notification_bubbles_developer_setting_summary" msgid="3675697756601760093">"কিছুমান জাননী স্ক্ৰীণত bubbles হিচাপে দেখা যাব পাৰে"</string>
+    <string name="bubbles_feature_education" msgid="4088275802688887634">"কিছুমান জাননী আৰু অন্য সমল স্ক্ৰীণত bubbles হিচাপে দেখা যাব পাৰে। কোনো এটা bubble খুলিবলৈ তাত টিপক। সোইটো অগ্ৰাহ্য কৰিবলৈ, টানি আনি স্ক্ৰীণৰ তলৰ অংশত এৰক।"</string>
+    <string name="bubbles_app_toggle_title" msgid="5319021259954576150">"Bubbles"</string>
+    <string name="bubbles_app_toggle_summary" msgid="1574515698567947948">"<xliff:g id="APP_NAME">%1$s</xliff:g> এপক কিছুমান জাননী bubbles হিচাপে দেখুৱাবলৈ অনুমতি দিয়ক"</string>
+    <string name="bubbles_feature_disabled_dialog_title" msgid="1233382767099262132">"Bubbles অন কৰক"</string>
+    <string name="bubbles_feature_disabled_dialog_text" msgid="6969068442520056407">"আপুনি এই এপ্‌টোৰ bubbles অন কৰিবলৈ প্ৰথমে নিজৰ ডিভাইচৰ bubbles অন কৰাৰ প্ৰয়োজন। এই কাৰ্যই আপুনি আগতে bubbles অন কৰা অন্য এপ্‌বোৰৰ ক্ষেত্ৰত প্ৰভাৱ পেলায়।"</string>
     <string name="bubbles_feature_disabled_button_approve" msgid="597665528889599104">"ডিভাইচৰ বাবে অন কৰক"</string>
     <string name="bubbles_feature_disabled_button_cancel" msgid="8963409459448350600">"বাতিল কৰক"</string>
     <string name="swipe_direction_title" msgid="4260320464727178413">"ছোৱাইপ কাৰ্য"</string>

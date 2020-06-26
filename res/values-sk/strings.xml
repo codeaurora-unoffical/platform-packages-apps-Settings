@@ -454,7 +454,7 @@
     <string name="security_settings_face_settings_require_confirmation_details" msgid="6454776517804994007">"Pri používaní odomknutia tvárou v aplikáciách požadovať potvrdenie"</string>
     <string name="security_settings_face_settings_remove_face_data" msgid="6491161841504747384">"Odstrániť údaje o tvári"</string>
     <string name="security_settings_face_settings_enroll" msgid="4656842124181309056">"Nastaviť odomknutie tvárou"</string>
-    <string name="security_settings_face_settings_footer" msgid="4263048343191609059">"Odomknutím tvárou môžete odomykať zariadenie, prihlasovať sa do aplikácií a potvrdzovať platby.\n\nDôležité upozornenie:\nTelefón môžete náhodne odomknúť pohľadom, aj keď ste to nechceli urobiť.\n\nMôže ho odomknúť aj niekto iný, keď telefón namieri na vašu tvár a budete mať otvorené oči.\n\nMôže ho odomknúť aj osoba, ktorá sa na vás veľmi podobá, napríklad vaše dvojča."</string>
+    <string name="security_settings_face_settings_footer" msgid="5545455769328594736">"Odomknutím tvárou môžete odomykať zariadenie, prihlasovať sa do aplikácií a potvrdzovať platby.\n\nDôležité upozornenie:\nTelefón môžete náhodne odomknúť pohľadom, aj keď ste to nechceli urobiť.\n\nMôže ho odomknúť aj niekto iný, keď telefón namieri na vašu tvár.\n\nMôže ho odomknúť aj osoba, ktorá sa na vás veľmi podobá, napríklad vaše dvojča."</string>
     <string name="security_settings_face_settings_footer_attention_not_supported" msgid="4460565590744451205">"Odomknutím tvárou môžete odomykať zariadenie, prihlasovať sa do aplikácií a potvrdzovať platby.\n\nDôležité upozornenie:\nTelefón môžete náhodne odomknúť pohľadom, aj keď ste to nechceli urobiť.\n\nMôže ho odomknúť aj niekto iný, keď telefón namieri na vašu tvár, a to dokonca aj vtedy, keď budete mať zatvorené oči.\n\nMôže ho odomknúť aj osoba, ktorá sa na vás veľmi podobá, napríklad vaše dvojča."</string>
     <string name="security_settings_face_settings_remove_dialog_title" msgid="2596803378375165362">"Chcete odstrániť údaje o tvári?"</string>
     <string name="security_settings_face_settings_remove_dialog_details" msgid="3458998128212675289">"Údaje o tvári používané na odomknutie tvárou budú natrvalo a bezpečne odstránené. Po ich odstránení budete na odomykanie telefónu, prihlasovanie do aplikácií a potvrdzovanie platieb potrebovať svoj kód PIN, vzor alebo heslo."</string>
@@ -2464,10 +2464,8 @@
     <string name="battery_tip_dialog_summary_message" product="device" msgid="8222461068860745749">"Vaše aplikácie majú normálnu spotrebu batérie. Ak ju využívajú nadmerne, zariadenie vám navrhne možné opatrenia.\n\nAk vám dochádza batéria, môžete ešte vždy zapnúť šetrič batérie."</string>
     <string name="smart_battery_manager_title" msgid="3677620516657920364">"Správca batérie"</string>
     <string name="smart_battery_title" msgid="9095903608520254254">"Spravovať aplikácie automaticky"</string>
-    <string name="smart_battery_summary" msgid="1492277404000064998">"Obmedzte spotrebu batérie aplikáciami, ktoré používate zriedka"</string>
-    <string name="smart_battery_footer" product="default" msgid="8407121907452993645">"Keď správca batérie zistí, že aplikácie nadmerne vybíjajú batériu, zobrazí sa možnosť ich obmedziť. Obmedzené aplikácie nemusia správne fungovať a upozornenia môžu byť oneskorené."</string>
-    <string name="smart_battery_footer" product="tablet" msgid="8407121907452993645">"Keď správca batérie zistí, že aplikácie nadmerne vybíjajú batériu, zobrazí sa možnosť ich obmedziť. Obmedzené aplikácie nemusia správne fungovať a upozornenia môžu byť oneskorené."</string>
-    <string name="smart_battery_footer" product="device" msgid="8407121907452993645">"Keď správca batérie zistí, že aplikácie nadmerne vybíjajú batériu, zobrazí sa možnosť ich obmedziť. Obmedzené aplikácie nemusia správne fungovať a upozornenia môžu byť oneskorené."</string>
+    <string name="smart_battery_summary" product="default" msgid="1492277404000064998">"Obmedzte spotrebu batérie aplikáciami, ktoré používate zriedka"</string>
+    <string name="smart_battery_footer" msgid="8407121907452993645">"Keď správca batérie zistí, že aplikácie nadmerne vybíjajú batériu, zobrazí sa možnosť ich obmedziť. Obmedzené aplikácie nemusia správne fungovať a upozornenia môžu byť oneskorené."</string>
     <string name="restricted_app_title" msgid="6585080822121007436">"Obmedzené aplikácie"</string>
     <plurals name="restricted_app_summary" formatted="false" msgid="6059772951505411003">
       <item quantity="few">Obmedzuje sa spotreba batérie %1$d aplikáciami</item>
@@ -2479,7 +2477,7 @@
     <string name="restricted_app_detail_footer" msgid="3683577206409650564">"Tieto aplikácie používali batériu na pozadí. Obmedzené aplikácie nemusia správne fungovať a upozornenia môžu byť oneskorené."</string>
     <string name="battery_auto_restriction_title" msgid="827206218118093357">"Použiť správcu batérie"</string>
     <string name="battery_auto_restriction_summary" msgid="2140896101984815711">"Zistite, keď aplikácie nadmerne vybíjajú batériu"</string>
-    <string name="battery_manager_on" msgid="3197525907390349054">"Zapnuté / zisťovanie nadmerného vybíjania batérie aplikáciami je aktívne"</string>
+    <string name="battery_manager_on" product="default" msgid="3197525907390349054">"Zapnuté / zisťovanie nadmerného vybíjania batérie aplikáciami je aktívne"</string>
     <string name="battery_manager_off" msgid="673547668722420924">"Vypnuté"</string>
     <plurals name="battery_manager_app_restricted" formatted="false" msgid="6714534362166394848">
       <item quantity="few">%1$d obmedzené aplikácie</item>
