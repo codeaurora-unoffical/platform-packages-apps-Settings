@@ -967,7 +967,7 @@
     <string name="wifi_tether_disabled_by_airplane" msgid="414480185654767932">"Ei käytettävissä, koska lentokonetila on päällä"</string>
     <string name="wifi_calling_settings_title" msgid="4102921303993404577">"Wi-Fi-puhelut"</string>
     <string name="wifi_calling_suggestion_title" msgid="5702964371483390024">"Laajenna puhelumahdollisuuksia Wi‑Fillä"</string>
-    <string name="wifi_calling_suggestion_summary" msgid="1331793267608673739">"Paranna kattavuutta ottamalla Wi-Fi-puhelut käyttöön"</string>
+    <string name="wifi_calling_suggestion_summary" msgid="1331793267608673739">"Paranna tavoittavuutta ottamalla Wi-Fi-puhelut käyttöön"</string>
     <string name="wifi_calling_mode_title" msgid="2164073796253284289">"Puheluasetus"</string>
     <string name="wifi_calling_mode_dialog_title" msgid="8149690312199253909">"Wi-Fi-puhelutila"</string>
     <string name="wifi_calling_roaming_mode_title" msgid="1565039047187685115">"Roaming-asetus"</string>
@@ -1117,10 +1117,10 @@
     <string name="night_display_summary_on_auto_mode_twilight" msgid="852270120144683507">"Sammuu automaattisesti, kun aurinko nousee"</string>
     <string name="night_display_activation_on_manual" msgid="277343561277625826">"Ota käyttöön nyt"</string>
     <string name="night_display_activation_off_manual" msgid="4074557720918572883">"Poista käytöstä nyt"</string>
-    <string name="night_display_activation_on_twilight" msgid="6976051971534953845">"Käytössä auringonnousuun saakka"</string>
+    <string name="night_display_activation_on_twilight" msgid="6976051971534953845">"Käytössä auringonnousuun asti"</string>
     <string name="night_display_activation_off_twilight" msgid="7196227685059907233">"Pois käytöstä auringonlaskuun asti"</string>
-    <string name="night_display_activation_on_custom" msgid="5472029024427933598">"Poista käytöstä <xliff:g id="ID_1">%1$s</xliff:g> asti"</string>
-    <string name="night_display_activation_off_custom" msgid="6169984658293744715">"Poista käytöstä <xliff:g id="ID_1">%1$s</xliff:g> asti"</string>
+    <string name="night_display_activation_on_custom" msgid="5472029024427933598">"Käytössä <xliff:g id="ID_1">%1$s</xliff:g> asti"</string>
+    <string name="night_display_activation_off_custom" msgid="6169984658293744715">"Pois käytöstä <xliff:g id="ID_1">%1$s</xliff:g> asti"</string>
     <string name="screen_timeout" msgid="4351334843529712571">"Siirtyminen virransäästöön"</string>
     <string name="screen_timeout_title" msgid="5130038655092628247">"Näyttö sammuu"</string>
     <string name="screen_timeout_summary" msgid="327761329263064327">"Laitteen oltua käyttämättä: <xliff:g id="TIMEOUT_DESCRIPTION">%1$s</xliff:g>"</string>
@@ -1675,7 +1675,7 @@
     <string name="auto_launch_label" msgid="2669236885531442195">"Avaa oletuksena"</string>
     <string name="auto_launch_label_generic" msgid="3230569852551968694">"Oletukset"</string>
     <string name="screen_compatibility_label" msgid="663250687205465394">"Ruudun yhteensopivuus"</string>
-    <string name="permissions_label" msgid="2605296874922726203">"Käyttöluvat"</string>
+    <string name="permissions_label" msgid="2605296874922726203">"Käyttöoikeudet"</string>
     <string name="cache_header_label" msgid="1877197634162461830">"Välimuisti"</string>
     <string name="clear_cache_btn_text" msgid="5756314834291116325">"Tyhjennä välimuisti"</string>
     <string name="cache_size_label" msgid="7505481393108282913">"Välimuisti"</string>
@@ -2892,7 +2892,7 @@
     <string name="restriction_nfc_enable_summary" product="default" msgid="825331120501418592">"Salli tiedonsiirto, kun puhelin koskettaa toista laitetta."</string>
     <string name="restriction_location_enable_title" msgid="5020268888245775164">"Sijainti"</string>
     <string name="restriction_location_enable_summary" msgid="3489765572281788755">"Anna sovellusten käyttää sijaintitietojasi"</string>
-    <string name="wizard_back" msgid="5567007959434765743">"Edellinen"</string>
+    <string name="wizard_back" msgid="5567007959434765743">"Takaisin"</string>
     <string name="wizard_next" msgid="3606212602795100640">"Seuraava"</string>
     <string name="wizard_finish" msgid="3286109692700083252">"Valmis"</string>
     <string name="user_image_take_photo" msgid="1280274310152803669">"Ota kuva"</string>
@@ -3889,9 +3889,9 @@
     <string name="notification_log_details_none" msgid="184131801230614059">"ei mitään"</string>
     <string name="notification_log_details_ranking_null" msgid="244660392058720919">"Sijoitustiedot puuttuvat."</string>
     <string name="notification_log_details_ranking_none" msgid="599607025882587844">"Tätä avainta ei ole sijoitustiedoissa."</string>
-    <string name="display_cutout_emulation" msgid="6306593933746393170">"Jäljittele näyttöä, jossa on aukko"</string>
+    <string name="display_cutout_emulation" msgid="7466869822418376317">"Näyttölovi"</string>
     <string name="display_cutout_emulation_keywords" msgid="4495418317471622562">"näyttölovi, näytön lovi"</string>
-    <string name="display_cutout_emulation_none" msgid="5144174674654097316">"–"</string>
+    <string name="display_cutout_emulation_device_default" msgid="7957250558326167503">"Laitteen oletusasetus"</string>
     <string name="special_access" msgid="3458780842491881155">"Sovellusten erikoiskäyttö"</string>
     <plurals name="special_access_summary" formatted="false" msgid="260765309935675867">
       <item quantity="other"><xliff:g id="COUNT">%d</xliff:g> sovelluksen datankäyttöä ei rajoiteta.</item>
@@ -4152,5 +4152,4 @@
     <string name="pref_title_network_details" msgid="7186418845727358964">"Verkon tiedot"</string>
     <string name="about_phone_device_name_warning" msgid="8885670415541365348">"Puhelimen sovellukset näkevät laitteesi nimen. Muut voivat myös nähdä nimen, kun muodostat Bluetooth-yhteyden laitteisiin tai aktivoit Wi-Fi-hotspotin."</string>
     <string name="devices_title" msgid="7701726109334110391">"Laitteet"</string>
-    <string name="display_cutout_emulation_device_default" msgid="7957250558326167503">"Oletus"</string>
 </resources>
