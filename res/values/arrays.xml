@@ -104,10 +104,10 @@
     <string-array name="dark_ui_scheduler_preference_titles">
         <!-- 0: None -->
         <item>@string/dark_ui_auto_mode_never</item>
-        <!-- 1: Auto -->
-        <item>@string/dark_ui_auto_mode_auto</item>
-        <!-- 2: Custom -->
+        <!-- 1: Custom -->
         <item>@string/dark_ui_auto_mode_custom</item>
+        <!-- 2: Auto -->
+        <item>@string/dark_ui_auto_mode_auto</item>
     </string-array>
 
     <!-- Security settings.  The delay after screen is turned off until device locks.
@@ -291,33 +291,6 @@
     <string-array translatable="false" name="wifi_ap_band_config_2G_only">
         <item>@string/wifi_ap_choose_auto</item>
         <item>@string/wifi_ap_choose_2G</item>
-    </string-array>
-
-   <!-- Wi-Fi AP Vendor band settings.  Either 2.4GHz, 5GHz or Both. -->
-   <!-- Note that adding/removing/moving the items will need wifi settings code change. -->
-    <string-array translatable="false" name="wifi_ap_band_vendor_config_full">
-        <item>1</item>
-        <item>3</item>
-        <item>8</item>
-    </string-array>
-
-    <string-array translatable="false" name="wifi_ap_band_vendor_summary_full">
-        <item>@string/wifi_ap_choose_2G</item>
-        <item>@string/wifi_ap_prefer_5G</item>
-        <item>@string/wifi_ap_choose_vendor_dual_band</item>
-    </string-array>
-
-   <!-- Wi-Fi AP Vendor band settings for OWE Transition mode.  Either 2.4GHz or 5GHz -->
-   <!-- Note: OWE transition mode SAP doesn't support dual band -->
-   <!-- Note: Adding/removing/moving the items will need wifi settings code change. -->
-    <string-array translatable="false" name="wifi_ap_band_vendor_config_no_dual">
-        <item>1</item>
-        <item>2</item>
-    </string-array>
-
-    <string-array translatable="false" name="wifi_ap_band_vendor_summary_no_dual">
-        <item>@string/wifi_ap_choose_2G</item>
-        <item>@string/wifi_ap_choose_5G</item>
     </string-array>
 
     <!-- Wi-Fi WPS setup for p2p connections.  -->
