@@ -59,6 +59,7 @@ public class SettingsBaseActivity extends FragmentActivity {
 
     private final PackageReceiver mPackageReceiver = new PackageReceiver();
     private final List<CategoryListener> mCategoryListeners = new ArrayList<>();
+    PackageManager mPackageManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,6 +67,10 @@ public class SettingsBaseActivity extends FragmentActivity {
         if (isLockTaskModePinned() && !isSettingsRunOnTop()) {
             Log.w(TAG, "Devices lock task mode pinned.");
             finish();
+        }
+        mPackageManager = getPackageManager();
+        if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_WATCH)){
+            requestWindowFeature(Window.FEATURE_SWIPE_TO_DISMISS);
         }
         final long startTime = System.currentTimeMillis();
         getLifecycle().addObserver(new HideNonSystemOverlayMixin(this));
