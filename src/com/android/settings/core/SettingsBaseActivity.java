@@ -67,6 +67,7 @@ public class SettingsBaseActivity extends FragmentActivity {
             Log.w(TAG, "Devices lock task mode pinned.");
             finish();
         }
+	requestWindowFeature(Window.FEATURE_SWIPE_TO_DISMISS);
         final long startTime = System.currentTimeMillis();
         getLifecycle().addObserver(new HideNonSystemOverlayMixin(this));
 
