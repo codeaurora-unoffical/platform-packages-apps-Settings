@@ -28,7 +28,7 @@ OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="set_id">设置名称</string>
+    <string name="group_id">組號</string>
     <string name="refresh_group">刷新组</string>
     <string name="cancel_refresh_group">取消刷新</string>
     <string name="disconnect_group">断开群组</string>
@@ -46,5 +46,8 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <string name="active">活性</string>
     <string name="groupaudio_unpair_dialog_title">忘记群组 ？</string>
     <string name="groupaudio_unpair_dialog_body">您的手机将不再与手机配对 <xliff:g id="setid">%1$s</xliff:g></string>
-	<string name="groupaudio_unpair_dialog_forget_confirm_button">忘记组</string>
+    <string name="groupaudio_unpair_dialog_forget_confirm_button">忘记组</string>
+    <string name="group_apply_changes_dialog_title">是否为所有小组成员应用更改？</string>
+    <string name="group_confirm_dialog_body">适用于组中所有成员的相同更改 <xliff:g id="groupid">%1$s</xliff:g></string>
+    <string name="group_confirm_dialog_apply_button">应用</string>
 </resources>

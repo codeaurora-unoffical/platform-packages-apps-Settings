@@ -28,7 +28,7 @@ OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="set_id">세트 ID</string>
+    <string name="group_id">그룹 ID</string>
     <string name="refresh_group">그룹 새로 고침</string>
     <string name="cancel_refresh_group">새로 고침 취소</string>
     <string name="disconnect_group">그룹 연결 해제</string>
@@ -47,4 +47,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <string name="groupaudio_unpair_dialog_body">휴대 전화가 더 이상 세트와 페어링되지 않습니다.
     <xliff:g id="setid">%1$s</xliff:g></string>
     <string name="groupaudio_unpair_dialog_forget_confirm_button">그룹 잊어 버려</string>
+    <string name="group_apply_changes_dialog_title">모든 그룹 구성원에게 변경 사항 적용 ? </string>
+    <string name="group_confirm_dialog_body">그룹의 모든 구성원에게 적용되는 동일한 변경 사항 <xliff:g id="groupid">%1$s</xliff:g></string>
+    <string name="group_confirm_dialog_apply_button">대다</string>
 </resources>
